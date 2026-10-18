@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dropdown, Avatar, Tag, Drawer, Space } from 'antd';
+import { Button, Dropdown, Avatar, Tag, Drawer, Space, Badge } from 'antd';
 import type { MenuProps } from 'antd';
 import {
   MenuOutlined,
@@ -9,14 +9,18 @@ import {
   AppstoreOutlined,
   CodeSandboxOutlined,
   ArrowRightOutlined,
+  ShoppingCartOutlined,
+  TagsOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
+import { useCart } from '../../cart/context/CartContext';
 import { getDefaultRouteForRole } from '../../auth/utils/resolveActorRoute';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const { cartCount } = useCart();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -30,6 +34,10 @@ export const Navbar: React.FC = () => {
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
+    if (window.location.pathname !== '/') {
+      navigate(`/#${id}`);
+      return;
+    }
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -59,36 +67,37 @@ export const Navbar: React.FC = () => {
     },
     { type: 'divider' },
     {
-      key: 'dashboard',
-      icon: <DashboardOutlined />,
-      label: 'My Portal / Dashboard',
-      onClick: () => navigate(dashboardRoute),
+      key: 'cart-menu',
+      icon: <ShoppingCartOutlined style={{ color: '#38bdf8' }} />,
+      label: `Giỏ hàng (${cartCount})`,
+      onClick: () => navigate('/cart'),
     },
     {
       key: 'customer-orders',
       icon: <CodeSandboxOutlined />,
-      label: 'My 3D Orders',
-      onClick: () => navigate('/customer/orders'),
+      label: 'Đơn hàng của tôi',
+      onClick: () => navigate('/orders'),
     },
     {
-      key: 'checkout-new',
-      icon: <ArrowRightOutlined />,
-      label: 'Order Keepsake (Checkout)',
-      onClick: () => navigate('/checkout'),
+      key: 'dashboard',
+      icon: <DashboardOutlined />,
+      label: 'Trang quản trị / Portal',
+      onClick: () => navigate(dashboardRoute),
     },
-    ...(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_OPERATOR'
+    ...(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_MANAGER'
       ? [
+          { type: 'divider' as const },
           {
-            key: 'inventory',
+            key: 'manager-products',
             icon: <AppstoreOutlined />,
-            label: 'WMS Inventory Control',
-            onClick: () => navigate('/manager/inventory'),
+            label: 'Quản lý Sản phẩm 3D',
+            onClick: () => navigate('/manager/products'),
           },
           {
-            key: 'print-jobs',
-            icon: <CodeSandboxOutlined />,
-            label: '3D Print Queue Farm',
-            onClick: () => navigate('/manager/print-jobs'),
+            key: 'manager-categories',
+            icon: <TagsOutlined />,
+            label: 'Quản lý Danh mục',
+            onClick: () => navigate('/manager/categories'),
           },
         ]
       : []),
@@ -97,7 +106,7 @@ export const Navbar: React.FC = () => {
       key: 'logout',
       icon: <LogoutOutlined />,
       danger: true,
-      label: 'Sign Out',
+      label: 'Đăng xuất',
       onClick: handleLogout,
     },
   ];
@@ -107,7 +116,7 @@ export const Navbar: React.FC = () => {
       <div className="home-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Brand Logo */}
         <div
-          onClick={() => scrollToSection('hero')}
+          onClick={() => navigate('/')}
           style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
         >
           <div
@@ -115,11 +124,11 @@ export const Navbar: React.FC = () => {
               width: 38,
               height: 38,
               borderRadius: 10,
-              background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+              background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 16px rgba(99, 102, 241, 0.45)',
+              boxShadow: '0 0 16px rgba(14, 165, 233, 0.45)',
             }}
           >
             <CodeSandboxOutlined style={{ fontSize: 22, color: '#ffffff' }} />
@@ -143,28 +152,45 @@ export const Navbar: React.FC = () => {
           }}
           className="desktop-nav-links"
         >
-          <span className="nav-link" onClick={() => scrollToSection('hero')}>
-            Home
+          <span className="nav-link" onClick={() => navigate('/')}>
+            Trang chủ
+          </span>
+          <span className="nav-link" onClick={() => navigate('/products')}>
+            Sản phẩm
+          </span>
+          <span className="nav-link" onClick={() => navigate('/categories')}>
+            Danh mục
           </span>
           <span className="nav-link" onClick={() => scrollToSection('how-it-works')}>
-            How It Works
-          </span>
-          <span className="nav-link" onClick={() => scrollToSection('products')}>
-            Products
-          </span>
-          <span className="nav-link" onClick={() => scrollToSection('experience')}>
-            3D Studio
-          </span>
-          <span className="nav-link" onClick={() => scrollToSection('benefits')}>
-            Why Us
+            Quy trình
           </span>
           <span className="nav-link" onClick={() => scrollToSection('story')}>
-            Story
+            Câu chuyện
           </span>
         </div>
 
-        {/* Auth CTA Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Auth & Cart Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {/* Cart Icon Button */}
+          <Badge count={cartCount} size="small" offset={[-2, 4]} color="#0ea5e9">
+            <Button
+              type="text"
+              icon={<ShoppingCartOutlined style={{ fontSize: 20, color: '#f8fafc' }} />}
+              onClick={() => navigate('/cart')}
+              style={{
+                color: '#f8fafc',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '6px 12px',
+                borderRadius: 8,
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
+              <span style={{ marginLeft: 4, fontSize: '0.85rem', fontWeight: 600 }}>Giỏ hàng</span>
+            </Button>
+          </Badge>
+
           {isAuthenticated && user ? (
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
               <div
@@ -181,7 +207,7 @@ export const Navbar: React.FC = () => {
               >
                 <Avatar
                   style={{
-                    backgroundColor: '#6366f1',
+                    backgroundColor: '#0ea5e9',
                     verticalAlign: 'middle',
                   }}
                   icon={<UserOutlined />}
@@ -192,7 +218,7 @@ export const Navbar: React.FC = () => {
                   <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc' }}>
                     {user.fullName || user.email}
                   </span>
-                  <span style={{ fontSize: '0.7rem', color: '#06b6d4' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#38bdf8' }}>
                     {user.role.replace('ROLE_', '')}
                   </span>
                 </div>
@@ -209,31 +235,28 @@ export const Navbar: React.FC = () => {
                   fontSize: '0.9rem',
                 }}
               >
-                Sign In
+                Đăng nhập
               </Button>
               <Button
                 type="primary"
                 onClick={() => navigate('/login')}
                 icon={<ArrowRightOutlined />}
                 style={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+                  background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
                   border: 'none',
-                  borderRadius: 9999,
-                  fontWeight: 600,
-                  padding: '0 20px',
-                  height: 38,
-                  boxShadow: '0 4px 16px rgba(99, 102, 241, 0.35)',
+                  fontWeight: 700,
+                  borderRadius: 8,
                 }}
               >
-                Get Started
+                Bắt đầu
               </Button>
             </Space>
           )}
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Hamburger Toggle */}
           <Button
             type="text"
-            icon={<MenuOutlined style={{ fontSize: 20, color: '#f8fafc' }} />}
+            icon={<MenuOutlined style={{ fontSize: 20, color: '#ffffff' }} />}
             onClick={() => setMobileMenuOpen(true)}
             className="mobile-menu-btn"
             style={{ display: 'none' }}
@@ -244,115 +267,78 @@ export const Navbar: React.FC = () => {
       {/* Mobile Drawer */}
       <Drawer
         title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <CodeSandboxOutlined style={{ color: '#06b6d4', fontSize: 20 }} />
-            <span style={{ color: '#ffffff', fontWeight: 700 }}>Memento3D Menu</span>
-          </div>
+          <span style={{ color: '#ffffff', fontWeight: 700 }}>
+            Memento<span className="gradient-text-cyan">3D</span> Menu
+          </span>
         }
         placement="right"
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
-        styles={{
-          body: { background: '#090d16', padding: '24px 16px' },
-          header: { background: '#090d16', borderBottom: '1px solid rgba(255,255,255,0.08)' },
-        }}
+        bodyStyle={{ background: '#0a0f1d', padding: 24 }}
+        headerStyle={{ background: '#070a14', borderBottom: '1px solid rgba(255,255,255,0.08)' }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div className="nav-link" onClick={() => scrollToSection('hero')} style={{ fontSize: '1.1rem' }}>
-            Home
-          </div>
-          <div className="nav-link" onClick={() => scrollToSection('how-it-works')} style={{ fontSize: '1.1rem' }}>
-            How It Works
-          </div>
-          <div className="nav-link" onClick={() => scrollToSection('products')} style={{ fontSize: '1.1rem' }}>
-            Product Collection
-          </div>
-          <div className="nav-link" onClick={() => scrollToSection('experience')} style={{ fontSize: '1.1rem' }}>
-            Interactive 3D Studio
-          </div>
-          <div className="nav-link" onClick={() => scrollToSection('benefits')} style={{ fontSize: '1.1rem' }}>
-            Why Memento3D
-          </div>
-          <div className="nav-link" onClick={() => scrollToSection('story')} style={{ fontSize: '1.1rem' }}>
-            Our Story
-          </div>
+          <Button
+            type="text"
+            block
+            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
+            onClick={() => {
+              setMobileMenuOpen(false);
+              navigate('/');
+            }}
+          >
+            Trang chủ
+          </Button>
 
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '12px 0' }} />
+          <Button
+            type="text"
+            block
+            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
+            onClick={() => {
+              setMobileMenuOpen(false);
+              navigate('/products');
+            }}
+          >
+            Sản phẩm 3D
+          </Button>
 
-          {isAuthenticated ? (
-            <Button
-              type="primary"
-              block
-              icon={<DashboardOutlined />}
-              onClick={() => {
-                setMobileMenuOpen(false);
-                navigate(dashboardRoute);
-              }}
-              style={{
-                background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
-                height: 44,
-                borderRadius: 10,
-              }}
-            >
-              Open Workspace Portal
-            </Button>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <Button
-                type="primary"
-                block
-                icon={<ArrowRightOutlined />}
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  navigate('/login');
-                }}
-                style={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
-                  height: 44,
-                  borderRadius: 10,
-                }}
-              >
-                Get Started
-              </Button>
-              <Button
-                block
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  navigate('/login');
-                }}
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  borderColor: 'rgba(255,255,255,0.12)',
-                  color: '#ffffff',
-                  height: 44,
-                  borderRadius: 10,
-                }}
-              >
-                Sign In
-              </Button>
-            </div>
-          )}
+          <Button
+            type="text"
+            block
+            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
+            onClick={() => {
+              setMobileMenuOpen(false);
+              navigate('/categories');
+            }}
+          >
+            Danh mục
+          </Button>
+
+          <Button
+            type="text"
+            block
+            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
+            onClick={() => {
+              setMobileMenuOpen(false);
+              navigate('/cart');
+            }}
+          >
+            Giỏ hàng ({cartCount})
+          </Button>
+
+          <Button
+            type="text"
+            block
+            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
+            onClick={() => {
+              setMobileMenuOpen(false);
+              navigate('/orders');
+            }}
+          >
+            Đơn hàng của tôi
+          </Button>
         </div>
       </Drawer>
-
-      <style>{`
-        @media (min-width: 868px) {
-          .desktop-nav-links {
-            display: flex !important;
-          }
-          .mobile-menu-btn {
-            display: none !important;
-          }
-        }
-        @media (max-width: 867px) {
-          .desktop-nav-links {
-            display: none !important;
-          }
-          .mobile-menu-btn {
-            display: inline-flex !important;
-          }
-        }
-      `}</style>
     </nav>
   );
 };

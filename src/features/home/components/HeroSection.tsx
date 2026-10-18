@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Tag } from 'antd';
 import {
   ArrowRightOutlined,
-  PlayCircleOutlined,
   StarOutlined,
   ThunderboltOutlined,
   CheckCircleOutlined,
@@ -12,11 +11,6 @@ import { useNavigate } from 'react-router-dom';
 
 export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
-
-  const scrollToHowItWorks = () => {
-    const el = document.getElementById('how-it-works');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
 
   return (
     <section id="hero" className="hero-wrapper">
@@ -65,25 +59,25 @@ export const HeroSection: React.FC = () => {
                 type="primary"
                 size="large"
                 icon={<ArrowRightOutlined />}
-                onClick={() => navigate('/login')}
+                onClick={() => navigate('/products')}
                 style={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+                  background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
                   border: 'none',
                   borderRadius: 12,
                   fontWeight: 700,
                   fontSize: '1rem',
                   height: 52,
                   padding: '0 28px',
-                  boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)',
+                  boxShadow: '0 8px 24px rgba(14, 165, 233, 0.4)',
                 }}
               >
-                Create Your 3D Memory
+                Explore Products
               </Button>
 
               <Button
                 size="large"
-                icon={<PlayCircleOutlined />}
-                onClick={scrollToHowItWorks}
+                icon={<ThunderboltOutlined />}
+                onClick={() => navigate('/checkout')}
                 style={{
                   background: 'rgba(255, 255, 255, 0.05)',
                   borderColor: 'rgba(255, 255, 255, 0.15)',
@@ -96,7 +90,7 @@ export const HeroSection: React.FC = () => {
                   backdropFilter: 'blur(10px)',
                 }}
               >
-                Explore How It Works
+                Create Your Memento
               </Button>
             </div>
 

@@ -18,6 +18,19 @@ export const useCreatePayment = () => {
   });
 };
 
+export const useConfirmCash = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<PaymentStatusResponse, Error, string>({
+    mutationFn: (paymentId: string) => paymentApi.confirmCash(paymentId),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['order', data.orderId] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+  });
+};
+
 export const usePaymentStatus = (paymentId?: string) => {
   return useQuery<PaymentStatusResponse, Error>({
     queryKey: ['payment-status', paymentId],

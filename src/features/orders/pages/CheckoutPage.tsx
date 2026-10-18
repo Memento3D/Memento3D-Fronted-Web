@@ -5,431 +5,515 @@ import {
   Card,
   Form,
   Input,
-  Select,
   Radio,
-  InputNumber,
   Button,
   Typography,
   Divider,
   message,
-  Alert,
   Spin,
+  Empty,
 } from 'antd';
 import {
-  ShoppingOutlined,
   ArrowLeftOutlined,
-  ThunderboltOutlined,
+  DollarCircleOutlined,
+  LockOutlined,
 } from '@ant-design/icons';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { materialApi } from '../../material/api/materialApi';
-import { useCreateOrder } from '../hooks/useCreateOrder';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
+import { useCart } from '../../cart/context/CartContext';
 import { formatCurrency } from '../utils/orderFormatters';
+import { OrderPaymentModal } from '../components/OrderPaymentModal';
+import { Navbar } from '../../home/components/Navbar';
+import { Footer } from '../../home/components/Footer';
+import type { OrderResponse, PaymentMethod } from '../types/order.types';
+import { apiClient } from '../../../services/apiClient';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
-interface ModelTier {
-  id: string;
-  name: string;
-  basePrice: number;
-  dimensions: string;
-  description: string;
-}
-
-const MODEL_TIERS: ModelTier[] = [
-  {
-    id: 'mini-keepsake',
-    name: 'Mini Keepsake & Charm (5cm)',
-    basePrice: 150000,
-    dimensions: '4.5cm – 6.0cm scale',
-    description: 'Chế tác phù điêu 3D bỏ túi, móc khóa bền chắc bằng nhựa quang hóa cao cấp.',
-  },
-  {
-    id: 'standard-keepsake',
-    name: 'Tượng chân dung Desk Sculpture (15cm)',
-    basePrice: 350000,
-    dimensions: '12cm – 15cm height',
-    description: 'Định dạng phổ biến nhất của Memento3D. Chi tiết khuôn mặt sắc nét, kèm đế gỗ mộc.',
-  },
-  {
-    id: 'signature-memorial',
-    name: 'Tác phẩm Signature Memorial (22cm)',
-    basePrice: 750000,
-    dimensions: '18cm – 24cm museum scale',
-    description: 'Tượng quy mô trưng bày viện bảo tàng, xử lý bề mặt thủ công patina kim loại.',
-  },
-];
-
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { user } = useAuth();
+  const { cart, isLoading: isCartLoading, refreshCart } = useCart();
   const [form] = Form.useForm();
-  const createOrderMutation = useCreateOrder();
 
-  const preselectedScanId = searchParams.get('scanId') || undefined;
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('MOMO');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [createdOrder, setCreatedOrder] = useState<OrderResponse | null>(null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
 
-  const [selectedTierId, setSelectedTierId] = useState<string>('standard-keepsake');
-  const [selectedMaterialId, setSelectedMaterialId] = useState<string>('');
-  const [quality, setQuality] = useState<'FINE' | 'STANDARD' | 'DRAFT'>('FINE');
-  const [quantity, setQuantity] = useState<number>(1);
-
-  // Fetch materials live from Backend
-  const { data: materialsData, isLoading: loadingMaterials } = useQuery({
-    queryKey: ['active-materials'],
-    queryFn: () => materialApi.list({ status: 'ACTIVE', limit: 100 }),
-  });
-
-  const selectedTier = MODEL_TIERS.find((t) => t.id === selectedTierId) || MODEL_TIERS[1];
-  const activeMaterials = materialsData?.content || [];
-  const selectedMaterial = activeMaterials.find((m) => m.id === selectedMaterialId) || activeMaterials[0];
-
-  // Dynamic Quotation calculation
-  const qualityMultiplier = quality === 'FINE' ? 1.2 : quality === 'STANDARD' ? 1.0 : 0.85;
-  const materialExtra = selectedMaterial ? Number(selectedMaterial.unitCost) * 1.5 : 50000;
-  const calculatedUnitPrice = Math.round((selectedTier.basePrice + materialExtra) * qualityMultiplier);
-  const calculatedTotalPrice = Math.max(1000, calculatedUnitPrice * quantity);
+  const cartItems = cart?.items || [];
+  const isCartEmpty = cartItems.length === 0;
 
   const handleSubmit = async (values: any) => {
+    if (isCartEmpty) {
+      message.error('Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng.');
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const order = await createOrderMutation.mutateAsync({
-        scanId: preselectedScanId,
-        totalPrice: calculatedTotalPrice,
-        currency: 'VND',
+      // 1. POST /api/v1/orders (No total price sent; backend calculates all from DB!)
+      const res = await apiClient.post<OrderResponse>('/orders', {
         recipientName: values.recipientName.trim(),
-        shippingAddress: values.shippingAddress.trim(),
         phone: values.phone.trim(),
+        shippingAddress: values.shippingAddress.trim(),
+        note: values.note ? values.note.trim() : undefined,
+        paymentMethod,
       });
 
-      message.success('Đơn hàng in 3D đã được khởi tạo thành công!');
-      navigate(`/customer/orders/${order.id}?pay=true`);
+      const order = res.data;
+      setCreatedOrder(order);
+      await refreshCart();
+
+      // If CASH: Order created with PENDING CASH payment. No external gateway redirect.
+      if (paymentMethod === 'CASH') {
+        message.success('Đặt hàng thành công! Đơn hàng sẽ thanh toán tiền mặt khi nhận hàng.');
+        navigate(`/orders/${order.id}`);
+        return;
+      }
+
+      // If MOMO or ZALOPAY: Open payment modal or redirect
+      message.success('Đơn hàng đã được tạo. Vui lòng hoàn tất thanh toán.');
+      setPaymentModalOpen(true);
     } catch (err: any) {
-      message.error(err.message || 'Không thể tạo đơn hàng. Vui lòng kiểm tra lại thông tin.');
+      message.error(err.message || 'Không thể tạo đơn hàng. Vui lòng thử lại.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#050811',
-        color: '#f8fafc',
-        padding: '40px 24px',
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-      }}
-    >
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        {/* Back and Breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
+    <div style={{ minHeight: '100vh', background: '#050811', color: '#f8fafc' }}>
+      <Navbar />
+
+      <main style={{ maxWidth: 1160, margin: '0 auto', padding: '100px 24px 60px' }}>
+        {/* Breadcrumb Back */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/customer/orders')}
-            style={{ color: '#94a3b8' }}
+            onClick={() => navigate('/cart')}
+            style={{ color: '#94a3b8', paddingLeft: 0 }}
           >
-            Quay lại Đơn hàng
+            Quay lại Giỏ hàng
           </Button>
         </div>
 
         <div style={{ marginBottom: 32 }}>
           <Title level={2} style={{ color: '#ffffff', margin: 0, fontWeight: 800 }}>
-            Đặt hàng in 3D & Cấu hình Sản phẩm
+            Thanh toán & Xác nhận Đơn hàng
           </Title>
           <Text style={{ color: '#94a3b8', fontSize: '0.95rem' }}>
-            Tùy biến vật liệu, chất lượng in và thông tin nhận hàng trước khi gửi lệnh lên xưởng in.
+            Vui lòng điền thông tin người nhận và lựa chọn phương thức thanh toán an toàn.
           </Text>
         </div>
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          initialValues={{
-            recipientName: user?.fullName || '',
-            phone: '',
-            shippingAddress: '',
-          }}
-        >
-          <Row gutter={[32, 32]}>
-            {/* Left Column: Configuration & Shipping */}
-            <Col xs={24} lg={15}>
-              {/* Step 1: Tier Selection */}
-              <Card
-                title={
-                  <span style={{ color: '#f8fafc', fontWeight: 700 }}>
-                    1. Chọn định dạng vật phẩm kỷ niệm
-                  </span>
-                }
+        {isCartLoading && !cart ? (
+          <div style={{ textAlign: 'center', padding: '60px 0' }}>
+            <Spin size="large" />
+          </div>
+        ) : isCartEmpty ? (
+          <Card
+            style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: 16,
+              textAlign: 'center',
+              padding: '60px 20px',
+            }}
+          >
+            <Empty
+              description={<span style={{ color: '#94a3b8' }}>Giỏ hàng của bạn đang trống.</span>}
+            >
+              <Button
+                type="primary"
+                onClick={() => navigate('/products')}
                 style={{
-                  background: 'rgba(18, 25, 41, 0.7)',
-                  borderColor: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: 14,
-                  marginBottom: 24,
+                  background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+                  borderColor: 'transparent',
+                  borderRadius: 8,
                 }}
               >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {MODEL_TIERS.map((tier) => {
-                    const isSelected = selectedTierId === tier.id;
-                    return (
-                      <div
-                        key={tier.id}
-                        onClick={() => setSelectedTierId(tier.id)}
-                        style={{
-                          padding: '16px 20px',
-                          borderRadius: 12,
-                          background: isSelected ? 'rgba(14, 165, 233, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                          border: isSelected ? '1px solid #0ea5e9' : '1px solid rgba(255, 255, 255, 0.08)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          transition: 'all 0.2s ease',
-                        }}
-                      >
-                        <div>
-                          <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '1rem', marginBottom: 4 }}>
-                            {tier.name}
-                          </div>
-                          <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginBottom: 6 }}>
-                            {tier.description}
-                          </div>
-                          <span
-                            style={{
-                              fontSize: '0.75rem',
-                              padding: '2px 8px',
-                              background: 'rgba(255, 255, 255, 0.06)',
-                              borderRadius: 4,
-                              color: '#cbd5e1',
-                            }}
-                          >
-                            {tier.dimensions}
-                          </span>
-                        </div>
-                        <div style={{ textAlign: 'right', minWidth: 110 }}>
-                          <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#38bdf8' }}>
-                            {formatCurrency(tier.basePrice)}
-                          </div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Giá khởi điểm</div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Card>
-
-              {/* Step 2: Material & Quality */}
-              <Card
-                title={
-                  <span style={{ color: '#f8fafc', fontWeight: 700 }}>
-                    2. Lựa chọn vật liệu & Thông số chế tác
-                  </span>
-                }
-                style={{
-                  background: 'rgba(18, 25, 41, 0.7)',
-                  borderColor: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: 14,
-                  marginBottom: 24,
-                }}
-              >
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ display: 'block', color: '#e2e8f0', marginBottom: 8, fontWeight: 600 }}>
-                    Vật liệu in sẵn có tại kho
-                  </label>
-                  {loadingMaterials ? (
-                    <Spin size="small" />
-                  ) : (
-                    <Select
-                      style={{ width: '100%' }}
-                      placeholder="Chọn vật liệu..."
-                      value={selectedMaterialId || (activeMaterials[0]?.id ?? '')}
-                      onChange={(val) => setSelectedMaterialId(val)}
-                      options={activeMaterials.map((m) => ({
-                        label: `${m.name} (${m.materialType} - ${m.color}) — Đơn giá kho: ${formatCurrency(m.unitCost)}`,
-                        value: m.id,
-                      }))}
-                    />
-                  )}
-                </div>
-
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ display: 'block', color: '#e2e8f0', marginBottom: 8, fontWeight: 600 }}>
-                    Độ phân giải / Chất lượng in (Layer Height)
-                  </label>
-                  <Radio.Group
-                    value={quality}
-                    onChange={(e) => setQuality(e.target.value)}
-                    style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}
-                  >
-                    <Radio.Button value="FINE" style={{ height: 'auto', padding: '10px 16px', borderRadius: 8 }}>
-                      <div style={{ fontWeight: 700 }}>Fine Detail (0.08mm)</div>
-                      <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Mịn màng nhất, chậm hơn 20%</div>
-                    </Radio.Button>
-                    <Radio.Button value="STANDARD" style={{ height: 'auto', padding: '10px 16px', borderRadius: 8 }}>
-                      <div style={{ fontWeight: 700 }}>Standard (0.16mm)</div>
-                      <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Cân bằng tốc độ & độ nét</div>
-                    </Radio.Button>
-                    <Radio.Button value="DRAFT" style={{ height: 'auto', padding: '10px 16px', borderRadius: 8 }}>
-                      <div style={{ fontWeight: 700 }}>Draft (0.28mm)</div>
-                      <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Tiết kiệm chi phí</div>
-                    </Radio.Button>
-                  </Radio.Group>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', color: '#e2e8f0', marginBottom: 8, fontWeight: 600 }}>
-                    Số lượng
-                  </label>
-                  <InputNumber
-                    min={1}
-                    max={50}
-                    value={quantity}
-                    onChange={(val) => setQuantity(val || 1)}
-                    style={{ width: 140 }}
-                  />
-                </div>
-              </Card>
-
-              {/* Step 3: Delivery Information */}
-              <Card
-                title={
-                  <span style={{ color: '#f8fafc', fontWeight: 700 }}>
-                    3. Thông tin người nhận & Địa chỉ giao hàng
-                  </span>
-                }
-                style={{
-                  background: 'rgba(18, 25, 41, 0.7)',
-                  borderColor: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: 14,
-                }}
-              >
-                <Form.Item
-                  name="recipientName"
-                  label={<span style={{ color: '#e2e8f0' }}>Họ và tên người nhận</span>}
-                  rules={[
-                    { required: true, message: 'Vui lòng nhập họ tên người nhận' },
-                    { max: 255, message: 'Họ tên không được vượt quá 255 ký tự' },
-                  ]}
-                >
-                  <Input placeholder="Ví dụ: Nguyễn Văn A" size="large" />
-                </Form.Item>
-
-                <Form.Item
-                  name="phone"
-                  label={<span style={{ color: '#e2e8f0' }}>Số điện thoại liên hệ</span>}
-                  rules={[
-                    { required: true, message: 'Vui lòng nhập số điện thoại' },
-                    {
-                      pattern: /^[0-9+()\-\s]{8,20}$/,
-                      message: 'Định dạng số điện thoại không hợp lệ (8 - 20 ký tự số)',
-                    },
-                  ]}
-                >
-                  <Input placeholder="Ví dụ: 0901234567" size="large" />
-                </Form.Item>
-
-                <Form.Item
-                  name="shippingAddress"
-                  label={<span style={{ color: '#e2e8f0' }}>Địa chỉ giao hàng chi tiết</span>}
-                  rules={[{ required: true, message: 'Vui lòng nhập địa chỉ giao hàng' }]}
-                >
-                  <TextArea
-                    rows={3}
-                    placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố..."
-                  />
-                </Form.Item>
-              </Card>
-            </Col>
-
-            {/* Right Column: Order Summary & Place Order */}
-            <Col xs={24} lg={9}>
-              <div style={{ position: 'sticky', top: 24 }}>
+                Khám phá sản phẩm
+              </Button>
+            </Empty>
+          </Card>
+        ) : (
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+            initialValues={{
+              recipientName: user?.fullName || '',
+              phone: '',
+              shippingAddress: '',
+              note: '',
+            }}
+          >
+            <Row gutter={[32, 32]}>
+              {/* Left Column: Customer & Shipping Information */}
+              <Col xs={24} lg={15}>
+                {/* 1. Customer & Shipping Info */}
                 <Card
                   title={
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#f8fafc', fontWeight: 800 }}>
-                      <ShoppingOutlined style={{ color: '#0ea5e9' }} />
-                      <span>Tóm tắt thanh toán</span>
-                    </div>
+                    <span style={{ color: '#fff', fontWeight: 700 }}>
+                      1. Thông tin người nhận & Địa chỉ giao hàng
+                    </span>
                   }
                   style={{
-                    background: 'linear-gradient(160deg, rgba(18, 25, 41, 0.9) 0%, rgba(11, 16, 28, 0.95) 100%)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: 14,
-                    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.4)',
+                    background: 'rgba(15, 23, 42, 0.65)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: 16,
+                    marginBottom: 24,
                   }}
+                  bodyStyle={{ padding: 24 }}
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                      <span style={{ color: '#94a3b8' }}>Định dạng:</span>
-                      <span style={{ color: '#f8fafc', fontWeight: 600 }}>{selectedTier.name}</span>
-                    </div>
+                  <Row gutter={16}>
+                    <Col xs={24} sm={12}>
+                      <Form.Item
+                        name="recipientName"
+                        label={<span style={{ color: '#e2e8f0' }}>Họ và tên người nhận</span>}
+                        rules={[{ required: true, message: 'Vui lòng nhập tên người nhận' }]}
+                      >
+                        <Input
+                          placeholder="Ví dụ: Nguyễn Văn A"
+                          size="large"
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.04)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            color: '#fff',
+                            borderRadius: 8,
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={12}>
+                      <Form.Item
+                        name="phone"
+                        label={<span style={{ color: '#e2e8f0' }}>Số điện thoại liên hệ</span>}
+                        rules={[
+                          { required: true, message: 'Vui lòng nhập số điện thoại' },
+                          {
+                            pattern: /^[0-9+()\-\s]{8,20}$/,
+                            message: 'Số điện thoại không hợp lệ',
+                          },
+                        ]}
+                      >
+                        <Input
+                          placeholder="0912 345 678"
+                          size="large"
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.04)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            color: '#fff',
+                            borderRadius: 8,
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                      <span style={{ color: '#94a3b8' }}>Vật liệu đã chọn:</span>
-                      <span style={{ color: '#38bdf8', fontWeight: 600 }}>
-                        {selectedMaterial ? selectedMaterial.name : 'Mặc định kho'}
+                  <Form.Item
+                    name="shippingAddress"
+                    label={<span style={{ color: '#e2e8f0' }}>Địa chỉ giao hàng chi tiết</span>}
+                    rules={[{ required: true, message: 'Vui lòng nhập địa chỉ nhận hàng' }]}
+                  >
+                    <TextArea
+                      rows={3}
+                      placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố..."
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.04)',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        color: '#fff',
+                        borderRadius: 8,
+                      }}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="note"
+                    label={<span style={{ color: '#e2e8f0' }}>Ghi chú đơn hàng (Tùy chọn)</span>}
+                  >
+                    <TextArea
+                      rows={2}
+                      placeholder="Ghi chú thêm về thời gian giao hoặc hướng dẫn bảo quản..."
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.04)',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        color: '#fff',
+                        borderRadius: 8,
+                      }}
+                    />
+                  </Form.Item>
+                </Card>
+
+                {/* 2. Payment Method */}
+                <Card
+                  title={
+                    <span style={{ color: '#fff', fontWeight: 700 }}>
+                      2. Chọn phương thức thanh toán
+                    </span>
+                  }
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.65)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: 16,
+                  }}
+                  bodyStyle={{ padding: 24 }}
+                >
+                  <Radio.Group
+                    value={paymentMethod}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}
+                  >
+                    {/* MoMo */}
+                    <Radio
+                      value="MOMO"
+                      style={{
+                        background: paymentMethod === 'MOMO' ? 'rgba(216, 45, 139, 0.12)' : 'rgba(255, 255, 255, 0.02)',
+                        border: paymentMethod === 'MOMO' ? '1px solid #d82d8b' : '1px solid rgba(255, 255, 255, 0.08)',
+                        padding: '16px',
+                        borderRadius: 12,
+                        width: '100%',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <div style={{ marginLeft: 8 }}>
+                        <div style={{ fontWeight: 700, color: '#ec4899', fontSize: '1rem' }}>
+                          Ví MoMo
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                          Thanh toán qua quét mã QR hoặc ứng dụng MoMo
+                        </div>
+                      </div>
+                    </Radio>
+
+                    {/* ZaloPay */}
+                    <Radio
+                      value="ZALOPAY"
+                      style={{
+                        background: paymentMethod === 'ZALOPAY' ? 'rgba(0, 104, 255, 0.12)' : 'rgba(255, 255, 255, 0.02)',
+                        border: paymentMethod === 'ZALOPAY' ? '1px solid #0068ff' : '1px solid rgba(255, 255, 255, 0.08)',
+                        padding: '16px',
+                        borderRadius: 12,
+                        width: '100%',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <div style={{ marginLeft: 8 }}>
+                        <div style={{ fontWeight: 700, color: '#38bdf8', fontSize: '1rem' }}>
+                          Ví ZaloPay
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                          Thanh toán qua cổng ZaloPay QR & Thẻ ATM/Visa
+                        </div>
+                      </div>
+                    </Radio>
+
+                    {/* Cash */}
+                    <Radio
+                      value="CASH"
+                      style={{
+                        background: paymentMethod === 'CASH' ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.02)',
+                        border: paymentMethod === 'CASH' ? '1px solid #22c55e' : '1px solid rgba(255, 255, 255, 0.08)',
+                        padding: '16px',
+                        borderRadius: 12,
+                        width: '100%',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <div style={{ marginLeft: 8 }}>
+                        <div style={{ fontWeight: 700, color: '#22c55e', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <DollarCircleOutlined /> Tiền mặt
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                          Thanh toán tiền mặt khi nhận hàng / khi đơn hàng hoàn thành
+                        </div>
+                      </div>
+                    </Radio>
+                  </Radio.Group>
+                </Card>
+              </Col>
+
+              {/* Right Column: Order Items & Price Summary */}
+              <Col xs={24} lg={9}>
+                {/* Order Items in Cart */}
+                <Card
+                  title={
+                    <span style={{ color: '#fff', fontWeight: 700 }}>
+                      Sản phẩm trong đơn ({cart?.totalItems || 0})
+                    </span>
+                  }
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.65)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: 16,
+                    marginBottom: 24,
+                  }}
+                  bodyStyle={{ padding: 20 }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxHeight: 320, overflowY: 'auto' }}>
+                    {cartItems.map((item) => (
+                      <div
+                        key={item.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 12,
+                          paddingBottom: 12,
+                          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 50,
+                            height: 50,
+                            borderRadius: 8,
+                            overflow: 'hidden',
+                            background: '#090d16',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {item.thumbnailUrl ? (
+                            <img
+                              src={item.thumbnailUrl}
+                              alt={item.productName}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              📦
+                            </div>
+                          )}
+                        </div>
+
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div
+                            style={{
+                              color: '#f8fafc',
+                              fontWeight: 600,
+                              fontSize: '0.9rem',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {item.productName}
+                          </div>
+                          <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                            SL: {item.quantity} × {formatCurrency(item.unitPrice, 'VND')}
+                          </div>
+                        </div>
+
+                        <div style={{ fontWeight: 700, color: '#38bdf8', fontSize: '0.95rem' }}>
+                          {formatCurrency(item.subtotal, 'VND')}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                {/* Price Summary */}
+                <Card
+                  title={<span style={{ color: '#fff', fontWeight: 700 }}>Tổng kết thanh toán</span>}
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.65)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: 16,
+                  }}
+                  bodyStyle={{ padding: 24 }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Tạm tính:</span>
+                      <span style={{ color: '#f8fafc', fontWeight: 600 }}>
+                        {formatCurrency(cart?.subtotal || 0, 'VND')}
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                      <span style={{ color: '#94a3b8' }}>Chế độ in:</span>
-                      <span style={{ color: '#cbd5e1' }}>{quality}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Giảm giá:</span>
+                      <span style={{ color: '#22c55e', fontWeight: 600 }}>
+                        - {formatCurrency(cart?.discount || 0, 'VND')}
+                      </span>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                      <span style={{ color: '#94a3b8' }}>Số lượng:</span>
-                      <span style={{ color: '#cbd5e1' }}>{quantity} cái</span>
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: '#94a3b8' }}>Phí vận chuyển:</span>
-                      <span style={{ color: '#10b981', fontWeight: 600 }}>Miễn phí toàn quốc</span>
+                      <span style={{ color: '#f8fafc', fontWeight: 600 }}>
+                        {cart?.shippingFee ? formatCurrency(cart.shippingFee, 'VND') : 'Miễn phí'}
+                      </span>
                     </div>
 
                     <Divider style={{ borderColor: 'rgba(255, 255, 255, 0.08)', margin: '8px 0' }} />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1rem' }}>Tổng cộng:</span>
-                      <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#38bdf8' }}>
-                        {formatCurrency(calculatedTotalPrice)}
+                      <span style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
+                        Tổng thanh toán:
+                      </span>
+                      <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#38bdf8' }}>
+                        {formatCurrency(cart?.total || 0, 'VND')}
                       </span>
                     </div>
                   </div>
-
-                  <Alert
-                    message="Bảo đảm chất lượng Memento3D"
-                    description="Mọi kỷ vật in 3D đều trải qua khâu kiểm định quang học bề mặt trước khi đóng gói và xuất kho."
-                    type="info"
-                    showIcon
-                    style={{ marginBottom: 24, borderRadius: 8, fontSize: '0.8rem' }}
-                  />
 
                   <Button
                     type="primary"
                     block
                     size="large"
                     htmlType="submit"
-                    loading={createOrderMutation.isPending}
-                    icon={<ThunderboltOutlined />}
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
                     style={{
-                      background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+                      background:
+                        paymentMethod === 'CASH'
+                          ? 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)'
+                          : 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
                       borderColor: 'transparent',
-                      height: 50,
                       borderRadius: 10,
-                      fontWeight: 800,
-                      fontSize: '1rem',
-                      boxShadow: '0 0 20px rgba(14, 165, 233, 0.35)',
+                      fontWeight: 700,
+                      height: 50,
+                      marginTop: 24,
                     }}
                   >
-                    Xác nhận đặt hàng
+                    {paymentMethod === 'CASH' ? 'Xác nhận đặt hàng' : 'Tiến hành thanh toán'}
                   </Button>
+
+                  <div
+                    style={{
+                      marginTop: 16,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      fontSize: '0.8rem',
+                      color: '#94a3b8',
+                    }}
+                  >
+                    <LockOutlined />
+                    <span>Thanh toán mã hóa bảo mật SSL 256-bit</span>
+                  </div>
                 </Card>
-              </div>
-            </Col>
-          </Row>
-        </Form>
-      </div>
+              </Col>
+            </Row>
+          </Form>
+        )}
+
+        {/* Payment Modal if MoMo / ZaloPay chosen */}
+        {createdOrder && (
+          <OrderPaymentModal
+            order={createdOrder}
+            open={paymentModalOpen}
+            onClose={() => setPaymentModalOpen(false)}
+            onPaymentSuccess={() => {
+              navigate(`/orders/${createdOrder.id}`);
+            }}
+          />
+        )}
+      </main>
+
+      <Footer />
     </div>
   );
 };

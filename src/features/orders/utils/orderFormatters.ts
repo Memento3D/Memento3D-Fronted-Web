@@ -1,30 +1,31 @@
-import dayjs from 'dayjs';
 import type { OrderStatus, PaymentStatus } from '../types/order.types';
 
-export const formatCurrency = (amount: number | string | undefined | null, currency = 'VND'): string => {
-  if (amount === undefined || amount === null) return '0 ₫';
-  const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  if (isNaN(numericAmount)) return '0 ₫';
-
+export const formatCurrency = (amount: number, currency: string = 'VND'): string => {
   try {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
       currency: currency || 'VND',
       maximumFractionDigits: 0,
-    }).format(numericAmount);
+    }).format(amount);
   } catch {
-    return `${numericAmount.toLocaleString('vi-VN')} ${currency}`;
+    return `${amount.toLocaleString('vi-VN')} ${currency}`;
   }
 };
 
-export const formatOrderDate = (dateStr?: string | null): string => {
-  if (!dateStr) return '—';
-  return dayjs(dateStr).format('DD/MM/YYYY HH:mm');
-};
-
-export const formatRelativeTime = (dateStr?: string | null): string => {
-  if (!dateStr) return '—';
-  return dayjs(dateStr).format('YYYY-MM-DD HH:mm:ss');
+export const formatOrderDate = (dateString?: string): string => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  } catch {
+    return dateString;
+  }
 };
 
 export interface StatusMeta {
@@ -36,23 +37,41 @@ export interface StatusMeta {
 }
 
 export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusMeta> = {
+  PENDING: {
+    label: 'Chờ xử lý',
+    color: '#f59e0b',
+    badgeStatus: 'warning',
+    description: 'Đơn hàng đã khởi tạo, đang chờ xử lý hoặc thanh toán.',
+  },
   PENDING_PAYMENT: {
     label: 'Chờ thanh toán',
     color: '#f59e0b',
     badgeStatus: 'warning',
-    description: 'Đơn hàng đã khởi tạo, đang chờ khách hàng thanh toán qua MoMo hoặc ZaloPay.',
+    description: 'Đơn hàng đã khởi tạo, đang chờ khách hàng thanh toán.',
   },
   CONFIRMED: {
     label: 'Đã xác nhận',
     color: '#06b6d4',
     badgeStatus: 'processing',
-    description: 'Thanh toán thành công. Đơn hàng đang được xếp lịch chuẩn bị sản xuất in 3D.',
+    description: 'Đơn hàng đã xác nhận và xếp lịch chuẩn bị sản xuất in 3D.',
+  },
+  PROCESSING: {
+    label: 'Đang xử lý kỹ thuật',
+    color: '#3b82f6',
+    badgeStatus: 'processing',
+    description: 'Kỹ sư đang tiền xử lý file 3D mesh và cấu hình vật liệu in.',
   },
   PRINTING: {
     label: 'Đang in 3D',
     color: '#8b5cf6',
     badgeStatus: 'processing',
     description: 'Xưởng in đang vận hành máy in 3D đùn sợi/resin để chế tác vật phẩm.',
+  },
+  READY: {
+    label: 'Hoàn thiện (Sẵn sàng)',
+    color: '#10b981',
+    badgeStatus: 'success',
+    description: 'Sản phẩm đã in xong, hoàn thiện thủ công và sẵn sàng bàn giao.',
   },
   SHIPPED: {
     label: 'Đang giao hàng',
@@ -65,6 +84,12 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusMeta> = {
     color: '#10b981',
     badgeStatus: 'success',
     description: 'Kiện hàng đã được giao tận tay khách hàng.',
+  },
+  COMPLETED: {
+    label: 'Hoàn thành',
+    color: '#10b981',
+    badgeStatus: 'success',
+    description: 'Đơn hàng đã hoàn thành trọn vẹn.',
   },
   CANCELLED: {
     label: 'Đã hủy',
@@ -86,6 +111,11 @@ export const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color
     color: '#f59e0b',
     badgeStatus: 'warning',
   },
+  PAID: {
+    label: 'Đã thanh toán',
+    color: '#10b981',
+    badgeStatus: 'success',
+  },
   SUCCESS: {
     label: 'Thành công',
     color: '#10b981',
@@ -98,6 +128,11 @@ export const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color
   },
   CANCELLED: {
     label: 'Đã hủy',
+    color: '#64748b',
+    badgeStatus: 'default',
+  },
+  REFUNDED: {
+    label: 'Đã hoàn tiền',
     color: '#64748b',
     badgeStatus: 'default',
   },

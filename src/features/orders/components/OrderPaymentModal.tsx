@@ -4,9 +4,12 @@ import {
   QrcodeOutlined,
   LinkOutlined,
   ClockCircleOutlined,
+  DollarCircleOutlined,
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import type { OrderResponse, PaymentMethod, PaymentResponse } from '../types/order.types';
-import { useCreatePayment, usePaymentStatus } from '../hooks/useOrderPayment';
+import { usePaymentStatus } from '../hooks/useOrderPayment';
+import { paymentApi } from '../api/paymentApi';
 import { formatCurrency } from '../utils/orderFormatters';
 
 interface OrderPaymentModalProps {
@@ -22,38 +25,57 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
   onClose,
   onPaymentSuccess,
 }) => {
+  const navigate = useNavigate();
   const [method, setMethod] = useState<PaymentMethod>('MOMO');
   const [activePayment, setActivePayment] = useState<PaymentResponse | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const createPaymentMutation = useCreatePayment();
   const { data: pollStatus } = usePaymentStatus(activePayment?.paymentId);
 
   React.useEffect(() => {
-    if (pollStatus?.status === 'SUCCESS') {
+    if (pollStatus?.status === 'SUCCESS' || pollStatus?.status === 'PAID') {
       message.success('Thanh toán đơn hàng thành công!');
       if (onPaymentSuccess) onPaymentSuccess();
       onClose();
+      if (order?.id) {
+        navigate(`/orders/${order.id}`);
+      }
     }
-  }, [pollStatus, onPaymentSuccess, onClose]);
+  }, [pollStatus, onPaymentSuccess, onClose, order?.id, navigate]);
 
   if (!order) return null;
 
+  const orderCode = order.orderCode || order.id.slice(0, 8).toUpperCase();
+  const totalAmount = order.totalAmount ?? order.totalPrice;
+
   const handleInitiatePayment = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
-      const response = await createPaymentMutation.mutateAsync({
-        orderId: order.id,
-        paymentMethod: method,
-        orderInfo: `Thanh toan don hang in 3D Memento3D #${order.id.slice(0, 8)}`,
-      });
+      if (method === 'CASH') {
+        // Cash payment does not call external gateway
+        const res = await paymentApi.payOrder(order.id, 'CASH');
+        setActivePayment(res);
+        message.success('Đã chọn phương thức thanh toán Tiền mặt. Đơn hàng đang được xử lý!');
+        if (onPaymentSuccess) onPaymentSuccess();
+        onClose();
+        navigate(`/orders/${order.id}`);
+        return;
+      }
+
+      // MOMO or ZALOPAY
+      const response = await paymentApi.payOrder(order.id, method);
       setActivePayment(response);
       message.info('Đã khởi tạo giao dịch thanh toán.');
 
-      // If provider gave a redirect paymentUrl, user can click or be redirected
       if (response.paymentUrl) {
         window.open(response.paymentUrl, '_blank', 'noopener,noreferrer');
       }
     } catch (err: any) {
       message.error(err.message || 'Không thể khởi tạo thanh toán. Vui lòng thử lại.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -67,7 +89,7 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#f8fafc' }}>
           <QrcodeOutlined style={{ color: '#0ea5e9' }} />
-          <span>Thanh toán đơn hàng #{order.id.slice(0, 8).toUpperCase()}</span>
+          <span>Thanh toán đơn hàng #{orderCode}</span>
         </div>
       }
       footer={null}
@@ -84,9 +106,13 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ color: '#94a3b8' }}>Mã đơn hàng:</span>
+            <span style={{ color: '#f8fafc', fontWeight: 700 }}>#{orderCode}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
             <span style={{ color: '#94a3b8' }}>Số tiền thanh toán:</span>
             <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#38bdf8' }}>
-              {formatCurrency(order.totalPrice, order.currency)}
+              {formatCurrency(totalAmount, order.currency || 'VND')}
             </span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
@@ -98,7 +124,7 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
         {!activePayment ? (
           <div>
             <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#e2e8f0', marginBottom: 12 }}>
-              Chọn cổng thanh toán trực tuyến:
+              Chọn phương thức thanh toán:
             </div>
 
             <Radio.Group
@@ -106,17 +132,19 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               onChange={(e) => setMethod(e.target.value)}
               style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}
             >
+              {/* 1. Ví MoMo */}
               <Radio
                 value="MOMO"
                 style={{
-                  background: 'rgba(216, 45, 139, 0.08)',
+                  background: method === 'MOMO' ? 'rgba(216, 45, 139, 0.15)' : 'rgba(216, 45, 139, 0.05)',
                   border: method === 'MOMO' ? '1px solid #d82d8b' : '1px solid rgba(255, 255, 255, 0.08)',
                   padding: '12px 16px',
                   borderRadius: 10,
                   width: '100%',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
                   <span style={{ fontWeight: 700, color: '#ec4899' }}>Ví MoMo</span>
                   <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
                     Thanh toán qua quét mã QR hoặc ứng dụng MoMo
@@ -124,20 +152,44 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
                 </div>
               </Radio>
 
+              {/* 2. Ví ZaloPay */}
               <Radio
                 value="ZALOPAY"
                 style={{
-                  background: 'rgba(0, 104, 255, 0.08)',
+                  background: method === 'ZALOPAY' ? 'rgba(0, 104, 255, 0.15)' : 'rgba(0, 104, 255, 0.05)',
                   border: method === 'ZALOPAY' ? '1px solid #0068ff' : '1px solid rgba(255, 255, 255, 0.08)',
                   padding: '12px 16px',
                   borderRadius: 10,
                   width: '100%',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
                   <span style={{ fontWeight: 700, color: '#38bdf8' }}>Ví ZaloPay</span>
                   <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
                     Thanh toán qua cổng ZaloPay QR & Thẻ ATM/Visa
+                  </span>
+                </div>
+              </Radio>
+
+              {/* 3. Tiền mặt */}
+              <Radio
+                value="CASH"
+                style={{
+                  background: method === 'CASH' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.05)',
+                  border: method === 'CASH' ? '1px solid #22c55e' : '1px solid rgba(255, 255, 255, 0.08)',
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  width: '100%',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
+                  <span style={{ fontWeight: 700, color: '#22c55e', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <DollarCircleOutlined /> Tiền mặt
+                  </span>
+                  <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                    Thanh toán tiền mặt khi nhận hàng / khi đơn hàng hoàn thành
                   </span>
                 </div>
               </Radio>
@@ -147,16 +199,20 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               type="primary"
               block
               size="large"
-              loading={createPaymentMutation.isPending}
+              loading={isSubmitting}
+              disabled={isSubmitting}
               onClick={handleInitiatePayment}
               style={{
-                background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+                background:
+                  method === 'CASH'
+                    ? 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)'
+                    : 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
                 borderColor: 'transparent',
                 fontWeight: 700,
                 borderRadius: 8,
               }}
             >
-              Tiến hành thanh toán
+              {method === 'CASH' ? 'Xác nhận đặt hàng' : 'Tiến hành thanh toán'}
             </Button>
           </div>
         ) : (
@@ -205,6 +261,16 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               <Spin size="small" />
               <span>Đang lắng nghe xác nhận từ ngân hàng...</span>
             </div>
+
+            <Button
+              style={{ marginTop: 16 }}
+              onClick={() => {
+                onClose();
+                navigate(`/orders/${order.id}`);
+              }}
+            >
+              Xem chi tiết đơn hàng
+            </Button>
           </div>
         )}
       </div>

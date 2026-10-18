@@ -24,11 +24,13 @@ import {
   StopOutlined,
   SendOutlined,
   SmileOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useOrderDetail } from '../hooks/useOrderDetail';
 import { useUpdateOrder } from '../hooks/useUpdateOrder';
+import { usePaymentsList, useConfirmCash } from '../hooks/useOrderPayment';
 import { printJobApi } from '../../printjob/api/printJobApi';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import { OrderTimeline } from '../components/OrderTimeline';
@@ -43,19 +45,19 @@ export const ManagerOrderDetailPage: React.FC = () => {
 
   const { data: order, isLoading, isError, error, refetch, isFetching } = useOrderDetail(id);
   const updateOrderMutation = useUpdateOrder(id || '');
+  const { data: payments = [], refetch: refetchPayments } = usePaymentsList();
+  const confirmCashMutation = useConfirmCash();
 
   const [editAddressOpen, setEditAddressOpen] = useState(false);
   const [printJobModalOpen, setPrintJobModalOpen] = useState(false);
   const [form] = Form.useForm();
 
   // Fetch linked print jobs for this order
-  const { data: printJobsData, refetch: refetchPrintJobs } = useQuery({
+  const { refetch: refetchPrintJobs } = useQuery({
     queryKey: ['order-print-jobs', id],
     queryFn: () => printJobApi.list({ limit: 50 }),
     enabled: Boolean(id),
   });
-
-  const linkedPrintJobs = (printJobsData?.content || []).filter((j) => j.orderId === id);
 
   if (isLoading) {
     return (
@@ -75,6 +77,9 @@ export const ManagerOrderDetailPage: React.FC = () => {
     );
   }
 
+  const orderPayments = payments.filter((p) => p.orderId === order.id);
+  const cashPayment = orderPayments.find((p) => p.paymentMethod === 'CASH');
+  const orderCode = order.orderCode || order.id.slice(0, 8).toUpperCase();
   const allowedStatuses = getNextAllowedStatuses(order.status, true);
 
   const handleStatusTransition = async (nextStatus: OrderStatus) => {
@@ -84,6 +89,19 @@ export const ManagerOrderDetailPage: React.FC = () => {
       refetch();
     } catch (err: any) {
       message.error(err.message || 'Không thể cập nhật trạng thái đơn hàng');
+    }
+  };
+
+  const handleConfirmCash = async () => {
+    // If we have cash payment record, use its id; otherwise call confirm cash
+    const targetPaymentId = cashPayment ? cashPayment.paymentId : order.id;
+    try {
+      await confirmCashMutation.mutateAsync(targetPaymentId);
+      message.success('Xác nhận đã nhận tiền mặt thành công! Trạng thái thanh toán chuyển sang PAID.');
+      refetch();
+      refetchPayments();
+    } catch (err: any) {
+      message.error(err.message || 'Không thể xác nhận thanh toán tiền mặt');
     }
   };
 
@@ -102,62 +120,52 @@ export const ManagerOrderDetailPage: React.FC = () => {
     }
   };
 
+  const isCash = order.paymentMethod === 'CASH';
+  const isPaid = order.paymentStatus === 'PAID';
+  const totalAmount = order.totalAmount ?? order.totalPrice;
+
   return (
-    <div style={{ padding: '4px 0' }}>
-      {/* Top Header */}
+    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
+      {/* Action Header */}
       <div
         style={{
           display: 'flex',
+          flexWrap: 'wrap',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 24,
-          flexWrap: 'wrap',
           gap: 16,
+          marginBottom: 24,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Button
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/manager/orders')}
-            className="btn btn-secondary"
-          >
-            Quay lại
+        <Space>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/manager/orders')}>
+            Quay lại Đơn hàng
           </Button>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc' }}>
-                Đơn hàng #{order.id.slice(0, 8).toUpperCase()}
-              </span>
-              <OrderStatusBadge status={order.status} />
-            </div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-              Mã UUID: {order.id} | Khách hàng UUID: {order.userId}
-            </div>
-          </div>
-        </div>
-
-        <Space wrap>
-          <Button icon={<ReloadOutlined spin={isFetching} />} onClick={() => refetch()} className="btn btn-secondary">
+          <Button icon={<ReloadOutlined spin={isFetching} />} onClick={() => refetch()}>
             Làm mới
           </Button>
+        </Space>
 
-          {/* Workflow Action Buttons */}
+        <Space wrap>
+          {/* Status Transitions */}
           {allowedStatuses.map((st) => {
             const isCancel = st === 'CANCELLED';
-            const isPrinting = st === 'PRINTING';
             const isConfirmed = st === 'CONFIRMED';
-            const isShipped = st === 'SHIPPED';
-            const isDelivered = st === 'DELIVERED';
+            const isPrinting = st === 'PRINTING' || st === 'PROCESSING';
+            const isReady = st === 'READY';
+            const isCompleted = st === 'COMPLETED' || st === 'DELIVERED';
 
             const buttonText =
               st === 'CONFIRMED'
                 ? 'Duyệt đơn (Xác nhận)'
+                : st === 'PROCESSING'
+                ? 'Đang xử lý kỹ thuật'
                 : st === 'PRINTING'
                 ? 'Chuyển sang In 3D'
-                : st === 'SHIPPED'
-                ? 'Bàn giao Vận chuyển'
-                : st === 'DELIVERED'
-                ? 'Đánh dấu Đã giao'
+                : st === 'READY'
+                ? 'Hoàn thiện (Sẵn sàng)'
+                : st === 'COMPLETED' || st === 'DELIVERED'
+                ? 'Đã hoàn thành'
                 : st === 'CANCELLED'
                 ? 'Hủy đơn'
                 : st;
@@ -180,9 +188,9 @@ export const ManagerOrderDetailPage: React.FC = () => {
                       <CheckCircleOutlined />
                     ) : isPrinting ? (
                       <PrinterOutlined />
-                    ) : isShipped ? (
+                    ) : isReady ? (
                       <SendOutlined />
-                    ) : isDelivered ? (
+                    ) : isCompleted ? (
                       <SmileOutlined />
                     ) : (
                       <StopOutlined />
@@ -219,13 +227,105 @@ export const ManagerOrderDetailPage: React.FC = () => {
         </Space>
       </div>
 
+      {/* Header Info */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div>
+          <h2 style={{ color: '#fff', margin: 0, fontWeight: 800 }}>
+            Quản lý Đơn hàng #{orderCode}
+          </h2>
+          <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: 4 }}>
+            ID hệ thống: {order.id} | Ngày tạo: {formatOrderDate(order.createdAt)}
+          </div>
+        </div>
+        <OrderStatusBadge status={order.status} />
+      </div>
+
       {/* Lifecycle Progress */}
       <OrderTimeline status={order.status} createdAt={order.createdAt} updatedAt={order.updatedAt} />
 
       <Row gutter={[24, 24]}>
-        {/* Left Column: Customer & Delivery Details */}
+        {/* Left Column: Customer & Items */}
         <Col xs={24} lg={15}>
-          {/* Recipient Card */}
+          {/* Order Items Snapshot Table */}
+          <Card
+            title={<span style={{ color: '#fff', fontWeight: 700 }}>Danh sách sản phẩm trong đơn</span>}
+            style={{
+              background: 'var(--card-bg, #0f172a)',
+              borderColor: 'var(--border-color)',
+              borderRadius: 14,
+              marginBottom: 24,
+            }}
+            bodyStyle={{ padding: 0 }}
+          >
+            {order.items && order.items.length > 0 ? (
+              <Table
+                dataSource={order.items}
+                rowKey="id"
+                pagination={false}
+                columns={[
+                  {
+                    title: 'Sản phẩm Snapshot',
+                    key: 'product',
+                    render: (_, item) => (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        {item.thumbnailSnapshot ? (
+                          <img
+                            src={item.thumbnailSnapshot}
+                            alt=""
+                            style={{ width: 44, height: 44, borderRadius: 6, objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <div style={{ width: 44, height: 44, borderRadius: 6, background: '#090d16', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            📦
+                          </div>
+                        )}
+                        <div>
+                          <div style={{ fontWeight: 600, color: '#f8fafc' }}>
+                            {item.productNameSnapshot}
+                          </div>
+                          {item.customizationSnapshot && Object.keys(item.customizationSnapshot).length > 0 && (
+                            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                              {Object.entries(item.customizationSnapshot).map(([k, v]) => `${k}: ${v}`).join(' | ')}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ),
+                  },
+                  {
+                    title: 'Đơn giá',
+                    dataIndex: 'unitPrice',
+                    key: 'unitPrice',
+                    align: 'right',
+                    render: (p) => formatCurrency(p, order.currency || 'VND'),
+                  },
+                  {
+                    title: 'SL',
+                    dataIndex: 'quantity',
+                    key: 'quantity',
+                    align: 'center',
+                  },
+                  {
+                    title: 'Thành tiền',
+                    dataIndex: 'subtotal',
+                    key: 'subtotal',
+                    align: 'right',
+                    render: (sub) => (
+                      <span style={{ fontWeight: 700, color: '#38bdf8' }}>
+                        {formatCurrency(sub, order.currency || 'VND')}
+                      </span>
+                    ),
+                  },
+                ]}
+              />
+            ) : (
+              <div style={{ padding: 20, color: '#94a3b8', textAlign: 'center' }}>
+                Đơn hàng chế tác Memento3D (Quản lý)
+              </div>
+            )}
+          </Card>
+
+          {/* Customer & Delivery Card */}
           <Card
             title={
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -249,155 +349,130 @@ export const ManagerOrderDetailPage: React.FC = () => {
             style={{
               background: 'var(--card-bg, #0f172a)',
               borderColor: 'var(--border-color)',
+              borderRadius: 14,
               marginBottom: 24,
             }}
           >
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
-              <div>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Người nhận</div>
-                <div style={{ fontWeight: 600, color: '#f8fafc', fontSize: '0.95rem' }}>
-                  {order.recipientName || 'Chưa cung cấp'}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#94a3b8' }}>Khách hàng / Người nhận:</span>
+                <span style={{ color: '#f8fafc', fontWeight: 600 }}>{order.recipientName}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#94a3b8' }}>Số điện thoại:</span>
+                <span style={{ color: '#f8fafc', fontWeight: 600 }}>{order.phone}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#94a3b8' }}>Địa chỉ nhận hàng:</span>
+                <span style={{ color: '#cbd5e1', textAlign: 'right', maxWidth: 350 }}>
+                  {order.shippingAddress}
+                </span>
+              </div>
+              {order.note && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#94a3b8' }}>Ghi chú đơn:</span>
+                  <span style={{ color: '#cbd5e1', fontStyle: 'italic' }}>{order.note}</span>
                 </div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Số điện thoại</div>
-                <div style={{ fontWeight: 600, color: '#f8fafc', fontSize: '0.95rem' }}>
-                  {order.phone || 'Chưa cung cấp'}
-                </div>
-              </div>
-
-              <div style={{ gridColumn: '1 / -1' }}>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Địa chỉ giao hàng</div>
-                <div style={{ color: '#cbd5e1', lineHeight: 1.5 }}>
-                  {order.shippingAddress || 'Chưa cung cấp'}
-                </div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Scan Session liên kết</div>
-                <div style={{ color: '#0ea5e9', fontWeight: 600 }}>
-                  {order.scanId ? `#${order.scanId}` : 'Mô hình chuẩn'}
-                </div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Ngày tạo đơn</div>
-                <div style={{ color: '#cbd5e1' }}>{formatOrderDate(order.createdAt)}</div>
-              </div>
+              )}
             </div>
-          </Card>
-
-          {/* Linked Print Jobs Section */}
-          <Card
-            title={
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#fff', fontWeight: 700 }}>Lệnh in 3D liên kết (Print Jobs)</span>
-                <Button
-                  size="small"
-                  type="primary"
-                  icon={<PrinterOutlined />}
-                  onClick={() => setPrintJobModalOpen(true)}
-                  style={{ background: '#8b5cf6', borderColor: 'transparent' }}
-                >
-                  Tạo Print Job
-                </Button>
-              </div>
-            }
-            style={{
-              background: 'var(--card-bg, #0f172a)',
-              borderColor: 'var(--border-color)',
-            }}
-          >
-            {linkedPrintJobs.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8' }}>
-                Chưa có Print Job nào được liên kết cho đơn hàng này.
-                <div style={{ marginTop: 8 }}>
-                  <Button size="small" onClick={() => setPrintJobModalOpen(true)}>
-                    Tạo lệnh in ngay
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <Table
-                dataSource={linkedPrintJobs}
-                rowKey="id"
-                pagination={false}
-                columns={[
-                  {
-                    title: 'Job Number',
-                    dataIndex: 'jobNumber',
-                    key: 'jobNumber',
-                    render: (j: string) => <span style={{ fontWeight: 700, color: '#a855f7' }}>{j}</span>,
-                  },
-                  {
-                    title: 'Vật liệu',
-                    dataIndex: 'materialName',
-                    key: 'materialName',
-                    render: (m: string, r) => <span>{m || r.materialSku}</span>,
-                  },
-                  {
-                    title: 'Khối lượng (g)',
-                    dataIndex: 'estimatedGram',
-                    key: 'estimatedGram',
-                    render: (g: number) => <span>{g} g</span>,
-                  },
-                  {
-                    title: 'Trạng thái Job',
-                    dataIndex: 'status',
-                    key: 'status',
-                    render: (st: string) => <Tag color="purple">{st}</Tag>,
-                  },
-                  {
-                    title: 'Xem',
-                    key: 'action',
-                    render: (_, r) => (
-                      <Button
-                        size="small"
-                        onClick={() => navigate(`/manager/print-jobs?search=${r.jobNumber}`)}
-                      >
-                        Trạm in
-                      </Button>
-                    ),
-                  },
-                ]}
-              />
-            )}
           </Card>
         </Col>
 
-        {/* Right Column: Pricing & Manager Actions */}
+        {/* Right Column: Pricing & Cash Confirmation */}
         <Col xs={24} lg={9}>
           <Card
             title={<span style={{ color: '#fff', fontWeight: 700 }}>Thông tin thanh toán</span>}
             style={{
               background: 'var(--card-bg, #0f172a)',
               borderColor: 'var(--border-color)',
+              borderRadius: 14,
+              position: 'sticky',
+              top: 100,
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8' }}>Tổng giá trị:</span>
+                <span style={{ color: '#94a3b8' }}>Phương thức:</span>
+                <Tag color={isCash ? 'green' : order.paymentMethod === 'MOMO' ? 'magenta' : 'blue'}>
+                  {order.paymentMethod || 'MOMO'}
+                </Tag>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#94a3b8' }}>Trạng thái thanh toán:</span>
+                <Tag color={isPaid ? 'green' : 'gold'}>
+                  {order.paymentStatus || 'PENDING'}
+                </Tag>
+              </div>
+
+              <Divider style={{ borderColor: 'var(--border-color)', margin: '4px 0' }} />
+
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#94a3b8' }}>Tổng giá trị đơn:</span>
                 <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#38bdf8' }}>
-                  {formatCurrency(order.totalPrice, order.currency)}
+                  {formatCurrency(totalAmount, order.currency || 'VND')}
                 </span>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                <span style={{ color: '#94a3b8' }}>Tiền tệ:</span>
-                <span style={{ color: '#f8fafc', fontWeight: 600 }}>{order.currency}</span>
-              </div>
+              {/* Manager Cash Confirmation Button */}
+              {isCash && !isPaid && (
+                <div
+                  style={{
+                    background: 'rgba(34, 197, 94, 0.08)',
+                    border: '1px solid rgba(34, 197, 94, 0.25)',
+                    borderRadius: 12,
+                    padding: 16,
+                    marginTop: 8,
+                  }}
+                >
+                  <div style={{ fontSize: '0.85rem', color: '#86efac', marginBottom: 12 }}>
+                    Đơn hàng thanh toán Tiền mặt (CASH). Khi đã nhận đủ tiền từ khách hàng hoặc đơn vị vận chuyển, xác nhận tại đây:
+                  </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                <span style={{ color: '#94a3b8' }}>Trạng thái đơn:</span>
-                <OrderStatusBadge status={order.status} />
-              </div>
+                  <Popconfirm
+                    title="Xác nhận đã nhận tiền mặt?"
+                    description="Thao tác này sẽ chuyển PaymentStatus từ PENDING sang PAID và lưu lịch sử người duyệt."
+                    onConfirm={handleConfirmCash}
+                    okText="Xác nhận đã thu tiền"
+                    cancelText="Hủy"
+                  >
+                    <Button
+                      type="primary"
+                      block
+                      size="large"
+                      icon={<SafetyCertificateOutlined />}
+                      loading={confirmCashMutation.isPending}
+                      style={{
+                        background: 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)',
+                        borderColor: 'transparent',
+                        fontWeight: 700,
+                        borderRadius: 8,
+                      }}
+                    >
+                      Xác nhận đã nhận tiền
+                    </Button>
+                  </Popconfirm>
+                </div>
+              )}
 
-              <Divider style={{ borderColor: 'var(--border-color)', margin: '8px 0' }} />
-
-              <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                Lưu ý: Quản trị viên và Quản lý vận hành có quyền thay đổi trạng thái theo quy trình máy in 3D.
-              </div>
+              {isCash && isPaid && (
+                <div
+                  style={{
+                    background: 'rgba(34, 197, 94, 0.1)',
+                    border: '1px solid rgba(34, 197, 94, 0.3)',
+                    borderRadius: 8,
+                    padding: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    color: '#86efac',
+                    fontSize: '0.85rem',
+                  }}
+                >
+                  <CheckCircleOutlined />
+                  <span>Đã xác nhận thanh toán tiền mặt thành công.</span>
+                </div>
+              )}
             </div>
           </Card>
         </Col>
