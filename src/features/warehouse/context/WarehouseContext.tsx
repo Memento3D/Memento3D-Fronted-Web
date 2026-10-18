@@ -24,7 +24,21 @@ export const WarehouseProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const { data: myWarehouses = [], isLoading, refetch } = useQuery({
     queryKey: ['my-warehouses'],
-    queryFn: warehouseApi.getMyWarehouses,
+    queryFn: async () => {
+      try {
+        const res = await warehouseApi.getMyWarehouses();
+        if (res && res.length > 0) return res;
+        const fallback = await warehouseApi.list({ limit: 50 });
+        return fallback.content || [];
+      } catch (err) {
+        try {
+          const fallback = await warehouseApi.list({ limit: 50 });
+          return fallback.content || [];
+        } catch {
+          return [];
+        }
+      }
+    },
     staleTime: 60000,
   });
 

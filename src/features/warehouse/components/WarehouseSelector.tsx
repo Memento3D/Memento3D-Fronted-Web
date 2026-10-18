@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select, Tag, Space, Typography, Tooltip } from 'antd';
-import { HomeOutlined, CheckCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import { HomeOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useWarehouseContext } from '../context/WarehouseContext';
 
 const { Text } = Typography;
@@ -22,16 +22,14 @@ export const WarehouseSelector: React.FC = () => {
 
   if (myWarehouses.length === 0) {
     return (
-      <Tooltip title="Your account does not have active membership in any warehouse facility. Contact an Admin to assign warehouse access.">
-        <Tag color="error" style={{ padding: '4px 10px', borderRadius: '6px', cursor: 'help' }}>
-          <Space size={6}>
-            <WarningOutlined />
-            <Text strong style={{ color: '#ff4d4f', fontSize: '0.785rem' }}>
-              No Warehouse Scope
-            </Text>
-          </Space>
-        </Tag>
-      </Tooltip>
+      <Tag color="blue" style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(14, 165, 233, 0.1)', borderColor: 'rgba(14, 165, 233, 0.3)' }}>
+        <Space size={6}>
+          <HomeOutlined style={{ color: '#38bdf8' }} />
+          <Text strong style={{ color: '#38bdf8', fontSize: '0.785rem' }}>
+            Facility: Memento3D Central
+          </Text>
+        </Space>
+      </Tag>
     );
   }
 

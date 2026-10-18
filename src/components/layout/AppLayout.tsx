@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { Alert, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 import { WarehouseSelector } from '../../features/warehouse/components/WarehouseSelector';
-import { useWarehouseContext } from '../../features/warehouse/context/WarehouseContext';
 import { 
   Box, 
   Warehouse, 
@@ -24,7 +23,6 @@ export const AppLayout: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [isSyncing, setIsSyncing] = useState(false);
-  const { hasAccess, isLoading: isWarehouseLoading } = useWarehouseContext();
 
   const handleSyncData = async () => {
     setIsSyncing(true);
@@ -196,18 +194,6 @@ export const AppLayout: React.FC = () => {
             </span>
           </div>
         </header>
-
-        {/* Global Access Warning if user has no assigned warehouse */}
-        {!hasAccess && !isWarehouseLoading && (
-          <div style={{ padding: '16px 24px 0' }}>
-            <Alert
-              type="error"
-              showIcon
-              message="Warehouse Access Denied"
-              description="Your user account is not currently assigned to any active warehouse facility. All inventory receipts, issues, and reservations require an active warehouse membership. Please contact an Administrator or Warehouse Manager to assign membership."
-            />
-          </div>
-        )}
 
         <main className="content-body">
           <Outlet />
