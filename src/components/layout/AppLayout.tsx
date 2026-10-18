@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ensureOperatorToken } from '../../services/apiClient';
+import { Alert, Tooltip } from 'antd';
+import { useAuth } from '../../features/auth/hooks/useAuth';
+import { WarehouseSelector } from '../../features/warehouse/components/WarehouseSelector';
+import { useWarehouseContext } from '../../features/warehouse/context/WarehouseContext';
 import { 
   Box, 
   Warehouse, 
@@ -12,17 +15,20 @@ import {
   History,
   ShieldCheck,
   Cpu,
-  RefreshCw
+  RefreshCw,
+  LogOut
 } from 'lucide-react';
 
 export const AppLayout: React.FC = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [isSyncing, setIsSyncing] = useState(false);
+  const { hasAccess, isLoading: isWarehouseLoading } = useWarehouseContext();
 
   const handleSyncData = async () => {
     setIsSyncing(true);
     try {
-      await ensureOperatorToken();
       await queryClient.invalidateQueries();
     } catch (e) {
       console.error('Sync failed:', e);
@@ -30,6 +36,12 @@ export const AppLayout: React.FC = () => {
       setIsSyncing(false);
     }
   };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login', { replace: true });
+  };
+
   return (
     <div className="app-container" id="app-root">
       {/* Sidebar */}
@@ -54,6 +66,7 @@ export const AppLayout: React.FC = () => {
         </div>
 
         <div style={{ padding: '16px 0', flex: 1, overflowY: 'auto' }}>
+          {/* Master Data */}
           <div style={{ padding: '0 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Master Data
           </div>
@@ -61,11 +74,14 @@ export const AppLayout: React.FC = () => {
             <Box size={18} />
             <span>Materials Catalog</span>
           </NavLink>
-          <NavLink to="/manager/warehouses" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-warehouses">
-            <Warehouse size={18} />
-            <span>Warehouses</span>
-          </NavLink>
+          {(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_MANAGER') && (
+            <NavLink to="/manager/warehouses" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-warehouses">
+              <Warehouse size={18} />
+              <span>Warehouses</span>
+            </NavLink>
+          )}
 
+          {/* Inventory Control */}
           <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Inventory Control
           </div>
@@ -73,48 +89,80 @@ export const AppLayout: React.FC = () => {
             <Layers size={18} />
             <span>Stock Balances</span>
           </NavLink>
-          <NavLink to="/manager/inventory/receipts/new" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-in">
-            <ArrowDownLeft size={18} />
-            <span>Goods Receipt</span>
-          </NavLink>
-          <NavLink to="/manager/inventory/issues/new" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-out">
-            <ArrowUpRight size={18} />
-            <span>Manual Issue</span>
-          </NavLink>
+          {(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_MANAGER' || user?.role === 'ROLE_WAREHOUSE') && (
+            <>
+              <NavLink to="/manager/inventory/receipts/new" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-in">
+                <ArrowDownLeft size={18} />
+                <span>Goods Receipt</span>
+              </NavLink>
+              <NavLink to="/manager/inventory/issues/new" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-out">
+                <ArrowUpRight size={18} />
+                <span>Manual Issue</span>
+              </NavLink>
+            </>
+          )}
 
+          {/* Production & Audit */}
           <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Production & Audit
           </div>
-          <NavLink to="/manager/print-jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-print-jobs">
-            <Printer size={18} />
-            <span>Print Jobs</span>
-          </NavLink>
+          {(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_MANAGER' || user?.role === 'ROLE_OPERATOR') && (
+            <NavLink to="/manager/print-jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-print-jobs">
+              <Printer size={18} />
+              <span>Print Jobs</span>
+            </NavLink>
+          )}
           <NavLink to="/manager/inventory/transactions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-ledger">
             <History size={18} />
             <span>Ledger History</span>
           </NavLink>
         </div>
 
-        <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ 
-            width: '32px', 
-            height: '32px', 
-            borderRadius: '50%', 
-            background: 'rgba(14, 165, 233, 0.15)',
-            border: '1px solid rgba(14, 165, 233, 0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <ShieldCheck size={16} color="var(--primary)" />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.825rem', fontWeight: 600, color: '#fff' }}>Operator Hub</div>
-            <div style={{ fontSize: '0.725rem', color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--success)', display: 'inline-block' }} />
-              Active System
+        {/* User Profile & Logout Footer */}
+        <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ 
+              width: '32px', 
+              height: '32px', 
+              borderRadius: '50%', 
+              background: 'rgba(14, 165, 233, 0.15)',
+              border: '1px solid rgba(14, 165, 233, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <ShieldCheck size={16} color="var(--primary)" />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <div style={{ fontSize: '0.825rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user?.fullName || 'Authenticated User'}
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user?.email || 'user@memento3d.com'}
+              </div>
             </div>
           </div>
+          
+          <Tooltip title="Sign Out of Session">
+            <button
+              onClick={handleLogout}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#ef4444',
+                cursor: 'pointer',
+                padding: '6px',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              title="Sign Out"
+            >
+              <LogOut size={16} />
+            </button>
+          </Tooltip>
         </div>
       </aside>
 
@@ -125,7 +173,11 @@ export const AppLayout: React.FC = () => {
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Workspace /</span>
             <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Manager Operations Portal</span>
           </div>
+          
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Warehouse Scoping Selector (F01) */}
+            <WarehouseSelector />
+
             <button
               onClick={handleSyncData}
               disabled={isSyncing}
@@ -140,10 +192,22 @@ export const AppLayout: React.FC = () => {
               PostgreSQL ACID Active
             </span>
             <span className="badge badge-info" id="manager-role-badge">
-              ROLE_OPERATOR
+              {user?.role || 'ROLE_OPERATOR'}
             </span>
           </div>
         </header>
+
+        {/* Global Access Warning if user has no assigned warehouse */}
+        {!hasAccess && !isWarehouseLoading && (
+          <div style={{ padding: '16px 24px 0' }}>
+            <Alert
+              type="error"
+              showIcon
+              message="Warehouse Access Denied"
+              description="Your user account is not currently assigned to any active warehouse facility. All inventory receipts, issues, and reservations require an active warehouse membership. Please contact an Administrator or Warehouse Manager to assign membership."
+            />
+          </div>
+        )}
 
         <main className="content-body">
           <Outlet />
@@ -152,3 +216,5 @@ export const AppLayout: React.FC = () => {
     </div>
   );
 };
+
+export default AppLayout;
