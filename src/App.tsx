@@ -20,6 +20,14 @@ import { WarehouseDashboardPage } from './features/inventory/pages/WarehouseDash
 import { StockReceiptPage } from './features/inventory/pages/StockReceiptPage';
 import { StockIssuePage } from './features/inventory/pages/StockIssuePage';
 import { StockMovementReportPage } from './features/inventory/pages/StockMovementReportPage';
+import { GoodsReceiptsManagementPage } from './features/inventory/pages/GoodsReceiptsManagementPage';
+import { StockIssuesManagementPage } from './features/inventory/pages/StockIssuesManagementPage';
+import { WarehouseTransfersPage } from './features/inventory/pages/WarehouseTransfersPage';
+import { StockAdjustmentsPage } from './features/inventory/pages/StockAdjustmentsPage';
+import { StockCountsPage } from './features/inventory/pages/StockCountsPage';
+import { ManagerDashboardPage } from './features/manager/pages/ManagerDashboardPage';
+import { ManagerApprovalsCenterPage } from './features/manager/pages/ManagerApprovalsCenterPage';
+import { AdminDashboardPage } from './features/admin/pages/AdminDashboardPage';
 import { PrintJobOperationsPage } from './features/printjob/pages/PrintJobOperationsPage';
 import { HomePage } from './features/home/pages/HomePage';
 import { CustomerOrdersPage } from './features/customer/pages/CustomerOrdersPage';
@@ -173,8 +181,34 @@ export const App: React.FC = () => {
                     </ProtectedRoute>
                   }
                 >
-                  <Route index element={<Navigate to="/manager/inventory" replace />} />
+                  <Route index element={<Navigate to="/manager/dashboard" replace />} />
                   
+                  {/* Executive & Governance */}
+                  <Route
+                    path="admin"
+                    element={
+                      <RoleGuard allowedRoles={['ROLE_ADMIN']}>
+                        <AdminDashboardPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="dashboard"
+                    element={
+                      <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER']}>
+                        <ManagerDashboardPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="approvals"
+                    element={
+                      <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER']}>
+                        <ManagerApprovalsCenterPage />
+                      </RoleGuard>
+                    }
+                  />
+
                   {/* Master Data */}
                   <Route path="materials" element={<MaterialManagementPage />} />
                   <Route
@@ -188,22 +222,19 @@ export const App: React.FC = () => {
 
                   {/* Warehouse Operations */}
                   <Route path="inventory" element={<WarehouseDashboardPage />} />
+                  <Route path="receipts" element={<GoodsReceiptsManagementPage />} />
                   <Route
                     path="inventory/receipts/new"
-                    element={
-                      <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_WAREHOUSE']}>
-                        <StockReceiptPage />
-                      </RoleGuard>
-                    }
+                    element={<StockReceiptPage />}
                   />
+                  <Route path="issues" element={<StockIssuesManagementPage />} />
                   <Route
                     path="inventory/issues/new"
-                    element={
-                      <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_WAREHOUSE']}>
-                        <StockIssuePage />
-                      </RoleGuard>
-                    }
+                    element={<StockIssuePage />}
                   />
+                  <Route path="transfers" element={<WarehouseTransfersPage />} />
+                  <Route path="adjustments" element={<StockAdjustmentsPage />} />
+                  <Route path="stock-counts" element={<StockCountsPage />} />
                   <Route path="inventory/transactions" element={<StockMovementReportPage />} />
 
                   {/* Production & Print Jobs */}
@@ -224,7 +255,7 @@ export const App: React.FC = () => {
                     }
                   />
 
-                  <Route path="*" element={<Navigate to="/manager/inventory" replace />} />
+                  <Route path="*" element={<Navigate to="/manager/dashboard" replace />} />
                 </Route>
 
                 {/* Fallback */}
