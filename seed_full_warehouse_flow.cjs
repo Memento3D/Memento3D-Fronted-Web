@@ -47,6 +47,7 @@ async function main() {
   await client.query('DELETE FROM stock_issues');
   await client.query('DELETE FROM stock_receipts');
   await client.query('DELETE FROM inventory_balances');
+  await client.query('DELETE FROM warehouse_memberships');
   await client.query('DELETE FROM materials');
   await client.query('DELETE FROM warehouses');
 
@@ -172,6 +173,26 @@ async function main() {
       ) RETURNING id, code, name
     `, [w.code, w.name, w.location, operatorUserId]);
     warehouseMap[w.code] = res.rows[0];
+  }
+
+  // 4b. Seed Warehouse Memberships (Access Control F01 & Scoping)
+  console.log('Seeding warehouse memberships...');
+  const memberRoles = [
+    { wh: 'WH-HCM-01', role: 'MANAGER' },
+    { wh: 'WH-HN-01', role: 'WAREHOUSE_STAFF' },
+    { wh: 'WH-DN-01', role: 'WAREHOUSE_STAFF' },
+    { wh: 'WH-OCTO-LAB', role: 'PRINT_OPERATOR' }
+  ];
+
+  for (const m of memberRoles) {
+    const wh = warehouseMap[m.wh];
+    await client.query(`
+      INSERT INTO warehouse_memberships (
+        id, warehouse_id, user_id, role, status, assigned_by, assigned_at, created_at, updated_at
+      ) VALUES (
+        gen_random_uuid(), $1, $2, $3, 'ACTIVE', $2, NOW(), NOW(), NOW()
+      ) ON CONFLICT (warehouse_id, user_id) DO NOTHING
+    `, [wh.id, operatorUserId, m.role]);
   }
 
   // 5. Seed Goods Receipts (Stock In) & Initial Balances

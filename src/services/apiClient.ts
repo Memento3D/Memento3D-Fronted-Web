@@ -1,4 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import type { InternalAxiosRequestConfig } from 'axios';
+import { tokenStorage } from '../features/auth/utils/tokenStorage';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
@@ -9,66 +11,105 @@ export const apiClient = axios.create({
   },
 });
 
-let authPromise: Promise<string> | null = null;
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: any) => void;
+}> = [];
 
-/**
- * Automatically ensures an active JWT token for development and operator operations.
- * Auto-authenticates against /api/v1/auth/login if no token is present in localStorage.
- */
-export async function ensureOperatorToken(): Promise<string> {
-  const existing = localStorage.getItem('access_token');
-  if (existing) return existing;
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else if (token) {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
 
-  if (!authPromise) {
-    authPromise = axios.post(`${BASE_URL}/auth/login`, {
-      email: 'operator@memento3d.vn',
-      password: 'Password@123',
-    }).then((res) => {
-      const token = res.data?.accessToken;
-      if (token) {
-        localStorage.setItem('access_token', token);
-        localStorage.setItem('user_role', res.data?.user?.role || 'ROLE_OPERATOR');
-        localStorage.setItem('user_email', res.data?.user?.email || 'operator@memento3d.vn');
-      }
-      return token || '';
-    }).catch((err) => {
-      console.warn('Auto operator login attempt failed:', err.message);
-      return '';
-    }).finally(() => {
-      authPromise = null;
-    });
-  }
-  return authPromise;
-}
-
-// Auto attach JWT token from localStorage or auto-authenticate
-apiClient.interceptors.request.use(async (config) => {
-  let token = localStorage.getItem('access_token');
-  if (!token && !config.url?.includes('/auth/login') && !config.url?.includes('/auth/register')) {
-    token = await ensureOperatorToken();
-  }
-  if (token) {
+// Request interceptor: attach bearer token from tokenStorage
+apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const token = tokenStorage.getAccessToken();
+  if (token && !config.url?.includes('/auth/login') && !config.url?.includes('/auth/register')) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// Response error handler mapping with auto-retry on 401
+// Response interceptor: handle 401 with synchronized refresh token rotation
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/login')) {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    // Ignore 401 from login, refresh, or register endpoints
+    const isAuthEndpoint =
+      originalRequest?.url?.includes('/auth/login') ||
+      originalRequest?.url?.includes('/auth/register') ||
+      originalRequest?.url?.includes('/auth/refresh');
+
+    if (error.response?.status === 401 && !originalRequest?._retry && !isAuthEndpoint) {
+      const refreshToken = tokenStorage.getRefreshToken();
+
+      if (!refreshToken) {
+        tokenStorage.clearTokens();
+        window.dispatchEvent(new CustomEvent('memento3d:session-expired'));
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+            return apiClient(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
       originalRequest._retry = true;
-      localStorage.removeItem('access_token');
-      const newToken = await ensureOperatorToken();
-      if (newToken) {
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return apiClient(originalRequest);
+      isRefreshing = true;
+
+      try {
+        const refreshResponse = await axios.post(`${BASE_URL}/auth/refresh`, {
+          refreshToken,
+        });
+
+        const newAccessToken = refreshResponse.data?.accessToken;
+        const newRefreshToken = refreshResponse.data?.refreshToken;
+
+        if (newAccessToken) {
+          tokenStorage.setTokens(newAccessToken, newRefreshToken);
+          processQueue(null, newAccessToken);
+
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          }
+          return apiClient(originalRequest);
+        } else {
+          throw new Error('Refresh response missing access token');
+        }
+      } catch (refreshErr) {
+        processQueue(refreshErr, null);
+        tokenStorage.clearTokens();
+        window.dispatchEvent(new CustomEvent('memento3d:session-expired'));
+        return Promise.reject(refreshErr);
+      } finally {
+        isRefreshing = false;
       }
     }
-    const errorData = error.response?.data;
-    const message = errorData?.message || error.message || 'An unexpected error occurred';
+
+    const errorData: any = error.response?.data;
+    const message =
+      errorData?.message ||
+      (typeof errorData === 'string' ? errorData : null) ||
+      error.message ||
+      'An unexpected error occurred';
+
     return Promise.reject(new Error(message));
   }
 );
