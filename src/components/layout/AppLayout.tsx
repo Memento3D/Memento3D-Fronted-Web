@@ -10,12 +10,19 @@ import {
   Layers, 
   ArrowDownLeft, 
   ArrowUpRight, 
+  ArrowLeftRight,
+  Sliders,
+  ClipboardCheck,
+  CheckSquare,
   Printer, 
   History,
   ShieldCheck,
   Cpu,
   RefreshCw,
-  LogOut
+  LogOut,
+  LayoutDashboard,
+  Users,
+  ShoppingBag
 } from 'lucide-react';
 
 export const AppLayout: React.FC = () => {
@@ -40,9 +47,12 @@ export const AppLayout: React.FC = () => {
     navigate('/login', { replace: true });
   };
 
+  const isAdmin = user?.role === 'ROLE_ADMIN';
+  const isManager = user?.role === 'ROLE_MANAGER' || isAdmin;
+
   return (
     <div className="app-container" id="app-root">
-      {/* Sidebar */}
+      {/* Sidebar Navigation */}
       <aside className="sidebar" id="sidebar-navigation">
         <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ 
@@ -59,60 +69,100 @@ export const AppLayout: React.FC = () => {
           </div>
           <div>
             <div style={{ fontWeight: 800, fontSize: '1.05rem', letterSpacing: '-0.02em', color: '#fff' }}>Memento3D</div>
-            <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Inventory Hub</div>
+            <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Enterprise WMS</div>
           </div>
         </div>
 
         <div style={{ padding: '16px 0', flex: 1, overflowY: 'auto' }}>
-          {/* Master Data */}
+          {/* Executive & Governance */}
           <div style={{ padding: '0 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Control Center
+          </div>
+
+          {isAdmin && (
+            <NavLink to="/manager/admin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-admin-dashboard">
+              <Users size={18} />
+              <span>Admin & RBAC</span>
+            </NavLink>
+          )}
+
+          {isManager && (
+            <>
+              <NavLink to="/manager/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-dashboard">
+                <LayoutDashboard size={18} />
+                <span>Manager Dashboard</span>
+              </NavLink>
+              <NavLink to="/manager/approvals" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-approvals">
+                <CheckSquare size={18} />
+                <span>Approvals Center</span>
+              </NavLink>
+            </>
+          )}
+
+          {/* Master Catalogs */}
+          <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Master Data
           </div>
           <NavLink to="/manager/materials" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-materials">
             <Box size={18} />
             <span>Materials Catalog</span>
           </NavLink>
-          {(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_MANAGER') && (
+          {isManager && (
             <NavLink to="/manager/warehouses" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-warehouses">
               <Warehouse size={18} />
               <span>Warehouses</span>
             </NavLink>
           )}
 
-          {/* Inventory Control */}
+          {/* WMS Operations Workflow */}
           <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Inventory Control
+            Inventory Operations
           </div>
           <NavLink to="/manager/inventory" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-inventory">
             <Layers size={18} />
             <span>Stock Balances</span>
           </NavLink>
-          {(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_MANAGER' || user?.role === 'ROLE_WAREHOUSE') && (
-            <>
-              <NavLink to="/manager/inventory/receipts/new" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-in">
-                <ArrowDownLeft size={18} />
-                <span>Goods Receipt</span>
-              </NavLink>
-              <NavLink to="/manager/inventory/issues/new" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-out">
-                <ArrowUpRight size={18} />
-                <span>Manual Issue</span>
-              </NavLink>
-            </>
-          )}
 
-          {/* Production & Audit */}
+          <NavLink to="/manager/receipts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-receipts">
+            <ArrowDownLeft size={18} />
+            <span>Goods Receipts</span>
+          </NavLink>
+
+          <NavLink to="/manager/issues" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-issues">
+            <ArrowUpRight size={18} />
+            <span>Stock Issues</span>
+          </NavLink>
+
+          <NavLink to="/manager/transfers" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-transfers">
+            <ArrowLeftRight size={18} />
+            <span>Transfers</span>
+          </NavLink>
+
+          <NavLink to="/manager/adjustments" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-adjustments">
+            <Sliders size={18} />
+            <span>Adjustments</span>
+          </NavLink>
+
+          <NavLink to="/manager/stock-counts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-counts">
+            <ClipboardCheck size={18} />
+            <span>Stock Counts / Audit</span>
+          </NavLink>
+
+          {/* Production & Ledger */}
           <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Production & Audit
+            Production & Fulfillment
           </div>
-          {(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_MANAGER' || user?.role === 'ROLE_OPERATOR') && (
-            <NavLink to="/manager/print-jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-print-jobs">
-              <Printer size={18} />
-              <span>Print Jobs</span>
-            </NavLink>
-          )}
+          <NavLink to="/manager/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-orders">
+            <ShoppingBag size={18} />
+            <span>Order Fulfillment</span>
+          </NavLink>
+          <NavLink to="/manager/print-jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-print-jobs">
+            <Printer size={18} />
+            <span>Print Jobs (Reservation)</span>
+          </NavLink>
           <NavLink to="/manager/inventory/transactions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-ledger">
             <History size={18} />
-            <span>Ledger History</span>
+            <span>Stock Movement Ledger</span>
           </NavLink>
         </div>
 
@@ -169,11 +219,13 @@ export const AppLayout: React.FC = () => {
         <header className="topbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Workspace /</span>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Manager Operations Portal</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              {isAdmin ? 'System Administrator Portal' : isManager ? 'Operations & Manager Portal' : 'Warehouse Operational Workspace'}
+            </span>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {/* Warehouse Scoping Selector (F01) */}
+            {/* Warehouse Scoping Selector */}
             <WarehouseSelector />
 
             <button
@@ -190,7 +242,7 @@ export const AppLayout: React.FC = () => {
               PostgreSQL ACID Active
             </span>
             <span className="badge badge-info" id="manager-role-badge">
-              {user?.role || 'ROLE_OPERATOR'}
+              {user?.role || 'ROLE_WAREHOUSE'}
             </span>
           </div>
         </header>
