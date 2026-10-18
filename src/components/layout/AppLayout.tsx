@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { ensureOperatorToken } from '../../services/apiClient';
 import { 
   Box, 
   Warehouse, 
@@ -9,10 +11,25 @@ import {
   Printer, 
   History,
   ShieldCheck,
-  Cpu
+  Cpu,
+  RefreshCw
 } from 'lucide-react';
 
 export const AppLayout: React.FC = () => {
+  const queryClient = useQueryClient();
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSyncData = async () => {
+    setIsSyncing(true);
+    try {
+      await ensureOperatorToken();
+      await queryClient.invalidateQueries();
+    } catch (e) {
+      console.error('Sync failed:', e);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
   return (
     <div className="app-container" id="app-root">
       {/* Sidebar */}
@@ -108,7 +125,17 @@ export const AppLayout: React.FC = () => {
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Workspace /</span>
             <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Manager Operations Portal</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              onClick={handleSyncData}
+              disabled={isSyncing}
+              className="btn btn-secondary"
+              style={{ padding: '6px 12px', fontSize: '0.775rem', gap: '6px', borderRadius: '6px' }}
+              title="Refresh and sync data with live database"
+            >
+              <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
+              <span>{isSyncing ? 'Syncing...' : 'Sync Live DB'}</span>
+            </button>
             <span className="badge badge-active" id="system-status-indicator">
               PostgreSQL ACID Active
             </span>
