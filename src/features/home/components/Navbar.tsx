@@ -64,6 +64,18 @@ export const Navbar: React.FC = () => {
       label: 'My Portal / Dashboard',
       onClick: () => navigate(dashboardRoute),
     },
+    {
+      key: 'customer-orders',
+      icon: <CodeSandboxOutlined />,
+      label: 'My 3D Orders',
+      onClick: () => navigate('/customer/orders'),
+    },
+    {
+      key: 'checkout-new',
+      icon: <ArrowRightOutlined />,
+      label: 'Order Keepsake (Checkout)',
+      onClick: () => navigate('/checkout'),
+    },
     ...(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_OPERATOR'
       ? [
           {

@@ -31,6 +31,10 @@ import { AdminDashboardPage } from './features/admin/pages/AdminDashboardPage';
 import { PrintJobOperationsPage } from './features/printjob/pages/PrintJobOperationsPage';
 import { HomePage } from './features/home/pages/HomePage';
 import { CustomerOrdersPage } from './features/customer/pages/CustomerOrdersPage';
+import { CustomerOrderDetailPage } from './features/orders/pages/CustomerOrderDetailPage';
+import { CheckoutPage } from './features/orders/pages/CheckoutPage';
+import { ManagerOrdersPage } from './features/orders/pages/ManagerOrdersPage';
+import { ManagerOrderDetailPage } from './features/orders/pages/ManagerOrderDetailPage';
 import { ProviderOrdersPage } from './features/provider/pages/ProviderOrdersPage';
 import { DriverDeliveriesPage } from './features/driver/pages/DriverDeliveriesPage';
 
@@ -145,6 +149,22 @@ export const App: React.FC = () => {
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/customer/orders/:id"
+                  element={
+                    <ProtectedRoute>
+                      <CustomerOrderDetailPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/checkout"
+                  element={
+                    <ProtectedRoute>
+                      <CheckoutPage />
+                    </ProtectedRoute>
+                  }
+                />
 
                 {/* Manufacturing Partner Portal */}
                 <Route
@@ -238,6 +258,22 @@ export const App: React.FC = () => {
                   <Route path="inventory/transactions" element={<StockMovementReportPage />} />
 
                   {/* Production & Print Jobs */}
+                  <Route
+                    path="orders"
+                    element={
+                      <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR']}>
+                        <ManagerOrdersPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="orders/:id"
+                    element={
+                      <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR']}>
+                        <ManagerOrderDetailPage />
+                      </RoleGuard>
+                    }
+                  />
                   <Route
                     path="print-jobs"
                     element={

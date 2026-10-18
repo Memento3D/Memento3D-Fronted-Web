@@ -21,7 +21,8 @@ import {
   RefreshCw,
   LogOut,
   LayoutDashboard,
-  Users
+  Users,
+  ShoppingBag
 } from 'lucide-react';
 
 export const AppLayout: React.FC = () => {
@@ -149,8 +150,12 @@ export const AppLayout: React.FC = () => {
 
           {/* Production & Ledger */}
           <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Audit & Production
+            Production & Fulfillment
           </div>
+          <NavLink to="/manager/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-orders">
+            <ShoppingBag size={18} />
+            <span>Order Fulfillment</span>
+          </NavLink>
           <NavLink to="/manager/print-jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-print-jobs">
             <Printer size={18} />
             <span>Print Jobs (Reservation)</span>
