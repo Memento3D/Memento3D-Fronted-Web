@@ -26,7 +26,7 @@ docker -v
 ### Bước 1: Clone Repository
 ```powershell
 cd C:\Users\KIETLT\Documents\GitHub
-git clone https://github.com/KietLT/Memento3d.git
+git clone https://github.com/KietLT33/Memento3d.git
 cd Memento3d
 ```
 
