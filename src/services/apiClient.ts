@@ -2,7 +2,24 @@ import axios, { AxiosError } from 'axios';
 import type { InternalAxiosRequestConfig } from 'axios';
 import { tokenStorage } from '../features/auth/utils/tokenStorage';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+export const resolveApiBaseUrl = (): string => {
+  const envUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
+  const rawUrl =
+    envUrl ||
+    (import.meta.env.PROD
+      ? 'https://memento3d-backend.onrender.com'
+      : 'http://localhost:8080');
+
+  const cleanUrl = rawUrl.replace(/\/+$/, '');
+
+  // If URL doesn't end with /api/v1 or /api, append /api/v1
+  if (!cleanUrl.endsWith('/api/v1') && !cleanUrl.endsWith('/api')) {
+    return `${cleanUrl}/api/v1`;
+  }
+  return cleanUrl;
+};
+
+export const BASE_URL = resolveApiBaseUrl();
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
