@@ -154,24 +154,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
         </Form.Item>
 
         <Form.Item
-          label={
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu</span>
-              <Link
-                to="/forgot-password"
-                style={{
-                  color: '#38bdf8',
-                  fontSize: '0.825rem',
-                  fontWeight: 500,
-                  textDecoration: 'none',
-                }}
-              >
-                Quên mật khẩu?
-              </Link>
-            </div>
-          }
+          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu</span>}
           name="password"
           rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
+          style={{ marginBottom: 10 }}
         >
           <Input.Password
             prefix={<LockOutlined style={{ color: '#64748b' }} />}
@@ -182,7 +168,21 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
           />
         </Form.Item>
 
-        <Form.Item style={{ marginTop: 24, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+          <Link
+            to="/forgot-password"
+            style={{
+              color: '#38bdf8',
+              fontSize: '0.85rem',
+              fontWeight: 500,
+              textDecoration: 'none',
+            }}
+          >
+            Quên mật khẩu?
+          </Link>
+        </div>
+
+        <Form.Item style={{ marginTop: 0, marginBottom: 12 }}>
           <Button
             type="primary"
             htmlType="submit"
