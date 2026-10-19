@@ -21,12 +21,14 @@ export const ProductShowcase: React.FC = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ['home-categories'],
     queryFn: () => categoryApi.list(true),
+    staleTime: 10 * 60 * 1000,
   });
 
   // Featured Products from Backend API
   const { data: productsData, isLoading } = useQuery({
     queryKey: ['home-featured-products'],
     queryFn: () => productApi.list({ size: 6, sort: 'popular' }),
+    staleTime: 5 * 60 * 1000,
   });
 
   const products = productsData?.content || [];

@@ -33,6 +33,7 @@ import type { PrintJob, PrintJobStatus } from '../types/printJob.types';
 import { ReserveModal } from '../components/ReserveModal';
 import { IssueModal } from '../components/IssueModal';
 import { ReconcileModal } from '../components/ReconcileModal';
+import { useEventSubscription } from '../../../shared/realtime';
 
 const { Title, Text } = Typography;
 
@@ -47,6 +48,11 @@ export const PrintJobOperationsPage: React.FC = () => {
   const { data: jobsData, isLoading, refetch, isFetching } = usePrintJobs({ limit: 50 });
   const { data: warehousesData } = useWarehouses({ limit: 100 });
   const { data: materialsData } = useMaterials({ limit: 100 });
+
+  // Real-time automatic updates on print job, printer, and QC changes
+  useEventSubscription('PRINT_JOB_UPDATED', () => refetch());
+  useEventSubscription('PRINTER_STATUS_CHANGED', () => refetch());
+  useEventSubscription('QC_STATUS_CHANGED', () => refetch());
 
   const {
     createMutation,

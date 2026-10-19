@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCart } from '../../cart/context/CartContext';
 import { getDefaultRouteForRole } from '../../auth/utils/resolveActorRoute';
+import { NotificationCenter } from '../../../components/notifications/NotificationCenter';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -190,6 +191,9 @@ export const Navbar: React.FC = () => {
               <span style={{ marginLeft: 4, fontSize: '0.85rem', fontWeight: 600 }}>Giỏ hàng</span>
             </Button>
           </Badge>
+
+          {/* Real-time Notification Center */}
+          {isAuthenticated && <NotificationCenter />}
 
           {isAuthenticated && user ? (
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>

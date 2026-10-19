@@ -50,6 +50,7 @@ export const ProductDetailPage: React.FC = () => {
     queryKey: ['product-detail', slug],
     queryFn: () => (slug ? productApi.getBySlug(slug) : null),
     enabled: Boolean(slug),
+    staleTime: 5 * 60 * 1000,
   });
 
   if (isLoading) {

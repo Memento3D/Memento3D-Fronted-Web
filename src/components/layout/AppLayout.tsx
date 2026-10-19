@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Tooltip } from 'antd';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 import { WarehouseSelector } from '../../features/warehouse/components/WarehouseSelector';
+import { NotificationCenter } from '../notifications/NotificationCenter';
 import { 
   Box, 
   Warehouse, 
@@ -225,6 +226,9 @@ export const AppLayout: React.FC = () => {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Real-time Notification Center */}
+            <NotificationCenter />
+
             {/* Warehouse Scoping Selector */}
             <WarehouseSelector />
 

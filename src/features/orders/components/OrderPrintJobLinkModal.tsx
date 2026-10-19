@@ -26,6 +26,7 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
     queryKey: ['active-materials'],
     queryFn: () => materialApi.list({ status: 'ACTIVE', limit: 50 }),
     enabled: open,
+    staleTime: 5 * 60 * 1000,
   });
 
   const createJobMutation = useMutation({
