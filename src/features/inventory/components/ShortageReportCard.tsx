@@ -21,13 +21,13 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
 
   const columns: ColumnsType<InventoryBalance> = [
     {
-      title: 'Warehouse',
+      title: 'Kho',
       dataIndex: 'warehouseCode',
       key: 'warehouseCode',
       render: (code: string) => <Tag color="blue">{code}</Tag>,
     },
     {
-      title: 'Material SKU',
+      title: 'Mã SKU vật liệu',
       dataIndex: 'materialSku',
       key: 'materialSku',
       render: (sku: string, record) => (
@@ -38,7 +38,7 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
       ),
     },
     {
-      title: 'Current Available',
+      title: 'Tồn khả dụng hiện tại',
       dataIndex: 'availableGram',
       key: 'availableGram',
       sorter: (a, b) => a.availableGram - b.availableGram,
@@ -46,13 +46,13 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
         const isCritical = gram <= 500;
         return (
           <Tag color={isCritical ? 'error' : 'warning'} style={{ fontWeight: 600 }}>
-            {gram} g ({(gram / 1000).toFixed(2)} spool)
+            {gram} g ({(gram / 1000).toFixed(2)} cuộn)
           </Tag>
         );
       },
     },
     {
-      title: 'Replenishment Rec.',
+      title: 'Đề xuất nhập thêm',
       key: 'recommendation',
       render: (_, record) => {
         const neededGram = Math.max(0, 5000 - Number(record.availableGram));
@@ -61,14 +61,14 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
           <Space>
             <ShoppingCartOutlined style={{ color: '#f59e0b' }} />
             <Text strong style={{ color: '#fbbf24' }}>
-              +{spools} Spools ({spools} kg)
+              +{spools} cuộn ({spools} kg)
             </Text>
           </Space>
         );
       },
     },
     {
-      title: 'Quick Order',
+      title: 'Thao tác nhanh',
       key: 'action',
       align: 'right',
       render: (_, record) => (
@@ -78,7 +78,7 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
           icon={<PlusCircleOutlined />}
           onClick={() => onOpenReceipt(record.materialId, record.warehouseId)}
         >
-          Receive Stock
+          Nhập kho
         </Button>
       ),
     },
@@ -90,12 +90,12 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
         title={
           <Space>
             <CheckCircleOutlined style={{ color: '#10b981' }} />
-            <span>Shortage & Low Stock Warning</span>
+            <span>Cảnh báo Thiếu hụt & Tồn kho Thấp</span>
           </Space>
         }
       >
         <Alert
-          message="All material stock levels are within safe operating buffers (> 1.5kg available per SKU)."
+          message="Tất cả định mức tồn kho vật liệu đang nằm trong ngưỡng đệm an toàn (> 1.5kg khả dụng mỗi SKU)."
           type="success"
           showIcon
         />
@@ -108,11 +108,11 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
       title={
         <Space>
           <AlertOutlined style={{ color: '#ef4444' }} />
-          <span>Low Stock Warnings & Replenishment Recommendations ({lowStockItems.length})</span>
+          <span>Cảnh báo Tồn kho Thấp & Đề xuất Nhập thêm ({lowStockItems.length})</span>
         </Space>
       }
       extra={
-        <Tag color="error">Action Required: {lowStockItems.length} SKUs Low</Tag>
+        <Tag color="error">Cần xử lý: {lowStockItems.length} mã SKU sắp hết</Tag>
       }
     >
       <Table

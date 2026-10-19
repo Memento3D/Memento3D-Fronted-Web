@@ -17,6 +17,7 @@ import { useAuth } from '../../auth/hooks/useAuth';
 import { useCart } from '../../cart/context/CartContext';
 import { getDefaultRouteForRole } from '../../auth/utils/resolveActorRoute';
 import { NotificationCenter } from '../../../components/notifications/NotificationCenter';
+import { getRoleLabel } from '../../../locales/i18n';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ export const Navbar: React.FC = () => {
           <div style={{ fontWeight: 700, color: '#f8fafc' }}>{user?.fullName || user?.email}</div>
           <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{user?.email}</div>
           <div style={{ marginTop: 4 }}>
-            <Tag color="cyan" style={{ fontSize: '0.7rem' }}>{user?.role}</Tag>
+            <Tag color="cyan" style={{ fontSize: '0.7rem' }}>{getRoleLabel(user?.role)}</Tag>
           </div>
         </div>
       ),
@@ -82,7 +83,7 @@ export const Navbar: React.FC = () => {
     {
       key: 'dashboard',
       icon: <DashboardOutlined />,
-      label: 'Trang quản trị / Portal',
+      label: 'Cổng quản trị & Vận hành',
       onClick: () => navigate(dashboardRoute),
     },
     ...(user?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_MANAGER'
@@ -223,7 +224,7 @@ export const Navbar: React.FC = () => {
                     {user.fullName || user.email}
                   </span>
                   <span style={{ fontSize: '0.7rem', color: '#38bdf8' }}>
-                    {user.role.replace('ROLE_', '')}
+                    {getRoleLabel(user.role)}
                   </span>
                 </div>
               </div>

@@ -62,7 +62,7 @@ export const FinalCTA: React.FC = () => {
             }}
           >
             <StarOutlined />
-            <span>Preserve What Matters Most</span>
+            <span>Lưu giữ Những điều Quý giá nhất</span>
           </div>
 
           <h2
@@ -78,7 +78,7 @@ export const FinalCTA: React.FC = () => {
               marginRight: 'auto',
             }}
           >
-            Ready to Bring Your <span className="gradient-text-cyan">Memories to Life?</span>
+            Sẵn sàng Hiện thực hóa <span className="gradient-text-cyan">Kỷ niệm của Bạn?</span>
           </h2>
 
           <p
@@ -92,7 +92,7 @@ export const FinalCTA: React.FC = () => {
               marginBottom: 36,
             }}
           >
-            Upload your first photo today. Experience the feeling of holding a cherished moment in the palm of your hand.
+            Tải lên bức ảnh đầu tiên ngay hôm nay. Trải nghiệm cảm giác nâng niu khoảnh khắc quý giá trong lòng bàn tay bạn.
           </p>
 
           {/* Action Buttons */}
@@ -113,7 +113,7 @@ export const FinalCTA: React.FC = () => {
                 boxShadow: '0 10px 25px rgba(99, 102, 241, 0.45)',
               }}
             >
-              {isAuthenticated ? 'Open Your Workspace' : 'Start Creating Now'}
+              {isAuthenticated ? 'Mở Không gian làm việc' : 'Bắt đầu Tạo kỷ vật'}
             </Button>
 
             {!isAuthenticated && (
@@ -131,7 +131,7 @@ export const FinalCTA: React.FC = () => {
                   padding: '0 28px',
                 }}
               >
-                Sign In to Account
+                Đăng nhập tài khoản
               </Button>
             )}
           </div>
@@ -149,15 +149,15 @@ export const FinalCTA: React.FC = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <CheckCircleOutlined style={{ color: '#10b981' }} />
-              <span>Full 3D Pre-Print Inspection</span>
+              <span>Kiểm tra 3D Toàn diện trước khi in</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <CheckCircleOutlined style={{ color: '#10b981' }} />
-              <span>Non-Toxic Eco Polymers</span>
+              <span>Vật liệu Sinh học Không độc hại</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <CheckCircleOutlined style={{ color: '#10b981' }} />
-              <span>Protective Presentation Packaging</span>
+              <span>Đóng gói Hộp quà Bảo vệ Cao cấp</span>
             </div>
           </div>
         </div>
@@ -165,3 +165,4 @@ export const FinalCTA: React.FC = () => {
     </section>
   );
 };
+export default FinalCTA;

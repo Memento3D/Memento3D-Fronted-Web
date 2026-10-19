@@ -35,6 +35,7 @@ import { useWarehouseContext } from '../../warehouse/context/WarehouseContext';
 import { materialApi } from '../../material/api/materialApi';
 import { warehouseApi } from '../../warehouse/api/warehouseApi';
 import { useAuth } from '../../auth/hooks/useAuth';
+import { getStatusLabel } from '../../../locales/i18n';
 
 const { Title, Text } = Typography;
 
@@ -75,19 +76,19 @@ export const StockIssuesManagementPage: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: wmsEnterpriseApi.createStockIssue,
     onSuccess: () => {
-      message.success('Stock issue draft created');
+      message.success('Tạo bản nháp phiếu xuất kho thành công');
       setIsCreateModalOpen(false);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['stock-issues'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
-    onError: (err: any) => message.error(err.message || 'Failed to create issue'),
+    onError: (err: any) => message.error(err.message || 'Tạo phiếu xuất kho thất bại'),
   });
 
   const submitMutation = useMutation({
     mutationFn: wmsEnterpriseApi.submitStockIssue,
     onSuccess: () => {
-      message.success('Stock issue submitted for manager approval');
+      message.success('Đã gửi phiếu xuất kho để quản lý phê duyệt');
       queryClient.invalidateQueries({ queryKey: ['stock-issues'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -97,7 +98,7 @@ export const StockIssuesManagementPage: React.FC = () => {
   const approveMutation = useMutation({
     mutationFn: wmsEnterpriseApi.approveStockIssue,
     onSuccess: () => {
-      message.success('Stock issue approved');
+      message.success('Đã phê duyệt phiếu xuất kho');
       queryClient.invalidateQueries({ queryKey: ['stock-issues'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -107,7 +108,7 @@ export const StockIssuesManagementPage: React.FC = () => {
   const completeMutation = useMutation({
     mutationFn: wmsEnterpriseApi.completeStockIssue,
     onSuccess: () => {
-      message.success('Stock issue completed! Stock deducted and ledger updated.');
+      message.success('Đã hoàn tất xuất kho! Tồn kho đã được trừ và sổ cái đã cập nhật.');
       queryClient.invalidateQueries({ queryKey: ['stock-issues'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-balances'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
@@ -118,7 +119,7 @@ export const StockIssuesManagementPage: React.FC = () => {
   const cancelMutation = useMutation({
     mutationFn: wmsEnterpriseApi.cancelStockIssue,
     onSuccess: () => {
-      message.warning('Stock issue cancelled');
+      message.warning('Đã hủy phiếu xuất kho');
       queryClient.invalidateQueries({ queryKey: ['stock-issues'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -141,12 +142,23 @@ export const StockIssuesManagementPage: React.FC = () => {
 
   const getStatusTag = (status: StockIssueStatus) => {
     switch (status) {
-      case 'DRAFT': return <Tag color="default">DRAFT</Tag>;
-      case 'SUBMITTED': return <Tag color="blue">SUBMITTED</Tag>;
-      case 'APPROVED': return <Tag color="gold">APPROVED</Tag>;
-      case 'COMPLETED': return <Tag color="green">COMPLETED</Tag>;
-      case 'CANCELLED': return <Tag color="red">CANCELLED</Tag>;
-      default: return <Tag>{status}</Tag>;
+      case 'DRAFT': return <Tag color="default">{getStatusLabel('DRAFT')}</Tag>;
+      case 'SUBMITTED': return <Tag color="blue">{getStatusLabel('SUBMITTED')}</Tag>;
+      case 'APPROVED': return <Tag color="gold">{getStatusLabel('APPROVED')}</Tag>;
+      case 'COMPLETED': return <Tag color="green">{getStatusLabel('COMPLETED')}</Tag>;
+      case 'CANCELLED': return <Tag color="red">{getStatusLabel('CANCELLED')}</Tag>;
+      default: return <Tag>{getStatusLabel(status)}</Tag>;
+    }
+  };
+
+  const getCategoryLabel = (type?: string) => {
+    switch (type) {
+      case 'PRINT_JOB': return 'Lệnh in sản xuất';
+      case 'PACKAGING': return 'Đóng gói / Giao hàng';
+      case 'DAMAGED': return 'Hư hỏng / Hết hạn';
+      case 'WASTE': return 'Xả nhựa / Phế phẩm';
+      case 'MANUAL': return 'Xuất thủ công';
+      default: return type || 'Xuất thủ công';
     }
   };
 
@@ -154,7 +166,7 @@ export const StockIssuesManagementPage: React.FC = () => {
 
   const columns = [
     {
-      title: 'Issue Code',
+      title: 'Mã phiếu xuất',
       dataIndex: 'issueCode',
       key: 'issueCode',
       render: (code: string, r: StockIssue) => (
@@ -164,46 +176,46 @@ export const StockIssuesManagementPage: React.FC = () => {
       ),
     },
     {
-      title: 'Warehouse',
+      title: 'Kho xuất',
       dataIndex: 'warehouseName',
       key: 'warehouseName',
-      render: (name: string) => <Text strong style={{ color: '#e2e8f0' }}>{name || 'Warehouse'}</Text>,
+      render: (name: string) => <Text strong style={{ color: '#e2e8f0' }}>{name || 'Kho hàng'}</Text>,
     },
     {
-      title: 'Ref / Purpose',
+      title: 'Phân loại / Mục đích',
       key: 'ref',
       render: (_: any, r: StockIssue) => (
         <div>
-          <Tag color="cyan">{r.referenceType || 'MANUAL'}</Tag>
+          <Tag color="cyan">{getCategoryLabel(r.referenceType)}</Tag>
           {r.reason && <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{r.reason}</div>}
         </div>
       ),
     },
     {
-      title: 'Items',
+      title: 'Mặt hàng',
       dataIndex: 'items',
       key: 'items',
-      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} line items</Text>,
+      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} mặt hàng</Text>,
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: StockIssueStatus) => getStatusTag(status),
     },
     {
-      title: 'Created At',
+      title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (val: string) => <Text style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(val).toLocaleDateString()}</Text>,
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_: any, r: StockIssue) => (
         <Space size="small">
           <Button size="small" icon={<Eye size={13} />} onClick={() => setViewIssue(r)}>
-            View
+            Xem
           </Button>
 
           {r.status === 'DRAFT' && (
@@ -213,7 +225,7 @@ export const StockIssuesManagementPage: React.FC = () => {
               icon={<Send size={13} />} 
               onClick={() => submitMutation.mutate(r.id)}
             >
-              Submit
+              Gửi duyệt
             </Button>
           )}
 
@@ -224,24 +236,31 @@ export const StockIssuesManagementPage: React.FC = () => {
               icon={<Check size={13} />} 
               onClick={() => approveMutation.mutate(r.id)}
             >
-              Approve
+              Phê duyệt
             </Button>
           )}
 
           {r.status === 'APPROVED' && (
             <Popconfirm 
-              title="Complete Issue?" 
-              description="This will atomically deduct inventory balances and check against available stock."
+              title="Hoàn tất xuất kho?" 
+              description="Thao tác này sẽ trừ số lượng tồn kho khả dụng và cập nhật sổ cái hệ thống."
+              okText="Đồng ý"
+              cancelText="Hủy"
               onConfirm={() => completeMutation.mutate(r.id)}
             >
               <Button size="small" type="primary" style={{ background: '#10b981', borderColor: '#10b981' }} icon={<CheckCircle2 size={13} />}>
-                Complete (Stock Out)
+                Hoàn tất xuất kho
               </Button>
             </Popconfirm>
           )}
 
           {(r.status === 'DRAFT' || (r.status === 'SUBMITTED' && isManager)) && (
-            <Popconfirm title="Cancel Issue?" onConfirm={() => cancelMutation.mutate(r.id)}>
+            <Popconfirm 
+              title="Hủy phiếu xuất kho?" 
+              okText="Đồng ý"
+              cancelText="Quay lại"
+              onConfirm={() => cancelMutation.mutate(r.id)}
+            >
               <Button size="small" danger icon={<XCircle size={13} />} />
             </Popconfirm>
           )}
@@ -255,25 +274,25 @@ export const StockIssuesManagementPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
-            Stock Issues (Stock Out)
+            Quản lý phiếu xuất kho
           </Title>
           <Text style={{ color: '#94a3b8' }}>
-            Issuing workflow: DRAFT → SUBMITTED → APPROVED → COMPLETED (Atomic Inventory Deduction with Negative-Stock Guard)
+            Quy trình xuất kho: BẢN NHÁP → ĐÃ GỬI DUYỆT → ĐÃ PHÊ DUYỆT → HOÀN TẤT
           </Text>
         </div>
         <Space>
           <Select
-            placeholder="Filter by Status"
+            placeholder="Lọc theo trạng thái"
             allowClear
             value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
-            style={{ width: 160 }}
+            style={{ width: 180 }}
           >
-            <Select.Option value="DRAFT">Draft</Select.Option>
-            <Select.Option value="SUBMITTED">Submitted</Select.Option>
-            <Select.Option value="APPROVED">Approved</Select.Option>
-            <Select.Option value="COMPLETED">Completed</Select.Option>
-            <Select.Option value="CANCELLED">Cancelled</Select.Option>
+            <Select.Option value="DRAFT">Bản nháp</Select.Option>
+            <Select.Option value="SUBMITTED">Đã gửi duyệt</Select.Option>
+            <Select.Option value="APPROVED">Đã phê duyệt</Select.Option>
+            <Select.Option value="COMPLETED">Hoàn tất</Select.Option>
+            <Select.Option value="CANCELLED">Đã hủy</Select.Option>
           </Select>
           <Button 
             type="primary" 
@@ -281,7 +300,7 @@ export const StockIssuesManagementPage: React.FC = () => {
             style={{ background: '#f43f5e', borderColor: '#f43f5e', borderRadius: 8, fontWeight: 600 }}
             onClick={() => setIsCreateModalOpen(true)}
           >
-            Create Issue Request
+            Tạo phiếu xuất kho
           </Button>
         </Space>
       </div>
@@ -303,15 +322,15 @@ export const StockIssuesManagementPage: React.FC = () => {
 
       {/* Create Modal */}
       <Modal
-        title="Create New Stock Issue"
+        title="Tạo phiếu xuất kho mới"
         open={isCreateModalOpen}
         onCancel={() => setIsCreateModalOpen(false)}
         footer={null}
         width={720}
       >
         <Form form={form} layout="vertical" onFinish={handleCreateSubmit} initialValues={{ warehouseId: activeWarehouse?.id, referenceType: 'PRINT_JOB', items: [{}] }}>
-          <Form.Item name="warehouseId" label="Source Warehouse" rules={[{ required: true, message: 'Please select warehouse' }]}>
-            <Select placeholder="Select warehouse">
+          <Form.Item name="warehouseId" label="Kho xuất" rules={[{ required: true, message: 'Vui lòng chọn kho xuất' }]}>
+            <Select placeholder="Chọn kho xuất">
               {warehousesData?.content?.map((w: any) => (
                 <Select.Option key={w.id} value={w.id}>{w.name} ({w.code})</Select.Option>
               ))}
@@ -319,25 +338,25 @@ export const StockIssuesManagementPage: React.FC = () => {
           </Form.Item>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <Form.Item name="referenceType" label="Issue Category" rules={[{ required: true }]}>
+            <Form.Item name="referenceType" label="Mục đích xuất kho" rules={[{ required: true }]}>
               <Select>
-                <Select.Option value="PRINT_JOB">Print Job Production</Select.Option>
-                <Select.Option value="PACKAGING">Packaging / Dispatch</Select.Option>
-                <Select.Option value="DAMAGED">Damaged / Expired</Select.Option>
-                <Select.Option value="WASTE">Purge / Prototype Waste</Select.Option>
-                <Select.Option value="MANUAL">Manual Issue</Select.Option>
+                <Select.Option value="PRINT_JOB">Lệnh in sản xuất</Select.Option>
+                <Select.Option value="PACKAGING">Đóng gói / Giao hàng</Select.Option>
+                <Select.Option value="DAMAGED">Hư hỏng / Hết hạn</Select.Option>
+                <Select.Option value="WASTE">Xả nhựa / Phế phẩm mẫu</Select.Option>
+                <Select.Option value="MANUAL">Xuất thủ công</Select.Option>
               </Select>
             </Form.Item>
-            <Form.Item name="referenceId" label="Reference ID / Job Code">
-              <Input placeholder="e.g. PJ-9842" />
+            <Form.Item name="referenceId" label="Mã tham chiếu / Mã lệnh in">
+              <Input placeholder="VD: PJ-9842" />
             </Form.Item>
           </div>
 
-          <Form.Item name="reason" label="Reason & Details" rules={[{ required: true, message: 'Please specify reason' }]}>
-            <Input.TextArea rows={2} placeholder="Reason for issuing materials..." />
+          <Form.Item name="reason" label="Lý do & Chi tiết" rules={[{ required: true, message: 'Vui lòng nhập lý do' }]}>
+            <Input.TextArea rows={2} placeholder="Nhập lý do xuất vật liệu..." />
           </Form.Item>
 
-          <Divider style={{ color: '#94a3b8' }}>Line Items</Divider>
+          <Divider style={{ color: '#94a3b8' }}>Danh sách mặt hàng xuất</Divider>
 
           <Form.List name="items">
             {(fields, { add, remove }) => (
@@ -347,13 +366,13 @@ export const StockIssuesManagementPage: React.FC = () => {
                     <Form.Item
                       {...restField}
                       name={[name, 'materialId']}
-                      rules={[{ required: true, message: 'Select material' }]}
+                      rules={[{ required: true, message: 'Vui lòng chọn vật liệu' }]}
                       style={{ flex: 4, margin: 0 }}
                     >
-                      <Select placeholder="Material SKU / Name" showSearch optionFilterProp="children">
+                      <Select placeholder="Mã SKU / Tên vật liệu" showSearch optionFilterProp="children">
                         {materialsData?.content?.map((m: any) => (
                           <Select.Option key={m.id} value={m.id}>
-                            [{m.sku}] {m.name} ({m.color || 'Standard'})
+                            [{m.sku}] {m.name} ({m.color || 'Tiêu chuẩn'})
                           </Select.Option>
                         ))}
                       </Select>
@@ -362,26 +381,26 @@ export const StockIssuesManagementPage: React.FC = () => {
                     <Form.Item
                       {...restField}
                       name={[name, 'requestedQuantity']}
-                      rules={[{ required: true, message: 'Qty' }]}
+                      rules={[{ required: true, message: 'Số lượng' }]}
                       style={{ flex: 2, margin: 0 }}
                     >
-                      <InputNumber min={0.01} step={1} placeholder="Requested Qty" style={{ width: '100%' }} />
+                      <InputNumber min={0.01} step={1} placeholder="SL yêu cầu" style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Button type="text" danger icon={<Trash2 size={16} />} onClick={() => remove(name)} />
                   </div>
                 ))}
                 <Button type="dashed" onClick={() => add()} block style={{ marginTop: 8 }}>
-                  + Add Item
+                  + Thêm mặt hàng
                 </Button>
               </>
             )}
           </Form.List>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24 }}>
-            <Button onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
+            <Button onClick={() => setIsCreateModalOpen(false)}>Hủy</Button>
             <Button type="primary" htmlType="submit" loading={createMutation.isPending} style={{ background: '#f43f5e', borderColor: '#f43f5e' }}>
-              Create Draft Issue
+              Tạo bản nháp phiếu xuất
             </Button>
           </div>
         </Form>
@@ -389,24 +408,24 @@ export const StockIssuesManagementPage: React.FC = () => {
 
       {/* Details Modal */}
       <Modal
-        title={`Stock Issue: ${viewIssue?.issueCode}`}
+        title={`Chi tiết phiếu xuất: ${viewIssue?.issueCode}`}
         open={!!viewIssue}
         onCancel={() => setViewIssue(null)}
         footer={[
-          <Button key="close" onClick={() => setViewIssue(null)}>Close</Button>,
+          <Button key="close" onClick={() => setViewIssue(null)}>Đóng</Button>,
           viewIssue?.status === 'DRAFT' && (
             <Button key="submit" type="primary" onClick={() => { submitMutation.mutate(viewIssue.id); setViewIssue(null); }}>
-              Submit for Approval
+              Gửi phê duyệt
             </Button>
           ),
           viewIssue?.status === 'SUBMITTED' && isManager && (
             <Button key="approve" style={{ background: '#f59e0b', color: '#fff' }} onClick={() => { approveMutation.mutate(viewIssue.id); setViewIssue(null); }}>
-              Approve
+              Phê duyệt
             </Button>
           ),
           viewIssue?.status === 'APPROVED' && (
             <Button key="complete" type="primary" style={{ background: '#10b981' }} onClick={() => { completeMutation.mutate(viewIssue.id); setViewIssue(null); }}>
-              Complete Issue (Stock Out)
+              Hoàn tất xuất kho
             </Button>
           )
         ]}
@@ -415,28 +434,28 @@ export const StockIssuesManagementPage: React.FC = () => {
         {viewIssue && (
           <div>
             <Descriptions bordered size="small" column={2} style={{ marginBottom: 16 }}>
-              <Descriptions.Item label="Status">{getStatusTag(viewIssue.status)}</Descriptions.Item>
-              <Descriptions.Item label="Warehouse">{viewIssue.warehouseName}</Descriptions.Item>
-              <Descriptions.Item label="Category">{viewIssue.referenceType || 'MANUAL'}</Descriptions.Item>
-              <Descriptions.Item label="Reference ID">{viewIssue.referenceId || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Reason" span={2}>{viewIssue.reason || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Submitted By">{viewIssue.submittedBy || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Approved By">{viewIssue.approvedBy || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Created At">{new Date(viewIssue.createdAt).toLocaleString()}</Descriptions.Item>
-              <Descriptions.Item label="Completed At">{viewIssue.completedAt ? new Date(viewIssue.completedAt).toLocaleString() : '—'}</Descriptions.Item>
+              <Descriptions.Item label="Trạng thái">{getStatusTag(viewIssue.status)}</Descriptions.Item>
+              <Descriptions.Item label="Kho xuất">{viewIssue.warehouseName}</Descriptions.Item>
+              <Descriptions.Item label="Mục đích xuất">{getCategoryLabel(viewIssue.referenceType)}</Descriptions.Item>
+              <Descriptions.Item label="Mã tham chiếu">{viewIssue.referenceId || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Lý do" span={2}>{viewIssue.reason || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Người gửi duyệt">{viewIssue.submittedBy || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Người phê duyệt">{viewIssue.approvedBy || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Thời gian tạo">{new Date(viewIssue.createdAt).toLocaleString()}</Descriptions.Item>
+              <Descriptions.Item label="Thời gian hoàn tất">{viewIssue.completedAt ? new Date(viewIssue.completedAt).toLocaleString() : '—'}</Descriptions.Item>
             </Descriptions>
 
-            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Items Issued</Title>
+            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Danh sách mặt hàng xuất kho</Title>
             <Table
               dataSource={viewIssue.items || []}
               rowKey="id"
               pagination={false}
               size="small"
               columns={[
-                { title: 'SKU', dataIndex: 'materialSku', key: 'sku' },
-                { title: 'Material Name', dataIndex: 'materialName', key: 'name' },
-                { title: 'Requested Qty', dataIndex: 'requestedQuantity', key: 'rq', render: (q: number) => <Text strong style={{ color: '#f43f5e' }}>-{q}</Text> },
-                { title: 'Issued Qty', dataIndex: 'issuedQuantity', key: 'iq' },
+                { title: 'Mã SKU', dataIndex: 'materialSku', key: 'sku' },
+                { title: 'Tên vật liệu', dataIndex: 'materialName', key: 'name' },
+                { title: 'SL yêu cầu', dataIndex: 'requestedQuantity', key: 'rq', render: (q: number) => <Text strong style={{ color: '#f43f5e' }}>-{q}</Text> },
+                { title: 'SL đã xuất', dataIndex: 'issuedQuantity', key: 'iq' },
               ]}
             />
           </div>

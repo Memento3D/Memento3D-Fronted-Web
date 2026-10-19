@@ -1,0 +1,26 @@
+{
+  "printJob": "Lệnh in",
+  "printJobs": "Danh sách lệnh in",
+  "printer": "Máy in 3D",
+  "printers": "Máy in 3D",
+  "printFarm": "Xưởng in 3D",
+  "jobNumber": "Mã lệnh in",
+  "materialRequired": "Vật liệu yêu cầu",
+  "estimatedGram": "Khối lượng ước tính (g)",
+  "actualGram": "Khối lượng thực tế (g)",
+  "estimatedDuration": "Thời gian in ước tính",
+  "reserveMaterial": "Giữ trước vật liệu",
+  "issueMaterial": "Xuất cuộn nhựa cho máy in",
+  "startPrint": "Bắt đầu in",
+  "reconcile": "Quyết toán vật liệu",
+  "printerStatus": "Trạng thái máy in",
+  "status": {
+    "CREATED": "Đang chờ hàng đợi",
+    "RESERVED": "Đã giữ trước vật liệu",
+    "ISSUED": "Đã xuất vật liệu",
+    "PRINTING": "Đang in 3D",
+    "COMPLETED": "Hoàn thành",
+    "FAILED": "Thất bại",
+    "CANCELLED": "Đã hủy"
+  }
+}

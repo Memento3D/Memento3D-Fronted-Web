@@ -88,11 +88,13 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({
 
   return (
     <Modal
-      title={material ? `Edit Material: ${material.sku}` : 'Create New Filament Material (F01)'}
+      title={material ? `Chỉnh sửa vật liệu: ${material.sku}` : 'Thêm mới vật liệu in 3D'}
       open={open}
       onCancel={onCancel}
       onOk={() => form.submit()}
       confirmLoading={loading}
+      okText="Lưu"
+      cancelText="Hủy"
       width={680}
       destroyOnClose
     >
@@ -111,22 +113,22 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({
           <Col span={10}>
             <Form.Item
               name="sku"
-              label="SKU Code"
+              label="Mã SKU"
               rules={[
-                { required: true, message: 'SKU is required' },
-                { pattern: /^[A-Z0-9_-]+$/i, message: 'Alphanumeric and dashes only' },
+                { required: true, message: 'Mã SKU không được để trống' },
+                { pattern: /^[A-Z0-9_-]+$/i, message: 'Chỉ chấp nhận chữ cái, số và dấu gạch nối' },
               ]}
             >
-              <Input placeholder="e.g. PLA-BLK-175" style={{ textTransform: 'uppercase' }} />
+              <Input placeholder="Ví dụ: PLA-BLK-175" style={{ textTransform: 'uppercase' }} />
             </Form.Item>
           </Col>
           <Col span={14}>
             <Form.Item
               name="name"
-              label="Material Name"
-              rules={[{ required: true, message: 'Name is required' }]}
+              label="Tên vật liệu"
+              rules={[{ required: true, message: 'Tên vật liệu không được để trống' }]}
             >
-              <Input placeholder="e.g. Hyper Series PLA Black" />
+              <Input placeholder="Ví dụ: Hyper Series PLA Đen bóng" />
             </Form.Item>
           </Col>
         </Row>
@@ -135,8 +137,8 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({
           <Col span={8}>
             <Form.Item
               name="materialType"
-              label="Polymer Type"
-              rules={[{ required: true }]}
+              label="Loại vật liệu"
+              rules={[{ required: true, message: 'Vui lòng chọn loại vật liệu' }]}
             >
               <Select onChange={handleTypeChange}>
                 {MATERIAL_TYPES.map((t) => (
@@ -150,14 +152,14 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({
           <Col span={10}>
             <Form.Item
               name="color"
-              label="Color Name"
-              rules={[{ required: true, message: 'Color is required' }]}
+              label="Tên màu sắc"
+              rules={[{ required: true, message: 'Màu sắc không được để trống' }]}
             >
-              <Input placeholder="e.g. Signal White / Jet Black" />
+              <Input placeholder="Ví dụ: Đen tuyền / Trắng ngọc trai" />
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item name="colorHex" label="Color Swatch">
+            <Form.Item name="colorHex" label="Mã màu hiển thị">
               <Space orientation="horizontal">
                 <Input
                   type="color"
@@ -170,20 +172,20 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({
 
         <Row gutter={16}>
           <Col span={6}>
-            <Form.Item name="diameter" label="Diameter (mm)">
+            <Form.Item name="diameter" label="Đường kính sợi (mm)">
               <InputNumber min={0.5} max={5.0} step={0.01} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item name="density" label="Density (g/cm³)">
+            <Form.Item name="density" label="Khối lượng riêng (g/cm³)">
               <InputNumber min={0.5} max={3.0} step={0.01} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item
               name="unitCost"
-              label="Unit Cost per Gram (VND)"
-              rules={[{ required: true, message: 'Unit cost is required' }]}
+              label="Đơn giá mỗi gram (VND)"
+              rules={[{ required: true, message: 'Đơn giá không được để trống' }]}
             >
               <InputNumber
                 min={0}
@@ -197,38 +199,38 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({
 
         <Row gutter={16}>
           <Col span={6}>
-            <Form.Item name="printTempMin" label="Nozzle Min (°C)">
+            <Form.Item name="printTempMin" label="Nhiệt độ vòi min (°C)">
               <InputNumber min={0} max={400} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item name="printTempMax" label="Nozzle Max (°C)">
+            <Form.Item name="printTempMax" label="Nhiệt độ vòi max (°C)">
               <InputNumber min={0} max={400} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item name="bedTempMin" label="Bed Min (°C)">
+            <Form.Item name="bedTempMin" label="Nhiệt độ bàn min (°C)">
               <InputNumber min={0} max={200} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item name="bedTempMax" label="Bed Max (°C)">
+            <Form.Item name="bedTempMax" label="Nhiệt độ bàn max (°C)">
               <InputNumber min={0} max={200} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>
 
         {material && (
-          <Form.Item name="status" label="Status">
+          <Form.Item name="status" label="Trạng thái">
             <Select>
-              <Select.Option value="ACTIVE">ACTIVE</Select.Option>
-              <Select.Option value="INACTIVE">INACTIVE</Select.Option>
+              <Select.Option value="ACTIVE">Đang hoạt động</Select.Option>
+              <Select.Option value="INACTIVE">Tạm ngưng</Select.Option>
             </Select>
           </Form.Item>
         )}
 
-        <Form.Item name="description" label="Notes / Supplier Description">
-          <Input.TextArea rows={2} placeholder="Optional technical or batch notes..." />
+        <Form.Item name="description" label="Ghi chú kỹ thuật / Nhà cung cấp">
+          <Input.TextArea rows={2} placeholder="Ghi chú kỹ thuật, tiêu chuẩn lưu kho hoặc nhà sản xuất..." />
         </Form.Item>
       </Form>
     </Modal>

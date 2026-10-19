@@ -291,11 +291,14 @@ export const ManagerProductsPage: React.FC = () => {
               title: 'Khả dụng',
               dataIndex: 'availability',
               key: 'availability',
-              render: (av) => (
-                <Tag color={av === 'AVAILABLE' ? 'green' : av === 'OUT_OF_STOCK' ? 'orange' : 'default'}>
-                  {av}
-                </Tag>
-              ),
+              render: (av) => {
+                const label = av === 'AVAILABLE' ? 'Sẵn sàng' : av === 'OUT_OF_STOCK' ? 'Hết hàng' : av === 'DISCONTINUED' ? 'Ngừng kinh doanh' : av;
+                return (
+                  <Tag color={av === 'AVAILABLE' ? 'green' : av === 'OUT_OF_STOCK' ? 'orange' : 'default'}>
+                    {label}
+                  </Tag>
+                );
+              },
             },
             {
               title: 'Nổi bật',
@@ -352,7 +355,7 @@ export const ManagerProductsPage: React.FC = () => {
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Row gutter={16}>
             <Col xs={24} sm={16}>
-              <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true }]}>
+              <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm' }]}>
                 <Input placeholder="Tượng chân dung Desk Sculpture..." />
               </Form.Item>
             </Col>
@@ -365,7 +368,7 @@ export const ManagerProductsPage: React.FC = () => {
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>
-              <Form.Item name="categoryId" label="Danh mục" rules={[{ required: true }]}>
+              <Form.Item name="categoryId" label="Danh mục" rules={[{ required: true, message: 'Vui lòng chọn danh mục' }]}>
                 <Select
                   placeholder="Chọn danh mục"
                   options={categories.map((c) => ({ label: c.name, value: c.id }))}
@@ -373,7 +376,7 @@ export const ManagerProductsPage: React.FC = () => {
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
-              <Form.Item name="price" label="Giá bán (VND)" rules={[{ required: true }]}>
+              <Form.Item name="price" label="Giá bán (VND)" rules={[{ required: true, message: 'Vui lòng nhập giá bán' }]}>
                 <InputNumber min={0} step={10000} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
@@ -396,9 +399,9 @@ export const ManagerProductsPage: React.FC = () => {
               <Form.Item name="availability" label="Tình trạng">
                 <Select
                   options={[
-                    { label: 'AVAILABLE', value: 'AVAILABLE' },
-                    { label: 'OUT_OF_STOCK', value: 'OUT_OF_STOCK' },
-                    { label: 'DISCONTINUED', value: 'DISCONTINUED' },
+                    { label: 'Sẵn sàng (AVAILABLE)', value: 'AVAILABLE' },
+                    { label: 'Hết hàng (OUT_OF_STOCK)', value: 'OUT_OF_STOCK' },
+                    { label: 'Ngừng kinh doanh (DISCONTINUED)', value: 'DISCONTINUED' },
                   ]}
                 />
               </Form.Item>

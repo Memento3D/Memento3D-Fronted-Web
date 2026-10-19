@@ -138,7 +138,10 @@ export const ProductListPage: React.FC = () => {
                 style={{ width: '100%' }}
                 options={[
                   { label: 'Tất cả danh mục', value: '' },
-                  ...categories.map((c) => ({ label: c.name, value: c.slug })),
+                  ...(Array.isArray(categories) ? categories : []).map((c) => ({
+                    label: c.name,
+                    value: c.slug,
+                  })),
                 ]}
               />
             </Col>

@@ -31,12 +31,12 @@ import type { StockIssue, CreateStockIssuePayload } from '../types/inventory.typ
 const { Title, Text } = Typography;
 
 const ISSUE_REASONS = [
-  'PRINTER_CALIBRATION (Extruder & bed calibration)',
-  'DAMAGED_FILAMENT (Moisture / brittle degradation)',
-  'INTERNAL_PROTOTYPE (R&D Sample run)',
-  'INVENTORY_ADJUSTMENT (Audit variance)',
-  'SAMPLE_FOR_CUSTOMER (Client demonstration)',
-  'OTHER_DISPOSAL',
+  'PRINTER_CALIBRATION (Hiệu chuẩn bàn in & đầu đùn)',
+  'DAMAGED_FILAMENT (Ẩm mốc / giòn gãy hư hại)',
+  'INTERNAL_PROTOTYPE (In thử nghiệm R&D nội bộ)',
+  'INVENTORY_ADJUSTMENT (Điều chỉnh sai lệch kiểm kê)',
+  'SAMPLE_FOR_CUSTOMER (Mẫu in trình diễn khách hàng)',
+  'OTHER_DISPOSAL (Hủy bỏ lý do khác)',
 ];
 
 export const StockIssuePage: React.FC = () => {
@@ -74,7 +74,7 @@ export const StockIssuePage: React.FC = () => {
       };
 
       const res = await issueMutation.mutateAsync(payload);
-      message.success(`Stock issue #${res.issueNumber} recorded! -${payload.quantityGram}g deducted.`);
+      message.success(`Đã ghi nhận phiếu xuất kho #${res.issueNumber}! Trừ -${payload.quantityGram}g thành công.`);
       setIsConfirmOpen(false);
       form.resetFields();
       form.setFieldsValue({
@@ -82,7 +82,7 @@ export const StockIssuePage: React.FC = () => {
         reason: ISSUE_REASONS[0],
       });
     } catch (err: any) {
-      message.error(err.message || 'Failed to submit stock issue');
+      message.error(err.message || 'Gửi phiếu xuất kho thất bại');
     }
   };
 
@@ -91,7 +91,7 @@ export const StockIssuePage: React.FC = () => {
 
   const columns: ColumnsType<StockIssue> = [
     {
-      title: 'Issue #',
+      title: 'Mã phiếu xuất',
       dataIndex: 'issueNumber',
       key: 'issueNumber',
       render: (num: string) => (
@@ -101,13 +101,13 @@ export const StockIssuePage: React.FC = () => {
       ),
     },
     {
-      title: 'Warehouse',
+      title: 'Kho hàng',
       dataIndex: 'warehouseCode',
       key: 'warehouseCode',
       render: (code: string) => <Tag color="blue">{code}</Tag>,
     },
     {
-      title: 'Material SKU',
+      title: 'Mã SKU / Vật liệu',
       dataIndex: 'materialSku',
       key: 'materialSku',
       render: (sku: string, record) => (
@@ -118,7 +118,7 @@ export const StockIssuePage: React.FC = () => {
       ),
     },
     {
-      title: 'Deducted Qty',
+      title: 'Khối lượng xuất trừ',
       dataIndex: 'quantityGram',
       key: 'quantityGram',
       render: (qty: number) => (
@@ -128,19 +128,19 @@ export const StockIssuePage: React.FC = () => {
       ),
     },
     {
-      title: 'Audit Reason',
+      title: 'Lý do xuất kho',
       dataIndex: 'reason',
       key: 'reason',
       render: (reason: string) => <Tag color="orange">{reason}</Tag>,
     },
     {
-      title: 'Issued By',
+      title: 'Người thực hiện',
       dataIndex: 'issuedBy',
       key: 'issuedBy',
-      render: (by: string) => by || 'OPERATOR',
+      render: (by: string) => by || 'Nhân viên vận hành',
     },
     {
-      title: 'Timestamp',
+      title: 'Thời gian',
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (val: string) => new Date(val).toLocaleString(),
@@ -152,10 +152,10 @@ export const StockIssuePage: React.FC = () => {
       {/* Page Title */}
       <div>
         <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
-          Manual Stock Issue (F05)
+          Xuất kho thủ công (F05)
         </Title>
         <Text type="secondary">
-          Audit-logged material disposal, calibration deductions, or workshop sample scrap.
+          Ghi nhận xuất hủy vật liệu, khấu trừ hiệu chuẩn máy in hoặc in mẫu thử nghiệm.
         </Text>
       </div>
 
@@ -164,13 +164,13 @@ export const StockIssuePage: React.FC = () => {
         title={
           <Space>
             <ExportOutlined style={{ color: '#ef4444' }} />
-            <span>Manual Stock Issue Voucher</span>
+            <span>Phiếu xuất kho thủ công</span>
           </Space>
         }
       >
         <Alert
-          message="Physical Inventory Deduction"
-          description="Stock issued via this form is deducted immediately from physical on-hand inventory balances."
+          message="Khấu trừ tồn kho thực tế"
+          description="Vật liệu xuất qua biểu mẫu này sẽ bị trừ ngay lập tức khỏi số dư tồn kho thực tế."
           type="warning"
           showIcon
           style={{ marginBottom: 20 }}
@@ -189,10 +189,10 @@ export const StockIssuePage: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="warehouseId"
-                label="Source Warehouse Hub"
-                rules={[{ required: true, message: 'Please select source warehouse' }]}
+                label="Kho xuất hàng"
+                rules={[{ required: true, message: 'Vui lòng chọn kho xuất' }]}
               >
-                <Select placeholder="Select warehouse source">
+                <Select placeholder="Chọn kho xuất hàng">
                   {warehouses.map((wh) => (
                     <Select.Option key={wh.id} value={wh.id}>
                       {wh.code} — {wh.name}
@@ -204,10 +204,10 @@ export const StockIssuePage: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="materialId"
-                label="Material Profile (Filament)"
-                rules={[{ required: true, message: 'Please select material SKU' }]}
+                label="Hồ sơ vật liệu in"
+                rules={[{ required: true, message: 'Vui lòng chọn mã SKU vật liệu' }]}
               >
-                <Select placeholder="Select material SKU" showSearch optionFilterProp="children">
+                <Select placeholder="Chọn mã SKU vật liệu" showSearch optionFilterProp="children">
                   {materials.map((mat) => (
                     <Select.Option key={mat.id} value={mat.id}>
                       [{mat.sku}] {mat.name} ({mat.color})
@@ -222,22 +222,22 @@ export const StockIssuePage: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="quantityGram"
-                label="Deduction Quantity (Grams)"
+                label="Khối lượng xuất trừ (Gam)"
                 rules={[
-                  { required: true, message: 'Quantity is required' },
-                  { type: 'number', min: 1, message: 'Quantity must be > 0' },
+                  { required: true, message: 'Khối lượng là bắt buộc' },
+                  { type: 'number', min: 1, message: 'Khối lượng phải lớn hơn 0' },
                 ]}
               >
-                <InputNumber style={{ width: '100%' }} step={100} addonAfter="grams" />
+                <InputNumber style={{ width: '100%' }} step={100} addonAfter="gam" />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
               <Form.Item
                 name="reason"
-                label="Audit Justification Reason"
-                rules={[{ required: true, message: 'Mandatory reason is required' }]}
+                label="Lý do xuất kho"
+                rules={[{ required: true, message: 'Lý do là bắt buộc' }]}
               >
-                <Select placeholder="Select primary reason">
+                <Select placeholder="Chọn lý do chính">
                   {ISSUE_REASONS.map((reason) => (
                     <Select.Option key={reason} value={reason}>
                       {reason}
@@ -248,8 +248,8 @@ export const StockIssuePage: React.FC = () => {
             </Col>
           </Row>
 
-          <Form.Item name="note" label="Additional Audit Notes / Work Order Reference">
-            <Input.TextArea rows={2} placeholder="Optional technician notes or test ID..." />
+          <Form.Item name="note" label="Ghi chú bổ sung / Mã lệnh công việc">
+            <Input.TextArea rows={2} placeholder="Ghi chú kỹ thuật viên hoặc mã phiếu kiểm tra (tùy chọn)..." />
           </Form.Item>
 
           <Button
@@ -261,7 +261,7 @@ export const StockIssuePage: React.FC = () => {
             loading={issueMutation.isPending}
             style={{ width: '100%', marginTop: 8 }}
           >
-            Review & Commit Stock Issue
+            Xem lại & Xác nhận xuất kho
           </Button>
         </Form>
       </Card>
@@ -271,7 +271,7 @@ export const StockIssuePage: React.FC = () => {
         title={
           <Space>
             <HistoryOutlined style={{ color: '#0ea5e9' }} />
-            <span>Recent Manual Stock Issues Ledger</span>
+            <span>Sổ theo dõi phiếu xuất kho thủ công gần đây</span>
           </Space>
         }
       >
@@ -289,30 +289,31 @@ export const StockIssuePage: React.FC = () => {
         title={
           <Space>
             <WarningOutlined style={{ color: '#ef4444' }} />
-            <span>Confirm Stock Deduction</span>
+            <span>Xác nhận khấu trừ tồn kho</span>
           </Space>
         }
         open={isConfirmOpen}
         onCancel={() => setIsConfirmOpen(false)}
         onOk={handleCommitIssue}
         confirmLoading={issueMutation.isPending}
-        okText="Confirm Deduction"
+        okText="Xác nhận xuất trừ"
+        cancelText="Hủy"
         okButtonProps={{ danger: true }}
         width={540}
       >
         <Descriptions bordered column={1} size="small" style={{ marginBottom: 16 }}>
-          <Descriptions.Item label="Source Warehouse">
+          <Descriptions.Item label="Kho xuất hàng">
             <Tag color="blue">{selectedWarehouse?.code}</Tag> {selectedWarehouse?.name}
           </Descriptions.Item>
-          <Descriptions.Item label="Material SKU">
+          <Descriptions.Item label="Mã SKU vật liệu">
             <Tag color="cyan">{selectedMaterial?.sku}</Tag> {selectedMaterial?.name}
           </Descriptions.Item>
-          <Descriptions.Item label="Deduction Quantity">
+          <Descriptions.Item label="Khối lượng xuất trừ">
             <Text strong style={{ color: '#ef4444', fontSize: 16 }}>
-              -{Number(pendingValues?.quantityGram || 0).toLocaleString()} grams
+              -{Number(pendingValues?.quantityGram || 0).toLocaleString()} gam
             </Text>
           </Descriptions.Item>
-          <Descriptions.Item label="Audit Justification">
+          <Descriptions.Item label="Lý do xuất kho">
             <Tag color="orange">{pendingValues?.reason}</Tag>
           </Descriptions.Item>
         </Descriptions>

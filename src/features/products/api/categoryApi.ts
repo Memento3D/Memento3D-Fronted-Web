@@ -7,10 +7,24 @@ import type {
 
 export const categoryApi = {
   list: async (activeOnly = true): Promise<ProductCategory[]> => {
-    const res = await apiClient.get<ProductCategory[]>('/product-categories', {
-      params: { activeOnly },
+    const res = await apiClient.get<any>('/product-categories', {
+      params: {
+        all: !activeOnly,
+        activeOnly,
+      },
     });
-    return res.data;
+
+    const data = res.data;
+    if (Array.isArray(data)) {
+      return data;
+    }
+    if (data && Array.isArray(data.content)) {
+      return data.content;
+    }
+    if (data && Array.isArray(data.data)) {
+      return data.data;
+    }
+    return [];
   },
 
   getById: async (id: string): Promise<ProductCategory> => {

@@ -401,7 +401,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#94a3b8' }}>Trạng thái thanh toán:</span>
                 <Tag color={isPaid ? 'green' : 'gold'}>
-                  {order.paymentStatus || 'PENDING'}
+                  {order.paymentStatus === 'PAID' ? 'Đã thanh toán' : order.paymentStatus === 'PENDING' ? 'Chờ thanh toán' : order.paymentStatus || 'Chờ thanh toán'}
                 </Tag>
               </div>
 
@@ -431,7 +431,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
 
                   <Popconfirm
                     title="Xác nhận đã nhận tiền mặt?"
-                    description="Thao tác này sẽ chuyển PaymentStatus từ PENDING sang PAID và lưu lịch sử người duyệt."
+                    description="Thao tác này sẽ chuyển trạng thái thanh toán từ Chờ thanh toán sang Đã thanh toán."
                     onConfirm={handleConfirmCash}
                     okText="Xác nhận đã thu tiền"
                     cancelText="Hủy"
@@ -485,22 +485,24 @@ export const ManagerOrderDetailPage: React.FC = () => {
         title="Cập nhật thông tin giao nhận"
         onOk={() => form.submit()}
         confirmLoading={updateOrderMutation.isPending}
+        okText="Lưu thay đổi"
+        cancelText="Hủy"
       >
         <Form form={form} layout="vertical" onFinish={handleUpdateShipping}>
-          <Form.Item name="recipientName" label="Người nhận" rules={[{ required: true }]}>
+          <Form.Item name="recipientName" label="Người nhận" rules={[{ required: true, message: 'Vui lòng nhập tên người nhận' }]}>
             <Input />
           </Form.Item>
           <Form.Item
             name="phone"
             label="Số điện thoại"
             rules={[
-              { required: true },
+              { required: true, message: 'Vui lòng nhập số điện thoại' },
               { pattern: /^[0-9+()\-\s]{8,20}$/, message: 'Số điện thoại không hợp lệ' },
             ]}
           >
             <Input />
           </Form.Item>
-          <Form.Item name="shippingAddress" label="Địa chỉ" rules={[{ required: true }]}>
+          <Form.Item name="shippingAddress" label="Địa chỉ" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ nhận hàng' }]}>
             <Input.TextArea rows={3} />
           </Form.Item>
         </Form>

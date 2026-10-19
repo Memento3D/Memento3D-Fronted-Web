@@ -14,7 +14,7 @@ export const WarehouseSelector: React.FC = () => {
       <Tag style={{ padding: '4px 8px', borderRadius: '6px' }}>
         <Space size={4}>
           <HomeOutlined spin />
-          <span>Loading Hubs...</span>
+          <span>Đang tải cơ sở kho...</span>
         </Space>
       </Tag>
     );
@@ -26,7 +26,7 @@ export const WarehouseSelector: React.FC = () => {
         <Space size={6}>
           <HomeOutlined style={{ color: '#38bdf8' }} />
           <Text strong style={{ color: '#38bdf8', fontSize: '0.785rem' }}>
-            Facility: Memento3D Central
+            Kho: Trung tâm Memento3D
           </Text>
         </Space>
       </Tag>
@@ -36,7 +36,7 @@ export const WarehouseSelector: React.FC = () => {
   if (myWarehouses.length === 1) {
     const single = myWarehouses[0];
     return (
-      <Tooltip title="Auto-selected warehouse facility (you have single warehouse membership scope)">
+      <Tooltip title="Kho tự động kích hoạt (Bạn có quyền hạn tại 1 cơ sở kho)">
         <div
           style={{
             display: 'flex',
@@ -63,13 +63,13 @@ export const WarehouseSelector: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <Tooltip title="Switch active warehouse facility context">
+      <Tooltip title="Chuyển đổi cơ sở kho làm việc">
         <Select
           id="warehouse-scope-selector"
           value={activeWarehouseId || undefined}
           onChange={setActiveWarehouseId}
           style={{ minWidth: 240 }}
-          placeholder="Select Warehouse Scope"
+          placeholder="Chọn cơ sở kho làm việc"
           popupMatchSelectWidth={false}
           options={myWarehouses.map((w) => ({
             value: w.id,

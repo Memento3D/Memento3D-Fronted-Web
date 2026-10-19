@@ -1,0 +1,26 @@
+{
+  "payment": "Thanh toán",
+  "checkout": "Thanh toán",
+  "paymentMethod": "Phương thức thanh toán",
+  "paymentMethods": "Phương thức thanh toán",
+  "payNow": "Thanh toán ngay",
+  "paymentSuccessful": "Thanh toán thành công",
+  "paymentFailed": "Thanh toán thất bại",
+  "paymentPending": "Đang chờ thanh toán",
+  "paymentDetails": "Chi tiết thanh toán",
+  "transactionCode": "Mã giao dịch",
+  "amount": "Số tiền",
+  "paidAt": "Thời gian thanh toán",
+  "paymentGateway": "Cổng thanh toán",
+  "vnpay": "Cổng VNPAY (Thẻ ATM / QR / Visa / Master)",
+  "cod": "Thanh toán khi nhận hàng (COD)",
+  "bankTransfer": "Chuyển khoản ngân hàng trực tiếp",
+  "status": {
+    "PENDING": "Đang chờ",
+    "PAID": "Đã thanh toán",
+    "SUCCESS": "Thành công",
+    "FAILED": "Thất bại",
+    "CANCELLED": "Đã hủy",
+    "REFUNDED": "Đã hoàn tiền"
+  }
+}

@@ -29,6 +29,7 @@ import { useWarehouses, useWarehouseMutations } from '../hooks/useWarehouses';
 import type { Warehouse, CreateWarehousePayload, UpdateWarehousePayload } from '../types/warehouse.types';
 import { WarehouseFormModal } from '../components/WarehouseFormModal';
 import { WarehouseMembersDrawer } from '../components/WarehouseMembersDrawer';
+import { getStatusLabel } from '../../../locales/i18n';
 
 const { Title, Text } = Typography;
 
@@ -64,23 +65,23 @@ export const WarehouseManagementPage: React.FC = () => {
     try {
       if (selectedWarehouse) {
         await updateMutation.mutateAsync({ id: selectedWarehouse.id, payload: values });
-        message.success(`Warehouse ${selectedWarehouse.code} updated successfully`);
+        message.success(`Đã cập nhật cơ sở kho ${selectedWarehouse.code} thành công`);
       } else {
         await createMutation.mutateAsync(values as CreateWarehousePayload);
-        message.success('Warehouse hub registered successfully');
+        message.success('Đã thêm mới cơ sở kho thành công');
       }
       setIsModalOpen(false);
     } catch (err: any) {
-      message.error(err.message || 'Operation failed');
+      message.error(err.message || 'Thao tác không thành công');
     }
   };
 
   const handleDeactivate = async (id: string, code: string) => {
     try {
       await deactivateMutation.mutateAsync(id);
-      message.success(`Warehouse ${code} deactivated`);
+      message.success(`Đã ngừng kích hoạt kho ${code}`);
     } catch (err: any) {
-      message.error(err.message || 'Cannot deactivate warehouse. Ensure inventory is zero.');
+      message.error(err.message || 'Không thể ngừng kích hoạt kho. Vui lòng đảm bảo tồn kho bằng 0.');
     }
   };
 
@@ -91,7 +92,7 @@ export const WarehouseManagementPage: React.FC = () => {
 
   const columns: ColumnsType<Warehouse> = [
     {
-      title: 'Warehouse Code',
+      title: 'Mã kho',
       dataIndex: 'code',
       key: 'code',
       sorter: (a, b) => a.code.localeCompare(b.code),
@@ -105,56 +106,56 @@ export const WarehouseManagementPage: React.FC = () => {
       ),
     },
     {
-      title: 'Facility Name',
+      title: 'Tên cơ sở kho',
       dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (name: string) => <Text strong>{name}</Text>,
     },
     {
-      title: 'Physical Address',
+      title: 'Địa chỉ kho',
       dataIndex: 'location',
       key: 'location',
       render: (loc: string) => (
         <Space>
           <EnvironmentOutlined style={{ color: '#94a3b8' }} />
-          <span>{loc || 'Primary Manufacturing Facility'}</span>
+          <span>{loc || 'Trung tâm Chế tác Chính'}</span>
         </Space>
       ),
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'ACTIVE' ? 'success' : 'default'}>
-          {status}
+          {getStatusLabel(status)}
         </Tag>
       ),
     },
     {
-      title: 'Last Modified',
+      title: 'Cập nhật lần cuối',
       dataIndex: 'updatedAt',
       key: 'updatedAt',
       responsive: ['md'],
-      render: (val: string) => new Date(val).toLocaleDateString(),
+      render: (val: string) => new Date(val).toLocaleDateString('vi-VN'),
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       align: 'right',
       render: (_, record) => (
         <Space>
-          <Tooltip title="Manage Warehouse Staff & Role Permissions (F01)">
+          <Tooltip title="Quản lý nhân viên & Phân quyền kho">
             <Button
               type="text"
               icon={<TeamOutlined style={{ color: '#38bdf8' }} />}
               onClick={() => handleOpenMembers(record)}
             >
-              Staff
+              Nhân viên
             </Button>
           </Tooltip>
-          <Tooltip title="Edit Facility">
+          <Tooltip title="Chỉnh sửa kho">
             <Button
               type="text"
               icon={<EditOutlined />}
@@ -163,14 +164,14 @@ export const WarehouseManagementPage: React.FC = () => {
           </Tooltip>
           {record.status === 'ACTIVE' && (
             <Popconfirm
-              title="Deactivate Warehouse Hub"
-              description={`Are you sure you want to deactivate ${record.code}?`}
+              title="Ngừng kích hoạt kho"
+              description={`Bạn có chắc chắn muốn ngừng kích hoạt kho ${record.code}?`}
               onConfirm={() => handleDeactivate(record.id, record.code)}
-              okText="Deactivate"
-              cancelText="Cancel"
+              okText="Ngừng kích hoạt"
+              cancelText="Hủy"
               okButtonProps={{ danger: true }}
             >
-              <Tooltip title="Deactivate">
+              <Tooltip title="Ngừng kích hoạt">
                 <Button type="text" danger icon={<StopOutlined />} />
               </Tooltip>
             </Popconfirm>
@@ -186,10 +187,10 @@ export const WarehouseManagementPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
-            Warehouses & Manufacturing Hubs (F02)
+            Quản lý Cơ sở Kho & Trung tâm Chế tác
           </Title>
           <Text type="secondary">
-            Manage physical inventory locations, regional printing hubs, and storage facilities.
+            Quản lý các điểm lưu kho vật lý, xưởng in 3D khu vực và cơ sở vật tư.
           </Text>
         </div>
         <Button
@@ -198,7 +199,7 @@ export const WarehouseManagementPage: React.FC = () => {
           size="large"
           onClick={handleOpenCreate}
         >
-          Add Warehouse Hub
+          Thêm kho mới
         </Button>
       </div>
 
@@ -207,21 +208,21 @@ export const WarehouseManagementPage: React.FC = () => {
         <Col xs={24} sm={12}>
           <Card>
             <Statistic
-              title="Total Warehouse Facilities"
+              title="Tổng số cơ sở kho"
               value={warehouses.length}
               prefix={<HomeOutlined style={{ color: '#0ea5e9' }} />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Locations</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Địa điểm</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12}>
           <Card>
             <Statistic
-              title="Operational Hubs"
+              title="Kho đang hoạt động"
               value={activeCount}
               valueStyle={{ color: '#10b981' }}
               prefix={<CheckCircleOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Active for Fulfillment</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Sẵn sàng điều phối</Text>}
             />
           </Card>
         </Col>
@@ -231,7 +232,7 @@ export const WarehouseManagementPage: React.FC = () => {
       <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <Input
-            placeholder="Search warehouse code or facility name..."
+            placeholder="Tìm kiếm theo mã kho hoặc tên cơ sở..."
             prefix={<SearchOutlined />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -239,7 +240,7 @@ export const WarehouseManagementPage: React.FC = () => {
             allowClear
           />
           <Text type="secondary" style={{ alignSelf: 'center' }}>
-            Showing {warehouses.length} locations
+            Hiển thị {warehouses.length} cơ sở kho
           </Text>
         </div>
 

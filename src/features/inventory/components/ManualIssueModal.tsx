@@ -27,12 +27,12 @@ interface ManualIssueModalProps {
 }
 
 const ISSUE_REASONS = [
-  'PRINTER_CALIBRATION (Test & bed leveling)',
-  'DAMAGED_FILAMENT (Moisture / brittle scrap)',
-  'INTERNAL_PROTOTYPE (R&D Sample run)',
-  'INVENTORY_ADJUSTMENT (Audit variance)',
-  'SAMPLE_FOR_CUSTOMER (Client demonstration)',
-  'OTHER_DISPOSAL',
+  'CÂN_CHỈNH_MÁY_IN (Kiểm tra & cân bàn in)',
+  'HỎNG_SỢI_NHỰA (Ẩm mốc / sợi giòn hao hụt)',
+  'MẪU_THỬ_NỘI_BỘ (Chạy thử nghiệm R&D)',
+  'ĐIỀU_CHỈNH_KIỂM_KÊ (Lệch số liệu kiểm toán)',
+  'MẪU_CHO_KHÁCH_HÀNG (Trưng bày & trải nghiệm)',
+  'TIÊU_HỦY_KHÁC',
 ];
 
 export const ManualIssueModal: React.FC<ManualIssueModalProps> = ({
@@ -76,21 +76,22 @@ export const ManualIssueModal: React.FC<ManualIssueModalProps> = ({
       title={
         <Space>
           <ExportOutlined style={{ color: '#ef4444' }} />
-          <span>Manual Stock Issue (F05)</span>
+          <span>Xuất kho thủ công</span>
         </Space>
       }
       open={open}
       onCancel={onCancel}
       onOk={() => form.submit()}
       confirmLoading={loading}
-      okText="Issue & Decrement Stock"
+      okText="Xác nhận xuất kho"
+      cancelText="Hủy"
       okButtonProps={{ danger: true }}
       width={600}
       destroyOnClose
     >
       <Alert
-        message="Stock Deduction Warning"
-        description="Manual stock issuance directly decrements physical inventory on-hand. This action is permanently audited in the ACID transaction ledger."
+        message="Cảnh báo khấu trừ tồn kho"
+        description="Thao tác xuất kho thủ công sẽ trừ trực tiếp vào số lượng tồn kho thực tế. Hành động này được lưu trữ vĩnh viễn trong sổ cái kiểm toán giao dịch ACID."
         type="warning"
         showIcon
         style={{ marginBottom: 16 }}
@@ -101,10 +102,10 @@ export const ManualIssueModal: React.FC<ManualIssueModalProps> = ({
           <Col span={12}>
             <Form.Item
               name="warehouseId"
-              label="Source Warehouse Hub"
-              rules={[{ required: true, message: 'Please select warehouse' }]}
+              label="Kho nguồn"
+              rules={[{ required: true, message: 'Vui lòng chọn cơ sở kho' }]}
             >
-              <Select placeholder="Select warehouse source">
+              <Select placeholder="Chọn kho nguồn">
                 {warehouses.map((wh) => (
                   <Select.Option key={wh.id} value={wh.id}>
                     {wh.code} — {wh.name}
@@ -116,10 +117,10 @@ export const ManualIssueModal: React.FC<ManualIssueModalProps> = ({
           <Col span={12}>
             <Form.Item
               name="materialId"
-              label="Material Filament"
-              rules={[{ required: true, message: 'Please select material' }]}
+              label="Vật liệu xuất"
+              rules={[{ required: true, message: 'Vui lòng chọn vật liệu' }]}
             >
-              <Select placeholder="Select material SKU" showSearch optionFilterProp="children">
+              <Select placeholder="Chọn mã SKU vật liệu" showSearch optionFilterProp="children">
                 {materials.map((mat) => (
                   <Select.Option key={mat.id} value={mat.id}>
                     [{mat.sku}] {mat.name}
@@ -132,21 +133,21 @@ export const ManualIssueModal: React.FC<ManualIssueModalProps> = ({
 
         <Form.Item
           name="quantityGram"
-          label="Deduction Quantity (Grams)"
+          label="Số lượng xuất (Gram)"
           rules={[
-            { required: true, message: 'Quantity is required' },
-            { type: 'number', min: 1, message: 'Quantity must be > 0' },
+            { required: true, message: 'Số lượng không được để trống' },
+            { type: 'number', min: 1, message: 'Số lượng phải lớn hơn 0' },
           ]}
         >
-          <InputNumber style={{ width: '100%' }} addonAfter="grams" step={50} />
+          <InputNumber style={{ width: '100%' }} addonAfter="gram" step={50} />
         </Form.Item>
 
         <Form.Item
           name="reason"
-          label="Audit Justification Reason"
-          rules={[{ required: true, message: 'Mandatory reason is required' }]}
+          label="Lý do xuất kho"
+          rules={[{ required: true, message: 'Vui lòng chọn lý do xuất kho' }]}
         >
-          <Select placeholder="Select primary reason">
+          <Select placeholder="Chọn lý do xuất kho">
             {ISSUE_REASONS.map((reason) => (
               <Select.Option key={reason} value={reason}>
                 {reason}
@@ -155,8 +156,8 @@ export const ManualIssueModal: React.FC<ManualIssueModalProps> = ({
           </Select>
         </Form.Item>
 
-        <Form.Item name="note" label="Additional Audit Notes">
-          <Input.TextArea rows={2} placeholder="Responsible technician, machine ID, or ticket number..." />
+        <Form.Item name="note" label="Ghi chú kiểm toán bổ sung">
+          <Input.TextArea rows={2} placeholder="Kỹ thuật viên phụ trách, mã máy in hoặc số phiếu công việc..." />
         </Form.Item>
       </Form>
     </Modal>

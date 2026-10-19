@@ -30,6 +30,7 @@ import { useWarehouseContext } from '../../warehouse/context/WarehouseContext';
 import { materialApi } from '../../material/api/materialApi';
 import { warehouseApi } from '../../warehouse/api/warehouseApi';
 import { useAuth } from '../../auth/hooks/useAuth';
+import { getStatusLabel } from '../../../locales/i18n';
 
 const { Title, Text } = Typography;
 
@@ -67,19 +68,19 @@ export const StockAdjustmentsPage: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: wmsEnterpriseApi.createAdjustment,
     onSuccess: () => {
-      message.success('Stock adjustment draft created');
+      message.success('Tạo bản nháp điều chỉnh tồn kho thành công');
       setIsCreateModalOpen(false);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['stock-adjustments'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
-    onError: (err: any) => message.error(err.message || 'Failed to create adjustment'),
+    onError: (err: any) => message.error(err.message || 'Tạo điều chỉnh tồn kho thất bại'),
   });
 
   const submitMutation = useMutation({
     mutationFn: wmsEnterpriseApi.submitAdjustment,
     onSuccess: () => {
-      message.success('Adjustment submitted for manager approval');
+      message.success('Đã gửi yêu cầu điều chỉnh để quản lý duyệt');
       queryClient.invalidateQueries({ queryKey: ['stock-adjustments'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -89,7 +90,7 @@ export const StockAdjustmentsPage: React.FC = () => {
   const approveMutation = useMutation({
     mutationFn: wmsEnterpriseApi.approveAdjustment,
     onSuccess: () => {
-      message.success('Adjustment approved! Ready to apply to balances.');
+      message.success('Đã phê duyệt điều chỉnh! Sẵn sàng áp dụng vào số dư.');
       queryClient.invalidateQueries({ queryKey: ['stock-adjustments'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -99,7 +100,7 @@ export const StockAdjustmentsPage: React.FC = () => {
   const applyMutation = useMutation({
     mutationFn: wmsEnterpriseApi.applyAdjustment,
     onSuccess: () => {
-      message.success('Adjustment applied! Inventory synchronized and ledger written.');
+      message.success('Đã áp dụng điều chỉnh! Tồn kho đã đồng bộ và sổ cái đã được ghi nhận.');
       queryClient.invalidateQueries({ queryKey: ['stock-adjustments'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-balances'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
@@ -119,13 +120,13 @@ export const StockAdjustmentsPage: React.FC = () => {
 
   const getStatusTag = (status: StockAdjustmentStatus) => {
     switch (status) {
-      case 'DRAFT': return <Tag color="default">DRAFT</Tag>;
-      case 'SUBMITTED': return <Tag color="blue">SUBMITTED</Tag>;
-      case 'APPROVED': return <Tag color="gold">APPROVED</Tag>;
-      case 'APPLIED': return <Tag color="green">APPLIED</Tag>;
-      case 'REJECTED': return <Tag color="red">REJECTED</Tag>;
-      case 'CANCELLED': return <Tag color="gray">CANCELLED</Tag>;
-      default: return <Tag>{status}</Tag>;
+      case 'DRAFT': return <Tag color="default">{getStatusLabel('DRAFT')}</Tag>;
+      case 'SUBMITTED': return <Tag color="blue">{getStatusLabel('SUBMITTED')}</Tag>;
+      case 'APPROVED': return <Tag color="gold">{getStatusLabel('APPROVED')}</Tag>;
+      case 'APPLIED': return <Tag color="green">{getStatusLabel('APPLIED')}</Tag>;
+      case 'REJECTED': return <Tag color="red">{getStatusLabel('REJECTED')}</Tag>;
+      case 'CANCELLED': return <Tag color="gray">{getStatusLabel('CANCELLED')}</Tag>;
+      default: return <Tag>{getStatusLabel(status)}</Tag>;
     }
   };
 
@@ -133,19 +134,19 @@ export const StockAdjustmentsPage: React.FC = () => {
 
   const columns = [
     {
-      title: 'Code',
+      title: 'Mã điều chỉnh',
       dataIndex: 'adjustmentCode',
       key: 'code',
       render: (code: string) => <Text strong style={{ color: '#fbbf24' }}>{code}</Text>,
     },
     {
-      title: 'Warehouse',
+      title: 'Kho hàng',
       dataIndex: 'warehouseName',
       key: 'warehouse',
       render: (name: string) => <Text style={{ color: '#e2e8f0' }}>{name}</Text>,
     },
     {
-      title: 'Material',
+      title: 'Vật liệu',
       key: 'material',
       render: (_: any, r: StockAdjustment) => (
         <div>
@@ -155,7 +156,7 @@ export const StockAdjustmentsPage: React.FC = () => {
       ),
     },
     {
-      title: 'Quantity (System → Actual)',
+      title: 'Số lượng (Hệ thống → Thực tế)',
       key: 'qty',
       render: (_: any, r: StockAdjustment) => (
         <span>
@@ -164,7 +165,7 @@ export const StockAdjustmentsPage: React.FC = () => {
       ),
     },
     {
-      title: 'Difference',
+      title: 'Chênh lệch',
       dataIndex: 'difference',
       key: 'diff',
       render: (diff: number) => {
@@ -177,38 +178,44 @@ export const StockAdjustmentsPage: React.FC = () => {
       },
     },
     {
-      title: 'Reason',
+      title: 'Lý do',
       dataIndex: 'reason',
       key: 'reason',
       render: (reason: string) => <Text style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>{reason}</Text>,
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: StockAdjustmentStatus) => getStatusTag(status),
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_: any, r: StockAdjustment) => (
         <Space size="small">
           {r.status === 'DRAFT' && (
             <Button size="small" type="primary" icon={<Send size={13} />} onClick={() => submitMutation.mutate(r.id)}>
-              Submit
+              Gửi duyệt
             </Button>
           )}
 
           {r.status === 'SUBMITTED' && isManager && (
             <Button size="small" style={{ background: '#f59e0b', color: '#fff', borderColor: '#f59e0b' }} icon={<Check size={13} />} onClick={() => approveMutation.mutate(r.id)}>
-              Approve
+              Phê duyệt
             </Button>
           )}
 
           {r.status === 'APPROVED' && (
-            <Popconfirm title="Apply Adjustment?" description="This will update live inventory balances and generate a ledger entry." onConfirm={() => applyMutation.mutate(r.id)}>
+            <Popconfirm 
+              title="Áp dụng điều chỉnh tồn kho?" 
+              description="Thao tác này sẽ cập nhật số dư tồn kho thực tế và tạo bản ghi sổ cái." 
+              okText="Đồng ý"
+              cancelText="Hủy"
+              onConfirm={() => applyMutation.mutate(r.id)}
+            >
               <Button size="small" type="primary" style={{ background: '#10b981', borderColor: '#10b981' }} icon={<CheckCircle2 size={13} />}>
-                Apply to Inventory
+                Áp dụng vào tồn kho
               </Button>
             </Popconfirm>
           )}
@@ -222,25 +229,25 @@ export const StockAdjustmentsPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
-            Stock Discrepancy Adjustments
+            Điều chỉnh chênh lệch tồn kho
           </Title>
           <Text style={{ color: '#94a3b8' }}>
-            Formal audit resolution: DRAFT → SUBMITTED → APPROVED → APPLIED (ADJUST_INCREASE or ADJUST_DECREASE)
+            Quy trình điều chỉnh: BẢN NHÁP → GỬI DUYỆT → ĐÃ DUYỆT → ĐÃ ÁP DỤNG
           </Text>
         </div>
         <Space>
           <Select
-            placeholder="Filter by Status"
+            placeholder="Lọc theo trạng thái"
             allowClear
             value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
-            style={{ width: 160 }}
+            style={{ width: 180 }}
           >
-            <Select.Option value="DRAFT">Draft</Select.Option>
-            <Select.Option value="SUBMITTED">Submitted</Select.Option>
-            <Select.Option value="APPROVED">Approved</Select.Option>
-            <Select.Option value="APPLIED">Applied</Select.Option>
-            <Select.Option value="REJECTED">Rejected</Select.Option>
+            <Select.Option value="DRAFT">Bản nháp</Select.Option>
+            <Select.Option value="SUBMITTED">Đã gửi duyệt</Select.Option>
+            <Select.Option value="APPROVED">Đã phê duyệt</Select.Option>
+            <Select.Option value="APPLIED">Đã áp dụng</Select.Option>
+            <Select.Option value="REJECTED">Đã từ chối</Select.Option>
           </Select>
           <Button 
             type="primary" 
@@ -248,7 +255,7 @@ export const StockAdjustmentsPage: React.FC = () => {
             style={{ background: '#fbbf24', borderColor: '#fbbf24', color: '#0f172a', borderRadius: 8, fontWeight: 700 }}
             onClick={() => setIsCreateModalOpen(true)}
           >
-            New Discrepancy Request
+            Tạo yêu cầu điều chỉnh
           </Button>
         </Space>
       </div>
@@ -270,47 +277,47 @@ export const StockAdjustmentsPage: React.FC = () => {
 
       {/* Create Modal */}
       <Modal
-        title="Report Stock Discrepancy / Adjustment"
+        title="Báo cáo chênh lệch / Điều chỉnh tồn kho"
         open={isCreateModalOpen}
         onCancel={() => setIsCreateModalOpen(false)}
         footer={null}
         width={560}
       >
         <Form form={form} layout="vertical" onFinish={handleCreateSubmit} initialValues={{ warehouseId: activeWarehouse?.id }}>
-          <Form.Item name="warehouseId" label="Warehouse" rules={[{ required: true, message: 'Select warehouse' }]}>
-            <Select placeholder="Warehouse location">
+          <Form.Item name="warehouseId" label="Kho hàng" rules={[{ required: true, message: 'Vui lòng chọn kho hàng' }]}>
+            <Select placeholder="Địa điểm kho hàng">
               {warehousesData?.content?.map((w: any) => (
                 <Select.Option key={w.id} value={w.id}>{w.name} ({w.code})</Select.Option>
               ))}
             </Select>
           </Form.Item>
 
-          <Form.Item name="materialId" label="Material" rules={[{ required: true, message: 'Select material' }]}>
-            <Select placeholder="Material SKU / Name" showSearch optionFilterProp="children">
+          <Form.Item name="materialId" label="Vật liệu" rules={[{ required: true, message: 'Vui lòng chọn vật liệu' }]}>
+            <Select placeholder="Mã SKU / Tên vật liệu" showSearch optionFilterProp="children">
               {materialsData?.content?.map((m: any) => (
                 <Select.Option key={m.id} value={m.id}>
-                  [{m.sku}] {m.name} ({m.color || 'Standard'})
+                  [{m.sku}] {m.name} ({m.color || 'Tiêu chuẩn'})
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
 
-          <Form.Item name="actualQuantity" label="Actual Physical Count" rules={[{ required: true, message: 'Specify actual count' }]}>
-            <InputNumber min={0} step={1} placeholder="Actual physical quantity counted" style={{ width: '100%' }} />
+          <Form.Item name="actualQuantity" label="Số lượng thực tế kiểm kê" rules={[{ required: true, message: 'Vui lòng nhập số lượng thực tế' }]}>
+            <InputNumber min={0} step={1} placeholder="Số lượng thực tế sau kiểm đếm" style={{ width: '100%' }} />
           </Form.Item>
 
-          <Form.Item name="reason" label="Discrepancy Reason" rules={[{ required: true, message: 'Reason is required' }]}>
-            <Input.TextArea rows={3} placeholder="Explain variance (e.g. Broken spool during print job, audit count discrepancy, damaged in storage...)" />
+          <Form.Item name="reason" label="Lý do chênh lệch" rules={[{ required: true, message: 'Lý do là bắt buộc' }]}>
+            <Input.TextArea rows={3} placeholder="Giải trình chênh lệch (VD: Hỏng cuộn nhựa khi in, sai lệch kiểm kê, hư hại trong kho...)" />
           </Form.Item>
 
-          <Form.Item name="evidence" label="Audit Reference / Evidence Link">
-            <Input placeholder="Photo link, incident ticket ID, audit sheet #" />
+          <Form.Item name="evidence" label="Tham chiếu kiểm kê / Liên kết bằng chứng">
+            <Input placeholder="Link ảnh, mã phiếu sự cố, số biên bản kiểm kê..." />
           </Form.Item>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24 }}>
-            <Button onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
+            <Button onClick={() => setIsCreateModalOpen(false)}>Hủy</Button>
             <Button type="primary" htmlType="submit" loading={createMutation.isPending} style={{ background: '#fbbf24', borderColor: '#fbbf24', color: '#0f172a', fontWeight: 700 }}>
-              Create Adjustment Request
+              Tạo yêu cầu điều chỉnh
             </Button>
           </div>
         </Form>

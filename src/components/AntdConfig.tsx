@@ -1,5 +1,10 @@
 import React from 'react';
 import { ConfigProvider, theme, App as AntdApp } from 'antd';
+import viVN from 'antd/locale/vi_VN';
+import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
+
+dayjs.locale('vi');
 
 interface AntdConfigProps {
   children: React.ReactNode;
@@ -8,6 +13,7 @@ interface AntdConfigProps {
 export const AntdConfig: React.FC<AntdConfigProps> = ({ children }) => {
   return (
     <ConfigProvider
+      locale={viVN}
       theme={{
         algorithm: theme.darkAlgorithm,
         token: {

@@ -42,7 +42,7 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
         usedGram: defaultUsed,
         wasteGram: defaultWaste,
         returnedGram: defaultReturn,
-        note: 'Normal print execution, support material purged and remnants returned.',
+        note: 'In hoàn thành chuẩn, vật liệu đỡ đã xả và phần dư đã thu hồi kho.',
       });
     }
   }, [open, job, issued, form]);
@@ -66,7 +66,7 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
       title={
         <Space>
           <RedoOutlined style={{ color: '#10b981' }} />
-          <span>Post-Print Consumption Reconciliation (F07)</span>
+          <span>Quyết toán tiêu hao vật liệu sau khi in (F07)</span>
         </Space>
       }
       open={open}
@@ -74,24 +74,25 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
       onOk={() => form.submit()}
       confirmLoading={loading}
       okButtonProps={{ disabled: !isValid }}
-      okText="Reconcile & Close Ledger"
+      okText="Quyết toán & Đóng sổ"
+      cancelText="Hủy"
       width={600}
       destroyOnClose
     >
       <Alert
-        message="Conservation of Mass Rule"
-        description="The sum of Used (Model) + Waste (Supports/Purge) + Returned (Spool remnant) must exactly match Issued quantity."
+        message="Nguyên tắc bảo toàn khối lượng"
+        description="Tổng khối lượng: Đã dùng (Mô hình) + Hao phí (Support/Xả nhựa) + Trả lại kho (Dư thừa) phải bằng chính xác khối lượng đã xuất cấp."
         type={isValid ? 'info' : 'warning'}
         showIcon
         style={{ marginBottom: 16 }}
       />
 
       <Descriptions bordered column={1} size="small" style={{ marginBottom: 16 }}>
-        <Descriptions.Item label="Job Reference">
+        <Descriptions.Item label="Mã lệnh in">
           <Text strong>{job?.jobNumber}</Text>
         </Descriptions.Item>
-        <Descriptions.Item label="Issued Stock Quantity">
-          <Text strong style={{ color: '#0ea5e9', fontSize: 15 }}>{issued} grams</Text>
+        <Descriptions.Item label="Khối lượng đã xuất kho">
+          <Text strong style={{ color: '#0ea5e9', fontSize: 15 }}>{issued} g</Text>
         </Descriptions.Item>
       </Descriptions>
 
@@ -100,8 +101,8 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
           <Col span={8}>
             <Form.Item
               name="usedGram"
-              label="Net Model Weight (g)"
-              rules={[{ required: true, message: 'Required' }]}
+              label="Mô hình thực tế (g)"
+              rules={[{ required: true, message: 'Bắt buộc' }]}
             >
               <InputNumber
                 style={{ width: '100%' }}
@@ -113,8 +114,8 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
           <Col span={8}>
             <Form.Item
               name="wasteGram"
-              label="Purge & Supports (g)"
-              rules={[{ required: true, message: 'Required' }]}
+              label="Hao phí & Support (g)"
+              rules={[{ required: true, message: 'Bắt buộc' }]}
             >
               <InputNumber
                 style={{ width: '100%' }}
@@ -126,8 +127,8 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
           <Col span={8}>
             <Form.Item
               name="returnedGram"
-              label="Returned to Hub (g)"
-              rules={[{ required: true, message: 'Required' }]}
+              label="Thu hồi về kho (g)"
+              rules={[{ required: true, message: 'Bắt buộc' }]}
             >
               <InputNumber
                 style={{ width: '100%' }}
@@ -156,17 +157,17 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
                 <WarningOutlined style={{ color: '#ef4444' }} />
               )}
               <Text strong style={{ color: isValid ? '#34d399' : '#f87171' }}>
-                Reconciliation Balance: {currentTotal} / {issued} g
+                Cân đối quyết toán: {currentTotal} / {issued} g
               </Text>
             </Space>
             <Tag color={isValid ? 'success' : 'error'}>
-              {isValid ? 'Balanced 100%' : `Discrepancy: ${difference > 0 ? `-${difference}g missing` : `+${Math.abs(difference)}g excess`}`}
+              {isValid ? 'Khớp 100%' : `Chênh lệch: ${difference > 0 ? `Thiếu ${difference}g` : `Thừa ${Math.abs(difference)}g`}`}
             </Tag>
           </div>
         </div>
 
-        <Form.Item name="note" label="Reconciliation Remarks">
-          <Input.TextArea rows={2} placeholder="Optional print result note or failure observations..." />
+        <Form.Item name="note" label="Ghi chú quyết toán">
+          <Input.TextArea rows={2} placeholder="Ghi chú kết quả in hoặc ghi nhận lỗi (nếu có)..." />
         </Form.Item>
       </Form>
     </Modal>

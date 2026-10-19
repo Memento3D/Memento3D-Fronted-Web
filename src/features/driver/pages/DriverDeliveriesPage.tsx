@@ -33,54 +33,54 @@ const MOCK_DELIVERIES: DeliveryRun[] = [
     id: '1',
     trackingCode: 'EXP-88912-VN',
     orderRef: 'ORD-2026-8812',
-    recipientName: 'Nguyen Van An',
+    recipientName: 'Nguyễn Văn An',
     phone: '0901-234-567',
-    shippingAddress: '45 Le Duan, District 1, Ho Chi Minh City',
-    itemDescription: 'Cyberpunk Mecha 3D Keepsake (Fragile Resin)',
+    shippingAddress: '45 Lê Duẩn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh',
+    itemDescription: 'Kỷ vật 3D Cyberpunk Mecha (Resin cao cấp)',
     weightGrams: 350,
     paymentType: 'PREPAID',
     status: 'IN_TRANSIT',
-    eta: '14:30 Today',
+    eta: '14:30 Hôm nay',
   },
   {
     id: '2',
     trackingCode: 'EXP-88915-VN',
     orderRef: 'ORD-2026-8798',
-    recipientName: 'Tran Thi Bich',
+    recipientName: 'Trần Thị Bích',
     phone: '0912-345-678',
-    shippingAddress: '128 Nguyen Thi Minh Khai, District 3, Ho Chi Minh City',
-    itemDescription: 'Mechanical Chronograph Enclosure (3 units)',
+    shippingAddress: '128 Nguyễn Thị Minh Khai, Phường 6, Quận 3, TP. Hồ Chí Minh',
+    itemDescription: 'Vỏ đồng hồ cơ khí Chronograph (3 chiếc)',
     weightGrams: 620,
     paymentType: 'COD_VND',
     codAmount: 450000,
     status: 'PICKED_UP',
-    eta: '16:00 Today',
+    eta: '16:00 Hôm nay',
   },
   {
     id: '3',
     trackingCode: 'EXP-88902-VN',
     orderRef: 'ORD-2026-8755',
-    recipientName: 'Le Hoang Minh',
+    recipientName: 'Lê Hoàng Minh',
     phone: '0988-765-432',
-    shippingAddress: 'Villa 14, Thao Dien, Thu Duc City',
-    itemDescription: 'Bronze Architectural Facade Scale Model',
+    shippingAddress: 'Biệt thự 14, Thảo Điền, TP. Thủ Đức, TP. Hồ Chí Minh',
+    itemDescription: 'Mô hình kiến trúc đồng thu nhỏ',
     weightGrams: 1200,
     paymentType: 'PREPAID',
     status: 'ASSIGNED',
-    eta: 'Awaiting Hub Pickup',
+    eta: 'Chờ lấy tại kho',
   },
   {
     id: '4',
     trackingCode: 'EXP-88840-VN',
     orderRef: 'ORD-2026-8711',
-    recipientName: 'Dang Quoc Bao',
+    recipientName: 'Đặng Quốc Bảo',
     phone: '0933-445-566',
-    shippingAddress: '72 Vo Van Kiet, District 5, Ho Chi Minh City',
-    itemDescription: 'Customized Keepsake Figurine',
+    shippingAddress: '72 Võ Văn Kiệt, Phường 1, Quận 5, TP. Hồ Chí Minh',
+    itemDescription: 'Tượng chân dung cá nhân hóa',
     weightGrams: 280,
     paymentType: 'PREPAID',
     status: 'DELIVERED',
-    eta: 'Delivered at 11:15',
+    eta: 'Đã giao lúc 11:15',
   },
 ];
 
@@ -98,12 +98,20 @@ export const DriverDeliveriesPage: React.FC = () => {
     setDeliveries((prev) =>
       prev.map((d) => (d.id === id ? { ...d, status: nextStatus } : d))
     );
-    message.success(`Delivery status updated: ${nextStatus.replace(/_/g, ' ')}`);
+    const statusText =
+      nextStatus === 'PICKED_UP'
+        ? 'Đã lấy hàng từ kho'
+        : nextStatus === 'IN_TRANSIT'
+        ? 'Đang trên đường giao'
+        : nextStatus === 'DELIVERED'
+        ? 'Đã giao hàng thành công'
+        : nextStatus;
+    message.success(`Cập nhật trạng thái giao vận: ${statusText}`);
   };
 
   const columns = [
     {
-      title: 'Tracking & Order',
+      title: 'Mã vận đơn & Đơn hàng',
       key: 'tracking',
       render: (_: unknown, record: DeliveryRun) => (
         <div>
@@ -111,7 +119,7 @@ export const DriverDeliveriesPage: React.FC = () => {
             {record.trackingCode}
           </div>
           <div style={{ color: '#0ea5e9', fontSize: '0.775rem' }}>
-            Ref: {record.orderRef}
+            Mã đơn: {record.orderRef}
           </div>
           <div style={{ color: '#64748b', fontSize: '0.725rem' }}>
             {record.itemDescription} ({record.weightGrams}g)
@@ -120,7 +128,7 @@ export const DriverDeliveriesPage: React.FC = () => {
       ),
     },
     {
-      title: 'Recipient & Destination',
+      title: 'Người nhận & Địa chỉ giao',
       key: 'destination',
       render: (_: unknown, record: DeliveryRun) => (
         <div>
@@ -137,42 +145,42 @@ export const DriverDeliveriesPage: React.FC = () => {
       ),
     },
     {
-      title: 'Billing & Terms',
+      title: 'Thanh toán & Thu hộ',
       key: 'billing',
       render: (_: unknown, record: DeliveryRun) => (
         <div>
           {record.paymentType === 'PREPAID' ? (
-            <Tag color="green">PAID ONLINE</Tag>
+            <Tag color="green">ĐÃ THANH TOÁN ONLINE</Tag>
           ) : (
             <Tag color="gold">
-              COD: {record.codAmount?.toLocaleString('vi-VN')} VND
+              THU HỘ COD: {record.codAmount?.toLocaleString('vi-VN')} VND
             </Tag>
           )}
           <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: 4 }}>
-            ETA: {record.eta}
+            Dự kiến: {record.eta}
           </div>
         </div>
       ),
     },
     {
-      title: 'Delivery Progress',
+      title: 'Tiến độ giao hàng',
       dataIndex: 'status',
       key: 'status',
       render: (status: DeliveryRun['status']) => {
         switch (status) {
           case 'ASSIGNED':
-            return <Badge status="default" text={<span style={{ color: '#94a3b8' }}>At Warehouse Dock</span>} />;
+            return <Badge status="default" text={<span style={{ color: '#94a3b8' }}>Tại cửa xuất kho</span>} />;
           case 'PICKED_UP':
-            return <Badge status="warning" text={<span style={{ color: '#f59e0b' }}>Picked Up from Hub</span>} />;
+            return <Badge status="warning" text={<span style={{ color: '#f59e0b' }}>Đã lấy từ trạm kho</span>} />;
           case 'IN_TRANSIT':
-            return <Badge status="processing" text={<span style={{ color: '#38bdf8' }}>On Route / In Transit</span>} />;
+            return <Badge status="processing" text={<span style={{ color: '#38bdf8' }}>Đang trên đường giao</span>} />;
           case 'DELIVERED':
-            return <Badge status="success" text={<span style={{ color: '#10b981' }}>Delivered & Signed</span>} />;
+            return <Badge status="success" text={<span style={{ color: '#10b981' }}>Đã giao & Ký nhận</span>} />;
         }
       },
     },
     {
-      title: 'Action',
+      title: 'Thao tác',
       key: 'action',
       render: (_: unknown, record: DeliveryRun) => (
         <Space size="small">
@@ -182,7 +190,7 @@ export const DriverDeliveriesPage: React.FC = () => {
               size="small"
               onClick={() => handleUpdateStatus(record.id, 'PICKED_UP')}
             >
-              Confirm Hub Pickup
+              Xác nhận đã lấy hàng
             </Button>
           )}
           {record.status === 'PICKED_UP' && (
@@ -191,7 +199,7 @@ export const DriverDeliveriesPage: React.FC = () => {
               style={{ borderColor: '#38bdf8', color: '#38bdf8' }}
               onClick={() => handleUpdateStatus(record.id, 'IN_TRANSIT')}
             >
-              Start Transit
+              Bắt đầu giao
             </Button>
           )}
           {record.status === 'IN_TRANSIT' && (
@@ -201,12 +209,12 @@ export const DriverDeliveriesPage: React.FC = () => {
               style={{ background: '#10b981', borderColor: '#10b981' }}
               onClick={() => handleUpdateStatus(record.id, 'DELIVERED')}
             >
-              Proof of Delivery
+              Xác nhận đã giao
             </Button>
           )}
           {record.status === 'DELIVERED' && (
             <Tag color="cyan" icon={<CheckCircle2 size={12} style={{ marginRight: 4 }} />}>
-              Completed
+              Hoàn thành
             </Tag>
           )}
         </Space>
@@ -241,14 +249,14 @@ export const DriverDeliveriesPage: React.FC = () => {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <h1 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700, color: '#fff' }}>
-                Logistics & Courier Delivery Portal
+                Cổng Giao vận & Điều phối Tài xế
               </h1>
               <Tag color="green" style={{ borderRadius: 6, fontWeight: 600 }}>
-                ROLE_DRIVER
+                ROLE_DRIVER (Tài xế giao vận)
               </Tag>
             </div>
             <p style={{ margin: '2px 0 0', color: '#94a3b8', fontSize: '0.8rem' }}>
-              Logged in driver: <strong style={{ color: '#e2e8f0' }}>{user?.fullName || 'Rapid Dispatch'}</strong> ({user?.email})
+              Tài xế đang đăng nhập: <strong style={{ color: '#e2e8f0' }}>{user?.fullName || 'Đội xe vận chuyển'}</strong> ({user?.email})
             </p>
           </div>
         </div>
@@ -260,7 +268,7 @@ export const DriverDeliveriesPage: React.FC = () => {
             onClick={handleLogout}
             style={{ borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6 }}
           >
-            Sign Out
+            Đăng xuất
           </Button>
         </div>
       </div>
@@ -274,14 +282,14 @@ export const DriverDeliveriesPage: React.FC = () => {
           padding: 20 
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
-            <span>Today's Total Route</span>
+            <span>Tổng lộ trình hôm nay</span>
             <Navigation size={18} color="#10b981" />
           </div>
           <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
-            {deliveries.length} Packages
+            {deliveries.length} Kiện hàng
           </div>
           <div style={{ color: '#10b981', fontSize: '0.75rem', marginTop: 4 }}>
-            Route Area: District 1, 3, 5, Thu Duc
+            Khu vực: Quận 1, 3, 5, TP. Thủ Đức
           </div>
         </div>
 
@@ -292,14 +300,14 @@ export const DriverDeliveriesPage: React.FC = () => {
           padding: 20 
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
-            <span>Awaiting Warehouse Pick</span>
+            <span>Chờ lấy hàng tại kho</span>
             <PackageCheck size={18} color="#f59e0b" />
           </div>
           <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
             {deliveries.filter((d) => d.status === 'ASSIGNED').length}
           </div>
           <div style={{ color: '#f59e0b', fontSize: '0.75rem', marginTop: 4 }}>
-            WH-HCM-01 Outbound Bay 2
+            Kho WH-HCM-01 Cửa xuất 2
           </div>
         </div>
 
@@ -310,14 +318,14 @@ export const DriverDeliveriesPage: React.FC = () => {
           padding: 20 
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
-            <span>Currently In Transit</span>
+            <span>Đang trên đường giao</span>
             <Clock size={18} color="#38bdf8" />
           </div>
           <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
             {deliveries.filter((d) => d.status === 'IN_TRANSIT' || d.status === 'PICKED_UP').length}
           </div>
           <div style={{ color: '#38bdf8', fontSize: '0.75rem', marginTop: 4 }}>
-            On-vehicle manifests
+            Đã xếp lên xe vận chuyển
           </div>
         </div>
 
@@ -328,14 +336,14 @@ export const DriverDeliveriesPage: React.FC = () => {
           padding: 20 
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
-            <span>Completed Deliveries</span>
+            <span>Đã giao thành công</span>
             <CheckCircle2 size={18} color="#a855f7" />
           </div>
           <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
             {deliveries.filter((d) => d.status === 'DELIVERED').length}
           </div>
           <div style={{ color: '#a855f7', fontSize: '0.75rem', marginTop: 4 }}>
-            100% recipient satisfaction
+            Tỉ lệ hài lòng 100%
           </div>
         </div>
       </div>
@@ -350,10 +358,10 @@ export const DriverDeliveriesPage: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
             <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#f8fafc' }}>
-              Assigned Delivery Manifest & Stops
+              Danh sách chuyến giao & Điểm dừng chỉ định
             </h3>
             <p style={{ margin: '2px 0 0', color: '#94a3b8', fontSize: '0.8rem' }}>
-              Pickup 3D keepsakes from fulfillment center, follow optimized stops, and capture proof of delivery.
+              Lấy kỷ vật 3D từ trung tâm xử lý, đi theo lộ trình tối ưu và xác nhận biên bản giao hàng.
             </p>
           </div>
         </div>

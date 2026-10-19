@@ -31,7 +31,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
       form.setFieldsValue({
         warehouseId: warehouses[0]?.id,
         issuedGram: job.estimatedGram || 400,
-        note: `Spool loaded onto printer ${job.printerName || 'Queue Bed'}`,
+        note: `Cuộn nhựa lắp vào máy in ${job.printerName || 'Bàn in hàng đợi'}`,
       });
     }
   }, [open, job, warehouses, form]);
@@ -49,33 +49,34 @@ export const IssueModal: React.FC<IssueModalProps> = ({
       title={
         <Space>
           <ExportOutlined style={{ color: '#0ea5e9' }} />
-          <span>Material Picking & Printer Loading (F07)</span>
+          <span>Xuất kho & Cấp vật liệu lên máy in (F07)</span>
         </Space>
       }
       open={open}
       onCancel={onCancel}
       onOk={() => form.submit()}
       confirmLoading={loading}
-      okText="Issue Material to Bed"
+      okText="Xuất cấp vật liệu"
+      cancelText="Hủy"
       width={560}
       destroyOnClose
     >
       <Alert
-        message="Warehouse Picking Execution"
-        description="This records the physical handover of the filament spool from the warehouse shelf to the 3D printer."
+        message="Thực hiện lấy hàng & xuất kho"
+        description="Ghi nhận thao tác thực tế bàn giao cuộn nhựa/vật liệu từ kệ kho đến máy in 3D tương ứng."
         type="info"
         showIcon
         style={{ marginBottom: 16 }}
       />
 
       <Descriptions bordered column={1} size="small" style={{ marginBottom: 16 }}>
-        <Descriptions.Item label="Target Job">
+        <Descriptions.Item label="Lệnh in mục tiêu">
           <Text strong>{job?.jobNumber}</Text>
         </Descriptions.Item>
-        <Descriptions.Item label="Assigned Printer">
-          <Tag color="purple">{job?.printerName || 'Workshop Printer'}</Tag>
+        <Descriptions.Item label="Máy in chỉ định">
+          <Tag color="purple">{job?.printerName || 'Máy in xưởng'}</Tag>
         </Descriptions.Item>
-        <Descriptions.Item label="Required Material">
+        <Descriptions.Item label="Vật liệu yêu cầu">
           <Tag color="cyan">{job?.materialSku}</Tag> {job?.materialName}
         </Descriptions.Item>
       </Descriptions>
@@ -83,10 +84,10 @@ export const IssueModal: React.FC<IssueModalProps> = ({
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Form.Item
           name="warehouseId"
-          label="Source Warehouse Hub"
-          rules={[{ required: true, message: 'Please select warehouse' }]}
+          label="Kho xuất hàng"
+          rules={[{ required: true, message: 'Vui lòng chọn kho xuất hàng' }]}
         >
-          <Select placeholder="Select warehouse">
+          <Select placeholder="Chọn kho hàng">
             {warehouses.map((wh) => (
               <Select.Option key={wh.id} value={wh.id}>
                 {wh.code} — {wh.name}
@@ -97,17 +98,17 @@ export const IssueModal: React.FC<IssueModalProps> = ({
 
         <Form.Item
           name="issuedGram"
-          label="Quantity Handed Over (Grams)"
+          label="Khối lượng xuất cấp thực tế (Gram)"
           rules={[
-            { required: true, message: 'Quantity is required' },
-            { type: 'number', min: 1, message: 'Must be > 0' },
+            { required: true, message: 'Vui lòng nhập khối lượng' },
+            { type: 'number', min: 1, message: 'Khối lượng phải lớn hơn 0' },
           ]}
         >
-          <InputNumber style={{ width: '100%' }} addonAfter="grams" />
+          <InputNumber style={{ width: '100%' }} addonAfter="g" />
         </Form.Item>
 
-        <Form.Item name="note" label="Picker Note / Serial Barcode">
-          <Input.TextArea rows={2} placeholder="Optional spool serial number or technician note..." />
+        <Form.Item name="note" label="Ghi chú xuất kho / Mã vạch cuộn nhựa">
+          <Input.TextArea rows={2} placeholder="Số serial cuộn nhựa hoặc ghi chú kỹ thuật viên..." />
         </Form.Item>
       </Form>
     </Modal>

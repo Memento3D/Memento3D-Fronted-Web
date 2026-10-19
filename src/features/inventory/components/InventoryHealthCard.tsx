@@ -18,20 +18,20 @@ export const InventoryHealthCard: React.FC<InventoryHealthCardProps> = ({ balanc
   const reservedPercentage = totalOnHand > 0 ? Math.round((totalReserved / totalOnHand) * 100) : 0;
 
   let healthStatus: { label: string; color: string; icon: React.ReactNode } = {
-    label: 'Optimal Available Capacity',
+    label: 'Dung lượng tồn kho tối ưu',
     color: 'success',
     icon: <CheckCircleOutlined />,
   };
 
   if (availablePercentage < 30) {
     healthStatus = {
-      label: 'Critical Backpressure: High Allocation',
+      label: 'Cảnh báo: Tồn khả dụng ở mức thấp',
       color: 'error',
       icon: <AlertOutlined />,
     };
   } else if (availablePercentage < 60) {
     healthStatus = {
-      label: 'Moderate Buffer: Production Active',
+      label: 'Tồn kho ổn định: Đang sản xuất',
       color: 'warning',
       icon: <WarningOutlined />,
     };
@@ -42,7 +42,7 @@ export const InventoryHealthCard: React.FC<InventoryHealthCardProps> = ({ balanc
       title={
         <Space>
           <DashboardOutlined style={{ color: '#0ea5e9' }} />
-          <span>Inventory Health & Allocation Matrix</span>
+          <span>Độ ổn định & Ma trận Phân bổ Tồn kho</span>
         </Space>
       }
       extra={
@@ -63,7 +63,7 @@ export const InventoryHealthCard: React.FC<InventoryHealthCardProps> = ({ balanc
             format={(percent) => (
               <div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: '#f8fafc' }}>{percent}%</div>
-                <div style={{ fontSize: 12, color: '#94a3b8' }}>Free Stock</div>
+                <div style={{ fontSize: 12, color: '#94a3b8' }}>Tồn khả dụng</div>
               </div>
             )}
           />
@@ -73,7 +73,7 @@ export const InventoryHealthCard: React.FC<InventoryHealthCardProps> = ({ balanc
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <Text type="secondary">Net Available for Queuing:</Text>
+                <Text type="secondary">Khả dụng cho lệnh in mới:</Text>
                 <Text strong style={{ color: '#34d399' }}>
                   {(totalAvailable / 1000).toFixed(2)} kg ({availablePercentage}%)
                 </Text>
@@ -83,7 +83,7 @@ export const InventoryHealthCard: React.FC<InventoryHealthCardProps> = ({ balanc
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <Text type="secondary">Reserved for Active Print Jobs:</Text>
+                <Text type="secondary">Đã giữ cho các lệnh in 3D:</Text>
                 <Text strong style={{ color: '#fbbf24' }}>
                   {(totalReserved / 1000).toFixed(2)} kg ({reservedPercentage}%)
                 </Text>
@@ -92,7 +92,7 @@ export const InventoryHealthCard: React.FC<InventoryHealthCardProps> = ({ balanc
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 10 }}>
-              <Text type="secondary">Total Physical Inventory Stored:</Text>
+              <Text type="secondary">Tổng tồn kho vật lý đang lưu trữ:</Text>
               <Text strong style={{ color: '#38bdf8' }}>
                 {(totalOnHand / 1000).toFixed(2)} kg (100%)
               </Text>

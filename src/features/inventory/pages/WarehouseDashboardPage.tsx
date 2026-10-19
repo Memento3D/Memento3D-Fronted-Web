@@ -80,26 +80,26 @@ export const WarehouseDashboardPage: React.FC = () => {
   const handleReceiptSubmit = async (payload: CreateStockReceiptPayload) => {
     try {
       const res = await receiptMutation.mutateAsync(payload);
-      message.success(`Receipt #${res.receiptNumber} processed! +${payload.quantityGram}g added.`);
+      message.success(`Đã ghi nhận phiếu nhập #${res.receiptNumber}! Cộng thêm ${payload.quantityGram}g.`);
       setIsReceiptOpen(false);
     } catch (err: any) {
-      message.error(err.message || 'Failed to complete receipt');
+      message.error(err.message || 'Ghi nhận phiếu nhập thất bại');
     }
   };
 
   const handleIssueSubmit = async (payload: CreateStockIssuePayload) => {
     try {
       const res = await issueMutation.mutateAsync(payload);
-      message.success(`Issue #${res.issueNumber} recorded! -${payload.quantityGram}g deducted.`);
+      message.success(`Đã ghi nhận phiếu xuất #${res.issueNumber}! Khấu trừ ${payload.quantityGram}g.`);
       setIsIssueOpen(false);
     } catch (err: any) {
-      message.error(err.message || 'Failed to issue material');
+      message.error(err.message || 'Ghi nhận phiếu xuất thất bại');
     }
   };
 
   const columns: ColumnsType<InventoryBalance> = [
     {
-      title: 'Warehouse Hub',
+      title: 'Kho lưu trữ',
       dataIndex: 'warehouseCode',
       key: 'warehouseCode',
       sorter: (a, b) => a.warehouseCode.localeCompare(b.warehouseCode),
@@ -113,7 +113,7 @@ export const WarehouseDashboardPage: React.FC = () => {
       ),
     },
     {
-      title: 'Filament SKU',
+      title: 'Mã SKU vật liệu',
       dataIndex: 'materialSku',
       key: 'materialSku',
       sorter: (a, b) => a.materialSku.localeCompare(b.materialSku),
@@ -125,7 +125,7 @@ export const WarehouseDashboardPage: React.FC = () => {
       ),
     },
     {
-      title: 'Polymer / Color',
+      title: 'Loại vật liệu / Màu sắc',
       key: 'typeColor',
       render: (_, record) => (
         <Space>
@@ -135,7 +135,7 @@ export const WarehouseDashboardPage: React.FC = () => {
       ),
     },
     {
-      title: 'On-Hand Stock',
+      title: 'Tồn kho thực tế',
       dataIndex: 'onHandGram',
       key: 'onHandGram',
       sorter: (a, b) => a.onHandGram - b.onHandGram,
@@ -149,7 +149,7 @@ export const WarehouseDashboardPage: React.FC = () => {
       ),
     },
     {
-      title: 'Reserved',
+      title: 'Đã giữ trước',
       dataIndex: 'reservedGram',
       key: 'reservedGram',
       sorter: (a, b) => a.reservedGram - b.reservedGram,
@@ -160,7 +160,7 @@ export const WarehouseDashboardPage: React.FC = () => {
       ),
     },
     {
-      title: 'Net Available',
+      title: 'Tồn khả dụng',
       dataIndex: 'availableGram',
       key: 'availableGram',
       sorter: (a, b) => a.availableGram - b.availableGram,
@@ -171,35 +171,35 @@ export const WarehouseDashboardPage: React.FC = () => {
             <Text strong style={{ color: isLow ? '#ef4444' : '#34d399', fontSize: 14 }}>
               {(val / 1000).toFixed(2)} kg
             </Text>
-            {isLow && <Tag color="error">Low</Tag>}
+            {isLow && <Tag color="error">Sắp hết</Tag>}
           </Space>
         );
       },
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       align: 'right',
       render: (_, record) => (
         <Space>
-          <Tooltip title="Inbound Goods Receipt">
+          <Tooltip title="Nhập kho vật tư">
             <Button
               type="primary"
               size="small"
               icon={<PlusOutlined />}
               onClick={() => handleOpenReceipt(record.materialId, record.warehouseId)}
             >
-              Stock In
+              Nhập kho
             </Button>
           </Tooltip>
-          <Tooltip title="Manual Scrap / Audit Issue">
+          <Tooltip title="Xuất hao hụt / Xuất kho">
             <Button
               size="small"
               danger
               icon={<ExportOutlined />}
               onClick={() => handleOpenIssue(record.materialId, record.warehouseId)}
             >
-              Issue
+              Xuất kho
             </Button>
           </Tooltip>
         </Space>
@@ -213,10 +213,10 @@ export const WarehouseDashboardPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
-            Warehouse & Inventory Dashboard (F03)
+            Tổng quan Tồn kho & Quản lý Kho
           </Title>
           <Text type="secondary">
-            Multi-facility stock monitoring. ACID Rule: Available = On-Hand - Reserved.
+            Giám sát tồn kho đa cơ sở. Quy tắc ACID: Khả dụng = Tồn thực tế - Đã giữ trước.
           </Text>
         </div>
         <Space wrap>
@@ -224,7 +224,7 @@ export const WarehouseDashboardPage: React.FC = () => {
             icon={<ReloadOutlined spin={isFetching} />}
             onClick={() => refetch()}
           >
-            Refresh
+            Làm mới
           </Button>
           <Button
             type="primary"
@@ -232,7 +232,7 @@ export const WarehouseDashboardPage: React.FC = () => {
             size="large"
             onClick={() => handleOpenReceipt()}
           >
-            Goods Receipt
+            Nhập kho
           </Button>
           <Button
             danger
@@ -240,7 +240,7 @@ export const WarehouseDashboardPage: React.FC = () => {
             size="large"
             onClick={() => handleOpenIssue()}
           >
-            Manual Issue
+            Xuất kho thủ công
           </Button>
         </Space>
       </div>
@@ -250,41 +250,41 @@ export const WarehouseDashboardPage: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Total Physical On-Hand"
+              title="Tổng tồn kho thực tế"
               value={(totalOnHand / 1000).toFixed(2)}
               prefix={<DatabaseOutlined style={{ color: '#0ea5e9' }} />}
               suffix={<Text type="secondary" style={{ fontSize: 14 }}>kg</Text>}
             />
             <Text type="secondary" style={{ fontSize: 12 }}>
-              Across {balances.length} SKU warehouse records
+              Trên {balances.length} bản ghi vật liệu tại các kho
             </Text>
           </Card>
         </Col>
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Total Reserved for Production"
+              title="Đã giữ trước cho sản xuất"
               value={(totalReserved / 1000).toFixed(2)}
               valueStyle={{ color: '#fbbf24' }}
               prefix={<ClockCircleOutlined />}
               suffix={<Text type="secondary" style={{ fontSize: 14 }}>kg</Text>}
             />
             <Text type="secondary" style={{ fontSize: 12 }}>
-              Committed to active print job queues
+              Phân bổ cho các hàng đợi lệnh in 3D
             </Text>
           </Card>
         </Col>
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Net Available for Allocation"
+              title="Tổng tồn kho khả dụng"
               value={(totalAvailable / 1000).toFixed(2)}
               valueStyle={{ color: '#10b981' }}
               prefix={<CheckCircleOutlined />}
               suffix={<Text type="secondary" style={{ fontSize: 14 }}>kg</Text>}
             />
             <Text type="secondary" style={{ fontSize: 12 }}>
-              Ready for slicing and job assignment
+              Sẵn sàng xếp lịch và phân bổ lệnh in
             </Text>
           </Card>
         </Col>
@@ -308,14 +308,14 @@ export const WarehouseDashboardPage: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <Space wrap>
             <FilterOutlined style={{ color: '#0ea5e9' }} />
-            <Text strong>Filter by Warehouse:</Text>
+            <Text strong>Lọc theo cơ sở kho:</Text>
             <Select
-              placeholder="All Warehouses & Hubs"
+              placeholder="Tất cả cơ sở kho"
               value={selectedWarehouseId}
               onChange={(val) => setSelectedWarehouseId(val)}
               style={{ width: 280 }}
             >
-              <Select.Option value="">All Warehouses & Hubs</Select.Option>
+              <Select.Option value="">Tất cả cơ sở kho</Select.Option>
               {warehouses.map((wh) => (
                 <Select.Option key={wh.id} value={wh.id}>
                   {wh.code} — {wh.name}
@@ -324,7 +324,7 @@ export const WarehouseDashboardPage: React.FC = () => {
             </Select>
           </Space>
           <Text type="secondary" style={{ alignSelf: 'center' }}>
-            Showing {balances.length} inventory balances
+            Hiển thị {balances.length} bản ghi tồn kho
           </Text>
         </div>
 

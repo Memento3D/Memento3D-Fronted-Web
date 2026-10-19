@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getDefaultRouteForRole } from '../utils/resolveActorRoute';
 import { HomeOutlined, LogoutOutlined } from '@ant-design/icons';
+import { getRoleLabel } from '../../../locales/i18n';
 
 const { Text } = Typography;
 
@@ -51,11 +52,11 @@ export const ForbiddenPage: React.FC = () => {
       >
         <Result
           status="403"
-          title={<span style={{ color: '#f8fafc', fontWeight: 800 }}>403 – Access Denied</span>}
+          title={<span style={{ color: '#f8fafc', fontWeight: 800 }}>403 – Từ chối truy cập</span>}
           subTitle={
             <span style={{ color: '#94a3b8' }}>
-              Your account does not have sufficient role privileges to enter the{' '}
-              <Text strong style={{ color: '#f87171' }}>{attemptedPortal.toUpperCase()}</Text> console.
+              Tài khoản của bạn không có đủ quyền để truy cập cổng{' '}
+              <Text strong style={{ color: '#f87171' }}>{attemptedPortal.toUpperCase()}</Text>.
             </span>
           }
           extra={[
@@ -70,11 +71,11 @@ export const ForbiddenPage: React.FC = () => {
               }}
             >
               <div style={{ fontSize: '0.825rem', color: '#64748b', marginBottom: 4 }}>
-                Current Authenticated Principal:
+                Tài khoản xác thực hiện tại:
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text strong style={{ color: '#f8fafc' }}>{user?.fullName || 'User'} ({user?.email})</Text>
-                <Tag color="red" style={{ fontWeight: 700 }}>{role}</Tag>
+                <Text strong style={{ color: '#f8fafc' }}>{user?.fullName || 'Người dùng'} ({user?.email})</Text>
+                <Tag color="red" style={{ fontWeight: 700 }}>{getRoleLabel(role)}</Tag>
               </div>
             </div>,
             <Space key="actions" size="middle" wrap style={{ justifyContent: 'center' }}>
@@ -84,7 +85,7 @@ export const ForbiddenPage: React.FC = () => {
                 onClick={handleGoAllowed}
                 style={{ borderRadius: 8 }}
               >
-                Go to Allowed Workspace
+                Đến không gian được phân quyền
               </Button>
               <Button
                 danger
@@ -92,7 +93,7 @@ export const ForbiddenPage: React.FC = () => {
                 onClick={handleLogout}
                 style={{ borderRadius: 8 }}
               >
-                Sign In with Different Account
+                Đăng nhập tài khoản khác
               </Button>
             </Space>,
           ]}

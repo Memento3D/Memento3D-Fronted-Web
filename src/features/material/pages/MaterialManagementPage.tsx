@@ -31,6 +31,7 @@ import { useMaterials, useMaterialMutations } from '../hooks/useMaterials';
 import type { Material, MaterialType, CreateMaterialPayload, UpdateMaterialPayload } from '../types/material.types';
 import { MaterialFormModal } from '../components/MaterialFormModal';
 import { MaterialDetailDrawer } from '../components/MaterialDetailDrawer';
+import { getStatusLabel } from '../../../locales/i18n';
 
 const { Title, Text } = Typography;
 
@@ -75,29 +76,29 @@ export const MaterialManagementPage: React.FC = () => {
     try {
       if (selectedMaterial) {
         await updateMutation.mutateAsync({ id: selectedMaterial.id, payload: values });
-        message.success(`Material SKU: ${selectedMaterial.sku} updated successfully`);
+        message.success(`Đã cập nhật vật liệu SKU: ${selectedMaterial.sku} thành công`);
       } else {
         await createMutation.mutateAsync(values as CreateMaterialPayload);
-        message.success('New material registered successfully');
+        message.success('Đã thêm mới vật liệu thành công');
       }
       setIsFormOpen(false);
     } catch (err: any) {
-      message.error(err.message || 'Operation failed');
+      message.error(err.message || 'Thao tác không thành công');
     }
   };
 
   const handleDeactivate = async (id: string, sku: string) => {
     try {
       await deactivateMutation.mutateAsync(id);
-      message.success(`Material SKU: ${sku} marked as INACTIVE`);
+      message.success(`Vật liệu SKU: ${sku} đã chuyển sang Tạm ngưng`);
     } catch (err: any) {
-      message.error(err.message || 'Failed to deactivate material');
+      message.error(err.message || 'Ngừng kích hoạt vật liệu thất bại');
     }
   };
 
   const columns: ColumnsType<Material> = [
     {
-      title: 'SKU / Code',
+      title: 'Mã SKU / Tên',
       dataIndex: 'sku',
       key: 'sku',
       sorter: (a, b) => a.sku.localeCompare(b.sku),
@@ -118,7 +119,7 @@ export const MaterialManagementPage: React.FC = () => {
       ),
     },
     {
-      title: 'Polymer Type',
+      title: 'Loại vật liệu',
       dataIndex: 'materialType',
       key: 'materialType',
       filters: [
@@ -140,7 +141,7 @@ export const MaterialManagementPage: React.FC = () => {
       },
     },
     {
-      title: 'Color & Swatch',
+      title: 'Màu sắc',
       key: 'color',
       render: (_, record) => (
         <Space>
@@ -159,7 +160,7 @@ export const MaterialManagementPage: React.FC = () => {
       ),
     },
     {
-      title: 'Print Temp',
+      title: 'Nhiệt độ in',
       key: 'printTemp',
       responsive: ['md'],
       render: (_, record) => (
@@ -168,13 +169,13 @@ export const MaterialManagementPage: React.FC = () => {
           <span>
             {record.printTempMin && record.printTempMax
               ? `${record.printTempMin}°C - ${record.printTempMax}°C`
-              : 'Standard'}
+              : 'Tiêu chuẩn'}
           </span>
         </Space>
       ),
     },
     {
-      title: 'Unit Cost',
+      title: 'Đơn giá (đ/g)',
       dataIndex: 'unitCost',
       key: 'unitCost',
       sorter: (a, b) => a.unitCost - b.unitCost,
@@ -185,29 +186,29 @@ export const MaterialManagementPage: React.FC = () => {
       ),
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'ACTIVE' ? 'success' : 'default'}>
-          {status}
+          {getStatusLabel(status)}
         </Tag>
       ),
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       align: 'right',
       render: (_, record) => (
         <Space>
-          <Tooltip title="View Detailed Profile">
+          <Tooltip title="Xem chi tiết hồ sơ vật liệu">
             <Button
               type="text"
               icon={<EyeOutlined />}
               onClick={() => handleOpenDetail(record)}
             />
           </Tooltip>
-          <Tooltip title="Edit Properties">
+          <Tooltip title="Chỉnh sửa thông số">
             <Button
               type="text"
               icon={<EditOutlined />}
@@ -216,14 +217,14 @@ export const MaterialManagementPage: React.FC = () => {
           </Tooltip>
           {record.status === 'ACTIVE' && (
             <Popconfirm
-              title="Deactivate Material"
-              description={`Are you sure you want to disable SKU ${record.sku}?`}
+              title="Ngừng kích hoạt vật liệu"
+              description={`Bạn có chắc chắn muốn ngừng kích hoạt SKU ${record.sku}?`}
               onConfirm={() => handleDeactivate(record.id, record.sku)}
-              okText="Deactivate"
-              cancelText="Cancel"
+              okText="Ngừng kích hoạt"
+              cancelText="Hủy"
               okButtonProps={{ danger: true }}
             >
-              <Tooltip title="Deactivate">
+              <Tooltip title="Ngừng kích hoạt">
                 <Button type="text" danger icon={<StopOutlined />} />
               </Tooltip>
             </Popconfirm>
@@ -239,10 +240,10 @@ export const MaterialManagementPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
-            Materials Catalog (F01)
+            Danh mục Vật liệu In 3D
           </Title>
           <Text type="secondary">
-            Master database of technical filaments, thermal extrusions, and unit cost profiles.
+            Cơ sở dữ liệu vật liệu in, thông số nhiệt độ đùn và biểu phí đơn giá.
           </Text>
         </div>
         <Button
@@ -251,7 +252,7 @@ export const MaterialManagementPage: React.FC = () => {
           size="large"
           onClick={handleOpenCreate}
         >
-          New Material SKU
+          Thêm vật liệu mới
         </Button>
       </div>
 
@@ -260,28 +261,28 @@ export const MaterialManagementPage: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Total Material SKUs"
+              title="Tổng số mã vật liệu"
               value={materials.length}
               prefix={<ExperimentOutlined style={{ color: '#0ea5e9' }} />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Profiles</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Loại</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Active Printing Profiles"
+              title="Vật liệu đang kích hoạt"
               value={activeCount}
               valueStyle={{ color: '#10b981' }}
               prefix={<CheckCircleOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>In Production</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Sản xuất</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Average Unit Cost"
+              title="Đơn giá trung bình"
               value={avgCost}
               valueStyle={{ color: '#38bdf8' }}
               prefix={<DollarCircleOutlined />}
@@ -296,7 +297,7 @@ export const MaterialManagementPage: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <Space wrap>
             <Input
-              placeholder="Search by SKU, name, color..."
+              placeholder="Tìm kiếm theo mã SKU, tên, màu sắc..."
               prefix={<SearchOutlined />}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -304,7 +305,7 @@ export const MaterialManagementPage: React.FC = () => {
               allowClear
             />
             <Select
-              placeholder="Filter Polymer"
+              placeholder="Lọc loại nhựa"
               value={typeFilter}
               onChange={(val) => setTypeFilter(val)}
               style={{ width: 150 }}
@@ -319,7 +320,7 @@ export const MaterialManagementPage: React.FC = () => {
             </Select>
           </Space>
           <Text type="secondary" style={{ alignSelf: 'center' }}>
-            Showing {materials.length} records
+            Hiển thị {materials.length} vật liệu
           </Text>
         </div>
 

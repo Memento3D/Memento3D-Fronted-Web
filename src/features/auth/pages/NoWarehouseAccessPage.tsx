@@ -26,12 +26,12 @@ export const NoWarehouseAccessPage: React.FC = () => {
     >
       <Result
         status="warning"
-        title="No Warehouse Scope Assigned"
+        title="Chưa được phân công kho"
         subTitle={
           <span style={{ color: '#94a3b8' }}>
-            Hello <strong style={{ color: '#f8fafc' }}>{user?.fullName || 'User'}</strong> ({user?.email}).
-            Your user account is authenticated, but you are not actively assigned to any regional warehouse facility.
-            Warehouse operations, goods receipt, and stocktaking require an active warehouse membership.
+            Xin chào <strong style={{ color: '#f8fafc' }}>{user?.fullName || 'Người dùng'}</strong> ({user?.email}).
+            Tài khoản của bạn đã được xác thực nhưng chưa được gán vào cơ sở kho khu vực nào.
+            Thao tác kho, nhập kho và kiểm kê yêu cầu quyền thành viên kho đang hoạt động.
           </span>
         }
         extra={[
@@ -41,14 +41,14 @@ export const NoWarehouseAccessPage: React.FC = () => {
               icon={<HomeOutlined />}
               onClick={() => navigate('/manager/inventory')}
             >
-              Overview Portal
+              Cổng tổng quan
             </Button>
             <Button
               danger
               icon={<LogoutOutlined />}
               onClick={handleLogout}
             >
-              Sign Out & Switch Account
+              Đăng xuất & Đổi tài khoản
             </Button>
           </Space>,
         ]}

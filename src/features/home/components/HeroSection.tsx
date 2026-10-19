@@ -23,7 +23,7 @@ export const HeroSection: React.FC = () => {
           <div style={{ gridColumn: 'span 7' }} className="hero-text-col">
             <div className="section-badge">
               <StarOutlined style={{ color: '#818cf8' }} />
-              <span>Next-Gen Additive Keepsakes</span>
+              <span>Kỷ vật 3D Thế hệ mới</span>
             </div>
 
             <h1
@@ -36,9 +36,9 @@ export const HeroSection: React.FC = () => {
                 marginBottom: 20,
               }}
             >
-              Your Memories.{' '}
+              Kỷ niệm của bạn.{' '}
               <span className="gradient-text-indigo">
-                Reimagined in 3D.
+                Hiện thực hóa bằng 3D.
               </span>
             </h1>
 
@@ -51,7 +51,7 @@ export const HeroSection: React.FC = () => {
                 marginBottom: 36,
               }}
             >
-              Transform your favorite moments into personalized 3D keepsakes — from a simple photo on your smartphone to something tangible you can hold forever.
+              Biến những khoảnh khắc quý giá thành kỷ vật 3D cá nhân hóa — từ bức ảnh chụp trên điện thoại trở thành vật phẩm hữu hình bạn có thể lưu giữ mãi mãi.
             </p>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 40 }}>
@@ -71,7 +71,7 @@ export const HeroSection: React.FC = () => {
                   boxShadow: '0 8px 24px rgba(14, 165, 233, 0.4)',
                 }}
               >
-                Explore Products
+                Khám phá sản phẩm
               </Button>
 
               <Button
@@ -90,7 +90,7 @@ export const HeroSection: React.FC = () => {
                   backdropFilter: 'blur(10px)',
                 }}
               >
-                Create Your Memento
+                Tạo kỷ vật ngay
               </Button>
             </div>
 
@@ -106,15 +106,15 @@ export const HeroSection: React.FC = () => {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <CheckCircleOutlined style={{ color: '#10b981', fontSize: 16 }} />
-                <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Watertight AI Reconstruction</span>
+                <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Tái tạo mô hình AI 3D chuẩn xác</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <CheckCircleOutlined style={{ color: '#10b981', fontSize: 16 }} />
-                <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Industrial SLA & Resin Precision</span>
+                <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Độ sắc nét máy in công nghiệp SLA</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <CheckCircleOutlined style={{ color: '#10b981', fontSize: 16 }} />
-                <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>No 3D Modeling Skills Required</span>
+                <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Không cần kỹ năng dựng hình 3D</span>
               </div>
             </div>
           </div>
@@ -143,11 +143,11 @@ export const HeroSection: React.FC = () => {
                     }}
                   />
                   <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#e2e8f0', letterSpacing: '0.05em' }}>
-                    AI TOPOLOGY ENGINE
+                    ĐỘNG CƠ HÌNH HỌC AI
                   </span>
                 </div>
                 <Tag color="purple" style={{ borderRadius: 6, fontWeight: 700 }}>
-                  0.05mm Micro-Detail
+                  Độ nét vi mô 0.05mm
                 </Tag>
               </div>
 
@@ -218,10 +218,10 @@ export const HeroSection: React.FC = () => {
                 {/* Synthesis Indicator Bar */}
                 <div style={{ marginTop: 24, textAlign: 'center', zIndex: 2 }}>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc' }}>
-                    Memory: "Graduation Honor Bust"
+                    Kỷ vật: "Tượng Vinh danh Tốt nghiệp"
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 4 }}>
-                    Photogrammetry Synthesized • 14,820 Facets
+                    Dựng hình đa giác AI • 14.820 mặt phẳng
                   </div>
                 </div>
 
@@ -243,7 +243,7 @@ export const HeroSection: React.FC = () => {
                     gap: 6,
                   }}
                 >
-                  <EyeOutlined /> 2D Portrait Input
+                  <EyeOutlined /> Đầu vào: Ảnh 2D
                 </div>
 
                 {/* Floating Micro Tag 2 */}
@@ -264,7 +264,7 @@ export const HeroSection: React.FC = () => {
                     gap: 6,
                   }}
                 >
-                  <CheckCircleOutlined /> Sliced for Print
+                  <CheckCircleOutlined /> Đã xuất file in (G-Code)
                 </div>
               </div>
 
@@ -281,21 +281,21 @@ export const HeroSection: React.FC = () => {
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Material</div>
+                  <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Vật liệu</div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginTop: 2 }}>
-                    Silk Bronze PLA
+                    PLA Đồng lụa
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Resolution</div>
+                  <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Độ phân giải</div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#38bdf8', marginTop: 2 }}>
-                    0.12mm Ultra
+                    0.12mm Siêu mịn
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Turnaround</div>
+                  <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Thời gian</div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#818cf8', marginTop: 2 }}>
-                    2-3 Days
+                    2-3 Ngày
                   </div>
                 </div>
               </div>
@@ -327,3 +327,4 @@ export const HeroSection: React.FC = () => {
     </section>
   );
 };
+export default HeroSection;

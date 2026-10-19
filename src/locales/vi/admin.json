@@ -1,0 +1,15 @@
+{
+  "admin": "Quản trị viên",
+  "dashboard": "Tổng quan quản trị",
+  "rbac": "Quản lý Người dùng & Phân quyền RBAC",
+  "users": "Danh sách người dùng",
+  "auditLogs": "Nhật ký kiểm toán hệ thống",
+  "systemMetrics": "Chỉ số hệ thống",
+  "changeRole": "Thay đổi quyền hạn",
+  "assignWarehouse": "Phân công quản lý kho",
+  "toggleStatus": "Bật/Tắt trạng thái hoạt động",
+  "activeUsers": "Người dùng đang hoạt động",
+  "totalWarehouses": "Tổng số cơ sở kho",
+  "totalMaterials": "Tổng chủng loại vật liệu",
+  "dbAcidStatus": "Trạng thái giao dịch ACID"
+}
