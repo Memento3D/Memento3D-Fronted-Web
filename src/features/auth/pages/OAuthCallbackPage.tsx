@@ -20,26 +20,41 @@ export const OAuthCallbackPage: React.FC = () => {
     const error = searchParams.get('error');
     const token = searchParams.get('token');
     const refreshToken = searchParams.get('refreshToken') || undefined;
+    const onboarding = searchParams.get('onboarding') === 'true';
 
     if (error) {
-      setErrorMessage(decodeURIComponent(error));
+      if (error === 'account_exists_link_required') {
+        setErrorMessage(
+          'Email này đã được đăng ký bằng Mật khẩu trên hệ thống. Vui lòng đăng nhập bằng Mật khẩu trước để liên kết tài khoản Google.'
+        );
+      } else if (error === 'email_not_verified') {
+        setErrorMessage(
+          'Tài khoản Google của bạn chưa được xác minh email bởi Google. Memento3D yêu cầu email đã xác thực.'
+        );
+      } else {
+        setErrorMessage(decodeURIComponent(error));
+      }
       return;
     }
 
     if (!token) {
-      setErrorMessage('No authentication token received from identity provider.');
+      setErrorMessage('Không nhận được mã xác thực bảo mật từ máy chủ.');
       return;
     }
 
     // Authenticate with received tokens and route
     loginWithTokens(token, refreshToken)
       .then((user) => {
-        const intended = tokenStorage.getIntendedUrl();
-        const destination = intended || getDefaultRouteForRole(user.role);
+        if (onboarding) {
+          navigate('/complete-registration', { replace: true });
+          return;
+        }
+        tokenStorage.clearIntendedUrl();
+        const destination = getDefaultRouteForRole(user.role);
         navigate(destination, { replace: true });
       })
       .catch((err: any) => {
-        setErrorMessage(err.message || 'Failed to initialize session with OAuth credentials.');
+        setErrorMessage(err.message || 'Không thể thiết lập phiên đăng nhập với thông tin xác thực Google.');
       });
   }, [searchParams, loginWithTokens, navigate]);
 
@@ -57,12 +72,12 @@ export const OAuthCallbackPage: React.FC = () => {
       >
         <Result
           status="error"
-          title="Google Authentication Failed"
-          subTitle={errorMessage}
+          title={<span style={{ color: '#ffffff' }}>Xác thực Google không thành công</span>}
+          subTitle={<span style={{ color: '#f87171' }}>{errorMessage}</span>}
           extra={[
             <Link to="/login" key="retry">
               <Button type="primary" size="large">
-                Return to Login
+                Quay lại trang Đăng nhập
               </Button>
             </Link>,
           ]}

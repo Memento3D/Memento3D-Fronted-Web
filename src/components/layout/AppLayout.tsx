@@ -6,7 +6,9 @@ import { useAuth } from '../../features/auth/hooks/useAuth';
 import { WarehouseSelector } from '../../features/warehouse/components/WarehouseSelector';
 import { getRoleLabel } from '../../locales/i18n';
 import { NotificationCenter } from '../notifications/NotificationCenter';
+import { getRoleHomeRoute } from '../../utils/roleHomeRoutes';
 import { 
+  Home,
   Box, 
   Warehouse, 
   Layers, 
@@ -51,6 +53,10 @@ export const AppLayout: React.FC = () => {
 
   const isAdmin = user?.role === 'ROLE_ADMIN';
   const isManager = user?.role === 'ROLE_MANAGER' || isAdmin;
+  const isOperator = user?.role === 'ROLE_OPERATOR';
+  const isWarehouse = user?.role === 'ROLE_WAREHOUSE';
+
+  const homeRoute = getRoleHomeRoute(user?.role);
 
   return (
     <div className="app-container" id="app-root">
@@ -76,96 +82,158 @@ export const AppLayout: React.FC = () => {
         </div>
 
         <div style={{ padding: '16px 0', flex: 1, overflowY: 'auto' }}>
-          {/* Executive & Governance */}
+          {/* Actor Home Landing Page - ALWAYS FIRST */}
           <div style={{ padding: '0 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Trung tâm điều khiển
+            Không gian làm việc
           </div>
 
-          {isAdmin && (
-            <NavLink to="/manager/admin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-admin-dashboard">
-              <Users size={18} />
-              <span>Quản trị & Phân quyền</span>
-            </NavLink>
-          )}
+          <NavLink to={homeRoute} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-actor-home">
+            <Home size={18} />
+            <span>Trang chủ</span>
+          </NavLink>
 
-          {isManager && (
+          {/* Operator Specific View */}
+          {isOperator && (
             <>
-              <NavLink to="/manager/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-dashboard">
-                <LayoutDashboard size={18} />
-                <span>Tổng quan Quản lý</span>
+              <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Vận hành xưởng in
+              </div>
+              <NavLink to="/manager/print-jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-operator-jobs">
+                <Printer size={18} />
+                <span>Lệnh in của tôi</span>
               </NavLink>
-              <NavLink to="/manager/approvals" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-approvals">
-                <CheckSquare size={18} />
-                <span>Trung tâm phê duyệt</span>
+              <NavLink to="/manager/inventory/transactions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-operator-ledger">
+                <History size={18} />
+                <span>Lịch sử vật tư</span>
               </NavLink>
             </>
           )}
 
-          {/* Master Catalogs */}
-          <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Dữ liệu danh mục
-          </div>
-          <NavLink to="/manager/materials" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-materials">
-            <Box size={18} />
-            <span>Danh mục Vật liệu</span>
-          </NavLink>
-          {isManager && (
-            <NavLink to="/manager/warehouses" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-warehouses">
-              <Warehouse size={18} />
-              <span>Quản lý Kho</span>
-            </NavLink>
+          {/* Warehouse Specific View */}
+          {isWarehouse && (
+            <>
+              <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Hậu cần kho WMS
+              </div>
+              <NavLink to="/manager/inventory" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-inventory">
+                <Layers size={18} />
+                <span>Tồn kho thực tế</span>
+              </NavLink>
+              <NavLink to="/manager/materials" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-materials">
+                <Box size={18} />
+                <span>Danh mục Vật liệu</span>
+              </NavLink>
+              <NavLink to="/manager/receipts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-receipts">
+                <ArrowDownLeft size={18} />
+                <span>Nhập kho</span>
+              </NavLink>
+              <NavLink to="/manager/issues" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-issues">
+                <ArrowUpRight size={18} />
+                <span>Xuất kho</span>
+              </NavLink>
+              <NavLink to="/manager/transfers" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-transfers">
+                <ArrowLeftRight size={18} />
+                <span>Điều chuyển kho</span>
+              </NavLink>
+              <NavLink to="/manager/adjustments" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-adjustments">
+                <Sliders size={18} />
+                <span>Điều chỉnh kho</span>
+              </NavLink>
+              <NavLink to="/manager/stock-counts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-counts">
+                <ClipboardCheck size={18} />
+                <span>Kiểm kê kho</span>
+              </NavLink>
+              <NavLink to="/manager/inventory/transactions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-ledger">
+                <History size={18} />
+                <span>Sổ cái biến động kho</span>
+              </NavLink>
+            </>
           )}
 
-          {/* WMS Operations Workflow */}
-          <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Vận hành tồn kho
-          </div>
-          <NavLink to="/manager/inventory" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-inventory">
-            <Layers size={18} />
-            <span>Tồn kho thực tế</span>
-          </NavLink>
+          {/* Manager & Admin Executive Modules */}
+          {isManager && (
+            <>
+              <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Điều hành & Giám sát
+              </div>
 
-          <NavLink to="/manager/receipts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-receipts">
-            <ArrowDownLeft size={18} />
-            <span>Nhập kho</span>
-          </NavLink>
+              {isAdmin && (
+                <NavLink to="/manager/admin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-admin-dashboard">
+                  <Users size={18} />
+                  <span>Quản trị & Phân quyền</span>
+                </NavLink>
+              )}
 
-          <NavLink to="/manager/issues" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-issues">
-            <ArrowUpRight size={18} />
-            <span>Xuất kho</span>
-          </NavLink>
+              <NavLink to="/manager/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-dashboard">
+                <LayoutDashboard size={18} />
+                <span>Tổng quan Quản lý</span>
+              </NavLink>
 
-          <NavLink to="/manager/transfers" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-transfers">
-            <ArrowLeftRight size={18} />
-            <span>Điều chuyển kho</span>
-          </NavLink>
+              <NavLink to="/manager/approvals" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-approvals">
+                <CheckSquare size={18} />
+                <span>Trung tâm phê duyệt</span>
+              </NavLink>
 
-          <NavLink to="/manager/adjustments" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-adjustments">
-            <Sliders size={18} />
-            <span>Điều chỉnh kho</span>
-          </NavLink>
+              {/* Master Catalogs */}
+              <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Dữ liệu danh mục
+              </div>
+              <NavLink to="/manager/materials" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-materials">
+                <Box size={18} />
+                <span>Danh mục Vật liệu</span>
+              </NavLink>
+              <NavLink to="/manager/warehouses" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-warehouses">
+                <Warehouse size={18} />
+                <span>Quản lý Kho</span>
+              </NavLink>
 
-          <NavLink to="/manager/stock-counts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-counts">
-            <ClipboardCheck size={18} />
-            <span>Kiểm kê kho</span>
-          </NavLink>
+              {/* WMS Operations Workflow */}
+              <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Vận hành tồn kho
+              </div>
+              <NavLink to="/manager/inventory" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-inventory">
+                <Layers size={18} />
+                <span>Tồn kho thực tế</span>
+              </NavLink>
+              <NavLink to="/manager/receipts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-receipts">
+                <ArrowDownLeft size={18} />
+                <span>Nhập kho</span>
+              </NavLink>
+              <NavLink to="/manager/issues" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-issues">
+                <ArrowUpRight size={18} />
+                <span>Xuất kho</span>
+              </NavLink>
+              <NavLink to="/manager/transfers" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-transfers">
+                <ArrowLeftRight size={18} />
+                <span>Điều chuyển kho</span>
+              </NavLink>
+              <NavLink to="/manager/adjustments" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-adjustments">
+                <Sliders size={18} />
+                <span>Điều chỉnh kho</span>
+              </NavLink>
+              <NavLink to="/manager/stock-counts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-counts">
+                <ClipboardCheck size={18} />
+                <span>Kiểm kê kho</span>
+              </NavLink>
 
-          {/* Production & Ledger */}
-          <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Sản xuất & Đơn hàng
-          </div>
-          <NavLink to="/manager/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-orders">
-            <ShoppingBag size={18} />
-            <span>Xử lý đơn hàng</span>
-          </NavLink>
-          <NavLink to="/manager/print-jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-print-jobs">
-            <Printer size={18} />
-            <span>Lệnh in (Giữ vật liệu)</span>
-          </NavLink>
-          <NavLink to="/manager/inventory/transactions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-ledger">
-            <History size={18} />
-            <span>Sổ cái biến động kho</span>
-          </NavLink>
+              {/* Production & Ledger */}
+              <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Sản xuất & Đơn hàng
+              </div>
+              <NavLink to="/manager/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-orders">
+                <ShoppingBag size={18} />
+                <span>Xử lý đơn hàng</span>
+              </NavLink>
+              <NavLink to="/manager/print-jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-print-jobs">
+                <Printer size={18} />
+                <span>Lệnh in (Giữ vật liệu)</span>
+              </NavLink>
+              <NavLink to="/manager/inventory/transactions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-ledger">
+                <History size={18} />
+                <span>Sổ cái biến động kho</span>
+              </NavLink>
+            </>
+          )}
         </div>
 
         {/* User Profile & Logout Footer */}
@@ -222,7 +290,7 @@ export const AppLayout: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Không gian /</span>
             <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              {isAdmin ? 'Cổng Quản trị viên Hệ thống' : isManager ? 'Cổng Quản lý & Vận hành' : 'Không gian Thao tác Kho'}
+              {isAdmin ? 'Cổng Quản trị viên Hệ thống' : isManager ? 'Cổng Quản lý & Vận hành' : isOperator ? 'Trạm Vận hành Xưởng in 3D' : 'Không gian Thao tác Kho WMS'}
             </span>
           </div>
           
@@ -252,9 +320,9 @@ export const AppLayout: React.FC = () => {
           </div>
         </header>
 
-        <main className="content-body">
+        <div className="content-body">
           <Outlet />
-        </main>
+        </div>
       </div>
     </div>
   );

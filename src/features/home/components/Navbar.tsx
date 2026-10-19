@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dropdown, Avatar, Tag, Drawer, Space, Badge } from 'antd';
+import { Button, Dropdown, Avatar, Tag, Drawer, Badge, Tooltip } from 'antd';
 import type { MenuProps } from 'antd';
 import {
   MenuOutlined,
@@ -8,47 +8,57 @@ import {
   DashboardOutlined,
   AppstoreOutlined,
   CodeSandboxOutlined,
-  ArrowRightOutlined,
   ShoppingCartOutlined,
   TagsOutlined,
+  SearchOutlined,
+  ThunderboltOutlined,
+  SunOutlined,
+  MoonOutlined,
+  ShoppingOutlined,
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCart } from '../../cart/context/CartContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { getDefaultRouteForRole } from '../../auth/utils/resolveActorRoute';
 import { NotificationCenter } from '../../../components/notifications/NotificationCenter';
 import { getRoleLabel } from '../../../locales/i18n';
+import './navbar.css';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
   const { cartCount } = useCart();
+  const { isDark, toggleTheme } = useTheme();
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      setScrolled(window.scrollY > 30);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    setMobileMenuOpen(false);
-    if (window.location.pathname !== '/') {
-      navigate(`/#${id}`);
-      return;
-    }
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   const handleLogout = async () => {
     await logout();
     navigate('/');
+  };
+
+  const handleSearchClick = () => {
+    if (location.pathname === '/') {
+      const el = document.getElementById('search-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const input = el.querySelector('input');
+        if (input) input.focus();
+        return;
+      }
+    }
+    navigate('/products');
   };
 
   const dashboardRoute = user ? getDefaultRouteForRole(user.role) : '/login';
@@ -57,11 +67,15 @@ export const Navbar: React.FC = () => {
     {
       key: 'user-info',
       label: (
-        <div style={{ padding: '4px 0' }}>
-          <div style={{ fontWeight: 700, color: '#f8fafc' }}>{user?.fullName || user?.email}</div>
-          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{user?.email}</div>
+        <div style={{ padding: '6px 4px' }}>
+          <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+            {user?.fullName || user?.email}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{user?.email}</div>
           <div style={{ marginTop: 4 }}>
-            <Tag color="cyan" style={{ fontSize: '0.7rem' }}>{getRoleLabel(user?.role)}</Tag>
+            <Tag color="cyan" style={{ fontSize: '0.7rem' }}>
+              {getRoleLabel(user?.role)}
+            </Tag>
           </div>
         </div>
       ),
@@ -70,13 +84,13 @@ export const Navbar: React.FC = () => {
     { type: 'divider' },
     {
       key: 'cart-menu',
-      icon: <ShoppingCartOutlined style={{ color: '#38bdf8' }} />,
+      icon: <ShoppingCartOutlined style={{ color: 'var(--primary)' }} />,
       label: `Giỏ hàng (${cartCount})`,
       onClick: () => navigate('/cart'),
     },
     {
       key: 'customer-orders',
-      icon: <CodeSandboxOutlined />,
+      icon: <ShoppingOutlined />,
       label: 'Đơn hàng của tôi',
       onClick: () => navigate('/orders'),
     },
@@ -115,235 +129,347 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav className={`home-navbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="home-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="home-container navbar-container">
         {/* Brand Logo */}
-        <div
-          onClick={() => navigate('/')}
-          style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-        >
-          <div
-            style={{
-              width: 38,
-              height: 38,
-              borderRadius: 10,
-              background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 16px rgba(14, 165, 233, 0.45)',
-            }}
-          >
-            <CodeSandboxOutlined style={{ fontSize: 22, color: '#ffffff' }} />
+        <div className="navbar-brand" onClick={() => navigate('/')}>
+          <div className="brand-logo-icon">
+            <CodeSandboxOutlined />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#ffffff' }}>
-              Memento<span className="gradient-text-cyan">3D</span>
+          <div className="brand-text-block">
+            <span className="brand-name">
+              Memento<span className="brand-name-accent">3D</span>
             </span>
-            <span style={{ fontSize: '0.65rem', color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: -3 }}>
-              Physical Keepsakes
-            </span>
+            <span className="brand-tagline">Personalized Keepsakes</span>
           </div>
         </div>
 
         {/* Desktop Navigation Links */}
-        <div
-          style={{
-            display: 'none',
-            alignItems: 'center',
-            gap: 28,
-          }}
-          className="desktop-nav-links"
-        >
-          <span className="nav-link" onClick={() => navigate('/')}>
+        <div className="navbar-links-desktop">
+          <span
+            className={`nav-item-link ${location.pathname === '/' ? 'active' : ''}`}
+            onClick={() => navigate('/')}
+          >
             Trang chủ
           </span>
-          <span className="nav-link" onClick={() => navigate('/products')}>
+          <span
+            className={`nav-item-link ${location.pathname.startsWith('/products') ? 'active' : ''}`}
+            onClick={() => navigate('/products')}
+          >
             Sản phẩm
           </span>
-          <span className="nav-link" onClick={() => navigate('/categories')}>
+          <span
+            className={`nav-item-link ${location.pathname.startsWith('/categories') ? 'active' : ''}`}
+            onClick={() => navigate('/categories')}
+          >
             Danh mục
           </span>
-          <span className="nav-link" onClick={() => scrollToSection('how-it-works')}>
-            Quy trình
+          <span
+            className="nav-item-link highlight-link"
+            onClick={() => navigate('/reconstruction/demo')}
+          >
+            <ThunderboltOutlined style={{ marginRight: 4 }} />
+            Tạo mô hình 3D
           </span>
-          <span className="nav-link" onClick={() => scrollToSection('story')}>
-            Câu chuyện
+          <span
+            className={`nav-item-link ${location.pathname.startsWith('/orders') ? 'active' : ''}`}
+            onClick={() => navigate('/orders')}
+          >
+            Đơn hàng
+          </span>
+          <span
+            className={`nav-item-link ${location.pathname === '/cart' ? 'active' : ''}`}
+            onClick={() => navigate('/cart')}
+          >
+            Giỏ hàng
           </span>
         </div>
 
-        {/* Auth & Cart Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {/* Cart Icon Button */}
-          <Badge count={cartCount} size="small" offset={[-2, 4]} color="#0ea5e9">
-            <Button
-              type="text"
-              icon={<ShoppingCartOutlined style={{ fontSize: 20, color: '#f8fafc' }} />}
-              onClick={() => navigate('/cart')}
-              style={{
-                color: '#f8fafc',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '6px 12px',
-                borderRadius: 8,
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-              }}
+        {/* Actions (Search, Dark/Light Toggle, Cart, Notification, Auth) */}
+        <div className="navbar-actions">
+          {/* Quick Search Trigger */}
+          <Tooltip title="Tìm kiếm mô hình">
+            <button
+              type="button"
+              className="navbar-icon-btn"
+              onClick={handleSearchClick}
+              aria-label="Tìm kiếm"
             >
-              <span style={{ marginLeft: 4, fontSize: '0.85rem', fontWeight: 600 }}>Giỏ hàng</span>
-            </Button>
-          </Badge>
+              <SearchOutlined />
+            </button>
+          </Tooltip>
+
+          {/* Dark / Light Mode Toggle Button */}
+          <Tooltip title={isDark ? 'Chuyển sang Chế độ sáng' : 'Chuyển sang Chế độ tối'}>
+            <button
+              type="button"
+              className="navbar-icon-btn theme-toggle-btn"
+              onClick={toggleTheme}
+              aria-label="Đổi giao diện Sáng / Tối"
+            >
+              {isDark ? (
+                <SunOutlined style={{ color: '#fbbf24' }} />
+              ) : (
+                <MoonOutlined style={{ color: '#0284c7' }} />
+              )}
+            </button>
+          </Tooltip>
+
+          {/* Cart Badge Button */}
+          <Tooltip title="Giỏ hàng">
+            <Badge count={cartCount} size="small" offset={[-2, 4]} color="var(--primary)">
+              <button
+                type="button"
+                className="navbar-icon-btn"
+                onClick={() => navigate('/cart')}
+                aria-label="Giỏ hàng"
+              >
+                <ShoppingCartOutlined />
+              </button>
+            </Badge>
+          </Tooltip>
 
           {/* Real-time Notification Center */}
           {isAuthenticated && <NotificationCenter />}
 
+          {/* User Profile or Guest Auth Buttons */}
           {isAuthenticated && user ? (
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  cursor: 'pointer',
-                  padding: '4px 12px',
-                  borderRadius: 9999,
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                }}
-              >
+              <div className="navbar-user-avatar-btn">
                 <Avatar
                   style={{
-                    backgroundColor: '#0ea5e9',
-                    verticalAlign: 'middle',
+                    background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
+                    cursor: 'pointer',
+                    fontWeight: 700,
                   }}
-                  icon={<UserOutlined />}
+                  icon={!user.avatarUrl ? <UserOutlined /> : undefined}
+                  src={user.avatarUrl}
+                  size={36}
                 >
-                  {user.fullName ? user.fullName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                  {(user.fullName || user.email || 'U').charAt(0).toUpperCase()}
                 </Avatar>
-                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc' }}>
-                    {user.fullName || user.email}
-                  </span>
-                  <span style={{ fontSize: '0.7rem', color: '#38bdf8' }}>
-                    {getRoleLabel(user.role)}
-                  </span>
-                </div>
+                <span className="navbar-user-name">
+                  {user.fullName || user.email?.split('@')[0]}
+                </span>
               </div>
             </Dropdown>
           ) : (
-            <Space size={10}>
+            <div className="navbar-auth-buttons">
               <Button
                 type="text"
                 onClick={() => navigate('/login')}
-                style={{
-                  color: '#cbd5e1',
-                  fontWeight: 600,
-                  fontSize: '0.9rem',
-                }}
+                className="navbar-login-btn"
               >
                 Đăng nhập
               </Button>
               <Button
                 type="primary"
-                onClick={() => navigate('/login')}
-                icon={<ArrowRightOutlined />}
-                style={{
-                  background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                  border: 'none',
-                  fontWeight: 700,
-                  borderRadius: 8,
-                }}
+                onClick={() => navigate('/login?tab=register')}
+                className="navbar-register-btn"
               >
-                Bắt đầu
+                Đăng ký
               </Button>
-            </Space>
+            </div>
           )}
 
-          {/* Mobile Hamburger Toggle */}
-          <Button
-            type="text"
-            icon={<MenuOutlined style={{ fontSize: 20, color: '#ffffff' }} />}
+          {/* Mobile Menu Hamburger */}
+          <button
+            type="button"
+            className="navbar-mobile-toggle"
             onClick={() => setMobileMenuOpen(true)}
-            className="mobile-menu-btn"
-            style={{ display: 'none' }}
-          />
+            aria-label="Mở menu"
+          >
+            <MenuOutlined />
+          </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       <Drawer
         title={
-          <span style={{ color: '#ffffff', fontWeight: 700 }}>
-            Memento<span className="gradient-text-cyan">3D</span> Menu
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <CodeSandboxOutlined style={{ color: 'var(--primary)', fontSize: 20 }} />
+            <span style={{ fontWeight: 800, color: 'var(--text-primary)' }}>Memento3D</span>
+          </div>
         }
         placement="right"
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
-        bodyStyle={{ background: '#0a0f1d', padding: 24 }}
-        headerStyle={{ background: '#070a14', borderBottom: '1px solid rgba(255,255,255,0.08)' }}
+        styles={{
+          body: {
+            padding: '20px 16px',
+            background: 'var(--bg-card)',
+            color: 'var(--text-primary)',
+          },
+          header: {
+            background: 'var(--bg-card)',
+            borderColor: 'var(--border-color)',
+          },
+        }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <Button
-            type="text"
-            block
-            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
+        <div className="mobile-drawer-content">
+          {/* Quick Search in drawer */}
+          <div
+            className="mobile-search-trigger"
             onClick={() => {
               setMobileMenuOpen(false);
-              navigate('/');
+              handleSearchClick();
             }}
           >
-            Trang chủ
-          </Button>
+            <SearchOutlined />
+            <span>Tìm kiếm sản phẩm, kỷ vật...</span>
+          </div>
 
-          <Button
-            type="text"
-            block
-            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
-            onClick={() => {
-              setMobileMenuOpen(false);
-              navigate('/products');
-            }}
-          >
-            Sản phẩm 3D
-          </Button>
+          {/* Theme switch in drawer */}
+          <div className="mobile-theme-row" onClick={toggleTheme}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {isDark ? (
+                <SunOutlined style={{ color: '#fbbf24', fontSize: 18 }} />
+              ) : (
+                <MoonOutlined style={{ color: '#0284c7', fontSize: 18 }} />
+              )}
+              <span>Chế độ: {isDark ? 'Tối (Dark)' : 'Sáng (Light)'}</span>
+            </div>
+            <span className="mobile-theme-toggle-hint">Đổi</span>
+          </div>
 
-          <Button
-            type="text"
-            block
-            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
-            onClick={() => {
-              setMobileMenuOpen(false);
-              navigate('/categories');
-            }}
-          >
-            Danh mục
-          </Button>
+          <div className="mobile-nav-divider" />
 
-          <Button
-            type="text"
-            block
-            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
-            onClick={() => {
-              setMobileMenuOpen(false);
-              navigate('/cart');
-            }}
-          >
-            Giỏ hàng ({cartCount})
-          </Button>
+          {/* Links */}
+          <div className="mobile-nav-links">
+            <div
+              className="mobile-nav-item"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/');
+              }}
+            >
+              Trang chủ
+            </div>
+            <div
+              className="mobile-nav-item"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/products');
+              }}
+            >
+              Sản phẩm
+            </div>
+            <div
+              className="mobile-nav-item"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/categories');
+              }}
+            >
+              Danh mục
+            </div>
+            <div
+              className="mobile-nav-item mobile-highlight-item"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/reconstruction/demo');
+              }}
+            >
+              <ThunderboltOutlined style={{ marginRight: 6 }} />
+              Tạo mô hình 3D
+            </div>
+            <div
+              className="mobile-nav-item"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/orders');
+              }}
+            >
+              Đơn hàng
+            </div>
+            <div
+              className="mobile-nav-item"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/cart');
+              }}
+            >
+              Giỏ hàng ({cartCount})
+            </div>
+          </div>
 
-          <Button
-            type="text"
-            block
-            style={{ textAlign: 'left', color: '#cbd5e1', fontSize: '1rem' }}
-            onClick={() => {
-              setMobileMenuOpen(false);
-              navigate('/orders');
-            }}
-          >
-            Đơn hàng của tôi
-          </Button>
+          <div className="mobile-nav-divider" />
+
+          {/* Auth in Mobile */}
+          {isAuthenticated && user ? (
+            <div className="mobile-user-section">
+              <div className="mobile-user-badge">
+                <Avatar
+                  style={{ background: 'var(--primary)', fontWeight: 700 }}
+                  size={40}
+                  src={user.avatarUrl}
+                >
+                  {(user.fullName || user.email || 'U').charAt(0).toUpperCase()}
+                </Avatar>
+                <div>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {user.fullName || user.email}
+                  </div>
+                  <Tag color="cyan" style={{ fontSize: '0.7rem', marginTop: 2 }}>
+                    {getRoleLabel(user.role)}
+                  </Tag>
+                </div>
+              </div>
+
+              <Button
+                block
+                icon={<DashboardOutlined />}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate(dashboardRoute);
+                }}
+                style={{ marginTop: 12, borderRadius: 'var(--radius-md)' }}
+              >
+                Cổng quản trị & Vận hành
+              </Button>
+
+              <Button
+                block
+                danger
+                icon={<LogoutOutlined />}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                style={{ marginTop: 10, borderRadius: 'var(--radius-md)' }}
+              >
+                Đăng xuất
+              </Button>
+            </div>
+          ) : (
+            <div className="mobile-guest-section">
+              <Button
+                block
+                type="primary"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/login');
+                }}
+                style={{ height: 44, borderRadius: 'var(--radius-md)', fontWeight: 700 }}
+              >
+                Đăng nhập
+              </Button>
+              <Button
+                block
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/login?tab=register');
+                }}
+                style={{ height: 44, borderRadius: 'var(--radius-md)', marginTop: 8 }}
+              >
+                Đăng ký tài khoản
+              </Button>
+            </div>
+          )}
         </div>
       </Drawer>
     </nav>
   );
 };
+
+export default Navbar;

@@ -1,0 +1,321 @@
+/* ==========================================================================
+   Memento3D Navbar Styles (Sticky, Glassmorphic, Theme Adaptive)
+   ========================================================================== */
+
+.home-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: rgba(8, 12, 20, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 100;
+  transition: all 0.25s ease;
+}
+
+body.light-theme .home-navbar,
+[data-theme='light'] .home-navbar {
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.home-navbar.scrolled {
+  height: 64px;
+  background: var(--bg-card);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* Brand */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.brand-logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px var(--primary-glow);
+  color: #ffffff;
+  font-size: 22px;
+  transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover .brand-logo-icon {
+  transform: scale(1.05) rotate(4deg);
+}
+
+.brand-text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.brand-name-accent {
+  color: var(--primary);
+}
+
+.brand-tagline {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Desktop Links */
+.navbar-links-desktop {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+@media (max-width: 960px) {
+  .navbar-links-desktop {
+    display: none;
+  }
+}
+
+.nav-item-link {
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  padding: 6px 0;
+  transition: color 0.2s ease;
+}
+
+.nav-item-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-item-link.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.nav-item-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+.nav-item-link.highlight-link {
+  color: var(--primary);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Right Actions */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+}
+
+.navbar-icon-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color-hover);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn {
+  font-size: 1.15rem;
+}
+
+.navbar-user-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navbar-user-avatar-btn:hover {
+  border-color: var(--border-color-hover);
+  background: var(--bg-card-hover);
+}
+
+.navbar-user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navbar-auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-login-btn {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.navbar-register-btn {
+  font-weight: 700 !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 4px 12px var(--primary-glow) !important;
+}
+
+.navbar-mobile-toggle {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .navbar-mobile-toggle {
+    display: flex;
+  }
+  .navbar-user-name,
+  .navbar-auth-buttons {
+    display: none;
+  }
+}
+
+/* Mobile Drawer Content */
+.mobile-drawer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.mobile-theme-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mobile-theme-toggle-hint {
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.mobile-nav-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 4px 0;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mobile-nav-item {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.975rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.mobile-nav-item:hover {
+  background: var(--bg-card-hover);
+}
+
+.mobile-highlight-item {
+  color: var(--primary);
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.mobile-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}

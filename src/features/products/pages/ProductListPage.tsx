@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Row,
   Col,
@@ -6,60 +6,71 @@ import {
   Input,
   Select,
   Slider,
-  Button,
-  Tag,
   Pagination,
-  Spin,
-  Empty,
+  Tag,
   Typography,
-  Space,
 } from 'antd';
 import {
   SearchOutlined,
-  ShoppingCartOutlined,
-  FireOutlined,
 } from '@ant-design/icons';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { productApi } from '../api/productApi';
 import { categoryApi } from '../api/categoryApi';
-import { useCart } from '../../cart/context/CartContext';
 import { formatCurrency } from '../../orders/utils/orderFormatters';
 import { Navbar } from '../../home/components/Navbar';
 import { Footer } from '../../home/components/Footer';
-import type { Product } from '../types/product.types';
+import { ProductCard } from '../components/ProductCard';
+import { ProductCardSkeleton } from '../components/ProductCardSkeleton';
+import { ProductEmptyState } from '../../../components/common/ProductEmptyState';
+import { ProductErrorState } from '../../../components/common/ProductErrorState';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 export const ProductListPage: React.FC = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { addToCart } = useCart();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [keyword, setKeyword] = useState<string>(searchParams.get('keyword') || '');
-  const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || '');
-  const [sort, setSort] = useState<'newest' | 'priceAsc' | 'priceDesc' | 'popular'>(
-    (searchParams.get('sort') as any) || 'newest'
-  );
+  const keyword = searchParams.get('keyword') || '';
+  const selectedCategory = searchParams.get('category') || searchParams.get('categorySlug') || '';
+  const selectedCategoryId = searchParams.get('categoryId') || '';
+  const sort = (searchParams.get('sort') as any) || 'newest';
+  const page = Number(searchParams.get('page')) || 1;
+
+  const [searchInput, setSearchInput] = useState<string>(keyword);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000000]);
-  const [page, setPage] = useState<number>(Number(searchParams.get('page')) || 1);
   const pageSize = 12;
 
+  useEffect(() => {
+    setSearchInput(keyword);
+  }, [keyword]);
+
   // Categories Query
-  const { data: categories = [] } = useQuery({
+  const { data: rawCategories = [] } = useQuery({
     queryKey: ['categories-active'],
     queryFn: () => categoryApi.list(true),
     staleTime: 10 * 60 * 1000,
   });
 
+  const categories = React.useMemo(() => {
+    if (Array.isArray(rawCategories)) return rawCategories;
+    if (rawCategories && Array.isArray((rawCategories as any).content)) return (rawCategories as any).content;
+    return [];
+  }, [rawCategories]);
+
   // Products Query
-  const { data: productsData, isLoading } = useQuery({
-    queryKey: ['products-list', page, keyword, selectedCategory, sort, priceRange],
+  const {
+    data: productsData,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ['products-list', page, keyword, selectedCategory, selectedCategoryId, sort, priceRange],
     queryFn: () =>
       productApi.list({
         page: page - 1,
         size: pageSize,
         keyword: keyword || undefined,
+        categoryId: selectedCategoryId || undefined,
         categorySlug: selectedCategory || undefined,
         minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
         maxPrice: priceRange[1] < 2000000 ? priceRange[1] : undefined,
@@ -68,31 +79,41 @@ export const ProductListPage: React.FC = () => {
   });
 
   const handleSearch = () => {
-    setPage(1);
+    updateUrl({ keyword: searchInput, page: 1 });
   };
 
-  const handleAddToCart = async (e: React.MouseEvent, product: Product) => {
-    e.stopPropagation();
-    await addToCart({
-      productId: product.id,
-      quantity: 1,
+  const updateUrl = (updates: Record<string, string | number | undefined>) => {
+    const next = new URLSearchParams(searchParams);
+    Object.entries(updates).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') {
+        next.set(k, String(v));
+      } else {
+        next.delete(k);
+      }
     });
+    setSearchParams(next);
+  };
+
+  const handleResetFilters = () => {
+    setSearchInput('');
+    setPriceRange([0, 2000000]);
+    setSearchParams(new URLSearchParams());
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050811', color: '#f8fafc' }}>
+    <div className="home-wrapper" style={{ minHeight: '100vh' }}>
       <Navbar />
 
-      <main style={{ maxWidth: 1280, margin: '0 auto', padding: '100px 24px 60px' }}>
+      <main style={{ maxWidth: 1280, margin: '0 auto', padding: '110px 24px 60px' }}>
         {/* Header */}
         <div style={{ marginBottom: 36, textAlign: 'center' }}>
-          <Tag color="cyan" style={{ marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
+          <Tag color="cyan" style={{ marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>
             Bộ sưu tập Memento3D
           </Tag>
-          <Title level={1} style={{ color: '#ffffff', margin: '4px 0 12px', fontWeight: 800 }}>
+          <Title level={1} style={{ color: 'var(--text-primary)', margin: '4px 0 12px', fontWeight: 800 }}>
             Khám phá Tác phẩm 3D & Kỷ vật Cá nhân
           </Title>
-          <Text style={{ color: '#94a3b8', fontSize: '1rem', maxWidth: 640, display: 'inline-block' }}>
+          <Text style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: 640, display: 'inline-block' }}>
             Từng tác phẩm được in 3D với độ chi tiết vi mô từ nhựa quang hóa cao cấp và hoàn thiện thủ công.
           </Text>
         </div>
@@ -100,10 +121,11 @@ export const ProductListPage: React.FC = () => {
         {/* Filter & Search Bar */}
         <Card
           style={{
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-color)',
             borderRadius: 16,
             marginBottom: 32,
+            boxShadow: 'var(--shadow-sm)',
           }}
           bodyStyle={{ padding: 20 }}
         >
@@ -111,16 +133,17 @@ export const ProductListPage: React.FC = () => {
             <Col xs={24} md={8}>
               <Input
                 placeholder="Tìm kiếm theo tên sản phẩm..."
-                prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
+                prefix={<SearchOutlined style={{ color: 'var(--text-muted)' }} />}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 onPressEnter={handleSearch}
                 allowClear
                 size="large"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  color: '#fff',
+                  background: 'var(--bg-input)',
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-primary)',
+                  borderRadius: 'var(--radius-md)',
                 }}
               />
             </Col>
@@ -128,19 +151,19 @@ export const ProductListPage: React.FC = () => {
             <Col xs={12} md={5}>
               <Select
                 placeholder="Danh mục"
-                value={selectedCategory || undefined}
+                value={selectedCategoryId || selectedCategory || undefined}
                 onChange={(val) => {
-                  setSelectedCategory(val || '');
-                  setPage(1);
+                  const cat = categories.find((c: any) => c.id === val || c.slug === val);
+                  updateUrl({ category: cat?.slug, categoryId: cat?.id, page: 1 });
                 }}
                 allowClear
                 size="large"
                 style={{ width: '100%' }}
                 options={[
                   { label: 'Tất cả danh mục', value: '' },
-                  ...(Array.isArray(categories) ? categories : []).map((c) => ({
+                  ...categories.map((c: any) => ({
                     label: c.name,
-                    value: c.slug,
+                    value: c.id,
                   })),
                 ]}
               />
@@ -150,8 +173,7 @@ export const ProductListPage: React.FC = () => {
               <Select
                 value={sort}
                 onChange={(val) => {
-                  setSort(val);
-                  setPage(1);
+                  updateUrl({ sort: val, page: 1 });
                 }}
                 size="large"
                 style={{ width: '100%' }}
@@ -159,17 +181,17 @@ export const ProductListPage: React.FC = () => {
                   { label: 'Mới nhất', value: 'newest' },
                   { label: 'Giá: Thấp đến Cao', value: 'priceAsc' },
                   { label: 'Giá: Cao đến Thấp', value: 'priceDesc' },
-                  { label: 'Phổ biến nhất', value: 'popular' },
+                  { label: 'Được yêu thích nhất', value: 'popular' },
                 ]}
               />
             </Col>
 
             <Col xs={24} md={6}>
               <div style={{ padding: '0 8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#94a3b8' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                   <span>Khoảng giá:</span>
-                  <span style={{ color: '#38bdf8' }}>
-                    {formatCurrency(priceRange[0], 'VND')} - {formatCurrency(priceRange[1], 'VND')}
+                  <span style={{ color: 'var(--primary)', fontWeight: 700 }}>
+                    {formatCurrency(priceRange[0])} - {formatCurrency(priceRange[1])}
                   </span>
                 </div>
                 <Slider
@@ -187,206 +209,39 @@ export const ProductListPage: React.FC = () => {
 
         {/* Product Grid */}
         {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '80px 0' }}>
-            <Spin size="large" />
-            <div style={{ marginTop: 16, color: '#94a3b8' }}>Đang tải danh sách tác phẩm...</div>
-          </div>
+          <Row gutter={[24, 24]}>
+            <ProductCardSkeleton count={8} />
+          </Row>
+        ) : isError ? (
+          <ProductErrorState onRetry={() => refetch()} />
         ) : !productsData?.content || productsData.content.length === 0 ? (
-          <Empty
-            description={<span style={{ color: '#94a3b8' }}>Không tìm thấy sản phẩm phù hợp.</span>}
-            style={{ margin: '80px 0' }}
-          >
-            <Button
-              type="primary"
-              onClick={() => {
-                setKeyword('');
-                setSelectedCategory('');
-                setPriceRange([0, 2000000]);
-              }}
-            >
-              Xóa bộ lọc
-            </Button>
-          </Empty>
+          <ProductEmptyState
+            title="Không tìm thấy sản phẩm phù hợp"
+            message="Hãy thử điều chỉnh từ khóa tìm kiếm hoặc lọc theo danh mục khác."
+            onReset={handleResetFilters}
+            resetText="Xóa toàn bộ bộ lọc"
+          />
         ) : (
           <>
             <Row gutter={[24, 24]}>
-              {productsData.content.map((product) => {
-                const isOutOfStock = product.availability === 'OUT_OF_STOCK';
-                return (
-                  <Col xs={24} sm={12} md={8} lg={6} key={product.id}>
-                    <Card
-                      hoverable
-                      onClick={() => navigate(`/products/${product.slug}`)}
-                      style={{
-                        background: 'rgba(15, 23, 42, 0.65)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        borderRadius: 16,
-                        overflow: 'hidden',
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        transition: 'transform 0.25s ease, border-color 0.25s ease',
-                      }}
-                      bodyStyle={{
-                        padding: 18,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        flex: 1,
-                      }}
-                      cover={
-                        <div
-                          style={{
-                            height: 220,
-                            overflow: 'hidden',
-                            position: 'relative',
-                            background: '#090d16',
-                          }}
-                        >
-                          {product.thumbnailUrl ? (
-                            <img
-                              alt={product.name}
-                              src={product.thumbnailUrl}
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                transition: 'transform 0.4s ease',
-                              }}
-                            />
-                          ) : (
-                            <div
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: '#475569',
-                                fontSize: '2.5rem',
-                              }}
-                            >
-                              📦
-                            </div>
-                          )}
-
-                          {product.featured && (
-                            <Tag
-                              color="gold"
-                              style={{
-                                position: 'absolute',
-                                top: 12,
-                                left: 12,
-                                fontWeight: 700,
-                                borderRadius: 6,
-                              }}
-                            >
-                              <FireOutlined /> Nổi bật
-                            </Tag>
-                          )}
-
-                          {product.category && (
-                            <Tag
-                              color="blue"
-                              style={{
-                                position: 'absolute',
-                                top: 12,
-                                right: 12,
-                                borderRadius: 6,
-                              }}
-                            >
-                              {product.category.name}
-                            </Tag>
-                          )}
-
-                          {isOutOfStock && (
-                            <div
-                              style={{
-                                position: 'absolute',
-                                inset: 0,
-                                background: 'rgba(0,0,0,0.6)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: '#ef4444',
-                                fontWeight: 800,
-                                fontSize: '1rem',
-                              }}
-                            >
-                              TẠM HẾT HÀNG
-                            </div>
-                          )}
-                        </div>
-                      }
-                    >
-                      <div style={{ flex: 1 }}>
-                        <Title
-                          level={4}
-                          ellipsis={{ rows: 2 }}
-                          style={{
-                            color: '#ffffff',
-                            margin: '0 0 8px',
-                            fontSize: '1rem',
-                            fontWeight: 700,
-                            minHeight: 44,
-                          }}
-                        >
-                          {product.name}
-                        </Title>
-                        <Paragraph
-                          ellipsis={{ rows: 2 }}
-                          style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: 12 }}
-                        >
-                          {product.shortDescription || product.description || 'Kỷ vật 3D cá nhân hóa cao cấp.'}
-                        </Paragraph>
-                      </div>
-
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          marginTop: 12,
-                          paddingTop: 12,
-                          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                        }}
-                      >
-                        <div>
-                          <Text style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block' }}>
-                            Giá khởi điểm:
-                          </Text>
-                          <Text style={{ fontSize: '1.15rem', fontWeight: 800, color: '#38bdf8' }}>
-                            {formatCurrency(product.price, 'VND')}
-                          </Text>
-                        </div>
-
-                        <Space>
-                          <Button
-                            type="primary"
-                            icon={<ShoppingCartOutlined />}
-                            disabled={isOutOfStock}
-                            onClick={(e) => handleAddToCart(e, product)}
-                            style={{
-                              background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                              borderColor: 'transparent',
-                              borderRadius: 8,
-                            }}
-                          />
-                        </Space>
-                      </div>
-                    </Card>
-                  </Col>
-                );
-              })}
+              {productsData.content.map((product) => (
+                <Col xs={24} sm={12} md={8} lg={6} key={product.id}>
+                  <ProductCard product={product} />
+                </Col>
+              ))}
             </Row>
 
             {/* Pagination */}
             {productsData.totalPages > 1 && (
-              <div style={{ textAlign: 'center', marginTop: 40 }}>
+              <div style={{ textAlign: 'center', marginTop: 48 }}>
                 <Pagination
                   current={page}
                   total={productsData.totalElements}
                   pageSize={pageSize}
-                  onChange={(p) => setPage(p)}
+                  onChange={(p) => {
+                    updateUrl({ page: p });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   showSizeChanger={false}
                 />
               </div>
@@ -399,3 +254,5 @@ export const ProductListPage: React.FC = () => {
     </div>
   );
 };
+
+export default ProductListPage;

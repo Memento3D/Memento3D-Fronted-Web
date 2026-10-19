@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { warehouseApi } from '../api/warehouseApi';
 import type { Warehouse } from '../types/warehouse.types';
 import { tokenStorage } from '../../auth/utils/tokenStorage';
+import { useAuth } from '../../auth/hooks/useAuth';
 
 interface WarehouseContextValue {
   activeWarehouseId: string | null;
@@ -19,9 +20,13 @@ const WarehouseContext = createContext<WarehouseContextValue | undefined>(undefi
 const STORAGE_KEY = 'memento3d_active_warehouse_id';
 
 export const WarehouseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isAuthenticated } = useAuth();
   const [storedId, setStoredId] = useState<string | null>(() => {
     return localStorage.getItem(STORAGE_KEY);
   });
+
+  const canAccessWarehouses =
+    Boolean(isAuthenticated && user?.role && ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_WAREHOUSE'].includes(user.role));
 
   const { data: myWarehouses = [], isLoading, refetch } = useQuery({
     queryKey: ['my-warehouses'],
@@ -32,15 +37,10 @@ export const WarehouseProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         const fallback = await warehouseApi.list({ limit: 50 });
         return fallback.content || [];
       } catch (err) {
-        try {
-          const fallback = await warehouseApi.list({ limit: 50 });
-          return fallback.content || [];
-        } catch {
-          return [];
-        }
+        return [];
       }
     },
-    enabled: !!tokenStorage.getAccessToken(),
+    enabled: Boolean(tokenStorage.getAccessToken() && canAccessWarehouses),
     staleTime: 60000,
   });
 

@@ -4,191 +4,144 @@ import {
   CodeSandboxOutlined,
   MailOutlined,
   EnvironmentOutlined,
+  PhoneOutlined,
+  HeartFilled,
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import './footer.css';
 
 export const Footer: React.FC = () => {
-  const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+  const navigate = useNavigate();
 
   return (
-    <footer
-      style={{
-        background: '#04060d',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        paddingTop: 80,
-        paddingBottom: 40,
-        position: 'relative',
-        zIndex: 1,
-      }}
-    >
+    <footer className="memento-footer">
       <div className="home-container">
         <Row gutter={[48, 40]}>
           {/* Brand Info */}
           <Col xs={24} md={8}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <CodeSandboxOutlined style={{ fontSize: 20, color: '#ffffff' }} />
+            <div className="footer-brand" onClick={() => navigate('/')}>
+              <div className="footer-logo-icon">
+                <CodeSandboxOutlined />
               </div>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff' }}>
-                Memento<span className="gradient-text-cyan">3D</span>
+              <span className="footer-brand-name">
+                Memento<span className="brand-name-accent">3D</span>
               </span>
             </div>
 
-            <p style={{ fontSize: '0.875rem', color: '#94a3b8', lineHeight: 1.6, marginBottom: 20, maxWidth: 320 }}>
-              Kỷ vật hữu hình được chế tác từ những khoảnh khắc cá nhân. Kết hợp công nghệ thị giác máy tính AI với quy trình in 3D công nghiệp độ chính xác cao.
+            <p className="footer-brand-desc">
+              Nền tảng kỷ vật 3D cá nhân hóa hàng đầu. Kết hợp công nghệ thị giác máy tính AI với hệ thống in 3D công nghiệp độ chính xác cao để hiện thực hóa những khoảnh khắc quý giá.
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.825rem', color: '#64748b' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <EnvironmentOutlined style={{ color: '#06b6d4' }} />
-                <span>TP. Hồ Chí Minh, Việt Nam</span>
+            <div className="footer-contact-list">
+              <div className="contact-item">
+                <EnvironmentOutlined style={{ color: 'var(--primary)' }} />
+                <span>Khu Công nghệ cao, TP. Thủ Đức, TP. Hồ Chí Minh</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <MailOutlined style={{ color: '#818cf8' }} />
+              <div className="contact-item">
+                <MailOutlined style={{ color: 'var(--primary)' }} />
                 <span>contact@memento3d.vn</span>
+              </div>
+              <div className="contact-item">
+                <PhoneOutlined style={{ color: 'var(--primary)' }} />
+                <span>(+84) 901 333 3D</span>
               </div>
             </div>
           </Col>
 
           {/* Column: Products */}
           <Col xs={12} sm={8} md={5}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>
-              Dòng Kỷ vật
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <h5 className="footer-col-title">Sản phẩm & Kỷ vật</h5>
+            <ul className="footer-links-list">
               <li>
-                <span className="nav-link" onClick={() => scrollTo('products')} style={{ fontSize: '0.875rem' }}>
-                  Tượng chân dung để bàn
+                <span onClick={() => navigate('/products?keyword=figure')}>
+                  Tượng Mini Figure cá nhân
                 </span>
               </li>
               <li>
-                <span className="nav-link" onClick={() => scrollTo('products')} style={{ fontSize: '0.875rem' }}>
-                  Móc khóa charm bỏ túi
+                <span onClick={() => navigate('/products?keyword=keychain')}>
+                  Móc khóa 3D khắc tên
                 </span>
               </li>
               <li>
-                <span className="nav-link" onClick={() => scrollTo('products')} style={{ fontSize: '0.875rem' }}>
-                  Kỷ vật tưởng niệm cao cấp
+                <span onClick={() => navigate('/products?keyword=tốt nghiệp')}>
+                  Quà tốt nghiệp độc bản
                 </span>
               </li>
               <li>
-                <span className="nav-link" onClick={() => scrollTo('products')} style={{ fontSize: '0.875rem' }}>
-                  Mô hình 3D số hóa (.GLB)
+                <span onClick={() => navigate('/products?keyword=couple')}>
+                  Quà tặng cặp đôi & Kỷ niệm
+                </span>
+              </li>
+              <li>
+                <span onClick={() => navigate('/products?keyword=pet')}>
+                  Tượng thú cưng từ ảnh
                 </span>
               </li>
             </ul>
           </Col>
 
-          {/* Column: Technology */}
+          {/* Column: Services */}
           <Col xs={12} sm={8} md={5}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>
-              Công nghệ
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <h5 className="footer-col-title">Dịch vụ & Tính năng</h5>
+            <ul className="footer-links-list">
               <li>
-                <span className="nav-link" onClick={() => scrollTo('how-it-works')} style={{ fontSize: '0.875rem' }}>
-                  Thị giác máy tính AI
+                <span onClick={() => navigate('/reconstruction/demo')}>
+                  Tạo mô hình 3D từ ảnh
                 </span>
               </li>
               <li>
-                <span className="nav-link" onClick={() => scrollTo('experience')} style={{ fontSize: '0.875rem' }}>
-                  Trình diễn 3D thời gian thực
+                <span onClick={() => navigate('/categories')}>
+                  Danh mục sản phẩm
                 </span>
               </li>
               <li>
-                <span className="nav-link" onClick={() => scrollTo('benefits')} style={{ fontSize: '0.875rem' }}>
-                  Hệ thống máy in điều phối
+                <span onClick={() => navigate('/orders')}>
+                  Theo dõi đơn hàng
                 </span>
               </li>
               <li>
-                <span className="nav-link" onClick={() => scrollTo('benefits')} style={{ fontSize: '0.875rem' }}>
-                  Kiểm soát chất lượng vật liệu
+                <span onClick={() => navigate('/cart')}>
+                  Giỏ hàng của bạn
                 </span>
               </li>
             </ul>
           </Col>
 
-          {/* Column: Portals & Navigation */}
-          <Col xs={24} sm={8} md={6}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>
-              Cổng Đăng nhập Phân quyền
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {/* Column: Legal & Support */}
+          <Col xs={12} sm={8} md={6}>
+            <h5 className="footer-col-title">Hỗ trợ & Chính sách</h5>
+            <ul className="footer-links-list">
               <li>
-                <a href="/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  Cổng Khách hàng
-                </a>
+                <span>Hướng dẫn chụp ảnh tạo 3D</span>
               </li>
               <li>
-                <a href="/manager/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  Quản lý Vận hành & Phê duyệt
-                </a>
+                <span>Chính sách đổi trả & Bảo hành in</span>
               </li>
               <li>
-                <a href="/warehouse/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  Thủ kho & Quản lý tồn kho
-                </a>
+                <span>Bảo mật dữ liệu hình ảnh 100%</span>
               </li>
               <li>
-                <a href="/operator/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  Kỹ thuật viên Vận hành in 3D
-                </a>
-              </li>
-              <li>
-                <a href="/admin/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  Bảng Quản trị Hệ thống
-                </a>
+                <span>Điều khoản dịch vụ khách hàng</span>
               </li>
             </ul>
           </Col>
         </Row>
 
-        {/* Bottom Bar */}
-        <div
-          style={{
-            marginTop: 64,
-            paddingTop: 24,
-            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 16,
-            fontSize: '0.8rem',
-            color: '#64748b',
-          }}
-        >
-          <div>
-            © {new Date().getFullYear()} Memento3D. Bản quyền thuộc về Memento3D. Kỷ niệm của bạn, hiện thực hóa bằng 3D.
+        {/* Footer Bottom */}
+        <div className="footer-bottom-bar">
+          <div className="copyright-text">
+            © {new Date().getFullYear()} Memento3D. All rights reserved. Chế tác với{' '}
+            <HeartFilled style={{ color: '#ef4444', margin: '0 2px' }} /> tại Việt Nam.
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: '#10b981',
-                boxShadow: '0 0 8px #10b981',
-              }}
-            />
-            <span style={{ color: '#94a3b8' }}>Trạng thái hệ thống: Sẵn sàng hoạt động</span>
+          <div className="footer-bottom-badges">
+            <span className="footer-badge-item">SLA Industrial 8K</span>
+            <span className="footer-badge-item">SSL 256-Bit Secure</span>
           </div>
         </div>
       </div>
     </footer>
   );
 };
+
 export default Footer;

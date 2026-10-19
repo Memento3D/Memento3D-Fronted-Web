@@ -55,11 +55,11 @@ export const ProductDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#050811' }}>
+      <div className="home-wrapper" style={{ minHeight: '100vh' }}>
         <Navbar />
         <div style={{ textAlign: 'center', padding: '120px 0' }}>
           <Spin size="large" />
-          <div style={{ marginTop: 16, color: '#94a3b8' }}>Đang tải thông tin sản phẩm...</div>
+          <div style={{ marginTop: 16, color: 'var(--text-muted)' }}>Đang tải thông tin sản phẩm...</div>
         </div>
       </div>
     );
@@ -67,7 +67,7 @@ export const ProductDetailPage: React.FC = () => {
 
   if (isError || !product) {
     return (
-      <div style={{ minHeight: '100vh', background: '#050811', color: '#fff' }}>
+      <div className="home-wrapper" style={{ minHeight: '100vh' }}>
         <Navbar />
         <div style={{ maxWidth: 600, margin: '100px auto', textAlign: 'center', padding: 24 }}>
           <Title level={3} style={{ color: '#ef4444' }}>
@@ -120,7 +120,7 @@ export const ProductDetailPage: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050811', color: '#f8fafc' }}>
+    <div className="home-wrapper" style={{ minHeight: '100vh' }}>
       <Navbar />
 
       <main style={{ maxWidth: 1240, margin: '0 auto', padding: '100px 24px 60px' }}>

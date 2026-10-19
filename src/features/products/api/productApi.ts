@@ -25,6 +25,11 @@ export const productApi = {
     return res.data;
   },
 
+  getFeatured: async (): Promise<Product[]> => {
+    const res = await apiClient.get<Product[]>('/products/featured');
+    return res.data;
+  },
+
   getById: async (id: string): Promise<Product> => {
     const res = await apiClient.get<Product>(`/products/${id}`);
     return res.data;

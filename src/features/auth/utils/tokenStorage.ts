@@ -30,6 +30,10 @@ export const tokenStorage = {
     localStorage.setItem(INTENDED_URL_KEY, url);
   },
 
+  clearIntendedUrl: (): void => {
+    localStorage.removeItem(INTENDED_URL_KEY);
+  },
+
   getIntendedUrl: (): string | null => {
     const url = localStorage.getItem(INTENDED_URL_KEY);
     localStorage.removeItem(INTENDED_URL_KEY);

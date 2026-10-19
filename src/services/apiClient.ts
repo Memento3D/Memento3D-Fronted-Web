@@ -156,12 +156,24 @@ apiClient.interceptors.response.use(
 
     // Friendly Vietnamese error translation
     const status = error.response?.status;
+    const requestUrl = error.config?.url || '';
+    const isLoginOrAuth = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/register');
+
     if (status === 401) {
-      message = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+      if (isLoginOrAuth) {
+        message = 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.';
+      } else {
+        message = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+      }
     } else if (status === 403) {
-      message = 'Bạn không có quyền thực hiện thao tác này.';
+      // If server returned a specific message (e.g. Email not verified, account suspended), preserve it!
+      if (!errorData?.message || errorData.message === 'Access denied' || errorData.message === 'Forbidden') {
+        message = 'Bạn không có quyền thực hiện thao tác này.';
+      } else {
+        message = errorData.message;
+      }
     } else if (status === 404) {
-      message = 'Không tìm thấy dữ liệu yêu cầu.';
+      message = errorData?.message || 'Không tìm thấy dữ liệu yêu cầu.';
     } else if (status === 409) {
       message = errorData?.message || 'Dữ liệu đã tồn tại hoặc xảy ra xung đột hệ thống.';
     } else if (status && status >= 500) {
@@ -173,6 +185,8 @@ apiClient.interceptors.response.use(
     const err = new Error(message);
     (err as any).originalError = error;
     (err as any).status = status;
+    (err as any).response = error.response;
+    (err as any).data = errorData;
     return Promise.reject(err);
   }
 );
