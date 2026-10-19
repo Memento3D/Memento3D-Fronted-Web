@@ -7,12 +7,8 @@ import {
 } from '@ant-design/icons';
 import {
   Box,
-  Layers,
-  Camera,
-  Gift,
   ArrowRight,
   ShoppingBag,
-  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useOrders } from '../../orders/hooks/useOrders';
@@ -281,7 +277,7 @@ export const CustomerHomePage: React.FC = () => {
                         </div>
                       )}
                       <Tag color="cyan" style={{ margin: 0, fontWeight: 700, fontSize: '0.7rem' }}>
-                        {cat.productCount != null ? `${cat.productCount} sản phẩm` : 'Bộ sưu tập'}
+                        {(cat as any).productCount != null ? `${(cat as any).productCount} sản phẩm` : 'Bộ sưu tập'}
                       </Tag>
                     </div>
                     <h3 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>

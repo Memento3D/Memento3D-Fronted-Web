@@ -158,10 +158,16 @@ export const AppLayout: React.FC = () => {
               </div>
 
               {isAdmin && (
-                <NavLink to="/manager/admin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-admin-dashboard">
-                  <Users size={18} />
-                  <span>Quản trị & Phân quyền</span>
-                </NavLink>
+                <>
+                  <NavLink to="/admin/home" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-admin-portal">
+                    <ShieldCheck size={18} />
+                    <span>Admin Portal</span>
+                  </NavLink>
+                  <NavLink to="/admin/users" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-admin-users">
+                    <Users size={18} />
+                    <span>Quản trị & Phân quyền</span>
+                  </NavLink>
+                </>
               )}
 
               <NavLink to="/manager/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-dashboard">
