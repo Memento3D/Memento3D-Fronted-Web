@@ -1,4 +1,0 @@
-# Cloudflare Pages / Workers Single Page App (SPA) Routing
-# Ensures HTML5 client-side history navigation (react-router-dom) works correctly
-# Static assets and existing files are served directly; all other paths route to index.html
-/*    /index.html   200
