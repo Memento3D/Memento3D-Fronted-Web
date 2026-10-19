@@ -21,17 +21,15 @@ Hệ thống được phát triển trên nền tảng **React 19 + TypeScript +
 
 Hệ thống phân tách không gian làm việc chuyên biệt theo từng vai trò nghiệp vụ với URL đăng nhập và trang chủ riêng biệt:
 
-| Actor | Vai Trò | Cổng Đăng Nhập | Trang Chủ Sau Đăng Nhập | Tài Khoản Test Chuẩn | Mật Khẩu |
-|---|---|---|---|---|:---:|
-| **Customer** | Khách hàng mua sắm & đặt in 3D | `/login` | `/customer/home` | `customer@memento3d.vn` | `123456` |
-| **Admin** | Quản trị viên hệ thống & phân quyền | `/admin/login` | `/admin/home` | `admin@memento3d.vn` | `123456` |
-| **Manager** | Quản lý sản xuất, vật tư & kho | `/manager/login` | `/manager/home` | `manager@memento3d.vn` | `123456` |
-| **Warehouse** | Thủ kho, nhập/xuất & kiểm kê | `/warehouse/login` | `/warehouse/home` | `warehouse@memento3d.vn` | `123456` |
-| **Operator** | Kỹ thuật viên vận hành máy in 3D | `/operator/login` | `/operator/home` | `operator@memento3d.vn` | `123456` |
-| **Provider** | Nhà cung cấp vật tư & máy móc | `/provider/login` | `/provider/home` | `provider@memento3d.vn` | `123456` |
-| **Driver** | Tài xế / Đơn vị giao nhận hàng | `/driver/login` | `/driver/home` | `driver@memento3d.vn` | `123456` |
-
-*(Lưu ý: Hệ thống cũng hỗ trợ domain dự phòng song song `@memento3d.com` với mật khẩu chung `123456`)*.
+| Actor | Vai Trò | Cổng Đăng Nhập | Trang Chủ Sau Đăng Nhập | Quyền Hạn & Phạm Vi Nghiệp Vụ |
+|---|---|---|---|---|
+| **Customer** | Khách hàng mua sắm & đặt in 3D | `/login` | `/customer/home` | Khám phá sản phẩm, tải ảnh dựng 3D, giỏ hàng & thanh toán |
+| **Admin** | Quản trị viên hệ thống & phân quyền | `/admin/login` | `/admin/home` | Toàn quyền kiểm soát tài khoản, hệ thống & báo cáo thống kê |
+| **Manager** | Quản lý sản xuất, vật tư & kho | `/manager/login` | `/manager/home` | Điều phối lệnh in, duyệt sản phẩm & giám sát tồn kho cơ sở |
+| **Warehouse** | Thủ kho, nhập/xuất & kiểm kê | `/warehouse/login` | `/warehouse/home` | Nhập vật liệu theo lô, xuất kho sản xuất & khóa tồn kho |
+| **Operator** | Kỹ thuật viên vận hành máy in 3D | `/operator/login` | `/operator/home` | QC Gate kiểm định ảnh, giám sát hàng đợi máy in & quyết toán vật tư |
+| **Provider** | Nhà cung cấp vật tư & máy móc | `/provider/login` | `/provider/home` | Tiếp nhận đơn in gia công ngoài & quản lý cung ứng B2B |
+| **Driver** | Tài xế / Đơn vị giao nhận hàng | `/driver/login` | `/driver/home` | Tiếp nhận kiện hàng tại kho, điều phối tuyến & xác nhận giao |
 
 ---
 
@@ -144,5 +142,5 @@ npm run build
 ---
 
 ## 👥 8. Đội Ngũ Phát Triển
-- **Technical Lead & Front-End Architect:** Lê Tuấn Kiệt (KietLT)
+- **Technical Lead & Front-End Architect:** Lê Tuấn Kiệt ([KietLT33](https://github.com/KietLT33))
 - **Repository:** [Memento3D-Fronted-Web](https://github.com/Memento3D/Memento3D-Fronted-Web)
