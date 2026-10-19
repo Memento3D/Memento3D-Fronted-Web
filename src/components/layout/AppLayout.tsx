@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { Tooltip } from 'antd';
+import { Tooltip, Avatar } from 'antd';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 import { WarehouseSelector } from '../../features/warehouse/components/WarehouseSelector';
 import { getRoleLabel } from '../../locales/i18n';
@@ -244,29 +244,42 @@ export const AppLayout: React.FC = () => {
 
         {/* User Profile & Logout Footer */}
         <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-            <div style={{ 
-              width: '32px', 
-              height: '32px', 
-              borderRadius: '50%', 
-              background: 'rgba(14, 165, 233, 0.15)',
-              border: '1px solid rgba(14, 165, 233, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0
-            }}>
-              <ShieldCheck size={16} color="var(--primary)" />
-            </div>
-            <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.825rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {user?.fullName || 'Authenticated User'}
+          <Tooltip title="Xem và cập nhật Hồ sơ cá nhân & Bảo mật">
+            <div
+              onClick={() => navigate('/profile')}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, cursor: 'pointer', flex: 1, paddingRight: 8 }}
+            >
+              {user?.avatarUrl ? (
+                <Avatar
+                  src={user.avatarUrl}
+                  size={32}
+                  style={{ border: '1px solid rgba(14, 165, 233, 0.4)', flexShrink: 0 }}
+                />
+              ) : (
+                <div style={{ 
+                  width: '32px', 
+                  height: '32px', 
+                  borderRadius: '50%', 
+                  background: 'rgba(14, 165, 233, 0.15)',
+                  border: '1px solid rgba(14, 165, 233, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <ShieldCheck size={16} color="var(--primary)" />
+                </div>
+              )}
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ fontSize: '0.825rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {user?.fullName || 'Authenticated User'}
+                </div>
+                <div style={{ fontSize: '0.7rem', color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {user?.email || 'user@memento3d.com'}
+                </div>
               </div>
-              <div style={{ fontSize: '0.7rem', color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {user?.email || 'user@memento3d.com'}
-              </div>
             </div>
-          </div>
+          </Tooltip>
           
           <Tooltip title="Đăng xuất khỏi hệ thống">
             <button
