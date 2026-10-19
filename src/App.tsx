@@ -25,6 +25,9 @@ import { OAuthCallbackPage } from './features/auth/pages/OAuthCallbackPage';
 import { ForbiddenPage } from './features/auth/pages/ForbiddenPage';
 import { WarehouseSelectPage } from './features/auth/pages/WarehouseSelectPage';
 import { NoWarehouseAccessPage } from './features/auth/pages/NoWarehouseAccessPage';
+import { ForgotPasswordPage } from './features/auth/pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './features/auth/pages/ResetPasswordPage';
+import { ProfilePage } from './features/profile/pages/ProfilePage';
 
 import { Spin } from 'antd';
 import { HomePage } from './features/home/pages/HomePage';
@@ -234,6 +237,22 @@ export const App: React.FC = () => {
                       </GuestRoute>
                     }
                   />
+                  <Route
+                    path="/forgot-password"
+                    element={
+                      <GuestRoute>
+                        <ForgotPasswordPage />
+                      </GuestRoute>
+                    }
+                  />
+                  <Route
+                    path="/reset-password"
+                    element={
+                      <GuestRoute>
+                        <ResetPasswordPage />
+                      </GuestRoute>
+                    }
+                  />
                   <Route path="/verify-email" element={<EmailVerificationPage />} />
                   <Route path="/verify-email/confirm" element={<VerifyEmailResultPage />} />
                   <Route
@@ -376,6 +395,31 @@ export const App: React.FC = () => {
                     element={
                       <ProtectedRoute>
                         <CheckoutPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  {/* User Profile & Account Security Management */}
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <ProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile/addresses"
+                    element={
+                      <ProtectedRoute>
+                        <ProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile/security"
+                    element={
+                      <ProtectedRoute>
+                        <ProfilePage />
                       </ProtectedRoute>
                     }
                   />

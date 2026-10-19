@@ -15,6 +15,8 @@ import {
   SunOutlined,
   MoonOutlined,
   ShoppingOutlined,
+  EnvironmentOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -80,6 +82,24 @@ export const Navbar: React.FC = () => {
         </div>
       ),
       disabled: true,
+    },
+    {
+      key: 'my-profile',
+      icon: <UserOutlined style={{ color: 'var(--primary)' }} />,
+      label: 'Hồ sơ của tôi',
+      onClick: () => navigate('/profile'),
+    },
+    {
+      key: 'my-addresses',
+      icon: <EnvironmentOutlined />,
+      label: 'Sổ địa chỉ nhận hàng',
+      onClick: () => navigate('/profile/addresses'),
+    },
+    {
+      key: 'my-security',
+      icon: <SafetyCertificateOutlined />,
+      label: 'Bảo mật tài khoản',
+      onClick: () => navigate('/profile/security'),
     },
     { type: 'divider' },
     {
@@ -418,12 +438,24 @@ export const Navbar: React.FC = () => {
 
               <Button
                 block
+                icon={<UserOutlined />}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/profile');
+                }}
+                style={{ marginTop: 12, borderRadius: 'var(--radius-md)' }}
+              >
+                Hồ sơ & Tài khoản
+              </Button>
+
+              <Button
+                block
                 icon={<DashboardOutlined />}
                 onClick={() => {
                   setMobileMenuOpen(false);
                   navigate(dashboardRoute);
                 }}
-                style={{ marginTop: 12, borderRadius: 'var(--radius-md)' }}
+                style={{ marginTop: 8, borderRadius: 'var(--radius-md)' }}
               >
                 Cổng quản trị & Vận hành
               </Button>

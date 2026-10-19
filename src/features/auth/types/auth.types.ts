@@ -17,8 +17,24 @@ export interface User {
   provider: AuthProviderType;
   avatarUrl?: string;
   emailVerified?: boolean;
-  status?: 'ACTIVE' | 'PENDING_VERIFICATION' | 'SUSPENDED';
+  status?: 'ACTIVE' | 'PENDING_VERIFICATION' | 'SUSPENDED' | 'INACTIVE' | 'LOCKED' | 'DELETED';
+  phone?: string;
+  dateOfBirth?: string;
+  hasPassword?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  lastLoginAt?: string;
 }
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
+}
+
 
 export interface RegisterPayload {
   fullName: string;

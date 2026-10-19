@@ -154,7 +154,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
         </Form.Item>
 
         <Form.Item
-          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu</span>}
+          label={
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+              <span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu</span>
+              <Link
+                to="/forgot-password"
+                style={{
+                  color: '#38bdf8',
+                  fontSize: '0.825rem',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                }}
+              >
+                Quên mật khẩu?
+              </Link>
+            </div>
+          }
           name="password"
           rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
         >

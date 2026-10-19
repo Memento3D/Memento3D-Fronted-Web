@@ -84,6 +84,19 @@ export const AdminHeader: React.FC<AdminHeaderProps> = () => {
     },
     { type: 'divider' as const },
     {
+      key: 'my-profile',
+      icon: <User size={14} />,
+      label: 'Hồ sơ cá nhân',
+      onClick: () => navigate('/profile'),
+    },
+    {
+      key: 'my-security',
+      icon: <Shield size={14} />,
+      label: 'Bảo mật tài khoản',
+      onClick: () => navigate('/profile/security'),
+    },
+    { type: 'divider' as const },
+    {
       key: 'system-status',
       icon: <Activity size={14} />,
       label: 'Tình trạng hệ thống',
