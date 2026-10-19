@@ -47,7 +47,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
 
         if (myWarehouses.length === 1) {
           localStorage.setItem('memento3d_active_warehouse_id', myWarehouses[0].id);
-          message.success(`Connected to facility: ${myWarehouses[0].code}`);
+          message.success(`Đã kết nối cơ sở kho: ${myWarehouses[0].code}`);
           navigate('/manager/inventory', { replace: true });
           return;
         }
@@ -69,7 +69,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
       portalConfig.defaultRedirect ||
       getDefaultRouteForRole(user.role);
 
-    message.success(`Welcome back, ${user.fullName}!`);
+    message.success(`Chào mừng trở lại, ${user.fullName}!`);
     navigate(destination, { replace: true });
   };
 
@@ -86,7 +86,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
       await handlePostLoginRouting(user);
     } catch (err: any) {
       setErrorMessage(
-        err.message || 'Authentication failed. Please verify your email and password.'
+        err.message || 'Xác thực thất bại. Vui lòng kiểm tra lại email và mật khẩu.'
       );
     } finally {
       setLoading(false);
@@ -99,7 +99,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
         <Alert
           type="error"
           showIcon
-          message="Authentication Error"
+          message="Lỗi xác thực"
           description={errorMessage}
           style={{ marginBottom: 20 }}
           closable
@@ -115,11 +115,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
         autoComplete="on"
       >
         <Form.Item
-          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Work Email</span>}
+          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Email công việc</span>}
           name="email"
           rules={[
-            { required: true, message: 'Please enter your work email' },
-            { type: 'email', message: 'Enter a valid email address' },
+            { required: true, message: 'Vui lòng nhập email công việc' },
+            { type: 'email', message: 'Email không đúng định dạng' },
           ]}
         >
           <Input
@@ -132,13 +132,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
         </Form.Item>
 
         <Form.Item
-          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Password</span>}
+          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu</span>}
           name="password"
-          rules={[{ required: true, message: 'Please enter your password' }]}
+          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
         >
           <Input.Password
             prefix={<LockOutlined style={{ color: '#64748b' }} />}
-            placeholder="Enter password"
+            placeholder="Nhập mật khẩu"
             size="large"
             autoComplete="current-password"
             style={{ borderRadius: '8px' }}
@@ -162,7 +162,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
               boxShadow: '0 4px 14px rgba(14, 165, 233, 0.4)',
             }}
           >
-            Sign In to {portalConfig.badge}
+            Đăng nhập {portalConfig.badge}
           </Button>
         </Form.Item>
       </Form>
@@ -171,7 +171,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
         <>
           <Divider plain style={{ margin: '18px 0', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
             <span style={{ color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase' }}>
-              Or authenticate with
+              Hoặc đăng nhập với
             </span>
           </Divider>
 

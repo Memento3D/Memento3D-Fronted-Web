@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Tooltip } from 'antd';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 import { WarehouseSelector } from '../../features/warehouse/components/WarehouseSelector';
+import { getRoleLabel } from '../../locales/i18n';
 import { NotificationCenter } from '../notifications/NotificationCenter';
 import { 
   Box, 
@@ -70,20 +71,20 @@ export const AppLayout: React.FC = () => {
           </div>
           <div>
             <div style={{ fontWeight: 800, fontSize: '1.05rem', letterSpacing: '-0.02em', color: '#fff' }}>Memento3D</div>
-            <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Enterprise WMS</div>
+            <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Hệ thống Quản lý WMS</div>
           </div>
         </div>
 
         <div style={{ padding: '16px 0', flex: 1, overflowY: 'auto' }}>
           {/* Executive & Governance */}
           <div style={{ padding: '0 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Control Center
+            Trung tâm điều khiển
           </div>
 
           {isAdmin && (
             <NavLink to="/manager/admin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-admin-dashboard">
               <Users size={18} />
-              <span>Admin & RBAC</span>
+              <span>Quản trị & Phân quyền</span>
             </NavLink>
           )}
 
@@ -91,79 +92,79 @@ export const AppLayout: React.FC = () => {
             <>
               <NavLink to="/manager/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-dashboard">
                 <LayoutDashboard size={18} />
-                <span>Manager Dashboard</span>
+                <span>Tổng quan Quản lý</span>
               </NavLink>
               <NavLink to="/manager/approvals" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-approvals">
                 <CheckSquare size={18} />
-                <span>Approvals Center</span>
+                <span>Trung tâm phê duyệt</span>
               </NavLink>
             </>
           )}
 
           {/* Master Catalogs */}
           <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Master Data
+            Dữ liệu danh mục
           </div>
           <NavLink to="/manager/materials" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-materials">
             <Box size={18} />
-            <span>Materials Catalog</span>
+            <span>Danh mục Vật liệu</span>
           </NavLink>
           {isManager && (
             <NavLink to="/manager/warehouses" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-warehouses">
               <Warehouse size={18} />
-              <span>Warehouses</span>
+              <span>Quản lý Kho</span>
             </NavLink>
           )}
 
           {/* WMS Operations Workflow */}
           <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Inventory Operations
+            Vận hành tồn kho
           </div>
           <NavLink to="/manager/inventory" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-inventory">
             <Layers size={18} />
-            <span>Stock Balances</span>
+            <span>Tồn kho thực tế</span>
           </NavLink>
 
           <NavLink to="/manager/receipts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-receipts">
             <ArrowDownLeft size={18} />
-            <span>Goods Receipts</span>
+            <span>Nhập kho</span>
           </NavLink>
 
           <NavLink to="/manager/issues" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-issues">
             <ArrowUpRight size={18} />
-            <span>Stock Issues</span>
+            <span>Xuất kho</span>
           </NavLink>
 
           <NavLink to="/manager/transfers" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-transfers">
             <ArrowLeftRight size={18} />
-            <span>Transfers</span>
+            <span>Điều chuyển kho</span>
           </NavLink>
 
           <NavLink to="/manager/adjustments" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-adjustments">
             <Sliders size={18} />
-            <span>Adjustments</span>
+            <span>Điều chỉnh kho</span>
           </NavLink>
 
           <NavLink to="/manager/stock-counts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-stock-counts">
             <ClipboardCheck size={18} />
-            <span>Stock Counts / Audit</span>
+            <span>Kiểm kê kho</span>
           </NavLink>
 
           {/* Production & Ledger */}
           <div style={{ padding: '20px 18px 8px', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Production & Fulfillment
+            Sản xuất & Đơn hàng
           </div>
           <NavLink to="/manager/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-manager-orders">
             <ShoppingBag size={18} />
-            <span>Order Fulfillment</span>
+            <span>Xử lý đơn hàng</span>
           </NavLink>
           <NavLink to="/manager/print-jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-print-jobs">
             <Printer size={18} />
-            <span>Print Jobs (Reservation)</span>
+            <span>Lệnh in (Giữ vật liệu)</span>
           </NavLink>
           <NavLink to="/manager/inventory/transactions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} id="nav-ledger">
             <History size={18} />
-            <span>Stock Movement Ledger</span>
+            <span>Sổ cái biến động kho</span>
           </NavLink>
         </div>
 
@@ -193,7 +194,7 @@ export const AppLayout: React.FC = () => {
             </div>
           </div>
           
-          <Tooltip title="Sign Out of Session">
+          <Tooltip title="Đăng xuất khỏi hệ thống">
             <button
               onClick={handleLogout}
               style={{
@@ -207,7 +208,7 @@ export const AppLayout: React.FC = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
-              title="Sign Out"
+              title="Đăng xuất"
             >
               <LogOut size={16} />
             </button>
@@ -219,9 +220,9 @@ export const AppLayout: React.FC = () => {
       <div className="main-content">
         <header className="topbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Workspace /</span>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Không gian /</span>
             <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              {isAdmin ? 'System Administrator Portal' : isManager ? 'Operations & Manager Portal' : 'Warehouse Operational Workspace'}
+              {isAdmin ? 'Cổng Quản trị viên Hệ thống' : isManager ? 'Cổng Quản lý & Vận hành' : 'Không gian Thao tác Kho'}
             </span>
           </div>
           
@@ -237,16 +238,16 @@ export const AppLayout: React.FC = () => {
               disabled={isSyncing}
               className="btn btn-secondary"
               style={{ padding: '6px 12px', fontSize: '0.775rem', gap: '6px', borderRadius: '6px' }}
-              title="Refresh and sync data with live database"
+              title="Làm mới và đồng bộ dữ liệu CSDL"
             >
               <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
-              <span>{isSyncing ? 'Syncing...' : 'Sync Live DB'}</span>
+              <span>{isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ CSDL'}</span>
             </button>
             <span className="badge badge-active" id="system-status-indicator">
-              PostgreSQL ACID Active
+              CSDL ACID Sẵn sàng
             </span>
             <span className="badge badge-info" id="manager-role-badge">
-              {user?.role || 'ROLE_WAREHOUSE'}
+              {getRoleLabel(user?.role || 'ROLE_WAREHOUSE')}
             </span>
           </div>
         </header>

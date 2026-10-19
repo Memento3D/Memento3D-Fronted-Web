@@ -64,7 +64,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   const approveReceiptMutation = useMutation({
     mutationFn: wmsEnterpriseApi.approveGoodsReceipt,
     onSuccess: () => {
-      message.success('Goods receipt approved');
+      message.success('Đã phê duyệt phiếu nhập kho');
       queryClient.invalidateQueries({ queryKey: ['pending-receipts'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -74,7 +74,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   const cancelReceiptMutation = useMutation({
     mutationFn: wmsEnterpriseApi.cancelGoodsReceipt,
     onSuccess: () => {
-      message.warning('Goods receipt rejected/cancelled');
+      message.warning('Đã từ chối/hủy phiếu nhập kho');
       queryClient.invalidateQueries({ queryKey: ['pending-receipts'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -84,7 +84,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   const approveIssueMutation = useMutation({
     mutationFn: wmsEnterpriseApi.approveStockIssue,
     onSuccess: () => {
-      message.success('Stock issue approved');
+      message.success('Đã phê duyệt phiếu xuất kho');
       queryClient.invalidateQueries({ queryKey: ['pending-issues'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -94,7 +94,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   const cancelIssueMutation = useMutation({
     mutationFn: wmsEnterpriseApi.cancelStockIssue,
     onSuccess: () => {
-      message.warning('Stock issue rejected');
+      message.warning('Đã từ chối phiếu xuất kho');
       queryClient.invalidateQueries({ queryKey: ['pending-issues'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -104,7 +104,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   const approveAdjustmentMutation = useMutation({
     mutationFn: wmsEnterpriseApi.approveAdjustment,
     onSuccess: () => {
-      message.success('Stock adjustment approved');
+      message.success('Đã phê duyệt điều chỉnh tồn kho');
       queryClient.invalidateQueries({ queryKey: ['pending-adjustments'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -112,9 +112,9 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   });
 
   const rejectAdjustmentMutation = useMutation({
-    mutationFn: (id: string) => wmsEnterpriseApi.rejectAdjustment(id, 'Rejected by Manager in Approval Center'),
+    mutationFn: (id: string) => wmsEnterpriseApi.rejectAdjustment(id, 'Bị quản lý từ chối tại Trung tâm phê duyệt'),
     onSuccess: () => {
-      message.warning('Stock adjustment rejected');
+      message.warning('Đã từ chối điều chỉnh tồn kho');
       queryClient.invalidateQueries({ queryKey: ['pending-adjustments'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -124,7 +124,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   const approveTransferMutation = useMutation({
     mutationFn: wmsEnterpriseApi.approveTransfer,
     onSuccess: () => {
-      message.success('Transfer approved');
+      message.success('Đã phê duyệt điều chuyển kho');
       queryClient.invalidateQueries({ queryKey: ['pending-transfers'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -134,7 +134,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   const cancelTransferMutation = useMutation({
     mutationFn: wmsEnterpriseApi.cancelTransfer,
     onSuccess: () => {
-      message.warning('Transfer rejected/cancelled');
+      message.warning('Đã từ chối/hủy điều chuyển kho');
       queryClient.invalidateQueries({ queryKey: ['pending-transfers'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -150,14 +150,14 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   };
 
   const receiptColumns = [
-    { title: 'Code', dataIndex: 'receiptCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#38bdf8' }}>{val}</Text> },
-    { title: 'Warehouse', dataIndex: 'warehouseName', key: 'warehouse' },
-    { title: 'Supplier', dataIndex: 'supplierName', key: 'supplier', render: (val: string) => val || '—' },
-    { title: 'Lines', dataIndex: 'items', key: 'items', render: (items: any[]) => `${items?.length || 0} items` },
-    { title: 'Submitted By', dataIndex: 'submittedBy', key: 'by', render: (val: string) => val || 'Staff' },
-    { title: 'Date', dataIndex: 'createdAt', key: 'date', render: (val: string) => new Date(val).toLocaleDateString() },
+    { title: 'Mã phiếu', dataIndex: 'receiptCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#38bdf8' }}>{val}</Text> },
+    { title: 'Kho hàng', dataIndex: 'warehouseName', key: 'warehouse' },
+    { title: 'Nhà cung cấp', dataIndex: 'supplierName', key: 'supplier', render: (val: string) => val || '—' },
+    { title: 'Mặt hàng', dataIndex: 'items', key: 'items', render: (items: any[]) => `${items?.length || 0} mặt hàng` },
+    { title: 'Người gửi duyệt', dataIndex: 'submittedBy', key: 'by', render: (val: string) => val || 'Nhân viên' },
+    { title: 'Ngày gửi', dataIndex: 'createdAt', key: 'date', render: (val: string) => new Date(val).toLocaleDateString() },
     {
-      title: 'Action',
+      title: 'Thao tác',
       key: 'action',
       render: (_: any, r: any) => (
         <Space size="small">
@@ -168,10 +168,15 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
             icon={<Check size={13} />} 
             onClick={() => approveReceiptMutation.mutate(r.id)}
           >
-            Approve
+            Phê duyệt
           </Button>
-          <Popconfirm title="Reject this receipt?" onConfirm={() => cancelReceiptMutation.mutate(r.id)}>
-            <Button size="small" danger icon={<X size={13} />}>Reject</Button>
+          <Popconfirm 
+            title="Từ chối phiếu nhập kho này?" 
+            okText="Đồng ý"
+            cancelText="Hủy"
+            onConfirm={() => cancelReceiptMutation.mutate(r.id)}
+          >
+            <Button size="small" danger icon={<X size={13} />}>Từ chối</Button>
           </Popconfirm>
         </Space>
       ),
@@ -179,14 +184,14 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   ];
 
   const issueColumns = [
-    { title: 'Code', dataIndex: 'issueCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#f43f5e' }}>{val}</Text> },
-    { title: 'Warehouse', dataIndex: 'warehouseName', key: 'warehouse' },
-    { title: 'Type / Purpose', dataIndex: 'referenceType', key: 'type', render: (val: string) => <Tag color="cyan">{val || 'PRINT_JOB'}</Tag> },
-    { title: 'Reason', dataIndex: 'reason', key: 'reason' },
-    { title: 'Lines', dataIndex: 'items', key: 'items', render: (items: any[]) => `${items?.length || 0} items` },
-    { title: 'Date', dataIndex: 'createdAt', key: 'date', render: (val: string) => new Date(val).toLocaleDateString() },
+    { title: 'Mã phiếu', dataIndex: 'issueCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#f43f5e' }}>{val}</Text> },
+    { title: 'Kho hàng', dataIndex: 'warehouseName', key: 'warehouse' },
+    { title: 'Phân loại / Mục đích', dataIndex: 'referenceType', key: 'type', render: (val: string) => <Tag color="cyan">{val || 'PRINT_JOB'}</Tag> },
+    { title: 'Lý do', dataIndex: 'reason', key: 'reason' },
+    { title: 'Mặt hàng', dataIndex: 'items', key: 'items', render: (items: any[]) => `${items?.length || 0} mặt hàng` },
+    { title: 'Ngày gửi', dataIndex: 'createdAt', key: 'date', render: (val: string) => new Date(val).toLocaleDateString() },
     {
-      title: 'Action',
+      title: 'Thao tác',
       key: 'action',
       render: (_: any, r: any) => (
         <Space size="small">
@@ -197,10 +202,15 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
             icon={<Check size={13} />} 
             onClick={() => approveIssueMutation.mutate(r.id)}
           >
-            Approve
+            Phê duyệt
           </Button>
-          <Popconfirm title="Reject this issue?" onConfirm={() => cancelIssueMutation.mutate(r.id)}>
-            <Button size="small" danger icon={<X size={13} />}>Reject</Button>
+          <Popconfirm 
+            title="Từ chối phiếu xuất kho này?" 
+            okText="Đồng ý"
+            cancelText="Hủy"
+            onConfirm={() => cancelIssueMutation.mutate(r.id)}
+          >
+            <Button size="small" danger icon={<X size={13} />}>Từ chối</Button>
           </Popconfirm>
         </Space>
       ),
@@ -208,19 +218,19 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   ];
 
   const adjustmentColumns = [
-    { title: 'Code', dataIndex: 'adjustmentCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#fbbf24' }}>{val}</Text> },
-    { title: 'Warehouse', dataIndex: 'warehouseName', key: 'warehouse' },
-    { title: 'Material', key: 'mat', render: (_: any, r: any) => `[${r.materialSku}] ${r.materialName}` },
-    { title: 'System → Actual', key: 'change', render: (_: any, r: any) => `${r.currentQuantity} → ${r.actualQuantity}` },
+    { title: 'Mã điều chỉnh', dataIndex: 'adjustmentCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#fbbf24' }}>{val}</Text> },
+    { title: 'Kho hàng', dataIndex: 'warehouseName', key: 'warehouse' },
+    { title: 'Vật liệu', key: 'mat', render: (_: any, r: any) => `[${r.materialSku}] ${r.materialName}` },
+    { title: 'Hệ thống → Thực tế', key: 'change', render: (_: any, r: any) => `${r.currentQuantity} → ${r.actualQuantity}` },
     { 
-      title: 'Difference', 
+      title: 'Chênh lệch', 
       dataIndex: 'difference', 
       key: 'diff', 
       render: (d: number) => <Text strong style={{ color: d > 0 ? '#10b981' : '#f43f5e' }}>{d > 0 ? `+${d}` : d}</Text> 
     },
-    { title: 'Reason', dataIndex: 'reason', key: 'reason' },
+    { title: 'Lý do', dataIndex: 'reason', key: 'reason' },
     {
-      title: 'Action',
+      title: 'Thao tác',
       key: 'action',
       render: (_: any, r: any) => (
         <Space size="small">
@@ -231,10 +241,15 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
             icon={<Check size={13} />} 
             onClick={() => approveAdjustmentMutation.mutate(r.id)}
           >
-            Approve
+            Phê duyệt
           </Button>
-          <Popconfirm title="Reject this adjustment?" onConfirm={() => rejectAdjustmentMutation.mutate(r.id)}>
-            <Button size="small" danger icon={<X size={13} />}>Reject</Button>
+          <Popconfirm 
+            title="Từ chối yêu cầu điều chỉnh này?" 
+            okText="Đồng ý"
+            cancelText="Hủy"
+            onConfirm={() => rejectAdjustmentMutation.mutate(r.id)}
+          >
+            <Button size="small" danger icon={<X size={13} />}>Từ chối</Button>
           </Popconfirm>
         </Space>
       ),
@@ -242,13 +257,13 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   ];
 
   const transferColumns = [
-    { title: 'Code', dataIndex: 'transferCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#a855f7' }}>{val}</Text> },
-    { title: 'Source', dataIndex: 'sourceWarehouseName', key: 'source' },
-    { title: 'Destination', dataIndex: 'destinationWarehouseName', key: 'dest' },
-    { title: 'Lines', dataIndex: 'items', key: 'items', render: (items: any[]) => `${items?.length || 0} items` },
-    { title: 'Date', dataIndex: 'createdAt', key: 'date', render: (val: string) => new Date(val).toLocaleDateString() },
+    { title: 'Mã chuyển kho', dataIndex: 'transferCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#a855f7' }}>{val}</Text> },
+    { title: 'Kho nguồn', dataIndex: 'sourceWarehouseName', key: 'source' },
+    { title: 'Kho đích', dataIndex: 'destinationWarehouseName', key: 'dest' },
+    { title: 'Mặt hàng', dataIndex: 'items', key: 'items', render: (items: any[]) => `${items?.length || 0} mặt hàng` },
+    { title: 'Ngày gửi', dataIndex: 'createdAt', key: 'date', render: (val: string) => new Date(val).toLocaleDateString() },
     {
-      title: 'Action',
+      title: 'Thao tác',
       key: 'action',
       render: (_: any, r: any) => (
         <Space size="small">
@@ -259,10 +274,15 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
             icon={<Check size={13} />} 
             onClick={() => approveTransferMutation.mutate(r.id)}
           >
-            Approve
+            Phê duyệt
           </Button>
-          <Popconfirm title="Reject this transfer?" onConfirm={() => cancelTransferMutation.mutate(r.id)}>
-            <Button size="small" danger icon={<X size={13} />}>Reject</Button>
+          <Popconfirm 
+            title="Từ chối yêu cầu điều chuyển này?" 
+            okText="Đồng ý"
+            cancelText="Hủy"
+            onConfirm={() => cancelTransferMutation.mutate(r.id)}
+          >
+            <Button size="small" danger icon={<X size={13} />}>Từ chối</Button>
           </Popconfirm>
         </Space>
       ),
@@ -279,14 +299,14 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
-            Manager Unified Approval Center
+            Trung tâm phê duyệt hợp nhất Quản lý
           </Title>
           <Text style={{ color: '#94a3b8' }}>
-            Consolidated operational queue for reviewing and authorizing warehouse operations
+            Hàng đợi vận hành tập trung để xem xét và phê duyệt các hoạt động kho bãi
           </Text>
         </div>
         <Button icon={<RefreshCw size={14} />} onClick={refreshAll}>
-          Refresh Queue
+          Làm mới hàng đợi
         </Button>
       </div>
 
@@ -300,7 +320,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
               label: (
                 <Space>
                   <ArrowDownLeft size={16} />
-                  <span>Goods Receipts</span>
+                  <span>Phiếu nhập kho</span>
                   <Badge count={countReceipts} overflowCount={99} />
                 </Space>
               ),
@@ -310,7 +330,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                   dataSource={receiptsData?.content || []} 
                   rowKey="id" 
                   loading={loadingReceipts}
-                  locale={{ emptyText: 'No pending goods receipts awaiting approval' }}
+                  locale={{ emptyText: 'Không có phiếu nhập kho nào đang chờ duyệt' }}
                 />
               ),
             },
@@ -319,7 +339,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
               label: (
                 <Space>
                   <ArrowUpRight size={16} />
-                  <span>Stock Issues</span>
+                  <span>Phiếu xuất kho</span>
                   <Badge count={countIssues} overflowCount={99} />
                 </Space>
               ),
@@ -329,7 +349,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                   dataSource={issuesData?.content || []} 
                   rowKey="id" 
                   loading={loadingIssues}
-                  locale={{ emptyText: 'No pending stock issues awaiting approval' }}
+                  locale={{ emptyText: 'Không có phiếu xuất kho nào đang chờ duyệt' }}
                 />
               ),
             },
@@ -338,7 +358,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
               label: (
                 <Space>
                   <Sliders size={16} />
-                  <span>Adjustments</span>
+                  <span>Điều chỉnh tồn kho</span>
                   <Badge count={countAdjustments} overflowCount={99} />
                 </Space>
               ),
@@ -348,7 +368,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                   dataSource={adjustmentsData?.content || []} 
                   rowKey="id" 
                   loading={loadingAdjustments}
-                  locale={{ emptyText: 'No pending stock adjustments awaiting approval' }}
+                  locale={{ emptyText: 'Không có yêu cầu điều chỉnh nào đang chờ duyệt' }}
                 />
               ),
             },
@@ -357,7 +377,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
               label: (
                 <Space>
                   <ArrowLeftRight size={16} />
-                  <span>Transfers</span>
+                  <span>Điều chuyển kho</span>
                   <Badge count={countTransfers} overflowCount={99} />
                 </Space>
               ),
@@ -367,7 +387,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                   dataSource={transfersData?.content || []} 
                   rowKey="id" 
                   loading={loadingTransfers}
-                  locale={{ emptyText: 'No pending warehouse transfers awaiting approval' }}
+                  locale={{ emptyText: 'Không có yêu cầu chuyển kho nào đang chờ duyệt' }}
                 />
               ),
             },

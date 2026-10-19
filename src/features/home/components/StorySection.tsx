@@ -19,39 +19,39 @@ interface StoryCard {
 const STORIES: StoryCard[] = [
   {
     icon: <TrophyOutlined style={{ fontSize: 24, color: '#38bdf8' }} />,
-    tag: 'Academic Milestone',
+    tag: 'Cột mốc Học tập',
     tagColor: 'cyan',
-    title: 'Graduation & Life Transitions',
+    title: 'Tốt nghiệp & Những bước ngoặt Cuộc đời',
     narrative:
-      'The ceremonial gown, the proud handshake with professors, the diploma held high. Capturing that breakthrough moment into a desk sculpture that serves as an enduring anchor for future ambitions.',
-    quote: '"Seeing my graduation moment cast in physical form brings back all the late nights and hard-won triumph every single morning."',
+      'Tấm áo cử nhân, cái bắt tay tự hào cùng thầy cô, tấm bằng tốt nghiệp giơ cao. Lưu giữ khoảnh khắc bứt phá ấy vào một tác phẩm điêu khắc để bàn, nguồn cảm hứng bất tận cho những hoài bão tương lai.',
+    quote: '"Ngắm nhìn khoảnh khắc tốt nghiệp được đúc thành vật phẩm mỗi sáng giúp tôi nhớ về những đêm thức trắng và chiến thắng xứng đáng."',
   },
   {
     icon: <SmileOutlined style={{ fontSize: 24, color: '#818cf8' }} />,
-    tag: 'Family Legacy',
+    tag: 'Gia đình & Cội nguồn',
     tagColor: 'purple',
-    title: 'Generational Bonds',
+    title: 'Gắn kết Các thế hệ',
     narrative:
-      'Grandparents sharing a quiet smile on the porch, a toddler’s first steps, or parents celebrating forty years together. Preserving their gentle warmth in sculpted relief that children and grandchildren can touch.',
-    quote: '"Photographs fade into phone folders with tens of thousands of other pictures. A tactile sculpture belongs on the mantelpiece forever."',
+      'Khoảnh khắc ông bà mỉm cười hiền hậu ngoài hiên nhà, bước đi chập chững đầu đời của con trẻ hay kỷ niệm 40 năm ngày cưới của cha mẹ. Lưu lại hơi ấm thân thương thành bức phù điêu mà con cháu có thể chạm vào.',
+    quote: '"Ảnh chụp sẽ chìm vào quên lãng giữa hàng chục ngàn bức ảnh trong máy. Tác phẩm điêu khắc hữu hình sẽ ngự trị mãi mãi nơi phòng khách."',
   },
   {
     icon: <HeartFilled style={{ fontSize: 24, color: '#f43f5e' }} />,
-    tag: 'Beloved Companions',
+    tag: 'Thú cưng Yêu quý',
     tagColor: 'magenta',
-    title: 'Faithful Companions & Pets',
+    title: 'Người bạn Trung thành',
     narrative:
-      'The dog that waited at the door every evening, the cat curled up on winter mornings. Our pets give us unconditional love throughout their lives. A custom 3D memorial keeps their loyal spirit close at hand.',
-    quote: '"Holding a 3D bust of our golden retriever captures his exact cocked-head expression. It brought tears of joyful remembrance to our whole family."',
+      'Chú cún luôn đợi bạn trước cửa mỗi chiều, chú mèo cuộn tròn sưởi ấm những sớm mùa đông. Thú cưng trao tặng ta tình yêu vô điều kiện. Một bức tượng lưu niệm 3D giúp bạn luôn cảm nhận được người bạn trung thành bên cạnh.',
+    quote: '"Cầm trên tay bức tượng 3D của chú cún cưng với đúng ánh mắt nghiêng đầu quen thuộc đã mang lại những giọt nước mắt xúc động cho cả gia đình tôi."',
   },
   {
     icon: <CrownOutlined style={{ fontSize: 24, color: '#eab308' }} />,
-    tag: 'Unforgettable Romance',
+    tag: 'Tình yêu Vĩnh cửu',
     tagColor: 'gold',
-    title: 'Weddings & Anniversaries',
+    title: 'Hôn lễ & Kỷ niệm Ngày cưới',
     narrative:
-      'The walk down the aisle, the quiet whisper after the first dance, the sunset on the honeymoon shore. Transform the defining snapshot of your love story into a timeless artisan heirloom.',
-    quote: '"Instead of a traditional framed photo, we gave each other a bronze composite of our first embrace. It remains the centerpiece of our home."',
+      'Từng bước chân bước vào lễ đường, lời thì thầm ngọt ngào sau điệu nhảy đầu tiên, buổi hoàng hôn trên bờ biển tuần trăng mật. Chuyển hóa khoảnh khắc định nghĩa tình yêu của hai bạn thành tác phẩm thủ công vượt thời gian.',
+    quote: '"Thay vì đóng khung một bức ảnh cưới thông thường, chúng tôi chọn đúc bức tượng composite ghi lại cái ôm đầu tiên. Đó luôn là điểm nhấn thiêng liêng nhất trong tổ ấm."',
   },
 ];
 
@@ -63,13 +63,13 @@ export const StorySection: React.FC = () => {
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <div className="section-badge">
             <HeartFilled style={{ color: '#f43f5e' }} />
-            <span>Emotional Storytelling</span>
+            <span>Câu chuyện Cảm xúc</span>
           </div>
           <h2 className="section-title">
-            Some moments deserve <span className="gradient-text-indigo">more than a photograph.</span>
+            Có những khoảnh khắc xứng đáng <span className="gradient-text-indigo">nhiều hơn một bức ảnh.</span>
           </h2>
           <p className="section-subtitle">
-            A digital snapshot gets lost in a camera roll of thousands. A physical keepsake has presence, tactile weight, and the permanence to be cherished across generations.
+            Một bức ảnh kỹ thuật số dễ bị lãng quên giữa hàng ngàn bức ảnh trong điện thoại. Một kỷ vật hữu hình mang sức sống, cảm giác cầm nắm thực tế và giá trị lưu truyền qua nhiều thế hệ.
           </p>
         </div>
 
@@ -138,3 +138,4 @@ export const StorySection: React.FC = () => {
     </section>
   );
 };
+export default StorySection;

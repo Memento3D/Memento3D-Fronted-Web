@@ -19,32 +19,32 @@ interface MaterialConfig {
 
 const MATERIALS: Record<MaterialTheme, MaterialConfig> = {
   bronze: {
-    name: 'Silk Cast Bronze',
+    name: 'Đồng lụa đúc (Silk Bronze)',
     color: '#d97706',
     glow: 'rgba(217, 119, 6, 0.4)',
     specular: '#fef3c7',
-    desc: 'Metallic luster with warm undertones and micro-brushed patina.',
+    desc: 'Ánh kim loại sang trọng với sắc đồng ấm và bề mặt bóng mờ cổ điển.',
   },
   ivory: {
-    name: 'Matte Ivory Resin',
+    name: 'Resin ngà mờ (Matte Ivory)',
     color: '#f8fafc',
     glow: 'rgba(248, 250, 252, 0.3)',
     specular: '#ffffff',
-    desc: 'Clean classical sculpture aesthetic with smooth tactile finish.',
+    desc: 'Thẩm mỹ điêu khắc cổ điển tinh tế với bề mặt mịn màng cao cấp.',
   },
   obsidian: {
-    name: 'Obsidian Slate SLA',
+    name: 'Đá phiến Obsidian SLA',
     color: '#334155',
     glow: 'rgba(51, 65, 85, 0.5)',
     specular: '#94a3b8',
-    desc: 'Sleek, modern deep monochrome finish with high shadow contrast.',
+    desc: 'Màu đen huyền bí hiện đại với độ tương phản đổ bóng sắc nét.',
   },
   'cyan-resin': {
-    name: 'Translucent Cyan Photopolymer',
+    name: 'Resin quang hóa xanh trong',
     color: '#06b6d4',
     glow: 'rgba(6, 182, 212, 0.6)',
     specular: '#a5f3fc',
-    desc: 'Light-transmitting internal refractions with holographic edge highlights.',
+    desc: 'Độ truyền sáng khúc xạ nội vi với viền sáng quang học độc đáo.',
   },
 };
 
@@ -95,13 +95,13 @@ export const ThreeDExperience: React.FC = () => {
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div className="section-badge">
             <CompassOutlined />
-            <span>Interactive 3D Studio</span>
+            <span>Trải nghiệm Tương tác 3D Trực quan</span>
           </div>
           <h2 className="section-title">
-            Inspect & Experience in <span className="gradient-text-cyan">Real-Time</span>
+            Kiểm tra & Trải nghiệm <span className="gradient-text-cyan">Thời gian thực</span>
           </h2>
           <p className="section-subtitle">
-            Interact with our simulated photogrammetry viewer. Rotate the keepsake, preview different physical material shaders, and test wireframe topology inspection.
+            Tương tác trực tiếp với bộ xem mô hình 3D. Xoay 360 độ, xem trước các chất liệu hoàn thiện vật lý và kiểm tra cấu trúc lưới đa giác.
           </p>
         </div>
 
@@ -236,7 +236,7 @@ export const ThreeDExperience: React.FC = () => {
                   }}
                 >
                   <RotateLeftOutlined style={{ color: '#38bdf8' }} />
-                  <span>Click and drag to rotate 360°</span>
+                  <span>Nhấp và kéo chuột để xoay 360°</span>
                 </div>
 
                 {/* Reset Camera Button */}
@@ -255,7 +255,7 @@ export const ThreeDExperience: React.FC = () => {
                     borderRadius: 8,
                   }}
                 >
-                  Reset View
+                  Đặt lại góc nhìn
                 </Button>
 
                 {/* Demo Disclaimer */}
@@ -272,7 +272,7 @@ export const ThreeDExperience: React.FC = () => {
                     border: '1px solid rgba(56, 189, 248, 0.3)',
                   }}
                 >
-                  Simulation Viewer • Real-Time CSS 3D
+                  Mô phỏng 3D Thời gian thực
                 </div>
               </div>
             </Col>
@@ -284,10 +284,10 @@ export const ThreeDExperience: React.FC = () => {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                     <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Physical Material Finish
+                      Chất liệu hoàn thiện vật lý
                     </span>
                     <Tag color="cyan" style={{ fontSize: '0.7rem', margin: 0 }}>
-                      Selected
+                      Đang chọn
                     </Tag>
                   </div>
 
@@ -332,7 +332,7 @@ export const ThreeDExperience: React.FC = () => {
                 {/* Shading & Topology Mode */}
                 <div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>
-                    Viewport Topology Mode
+                    Chế độ hiển thị khung nhìn
                   </div>
                   <Radio.Group
                     value={renderMode}
@@ -340,13 +340,13 @@ export const ThreeDExperience: React.FC = () => {
                     style={{ width: '100%', display: 'flex', gap: 8 }}
                   >
                     <Radio.Button value="solid" style={{ flex: 1, textAlign: 'center' }}>
-                      Solid Shader
+                      Đặc khối (Solid)
                     </Radio.Button>
                     <Radio.Button value="wireframe" style={{ flex: 1, textAlign: 'center' }}>
-                      Wireframe
+                      Lưới đa giác (Wireframe)
                     </Radio.Button>
                     <Radio.Button value="xray" style={{ flex: 1, textAlign: 'center' }}>
-                      X-Ray Density
+                      Tia X (X-Ray)
                     </Radio.Button>
                   </Radio.Group>
                 </div>
@@ -361,24 +361,24 @@ export const ThreeDExperience: React.FC = () => {
                   }}
                 >
                   <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#38bdf8', marginBottom: 8, textTransform: 'uppercase' }}>
-                    Synthesis Telemetry
+                    Thông số đo đạc mô hình
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
                     <div>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Polygon Density</div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff' }}>48,200 Triangles</div>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Mật độ tam giác</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff' }}>48.200 Tam giác</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Watertight Shell</div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#10b981' }}>100% Manifold</div>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Bề mặt khép kín</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#10b981' }}>Khép kín 100%</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Layer Resolution</div>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Độ dày lớp in</div>
                       <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff' }}>0.08 mm</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Print Time Est.</div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#cbd5e1' }}>7h 45m</div>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Thời gian in dự kiến</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#cbd5e1' }}>7 giờ 45 phút</div>
                     </div>
                   </div>
                 </div>
@@ -390,3 +390,4 @@ export const ThreeDExperience: React.FC = () => {
     </section>
   );
 };
+export default ThreeDExperience;

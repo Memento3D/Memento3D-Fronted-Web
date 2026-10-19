@@ -46,21 +46,21 @@ export const StockMovementReportPage: React.FC = () => {
 
   const handleExportCSV = () => {
     if (transactions.length === 0) {
-      message.warning('No transaction records available to export');
+      message.warning('Không có bản ghi giao dịch nào để xuất');
       return;
     }
 
     const headers = [
-      'Timestamp',
-      'Transaction Type',
-      'Warehouse Code',
-      'Material SKU',
-      'Material Name',
-      'Delta On-Hand (g)',
-      'Delta Reserved (g)',
-      'Before On-Hand (g)',
-      'After On-Hand (g)',
-      'Reference / Job ID',
+      'Thời gian',
+      'Loại giao dịch',
+      'Mã kho',
+      'Mã SKU vật liệu',
+      'Tên vật liệu',
+      'Biến động tồn thực tế (g)',
+      'Biến động tạm giữ (g)',
+      'Tồn trước giao dịch (g)',
+      'Tồn sau giao dịch (g)',
+      'Mã tham chiếu / Lệnh in',
     ];
 
     const rows = transactions.map((t) => [
@@ -80,11 +80,11 @@ export const StockMovementReportPage: React.FC = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Memento3D_Inventory_Ledger_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `Memento3D_SoCaiTonKho_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    message.success('Stock movement audit ledger exported to CSV successfully');
+    message.success('Đã xuất sổ cái biến động kho sang CSV thành công');
   };
 
   const renderTypeTag = (type: InventoryTransactionType) => {
@@ -92,37 +92,37 @@ export const StockMovementReportPage: React.FC = () => {
       case 'RECEIPT':
         return (
           <Tag color="success" icon={<ArrowDownOutlined />}>
-            RECEIPT
+            NHẬP KHO
           </Tag>
         );
       case 'ISSUE':
         return (
           <Tag color="error" icon={<ArrowUpOutlined />}>
-            MANUAL ISSUE
+            XUẤT THỦ CÔNG
           </Tag>
         );
       case 'RESERVATION_HOLD':
         return (
           <Tag color="warning" icon={<LockOutlined />}>
-            RESERVATION HOLD
+            TẠM GIỮ THEO ĐƠN
           </Tag>
         );
       case 'RESERVATION_RELEASE':
         return (
           <Tag color="processing" icon={<UnlockOutlined />}>
-            RELEASE RESERVATION
+            GIẢI PHÓNG TẠM GIỮ
           </Tag>
         );
       case 'PRINT_ISSUE':
         return (
           <Tag color="volcano" icon={<ArrowUpOutlined />}>
-            PRINT ISSUE
+            XUẤT SẢN XUẤT IN
           </Tag>
         );
       case 'PRINT_RETURN':
         return (
           <Tag color="cyan" icon={<ArrowDownOutlined />}>
-            PRINT RETURN
+            HOÀN TRẢ SAU IN
           </Tag>
         );
       default:
@@ -132,7 +132,7 @@ export const StockMovementReportPage: React.FC = () => {
 
   const columns: ColumnsType<InventoryTransaction> = [
     {
-      title: 'Timestamp',
+      title: 'Thời gian',
       dataIndex: 'createdAt',
       key: 'createdAt',
       sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
@@ -143,19 +143,19 @@ export const StockMovementReportPage: React.FC = () => {
       ),
     },
     {
-      title: 'Transaction Type',
+      title: 'Loại biến động',
       dataIndex: 'transactionType',
       key: 'transactionType',
       render: (type: InventoryTransactionType) => renderTypeTag(type),
     },
     {
-      title: 'Warehouse',
+      title: 'Kho hàng',
       dataIndex: 'warehouseCode',
       key: 'warehouseCode',
       render: (code: string) => <Tag color="blue">{code}</Tag>,
     },
     {
-      title: 'Material SKU',
+      title: 'Mã SKU / Vật liệu',
       dataIndex: 'materialSku',
       key: 'materialSku',
       render: (sku: string, record) => (
@@ -166,7 +166,7 @@ export const StockMovementReportPage: React.FC = () => {
       ),
     },
     {
-      title: 'Delta On-Hand',
+      title: 'Biến động tồn thực tế',
       dataIndex: 'deltaOnHandGram',
       key: 'deltaOnHandGram',
       render: (delta: number) => {
@@ -176,7 +176,7 @@ export const StockMovementReportPage: React.FC = () => {
       },
     },
     {
-      title: 'Delta Reserved',
+      title: 'Biến động tạm giữ',
       dataIndex: 'deltaReservedGram',
       key: 'deltaReservedGram',
       render: (delta: number) => {
@@ -186,21 +186,21 @@ export const StockMovementReportPage: React.FC = () => {
       },
     },
     {
-      title: 'Balance After',
+      title: 'Số dư sau giao dịch',
       key: 'balanceAfter',
       render: (_, record) => (
         <Space orientation="vertical" size={0}>
-          <Text style={{ fontSize: 12 }}>On-Hand: {record.afterOnHandGram} g</Text>
-          <Text type="secondary" style={{ fontSize: 11 }}>Reserved: {record.afterReservedGram} g</Text>
+          <Text style={{ fontSize: 12 }}>Tồn thực tế: {record.afterOnHandGram} g</Text>
+          <Text type="secondary" style={{ fontSize: 11 }}>Tạm giữ: {record.afterReservedGram} g</Text>
         </Space>
       ),
     },
     {
-      title: 'Reference / Job',
+      title: 'Mã tham chiếu / Lệnh in',
       key: 'reference',
       render: (_, record) => (
         <Text copyable code style={{ fontSize: 11 }}>
-          {record.printJobId ? `Job #${record.printJobId.slice(0, 8)}` : record.idempotencyKey?.slice(0, 12) || 'Direct'}
+          {record.printJobId ? `Lệnh in #${record.printJobId.slice(0, 8)}` : record.idempotencyKey?.slice(0, 12) || 'Trực tiếp'}
         </Text>
       ),
     },
@@ -215,18 +215,18 @@ export const StockMovementReportPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
-            Inventory Movement & Audit Ledger (F08)
+            Sổ cái biến động kho & Đối soát (F08)
           </Title>
           <Text type="secondary">
-            Immutable, double-entry inventory ledger tracking every stock inbound, allocation hold, and issue.
+            Sổ cái tồn kho bất biến theo dõi toàn bộ hoạt động nhập kho, tạm giữ phân bổ và xuất kho.
           </Text>
         </div>
         <Space wrap>
           <Button icon={<DownloadOutlined />} onClick={handleExportCSV}>
-            Export CSV
+            Xuất file CSV
           </Button>
           <Button icon={<PrinterOutlined />} onClick={() => window.print()}>
-            Print Report
+            In báo cáo
           </Button>
         </Space>
       </div>
@@ -236,32 +236,32 @@ export const StockMovementReportPage: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Total Ledger Records"
+              title="Tổng số bản ghi sổ cái"
               value={transactions.length}
               prefix={<HistoryOutlined style={{ color: '#0ea5e9' }} />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Audit entries</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Bản ghi</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Inbound Receipts Logged"
+              title="Lượt nhập kho đã ghi nhận"
               value={receiptCount}
               valueStyle={{ color: '#10b981' }}
               prefix={<ArrowDownOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Shipments</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Lô hàng</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Outbound & Production Issues"
+              title="Lượt xuất kho & Sản xuất"
               value={issueCount}
               valueStyle={{ color: '#ef4444' }}
               prefix={<ArrowUpOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Deductions</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Lượt xuất</Text>}
             />
           </Card>
         </Col>
@@ -273,10 +273,10 @@ export const StockMovementReportPage: React.FC = () => {
           <Space wrap>
             <FilterOutlined style={{ color: '#0ea5e9' }} />
             <Select
-              placeholder="All Warehouses"
+              placeholder="Tất cả các kho"
               value={warehouseId}
               onChange={(val) => setWarehouseId(val)}
-              style={{ width: 220 }}
+              style={{ width: 240 }}
               allowClear
             >
               {warehouses.map((wh) => (
@@ -287,22 +287,22 @@ export const StockMovementReportPage: React.FC = () => {
             </Select>
 
             <Select
-              placeholder="Filter Transaction Type"
+              placeholder="Lọc loại biến động"
               value={txType}
               onChange={(val) => setTxType(val)}
-              style={{ width: 220 }}
+              style={{ width: 260 }}
               allowClear
             >
-              <Select.Option value="RECEIPT">RECEIPT (Goods In)</Select.Option>
-              <Select.Option value="ISSUE">ISSUE (Manual Deduction)</Select.Option>
-              <Select.Option value="RESERVATION_HOLD">RESERVATION_HOLD (Job Hold)</Select.Option>
-              <Select.Option value="RESERVATION_RELEASE">RESERVATION_RELEASE (Canceled)</Select.Option>
-              <Select.Option value="PRINT_ISSUE">PRINT_ISSUE (Sent to Bed)</Select.Option>
-              <Select.Option value="PRINT_RETURN">PRINT_RETURN (Unused Returned)</Select.Option>
+              <Select.Option value="RECEIPT">NHẬP KHO (Tiếp nhận hàng)</Select.Option>
+              <Select.Option value="ISSUE">XUẤT KHO (Xuất thủ công)</Select.Option>
+              <Select.Option value="RESERVATION_HOLD">TẠM GIỮ (Theo lệnh in)</Select.Option>
+              <Select.Option value="RESERVATION_RELEASE">GIẢI PHÓNG TẠM GIỮ (Hủy lệnh)</Select.Option>
+              <Select.Option value="PRINT_ISSUE">XUẤT SẢN XUẤT (Bắt đầu in)</Select.Option>
+              <Select.Option value="PRINT_RETURN">HOÀN TRẢ KHO (Dư sau in)</Select.Option>
             </Select>
           </Space>
           <Text type="secondary" style={{ alignSelf: 'center' }}>
-            Showing {transactions.length} audit transactions
+            Hiển thị {transactions.length} giao dịch kiểm toán
           </Text>
         </div>
 

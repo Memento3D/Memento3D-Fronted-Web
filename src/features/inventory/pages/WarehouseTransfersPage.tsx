@@ -36,6 +36,7 @@ import { useWarehouseContext } from '../../warehouse/context/WarehouseContext';
 import { materialApi } from '../../material/api/materialApi';
 import { warehouseApi } from '../../warehouse/api/warehouseApi';
 import { useAuth } from '../../auth/hooks/useAuth';
+import { getStatusLabel } from '../../../locales/i18n';
 
 const { Title, Text } = Typography;
 
@@ -74,19 +75,19 @@ export const WarehouseTransfersPage: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: wmsEnterpriseApi.createTransfer,
     onSuccess: () => {
-      message.success('Warehouse transfer draft created');
+      message.success('Tạo bản nháp phiếu chuyển kho thành công');
       setIsCreateModalOpen(false);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['warehouse-transfers'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
-    onError: (err: any) => message.error(err.message || 'Failed to create transfer'),
+    onError: (err: any) => message.error(err.message || 'Tạo phiếu chuyển kho thất bại'),
   });
 
   const submitMutation = useMutation({
     mutationFn: wmsEnterpriseApi.submitTransfer,
     onSuccess: () => {
-      message.success('Transfer submitted for manager approval');
+      message.success('Đã gửi phiếu chuyển kho để quản lý duyệt');
       queryClient.invalidateQueries({ queryKey: ['warehouse-transfers'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -96,7 +97,7 @@ export const WarehouseTransfersPage: React.FC = () => {
   const approveMutation = useMutation({
     mutationFn: wmsEnterpriseApi.approveTransfer,
     onSuccess: () => {
-      message.success('Transfer approved! Ready to ship.');
+      message.success('Đã phê duyệt phiếu chuyển kho! Sẵn sàng xuất vận chuyển.');
       queryClient.invalidateQueries({ queryKey: ['warehouse-transfers'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -106,7 +107,7 @@ export const WarehouseTransfersPage: React.FC = () => {
   const shipMutation = useMutation({
     mutationFn: wmsEnterpriseApi.shipTransfer,
     onSuccess: () => {
-      message.success('Transfer marked IN_TRANSIT! Source stock deducted.');
+      message.success('Đã chuyển trạng thái ĐANG VẬN CHUYỂN! Đã trừ tồn kho nguồn.');
       queryClient.invalidateQueries({ queryKey: ['warehouse-transfers'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-balances'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
@@ -117,7 +118,7 @@ export const WarehouseTransfersPage: React.FC = () => {
   const receiveMutation = useMutation({
     mutationFn: wmsEnterpriseApi.receiveTransfer,
     onSuccess: () => {
-      message.success('Transfer received! Destination inventory credited.');
+      message.success('Đã tiếp nhận hàng chuyển kho! Đã cộng tồn kho đích.');
       queryClient.invalidateQueries({ queryKey: ['warehouse-transfers'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-balances'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
@@ -128,7 +129,7 @@ export const WarehouseTransfersPage: React.FC = () => {
   const cancelMutation = useMutation({
     mutationFn: wmsEnterpriseApi.cancelTransfer,
     onSuccess: () => {
-      message.warning('Transfer cancelled');
+      message.warning('Đã hủy phiếu chuyển kho');
       queryClient.invalidateQueries({ queryKey: ['warehouse-transfers'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -137,7 +138,7 @@ export const WarehouseTransfersPage: React.FC = () => {
 
   const handleCreateSubmit = (values: any) => {
     if (values.sourceWarehouseId === values.destinationWarehouseId) {
-      message.error('Source and Destination warehouse must be different');
+      message.error('Kho nguồn và Kho đích phải khác nhau');
       return;
     }
 
@@ -155,13 +156,13 @@ export const WarehouseTransfersPage: React.FC = () => {
 
   const getStatusTag = (status: WarehouseTransferStatus) => {
     switch (status) {
-      case 'DRAFT': return <Tag color="default">DRAFT</Tag>;
-      case 'SUBMITTED': return <Tag color="blue">SUBMITTED</Tag>;
-      case 'APPROVED': return <Tag color="gold">APPROVED</Tag>;
-      case 'IN_TRANSIT': return <Tag color="purple">IN TRANSIT</Tag>;
-      case 'RECEIVED': return <Tag color="green">RECEIVED</Tag>;
-      case 'CANCELLED': return <Tag color="red">CANCELLED</Tag>;
-      default: return <Tag>{status}</Tag>;
+      case 'DRAFT': return <Tag color="default">{getStatusLabel('DRAFT')}</Tag>;
+      case 'SUBMITTED': return <Tag color="blue">{getStatusLabel('SUBMITTED')}</Tag>;
+      case 'APPROVED': return <Tag color="gold">{getStatusLabel('APPROVED')}</Tag>;
+      case 'IN_TRANSIT': return <Tag color="purple">{getStatusLabel('IN_TRANSIT')}</Tag>;
+      case 'RECEIVED': return <Tag color="green">{getStatusLabel('RECEIVED')}</Tag>;
+      case 'CANCELLED': return <Tag color="red">{getStatusLabel('CANCELLED')}</Tag>;
+      default: return <Tag>{getStatusLabel(status)}</Tag>;
     }
   };
 
@@ -169,7 +170,7 @@ export const WarehouseTransfersPage: React.FC = () => {
 
   const columns = [
     {
-      title: 'Transfer Code',
+      title: 'Mã phiếu chuyển',
       dataIndex: 'transferCode',
       key: 'transferCode',
       render: (code: string, r: WarehouseTransfer) => (
@@ -179,68 +180,85 @@ export const WarehouseTransfersPage: React.FC = () => {
       ),
     },
     {
-      title: 'Source Warehouse',
+      title: 'Kho nguồn (Xuất)',
       dataIndex: 'sourceWarehouseName',
       key: 'sourceWarehouseName',
       render: (name: string) => <Text strong style={{ color: '#f87171' }}>{name}</Text>,
     },
     {
-      title: 'Destination Warehouse',
+      title: 'Kho đích (Nhập)',
       dataIndex: 'destinationWarehouseName',
       key: 'destinationWarehouseName',
       render: (name: string) => <Text strong style={{ color: '#34d399' }}>{name}</Text>,
     },
     {
-      title: 'Items',
+      title: 'Mặt hàng',
       dataIndex: 'items',
       key: 'items',
-      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} line items</Text>,
+      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} mặt hàng</Text>,
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: WarehouseTransferStatus) => getStatusTag(status),
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_: any, r: WarehouseTransfer) => (
         <Space size="small">
           <Button size="small" icon={<Eye size={13} />} onClick={() => setViewTransfer(r)}>
-            View
+            Xem
           </Button>
 
           {r.status === 'DRAFT' && (
             <Button size="small" type="primary" icon={<Send size={13} />} onClick={() => submitMutation.mutate(r.id)}>
-              Submit
+              Gửi duyệt
             </Button>
           )}
 
           {r.status === 'SUBMITTED' && isManager && (
             <Button size="small" style={{ background: '#f59e0b', color: '#fff', borderColor: '#f59e0b' }} icon={<Check size={13} />} onClick={() => approveMutation.mutate(r.id)}>
-              Approve
+              Phê duyệt
             </Button>
           )}
 
           {r.status === 'APPROVED' && (
-            <Popconfirm title="Dispatch & Ship Transfer?" description="This will deduct inventory from source warehouse." onConfirm={() => shipMutation.mutate(r.id)}>
+            <Popconfirm 
+              title="Xuất kho & Vận chuyển?" 
+              description="Thao tác này sẽ trừ số lượng tồn kho tại kho nguồn." 
+              okText="Đồng ý"
+              cancelText="Hủy"
+              onConfirm={() => shipMutation.mutate(r.id)}
+            >
               <Button size="small" type="primary" style={{ background: '#8b5cf6', borderColor: '#8b5cf6' }} icon={<Truck size={13} />}>
-                Ship
+                Vận chuyển
               </Button>
             </Popconfirm>
           )}
 
           {r.status === 'IN_TRANSIT' && (
-            <Popconfirm title="Confirm Goods Received?" description="This will add items to destination warehouse inventory." onConfirm={() => receiveMutation.mutate(r.id)}>
+            <Popconfirm 
+              title="Xác nhận đã nhận hàng?" 
+              description="Thao tác này sẽ ghi tăng tồn kho tại kho đích." 
+              okText="Đồng ý"
+              cancelText="Hủy"
+              onConfirm={() => receiveMutation.mutate(r.id)}
+            >
               <Button size="small" type="primary" style={{ background: '#10b981', borderColor: '#10b981' }} icon={<CheckCircle2 size={13} />}>
-                Receive
+                Nhận hàng
               </Button>
             </Popconfirm>
           )}
 
           {(r.status === 'DRAFT' || r.status === 'SUBMITTED') && (
-            <Popconfirm title="Cancel Transfer?" onConfirm={() => cancelMutation.mutate(r.id)}>
+            <Popconfirm 
+              title="Hủy phiếu chuyển kho?" 
+              okText="Đồng ý"
+              cancelText="Quay lại"
+              onConfirm={() => cancelMutation.mutate(r.id)}
+            >
               <Button size="small" danger icon={<XCircle size={13} />} />
             </Popconfirm>
           )}
@@ -254,26 +272,26 @@ export const WarehouseTransfersPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
-            Inter-Warehouse Transfers
+            Điều chuyển giữa các kho
           </Title>
           <Text style={{ color: '#94a3b8' }}>
-            Transfer workflow: DRAFT → SUBMITTED → APPROVED → IN_TRANSIT (Ship) → RECEIVED (Destination Receive)
+            Quy trình điều chuyển: BẢN NHÁP → GỬI DUYỆT → ĐÃ DUYỆT → ĐANG VẬN CHUYỂN → ĐÃ TIẾP NHẬN
           </Text>
         </div>
         <Space>
           <Select
-            placeholder="Filter by Status"
+            placeholder="Lọc theo trạng thái"
             allowClear
             value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
-            style={{ width: 160 }}
+            style={{ width: 180 }}
           >
-            <Select.Option value="DRAFT">Draft</Select.Option>
-            <Select.Option value="SUBMITTED">Submitted</Select.Option>
-            <Select.Option value="APPROVED">Approved</Select.Option>
-            <Select.Option value="IN_TRANSIT">In Transit</Select.Option>
-            <Select.Option value="RECEIVED">Received</Select.Option>
-            <Select.Option value="CANCELLED">Cancelled</Select.Option>
+            <Select.Option value="DRAFT">Bản nháp</Select.Option>
+            <Select.Option value="SUBMITTED">Đã gửi duyệt</Select.Option>
+            <Select.Option value="APPROVED">Đã phê duyệt</Select.Option>
+            <Select.Option value="IN_TRANSIT">Đang vận chuyển</Select.Option>
+            <Select.Option value="RECEIVED">Đã tiếp nhận</Select.Option>
+            <Select.Option value="CANCELLED">Đã hủy</Select.Option>
           </Select>
           <Button 
             type="primary" 
@@ -281,7 +299,7 @@ export const WarehouseTransfersPage: React.FC = () => {
             style={{ background: '#a855f7', borderColor: '#a855f7', borderRadius: 8, fontWeight: 600 }}
             onClick={() => setIsCreateModalOpen(true)}
           >
-            New Transfer Request
+            Tạo yêu cầu điều chuyển
           </Button>
         </Space>
       </div>
@@ -303,7 +321,7 @@ export const WarehouseTransfersPage: React.FC = () => {
 
       {/* Create Modal */}
       <Modal
-        title="Create Inter-Warehouse Transfer Request"
+        title="Tạo yêu cầu điều chuyển kho"
         open={isCreateModalOpen}
         onCancel={() => setIsCreateModalOpen(false)}
         footer={null}
@@ -311,16 +329,16 @@ export const WarehouseTransfersPage: React.FC = () => {
       >
         <Form form={form} layout="vertical" onFinish={handleCreateSubmit} initialValues={{ sourceWarehouseId: activeWarehouse?.id, items: [{}] }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <Form.Item name="sourceWarehouseId" label="Source Warehouse" rules={[{ required: true, message: 'Select source warehouse' }]}>
-              <Select placeholder="Origin warehouse">
+            <Form.Item name="sourceWarehouseId" label="Kho nguồn (Xuất)" rules={[{ required: true, message: 'Vui lòng chọn kho nguồn' }]}>
+              <Select placeholder="Chọn kho nguồn">
                 {warehousesData?.content?.map((w: any) => (
                   <Select.Option key={w.id} value={w.id}>{w.name} ({w.code})</Select.Option>
                 ))}
               </Select>
             </Form.Item>
 
-            <Form.Item name="destinationWarehouseId" label="Destination Warehouse" rules={[{ required: true, message: 'Select destination warehouse' }]}>
-              <Select placeholder="Target warehouse">
+            <Form.Item name="destinationWarehouseId" label="Kho đích (Nhập)" rules={[{ required: true, message: 'Vui lòng chọn kho đích' }]}>
+              <Select placeholder="Chọn kho đích">
                 {warehousesData?.content?.map((w: any) => (
                   <Select.Option key={w.id} value={w.id}>{w.name} ({w.code})</Select.Option>
                 ))}
@@ -328,11 +346,11 @@ export const WarehouseTransfersPage: React.FC = () => {
             </Form.Item>
           </div>
 
-          <Form.Item name="notes" label="Notes / Transport Details">
-            <Input.TextArea rows={2} placeholder="Carrier, driver contact, tracking notes..." />
+          <Form.Item name="notes" label="Ghi chú / Thông tin vận chuyển">
+            <Input.TextArea rows={2} placeholder="Đơn vị vận chuyển, liên hệ tài xế, mã vận đơn..." />
           </Form.Item>
 
-          <Divider style={{ color: '#94a3b8' }}>Materials to Transfer</Divider>
+          <Divider style={{ color: '#94a3b8' }}>Danh sách vật liệu điều chuyển</Divider>
 
           <Form.List name="items">
             {(fields, { add, remove }) => (
@@ -342,13 +360,13 @@ export const WarehouseTransfersPage: React.FC = () => {
                     <Form.Item
                       {...restField}
                       name={[name, 'materialId']}
-                      rules={[{ required: true, message: 'Select material' }]}
+                      rules={[{ required: true, message: 'Vui lòng chọn vật liệu' }]}
                       style={{ flex: 4, margin: 0 }}
                     >
-                      <Select placeholder="Material SKU / Name" showSearch optionFilterProp="children">
+                      <Select placeholder="Mã SKU / Tên vật liệu" showSearch optionFilterProp="children">
                         {materialsData?.content?.map((m: any) => (
                           <Select.Option key={m.id} value={m.id}>
-                            [{m.sku}] {m.name} ({m.color || 'Standard'})
+                            [{m.sku}] {m.name} ({m.color || 'Tiêu chuẩn'})
                           </Select.Option>
                         ))}
                       </Select>
@@ -357,26 +375,26 @@ export const WarehouseTransfersPage: React.FC = () => {
                     <Form.Item
                       {...restField}
                       name={[name, 'quantity']}
-                      rules={[{ required: true, message: 'Qty' }]}
+                      rules={[{ required: true, message: 'Số lượng' }]}
                       style={{ flex: 2, margin: 0 }}
                     >
-                      <InputNumber min={0.01} step={1} placeholder="Transfer Qty" style={{ width: '100%' }} />
+                      <InputNumber min={0.01} step={1} placeholder="SL chuyển" style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Button type="text" danger icon={<Trash2 size={16} />} onClick={() => remove(name)} />
                   </div>
                 ))}
                 <Button type="dashed" onClick={() => add()} block style={{ marginTop: 8 }}>
-                  + Add Material
+                  + Thêm vật liệu
                 </Button>
               </>
             )}
           </Form.List>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24 }}>
-            <Button onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
+            <Button onClick={() => setIsCreateModalOpen(false)}>Hủy</Button>
             <Button type="primary" htmlType="submit" loading={createMutation.isPending} style={{ background: '#a855f7', borderColor: '#a855f7' }}>
-              Create Transfer Draft
+              Tạo bản nháp điều chuyển
             </Button>
           </div>
         </Form>
@@ -384,29 +402,29 @@ export const WarehouseTransfersPage: React.FC = () => {
 
       {/* Details Modal */}
       <Modal
-        title={`Warehouse Transfer: ${viewTransfer?.transferCode}`}
+        title={`Chi tiết điều chuyển kho: ${viewTransfer?.transferCode}`}
         open={!!viewTransfer}
         onCancel={() => setViewTransfer(null)}
         footer={[
-          <Button key="close" onClick={() => setViewTransfer(null)}>Close</Button>,
+          <Button key="close" onClick={() => setViewTransfer(null)}>Đóng</Button>,
           viewTransfer?.status === 'DRAFT' && (
             <Button key="submit" type="primary" onClick={() => { submitMutation.mutate(viewTransfer.id); setViewTransfer(null); }}>
-              Submit for Approval
+              Gửi phê duyệt
             </Button>
           ),
           viewTransfer?.status === 'SUBMITTED' && isManager && (
             <Button key="approve" style={{ background: '#f59e0b', color: '#fff' }} onClick={() => { approveMutation.mutate(viewTransfer.id); setViewTransfer(null); }}>
-              Approve
+              Phê duyệt
             </Button>
           ),
           viewTransfer?.status === 'APPROVED' && (
             <Button key="ship" type="primary" style={{ background: '#8b5cf6' }} onClick={() => { shipMutation.mutate(viewTransfer.id); setViewTransfer(null); }}>
-              Ship (In Transit)
+              Xuất kho vận chuyển
             </Button>
           ),
           viewTransfer?.status === 'IN_TRANSIT' && (
             <Button key="receive" type="primary" style={{ background: '#10b981' }} onClick={() => { receiveMutation.mutate(viewTransfer.id); setViewTransfer(null); }}>
-              Receive (Deposit to Target)
+              Tiếp nhận vào kho đích
             </Button>
           )
         ]}
@@ -415,25 +433,25 @@ export const WarehouseTransfersPage: React.FC = () => {
         {viewTransfer && (
           <div>
             <Descriptions bordered size="small" column={2} style={{ marginBottom: 16 }}>
-              <Descriptions.Item label="Status">{getStatusTag(viewTransfer.status)}</Descriptions.Item>
-              <Descriptions.Item label="Source">{viewTransfer.sourceWarehouseName}</Descriptions.Item>
-              <Descriptions.Item label="Destination">{viewTransfer.destinationWarehouseName}</Descriptions.Item>
-              <Descriptions.Item label="Approved By">{viewTransfer.approvedBy || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Shipped At">{viewTransfer.shippedAt ? new Date(viewTransfer.shippedAt).toLocaleString() : '—'}</Descriptions.Item>
-              <Descriptions.Item label="Received At">{viewTransfer.receivedAt ? new Date(viewTransfer.receivedAt).toLocaleString() : '—'}</Descriptions.Item>
-              <Descriptions.Item label="Notes" span={2}>{viewTransfer.notes || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Trạng thái">{getStatusTag(viewTransfer.status)}</Descriptions.Item>
+              <Descriptions.Item label="Kho nguồn">{viewTransfer.sourceWarehouseName}</Descriptions.Item>
+              <Descriptions.Item label="Kho đích">{viewTransfer.destinationWarehouseName}</Descriptions.Item>
+              <Descriptions.Item label="Người phê duyệt">{viewTransfer.approvedBy || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Thời gian xuất">{viewTransfer.shippedAt ? new Date(viewTransfer.shippedAt).toLocaleString() : '—'}</Descriptions.Item>
+              <Descriptions.Item label="Thời gian nhận">{viewTransfer.receivedAt ? new Date(viewTransfer.receivedAt).toLocaleString() : '—'}</Descriptions.Item>
+              <Descriptions.Item label="Ghi chú" span={2}>{viewTransfer.notes || '—'}</Descriptions.Item>
             </Descriptions>
 
-            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Items In Transit</Title>
+            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Danh sách mặt hàng điều chuyển</Title>
             <Table
               dataSource={viewTransfer.items || []}
               rowKey="id"
               pagination={false}
               size="small"
               columns={[
-                { title: 'SKU', dataIndex: 'materialSku', key: 'sku' },
-                { title: 'Material Name', dataIndex: 'materialName', key: 'name' },
-                { title: 'Quantity', dataIndex: 'quantity', key: 'quantity', render: (q: number) => <Text strong style={{ color: '#a855f7' }}>{q}</Text> },
+                { title: 'Mã SKU', dataIndex: 'materialSku', key: 'sku' },
+                { title: 'Tên vật liệu', dataIndex: 'materialName', key: 'name' },
+                { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity', render: (q: number) => <Text strong style={{ color: '#a855f7' }}>{q}</Text> },
               ]}
             />
           </div>

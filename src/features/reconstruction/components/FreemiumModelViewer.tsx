@@ -96,7 +96,7 @@ export const FreemiumModelViewer: React.FC<FreemiumModelViewerProps> = ({
                     justifyContent: 'center',
                   }}
                 >
-                  MEMENTO3D PREVIEW
+                  BẢN XEM TRƯỚC MEMENTO3D
                 </div>
               ))}
             </div>
@@ -132,7 +132,7 @@ export const FreemiumModelViewer: React.FC<FreemiumModelViewerProps> = ({
                 backdropFilter: 'blur(8px)',
               }}
             >
-              🔒 WATERMARKED PREVIEW
+              🔒 BẢN XEM TRƯỚC CÓ WATERMARK
             </div>
           )}
         </div>

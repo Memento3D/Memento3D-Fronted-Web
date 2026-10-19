@@ -31,6 +31,7 @@ import {
   type UserSummary 
 } from '../../inventory/api/wmsEnterpriseApi';
 import { warehouseApi } from '../../warehouse/api/warehouseApi';
+import { getRoleLabel } from '../../../locales/i18n';
 
 const { Title, Text } = Typography;
 
@@ -74,7 +75,7 @@ export const AdminDashboardPage: React.FC = () => {
   const updateRoleMutation = useMutation({
     mutationFn: ({ userId, role }: { userId: string; role: string }) => wmsEnterpriseApi.updateUserRole(userId, role),
     onSuccess: () => {
-      message.success('User role updated successfully');
+      message.success('Cập nhật vai trò người dùng thành công');
       setSelectedUserForRole(null);
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
@@ -85,7 +86,7 @@ export const AdminDashboardPage: React.FC = () => {
   const updateStatusMutation = useMutation({
     mutationFn: ({ userId, active }: { userId: string; active: boolean }) => wmsEnterpriseApi.updateUserStatus(userId, active),
     onSuccess: () => {
-      message.success('User active status toggled');
+      message.success('Đã thay đổi trạng thái hoạt động của người dùng');
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     },
@@ -95,7 +96,7 @@ export const AdminDashboardPage: React.FC = () => {
   const assignWarehousesMutation = useMutation({
     mutationFn: ({ userId, warehouseIds }: { userId: string; warehouseIds: string[] }) => wmsEnterpriseApi.assignWarehouses(userId, warehouseIds),
     onSuccess: () => {
-      message.success('Warehouse assignments saved');
+      message.success('Đã lưu phân quyền kho cho người dùng');
       setSelectedUserForWh(null);
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
     },
@@ -104,17 +105,17 @@ export const AdminDashboardPage: React.FC = () => {
 
   const userColumns = [
     {
-      title: 'Full Name / Email',
+      title: 'Họ và tên / Email',
       key: 'nameEmail',
       render: (_: any, r: UserSummary) => (
         <div>
-          <div style={{ fontWeight: 700, color: '#f8fafc' }}>{r.fullName || 'User'}</div>
+          <div style={{ fontWeight: 700, color: '#f8fafc' }}>{r.fullName || 'Người dùng'}</div>
           <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{r.email}</div>
         </div>
       ),
     },
     {
-      title: 'Role',
+      title: 'Vai trò',
       dataIndex: 'role',
       key: 'role',
       render: (role: string) => {
@@ -123,15 +124,15 @@ export const AdminDashboardPage: React.FC = () => {
         else if (role === 'ROLE_MANAGER') color = 'gold';
         else if (role === 'ROLE_WAREHOUSE' || role === 'ROLE_WAREHOUSE_STAFF') color = 'blue';
         else if (role === 'ROLE_OPERATOR') color = 'cyan';
-        return <Tag color={color} style={{ fontWeight: 700 }}>{role}</Tag>;
+        return <Tag color={color} style={{ fontWeight: 700 }}>{getRoleLabel(role)}</Tag>;
       },
     },
     {
-      title: 'Assigned Warehouses',
+      title: 'Kho được phân quyền',
       dataIndex: 'assignedWarehouseIds',
       key: 'warehouses',
       render: (ids: string[]) => {
-        if (!ids || ids.length === 0) return <Text style={{ color: '#64748b' }}>None assigned</Text>;
+        if (!ids || ids.length === 0) return <Text style={{ color: '#64748b' }}>Chưa phân quyền kho</Text>;
         return (
           <Space wrap size={[4, 4]}>
             {ids.map((id) => {
@@ -143,20 +144,20 @@ export const AdminDashboardPage: React.FC = () => {
       },
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'active',
       key: 'active',
       render: (active: boolean, r: UserSummary) => (
         <Switch 
           checked={active} 
-          checkedChildren="Active" 
-          unCheckedChildren="Inactive" 
+          checkedChildren="Hoạt động" 
+          unCheckedChildren="Khóa" 
           onChange={(checked) => updateStatusMutation.mutate({ userId: r.id, active: checked })}
         />
       ),
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_: any, r: UserSummary) => (
         <Space size="small">
@@ -168,7 +169,7 @@ export const AdminDashboardPage: React.FC = () => {
               roleForm.setFieldsValue({ role: r.role });
             }}
           >
-            Role
+            Vai trò
           </Button>
           <Button 
             size="small" 
@@ -178,7 +179,7 @@ export const AdminDashboardPage: React.FC = () => {
               whForm.setFieldsValue({ warehouseIds: r.assignedWarehouseIds || [] });
             }}
           >
-            Warehouses
+            Phân quyền kho
           </Button>
         </Space>
       ),
@@ -187,31 +188,31 @@ export const AdminDashboardPage: React.FC = () => {
 
   const auditColumns = [
     {
-      title: 'Time',
+      title: 'Thời gian',
       dataIndex: 'createdAt',
       key: 'time',
       render: (val: string) => <Text style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{new Date(val).toLocaleString()}</Text>,
     },
     {
-      title: 'Actor',
+      title: 'Người thực hiện',
       dataIndex: 'actorEmail',
       key: 'actor',
-      render: (val: string) => <Text strong style={{ color: '#38bdf8' }}>{val || 'SYSTEM'}</Text>,
+      render: (val: string) => <Text strong style={{ color: '#38bdf8' }}>{val || 'HỆ THỐNG'}</Text>,
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       dataIndex: 'action',
       key: 'action',
       render: (val: string) => <Tag color="blue" style={{ fontWeight: 600 }}>{val}</Tag>,
     },
     {
-      title: 'Entity Type',
+      title: 'Loại đối tượng',
       dataIndex: 'entityType',
       key: 'entityType',
       render: (val: string) => <Tag color="cyan">{val}</Tag>,
     },
     {
-      title: 'Entity ID',
+      title: 'Mã đối tượng',
       dataIndex: 'entityId',
       key: 'entityId',
       render: (val: string) => <Text code style={{ fontSize: '0.75rem' }}>{val || '—'}</Text>,
@@ -223,17 +224,17 @@ export const AdminDashboardPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <Title level={2} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
-            Enterprise Administration & RBAC
+            Quản trị hệ thống & Phân quyền RBAC
           </Title>
           <Text style={{ color: '#94a3b8' }}>
-            System-wide user authority, warehouse allocations, and immutable compliance audit trail
+            Quản lý phân quyền tài khoản toàn hệ thống, gán quyền kho và theo dõi lịch sử kiểm toán tuân thủ
           </Text>
         </div>
         <Button 
           icon={<RefreshCw size={14} />} 
           onClick={() => { refetchDashboard(); refetchUsers(); }}
         >
-          Refresh All
+          Làm mới tất cả
         </Button>
       </div>
 
@@ -241,37 +242,37 @@ export const AdminDashboardPage: React.FC = () => {
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} lg={4}>
           <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Total Users</div>
+            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Tổng tài khoản</div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>{dashboard?.totalUsers ?? 0}</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={4}>
           <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Managers</div>
+            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Quản lý</div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fbbf24', marginTop: 4 }}>{dashboard?.totalManagers ?? 0}</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={4}>
           <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Warehouse Staff</div>
+            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Nhân viên kho</div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#38bdf8', marginTop: 4 }}>{dashboard?.totalWarehouseStaff ?? 0}</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={4}>
           <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Warehouses</div>
+            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Kho hàng</div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#a855f7', marginTop: 4 }}>{dashboard?.totalWarehouses ?? 0}</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={4}>
           <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Catalog Materials</div>
+            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Vật liệu trong danh mục</div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#10b981', marginTop: 4 }}>{dashboard?.totalMaterials ?? 0}</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={4}>
           <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Pending Approvals</div>
+            <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Chờ phê duyệt</div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f43f5e', marginTop: 4 }}>{dashboard?.pendingApprovals ?? 0}</div>
           </Card>
         </Col>
@@ -288,34 +289,34 @@ export const AdminDashboardPage: React.FC = () => {
               label: (
                 <Space>
                   <Users size={16} />
-                  <span>User & Role Governance</span>
+                  <span>Quản trị người dùng & Phân quyền</span>
                 </Space>
               ),
               children: (
                 <div>
                   <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
                     <Input 
-                      placeholder="Search users by email or name..." 
+                      placeholder="Tìm người dùng theo email hoặc họ tên..." 
                       prefix={<Search size={14} color="#94a3b8" />}
                       value={userSearch}
                       onChange={(e) => setUserSearch(e.target.value)}
-                      style={{ maxWidth: 300 }}
+                      style={{ maxWidth: 320 }}
                       allowClear
                     />
                     <Select
-                      placeholder="Filter Role"
+                      placeholder="Lọc theo vai trò"
                       allowClear
                       value={roleFilter}
                       onChange={(v) => setRoleFilter(v)}
-                      style={{ width: 180 }}
+                      style={{ width: 200 }}
                     >
-                      <Select.Option value="ROLE_ADMIN">Admin</Select.Option>
-                      <Select.Option value="ROLE_MANAGER">Manager</Select.Option>
-                      <Select.Option value="ROLE_WAREHOUSE">Warehouse Staff</Select.Option>
-                      <Select.Option value="ROLE_OPERATOR">Operator</Select.Option>
-                      <Select.Option value="ROLE_PROVIDER">Provider</Select.Option>
-                      <Select.Option value="ROLE_DRIVER">Driver</Select.Option>
-                      <Select.Option value="ROLE_CUSTOMER">Customer</Select.Option>
+                      <Select.Option value="ROLE_ADMIN">Quản trị viên</Select.Option>
+                      <Select.Option value="ROLE_MANAGER">Quản lý</Select.Option>
+                      <Select.Option value="ROLE_WAREHOUSE">Nhân viên kho</Select.Option>
+                      <Select.Option value="ROLE_OPERATOR">Vận hành máy in</Select.Option>
+                      <Select.Option value="ROLE_PROVIDER">Nhà cung cấp</Select.Option>
+                      <Select.Option value="ROLE_DRIVER">Tài xế giao hàng</Select.Option>
+                      <Select.Option value="ROLE_CUSTOMER">Khách hàng</Select.Option>
                     </Select>
                   </div>
 
@@ -339,14 +340,14 @@ export const AdminDashboardPage: React.FC = () => {
               label: (
                 <Space>
                   <FileText size={16} />
-                  <span>Immutable System Audit Trail</span>
+                  <span>Nhật ký kiểm toán hệ thống</span>
                 </Space>
               ),
               children: (
                 <Table 
                   columns={auditColumns} 
                   dataSource={auditLogsData?.content || []} 
-                  rowKey="id"
+                  rowKey="id" 
                   loading={loadingAudit}
                   pagination={{ pageSize: 15 }}
                 />
@@ -358,11 +359,11 @@ export const AdminDashboardPage: React.FC = () => {
 
       {/* Role Assignment Modal */}
       <Modal
-        title={`Change Authority Role: ${selectedUserForRole?.email}`}
+        title={`Thay đổi vai trò người dùng: ${selectedUserForRole?.email}`}
         open={!!selectedUserForRole}
         onCancel={() => setSelectedUserForRole(null)}
         footer={null}
-        width={450}
+        width={500}
       >
         <Form 
           form={roleForm} 
@@ -373,22 +374,22 @@ export const AdminDashboardPage: React.FC = () => {
             }
           }}
         >
-          <Form.Item name="role" label="Assign Role" rules={[{ required: true }]}>
+          <Form.Item name="role" label="Gán vai trò mới" rules={[{ required: true, message: 'Vui lòng chọn vai trò' }]}>
             <Select>
-              <Select.Option value="ROLE_ADMIN">ROLE_ADMIN (Full Global Control)</Select.Option>
-              <Select.Option value="ROLE_MANAGER">ROLE_MANAGER (Warehouse Approvals & Operations)</Select.Option>
-              <Select.Option value="ROLE_WAREHOUSE">ROLE_WAREHOUSE (Receipt, Issue, Count Operations)</Select.Option>
-              <Select.Option value="ROLE_OPERATOR">ROLE_OPERATOR (3D Printing Machinery)</Select.Option>
-              <Select.Option value="ROLE_PROVIDER">ROLE_PROVIDER (Manufacturing Partner)</Select.Option>
-              <Select.Option value="ROLE_DRIVER">ROLE_DRIVER (Logistics & Delivery)</Select.Option>
-              <Select.Option value="ROLE_CUSTOMER">ROLE_CUSTOMER (Standard Client)</Select.Option>
+              <Select.Option value="ROLE_ADMIN">ROLE_ADMIN (Toàn quyền quản trị hệ thống)</Select.Option>
+              <Select.Option value="ROLE_MANAGER">ROLE_MANAGER (Quản lý phê duyệt & vận hành kho)</Select.Option>
+              <Select.Option value="ROLE_WAREHOUSE">ROLE_WAREHOUSE (Nhân viên nhập/xuất/kiểm kê kho)</Select.Option>
+              <Select.Option value="ROLE_OPERATOR">ROLE_OPERATOR (Kỹ thuật viên vận hành máy in 3D)</Select.Option>
+              <Select.Option value="ROLE_PROVIDER">ROLE_PROVIDER (Đối tác sản xuất / gia công)</Select.Option>
+              <Select.Option value="ROLE_DRIVER">ROLE_DRIVER (Tài xế giao vận hậu cần)</Select.Option>
+              <Select.Option value="ROLE_CUSTOMER">ROLE_CUSTOMER (Khách hàng tiêu chuẩn)</Select.Option>
             </Select>
           </Form.Item>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24 }}>
-            <Button onClick={() => setSelectedUserForRole(null)}>Cancel</Button>
+            <Button onClick={() => setSelectedUserForRole(null)}>Hủy</Button>
             <Button type="primary" htmlType="submit" loading={updateRoleMutation.isPending}>
-              Update Authority
+              Cập nhật phân quyền
             </Button>
           </div>
         </Form>
@@ -396,7 +397,7 @@ export const AdminDashboardPage: React.FC = () => {
 
       {/* Warehouse Assignment Modal */}
       <Modal
-        title={`Assign Warehouses for: ${selectedUserForWh?.email}`}
+        title={`Phân quyền kho cho: ${selectedUserForWh?.email}`}
         open={!!selectedUserForWh}
         onCancel={() => setSelectedUserForWh(null)}
         footer={null}
@@ -411,8 +412,8 @@ export const AdminDashboardPage: React.FC = () => {
             }
           }}
         >
-          <Form.Item name="warehouseIds" label="Assigned Warehouses (Multi-selection)">
-            <Select mode="multiple" placeholder="Select warehouses" style={{ width: '100%' }}>
+          <Form.Item name="warehouseIds" label="Danh sách kho được phân quyền (Chọn nhiều kho)">
+            <Select mode="multiple" placeholder="Chọn các kho hàng" style={{ width: '100%' }}>
               {warehousesData?.content?.map((w: any) => (
                 <Select.Option key={w.id} value={w.id}>
                   [{w.code}] {w.name}
@@ -422,9 +423,9 @@ export const AdminDashboardPage: React.FC = () => {
           </Form.Item>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24 }}>
-            <Button onClick={() => setSelectedUserForWh(null)}>Cancel</Button>
+            <Button onClick={() => setSelectedUserForWh(null)}>Hủy</Button>
             <Button type="primary" htmlType="submit" loading={assignWarehousesMutation.isPending}>
-              Save Scoped Access
+              Lưu phân quyền kho
             </Button>
           </div>
         </Form>

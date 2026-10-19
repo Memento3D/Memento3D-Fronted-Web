@@ -40,43 +40,45 @@ export const WarehouseFormModal: React.FC<WarehouseFormModalProps> = ({
 
   return (
     <Modal
-      title={warehouse ? `Edit Warehouse Hub: ${warehouse.code}` : 'Register New Warehouse Hub (F02)'}
+      title={warehouse ? `Chỉnh sửa cơ sở kho: ${warehouse.code}` : 'Thêm mới cơ sở kho'}
       open={open}
       onCancel={onCancel}
       onOk={() => form.submit()}
       confirmLoading={loading}
+      okText="Lưu"
+      cancelText="Hủy"
       width={520}
       destroyOnClose
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Form.Item
           name="code"
-          label="Warehouse Code"
+          label="Mã kho"
           rules={[
-            { required: true, message: 'Warehouse code is required' },
-            { pattern: /^[A-Z0-9_-]+$/i, message: 'Alphanumeric characters only' },
+            { required: true, message: 'Mã kho không được để trống' },
+            { pattern: /^[A-Z0-9_-]+$/i, message: 'Chỉ chấp nhận ký tự chữ cái, số và dấu gạch nối' },
           ]}
         >
-          <Input placeholder="e.g. WH-HCM-01, WH-HAN-02" style={{ textTransform: 'uppercase' }} />
+          <Input placeholder="Ví dụ: KHO-HCM-01, KHO-HN-02" style={{ textTransform: 'uppercase' }} />
         </Form.Item>
 
         <Form.Item
           name="name"
-          label="Facility Name"
-          rules={[{ required: true, message: 'Warehouse name is required' }]}
+          label="Tên cơ sở kho"
+          rules={[{ required: true, message: 'Tên kho không được để trống' }]}
         >
-          <Input placeholder="e.g. HCM District 9 Main Hub" />
+          <Input placeholder="Ví dụ: Kho Trung tâm Quận 9 - TP.HCM" />
         </Form.Item>
 
-        <Form.Item name="location" label="Physical Address / Zone">
-          <Input placeholder="e.g. Lot E2a-7, D1 Street, Hi-Tech Park, Thu Duc City" />
+        <Form.Item name="location" label="Địa chỉ / Khu vực">
+          <Input placeholder="Ví dụ: Lô E2a-7, Đường D1, Khu Công nghệ cao, TP. Thủ Đức" />
         </Form.Item>
 
         {warehouse && (
-          <Form.Item name="status" label="Operational Status">
+          <Form.Item name="status" label="Trạng thái hoạt động">
             <Select>
-              <Select.Option value="ACTIVE">ACTIVE</Select.Option>
-              <Select.Option value="INACTIVE">INACTIVE</Select.Option>
+              <Select.Option value="ACTIVE">Đang hoạt động</Select.Option>
+              <Select.Option value="INACTIVE">Tạm ngưng</Select.Option>
             </Select>
           </Form.Item>
         )}

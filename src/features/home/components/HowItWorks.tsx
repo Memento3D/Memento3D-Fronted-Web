@@ -23,51 +23,51 @@ interface StepItem {
 const STEPS: StepItem[] = [
   {
     number: '01',
-    title: 'Upload Your Photos',
-    subtitle: 'Smartphone or Digital Camera',
+    title: 'Tải lên Ảnh của bạn',
+    subtitle: 'Điện thoại hoặc Máy ảnh kỹ thuật số',
     description:
-      'Simply snap 1 to 5 clear photos of the person, pet, or landmark you wish to commemorate. No professional photography or LiDAR hardware required.',
+      'Chỉ cần chụp từ 1 đến 5 bức ảnh rõ nét của người thân, thú cưng hoặc địa danh bạn muốn lưu giữ. Không cần máy ảnh chuyên nghiệp hay phần cứng LiDAR.',
     icon: <CloudUploadOutlined style={{ fontSize: 28, color: '#38bdf8' }} />,
-    tag: 'Instant Ingestion',
+    tag: 'Tiếp nhận Tức thì',
     tagColor: 'cyan',
-    details: ['Supports JPEG, PNG, HEIC', 'Automatic lighting correction', 'Background subject isolation'],
-    metrics: '< 10 Seconds Upload',
+    details: ['Hỗ trợ định dạng JPEG, PNG, HEIC', 'Tự động cân bằng sáng thông minh', 'Tách chủ thể khỏi phông nền'],
+    metrics: 'Tải lên < 10 giây',
   },
   {
     number: '02',
-    title: 'AI Reconstructs in 3D',
-    subtitle: 'Neural Mesh Synthesis',
+    title: 'AI Tái cấu trúc 3D',
+    subtitle: 'Tổng hợp Lưới đa giác Neural',
     description:
-      'Our proprietary neural photogrammetry engine synthesizes multi-view depth maps into a high-density, watertight polygonal mesh with zero open edges.',
+      'Động cơ thị giác máy tính độc quyền tổng hợp bản đồ độ sâu đa góc nhìn thành lưới đa giác 3D mật độ cao, khép kín hoàn toàn và không có cạnh hở.',
     icon: <ExperimentOutlined style={{ fontSize: 28, color: '#818cf8' }} />,
-    tag: 'AI Topology',
+    tag: 'Hình học AI',
     tagColor: 'purple',
-    details: ['Watertight STL / OBJ output', 'Sub-millimeter facial contouring', 'Auto-healing manifold mesh'],
-    metrics: '99.4% Mesh Precision',
+    details: ['Xuất file 3D STL / OBJ hoàn chỉnh', 'Tái tạo đường nét khuôn mặt dưới 1mm', 'Tự động sửa lỗi bề mặt dạng khối'],
+    metrics: 'Độ chính xác lưới 99.4%',
   },
   {
     number: '03',
-    title: 'Customize Your Keepsake',
-    subtitle: 'Materials & Finishes',
+    title: 'Tùy biến Kỷ vật của bạn',
+    subtitle: 'Vật liệu & Bề mặt hoàn thiện',
     description:
-      'Choose your physical dimension, premium polymer finish (Silk Bronze, Matte Stone, Crystal Clear Resin), and customize an engraved pedestal with names and dates.',
+      'Chọn kích thước vật lý, chất liệu hoàn thiện cao cấp (Đồng lụa, Đá nhám, Resin pha lê trong suốt) và cá nhân hóa đế trưng bày khắc tên hoặc ngày kỷ niệm.',
     icon: <BgColorsOutlined style={{ fontSize: 28, color: '#f59e0b' }} />,
-    tag: 'Bespoke Customizer',
+    tag: 'Tùy biến Theo yêu cầu',
     tagColor: 'gold',
-    details: ['8cm to 25cm desktop scales', 'Eco Bio-PLA & SLA Photopolymers', 'Laser-etched pedestal text'],
-    metrics: '12+ Finish Palettes',
+    details: ['Kích thước để bàn từ 8cm đến 25cm', 'Vật liệu sinh học Bio-PLA & Resin SLA', 'Khắc laser tên & ngày kỷ niệm lên đế'],
+    metrics: 'Hơn 12 bảng màu hoàn thiện',
   },
   {
     number: '04',
-    title: 'Print & Preserve Forever',
-    subtitle: 'Additive Manufacturing & Delivery',
+    title: 'In 3D & Lưu giữ Mãi mãi',
+    subtitle: 'Sản xuất Đắp lớp & Giao nhận',
     description:
-      'Dispatched to our climate-controlled regional 3D print farms. Each piece is crafted with calibrated layers, UV cured, hand-inspected, and delivered in protective gift packaging.',
+      'Được chuyển tới xưởng in 3D khép kín kiểm soát nhiệt độ. Từng tác phẩm được đùn sợi chính xác, sấy UV, kiểm định thủ công và đóng hộp quà bảo vệ sang trọng.',
     icon: <GiftOutlined style={{ fontSize: 28, color: '#10b981' }} />,
-    tag: 'Industrial Farm',
+    tag: 'Xưởng in Công nghiệp',
     tagColor: 'green',
-    details: ['OctoPrint automated queue', 'Individual QC & hand polishing', 'Heirloom gift unboxing'],
-    metrics: 'Fulfillment in 48-72h',
+    details: ['Hàng đợi in tự động OctoPrint', 'Kiểm định QC & hoàn thiện tỉ mỉ bằng tay', 'Đóng gói hộp quà lưu niệm cao cấp'],
+    metrics: 'Hoàn thiện trong 48-72 giờ',
   },
 ];
 
@@ -80,13 +80,13 @@ export const HowItWorks: React.FC = () => {
         {/* Section Header */}
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <div className="section-badge">
-            <span>Seamless 4-Step Journey</span>
+            <span>Quy trình 4 Bước Liền mạch</span>
           </div>
           <h2 className="section-title">
-            How Your Memories Become <span className="gradient-text-cyan">Tangible Art</span>
+            Kỷ niệm của bạn Trở thành <span className="gradient-text-cyan">Nghệ thuật Hữu hình</span>
           </h2>
           <p className="section-subtitle">
-            From an ordinary photo in your phone gallery to a timeless 3D sculpture sitting on your desk. No technical expertise required.
+            Từ một bức ảnh thông thường trong điện thoại trở thành tác phẩm điêu khắc 3D vĩnh cửu trên bàn làm việc của bạn. Hoàn toàn không cần kỹ năng kỹ thuật.
           </p>
         </div>
 
@@ -184,7 +184,7 @@ export const HowItWorks: React.FC = () => {
                         alignItems: 'center',
                       }}
                     >
-                      <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>Spec</span>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>Thông số</span>
                       <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#38bdf8' }}>{step.metrics}</span>
                     </div>
                   </div>
@@ -197,3 +197,4 @@ export const HowItWorks: React.FC = () => {
     </section>
   );
 };
+export default HowItWorks;

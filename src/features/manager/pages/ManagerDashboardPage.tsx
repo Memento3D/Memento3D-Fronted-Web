@@ -30,19 +30,19 @@ export const ManagerDashboardPage: React.FC = () => {
 
   const recentMovementColumns = [
     {
-      title: 'Time',
+      title: 'Thời gian',
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (val: string) => <Text style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{new Date(val).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</Text>,
     },
     {
-      title: 'Warehouse',
+      title: 'Kho hàng',
       dataIndex: 'warehouseName',
       key: 'warehouseName',
-      render: (val: string) => <Text strong style={{ color: '#e2e8f0', fontSize: '0.85rem' }}>{val || 'Primary WH'}</Text>,
+      render: (val: string) => <Text strong style={{ color: '#e2e8f0', fontSize: '0.85rem' }}>{val || 'Kho chính'}</Text>,
     },
     {
-      title: 'Material',
+      title: 'Vật liệu',
       key: 'material',
       render: (_: any, r: any) => (
         <div>
@@ -52,20 +52,30 @@ export const ManagerDashboardPage: React.FC = () => {
       ),
     },
     {
-      title: 'Type',
+      title: 'Loại biến động',
       key: 'type',
       render: (_: any, r: any) => {
         const typeStr = String(r.movementType || r.transactionType || 'MOVEMENT').toUpperCase();
         let color = 'default';
-        if (typeStr.includes('IN') || typeStr.includes('RECEIPT')) color = 'cyan';
-        else if (typeStr.includes('OUT') || typeStr.includes('ISSUE')) color = 'magenta';
-        else if (typeStr.includes('RESERVE')) color = 'gold';
-        else if (typeStr.includes('ADJUST')) color = 'purple';
-        return <Tag color={color} style={{ fontSize: '0.75rem', fontWeight: 600 }}>{typeStr}</Tag>;
+        let label = typeStr;
+        if (typeStr.includes('IN') || typeStr.includes('RECEIPT')) {
+          color = 'cyan';
+          label = 'NHẬP KHO';
+        } else if (typeStr.includes('OUT') || typeStr.includes('ISSUE')) {
+          color = 'magenta';
+          label = 'XUẤT KHO';
+        } else if (typeStr.includes('RESERVE')) {
+          color = 'gold';
+          label = 'TẠM GIỮ';
+        } else if (typeStr.includes('ADJUST')) {
+          color = 'purple';
+          label = 'ĐIỀU CHỈNH';
+        }
+        return <Tag color={color} style={{ fontSize: '0.75rem', fontWeight: 600 }}>{label}</Tag>;
       },
     },
     {
-      title: 'Quantity',
+      title: 'Số lượng',
       key: 'quantity',
       render: (_: any, r: any) => {
         const typeStr = String(r.movementType || r.transactionType || '').toUpperCase();
@@ -80,7 +90,7 @@ export const ManagerDashboardPage: React.FC = () => {
       },
     },
     {
-      title: 'Stock Ledger (Before -> After)',
+      title: 'Sổ cái tồn kho (Trước → Sau)',
       key: 'balanceFlow',
       render: (_: any, r: any) => {
         const before = r.quantityBefore ?? r.beforeOnHandGram ?? 0;
@@ -97,7 +107,7 @@ export const ManagerDashboardPage: React.FC = () => {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-        <Spin size="large" tip="Loading Manager Control Center..." />
+        <Spin size="large" tip="Đang tải Trung tâm điều hành Quản lý..." />
       </div>
     );
   }
@@ -106,9 +116,9 @@ export const ManagerDashboardPage: React.FC = () => {
     return (
       <Alert
         type="error"
-        message="Failed to load Manager Dashboard"
+        message="Tải bảng tổng quan Quản lý thất bại"
         description={(error as Error).message}
-        action={<Button onClick={() => refetch()}>Retry</Button>}
+        action={<Button onClick={() => refetch()}>Thử lại</Button>}
         showIcon
         style={{ margin: 24 }}
       />
@@ -121,12 +131,12 @@ export const ManagerDashboardPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <Title level={2} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
-            Manager Control Center
+            Trung tâm điều hành Quản lý
           </Title>
           <Text style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
             {activeWarehouse 
-              ? `Operational metrics for ${activeWarehouse.name} (${activeWarehouse.code})`
-              : 'Global Multi-Warehouse Operational Overview'}
+              ? `Số liệu vận hành cho ${activeWarehouse.name} (${activeWarehouse.code})`
+              : 'Tổng quan vận hành toàn bộ hệ thống kho'}
           </Text>
         </div>
         <Space>
@@ -135,14 +145,14 @@ export const ManagerDashboardPage: React.FC = () => {
             onClick={() => refetch()}
             style={{ borderRadius: 8 }}
           >
-            Refresh
+            Làm mới
           </Button>
           <Button 
             type="primary" 
             style={{ background: '#3b82f6', borderColor: '#3b82f6', borderRadius: 8, fontWeight: 600 }}
             onClick={() => navigate('/manager/approvals')}
           >
-            Approvals Center ({((dashboard?.pendingGoodsReceipts || 0) + (dashboard?.pendingStockIssues || 0) + (dashboard?.pendingAdjustments || 0) + (dashboard?.pendingTransfers || 0))})
+            Trung tâm phê duyệt ({((dashboard?.pendingGoodsReceipts || 0) + (dashboard?.pendingStockIssues || 0) + (dashboard?.pendingAdjustments || 0) + (dashboard?.pendingTransfers || 0))})
           </Button>
         </Space>
       </div>
@@ -157,12 +167,12 @@ export const ManagerDashboardPage: React.FC = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Total Inventory Items</div>
+                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Tổng mặt hàng tồn kho</div>
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#38bdf8', marginTop: 4 }}>
                   {dashboard?.totalInventoryItems ?? 0}
                 </div>
                 <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: 4 }}>
-                  Across {dashboard?.totalWarehouses ?? 0} warehouses
+                  Trên toàn bộ {dashboard?.totalWarehouses ?? 0} kho
                 </div>
               </div>
               <div style={{ background: 'rgba(56, 189, 248, 0.1)', padding: 12, borderRadius: 10 }}>
@@ -180,12 +190,12 @@ export const ManagerDashboardPage: React.FC = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Low Stock Warnings</div>
+                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Cảnh báo sắp hết hàng</div>
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fbbf24', marginTop: 4 }}>
                   {dashboard?.lowStockCount ?? 0}
                 </div>
                 <div style={{ color: '#f87171', fontSize: '0.75rem', marginTop: 4 }}>
-                  {dashboard?.outOfStockCount ?? 0} out of stock
+                  {dashboard?.outOfStockCount ?? 0} mặt hàng hết hàng
                 </div>
               </div>
               <div style={{ background: 'rgba(251, 191, 36, 0.1)', padding: 12, borderRadius: 10 }}>
@@ -203,12 +213,12 @@ export const ManagerDashboardPage: React.FC = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Pending Approvals</div>
+                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Yêu cầu chờ phê duyệt</div>
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#a855f7', marginTop: 4 }}>
                   {((dashboard?.pendingGoodsReceipts || 0) + (dashboard?.pendingStockIssues || 0) + (dashboard?.pendingAdjustments || 0) + (dashboard?.pendingTransfers || 0))}
                 </div>
                 <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: 4 }}>
-                  Receipts, Issues, Adjustments
+                  Nhập kho, Xuất kho, Điều chỉnh
                 </div>
               </div>
               <div style={{ background: 'rgba(168, 85, 247, 0.1)', padding: 12, borderRadius: 10 }}>
@@ -226,12 +236,12 @@ export const ManagerDashboardPage: React.FC = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Active Materials</div>
+                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Vật liệu đang hoạt động</div>
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', marginTop: 4 }}>
                   {dashboard?.totalMaterials ?? 0}
                 </div>
                 <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: 4 }}>
-                  Filaments & Resins Catalog
+                  Danh mục nhựa in & vật liệu
                 </div>
               </div>
               <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: 12, borderRadius: 10 }}>
@@ -253,9 +263,9 @@ export const ManagerDashboardPage: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <ArrowDownLeft color="#38bdf8" size={22} />
               <div>
-                <Text strong style={{ color: '#f8fafc' }}>Goods Receipts</Text>
+                <Text strong style={{ color: '#f8fafc' }}>Phiếu nhập kho</Text>
                 <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {dashboard?.pendingGoodsReceipts ?? 0} awaiting approval
+                  {dashboard?.pendingGoodsReceipts ?? 0} phiếu chờ duyệt
                 </div>
               </div>
             </div>
@@ -270,9 +280,9 @@ export const ManagerDashboardPage: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <ArrowUpRight color="#f43f5e" size={22} />
               <div>
-                <Text strong style={{ color: '#f8fafc' }}>Stock Issues</Text>
+                <Text strong style={{ color: '#f8fafc' }}>Phiếu xuất kho</Text>
                 <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {dashboard?.pendingStockIssues ?? 0} awaiting approval
+                  {dashboard?.pendingStockIssues ?? 0} phiếu chờ duyệt
                 </div>
               </div>
             </div>
@@ -287,9 +297,9 @@ export const ManagerDashboardPage: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <ArrowLeftRight color="#a855f7" size={22} />
               <div>
-                <Text strong style={{ color: '#f8fafc' }}>Transfers</Text>
+                <Text strong style={{ color: '#f8fafc' }}>Điều chuyển kho</Text>
                 <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {dashboard?.pendingTransfers ?? 0} pending transit
+                  {dashboard?.pendingTransfers ?? 0} yêu cầu chờ xử lý
                 </div>
               </div>
             </div>
@@ -304,9 +314,9 @@ export const ManagerDashboardPage: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Sliders color="#fbbf24" size={22} />
               <div>
-                <Text strong style={{ color: '#f8fafc' }}>Stock Adjustments</Text>
+                <Text strong style={{ color: '#f8fafc' }}>Điều chỉnh tồn kho</Text>
                 <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {dashboard?.pendingAdjustments ?? 0} pending review
+                  {dashboard?.pendingAdjustments ?? 0} yêu cầu chờ duyệt
                 </div>
               </div>
             </div>
@@ -321,10 +331,10 @@ export const ManagerDashboardPage: React.FC = () => {
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.05rem' }}>
-              Real-time Stock Movement Ledger
+              Sổ cái biến động kho theo thời gian thực
             </span>
             <Button type="link" onClick={() => navigate('/manager/inventory/transactions')}>
-              View Full Ledger →
+              Xem toàn bộ sổ cái →
             </Button>
           </div>
         }
@@ -335,7 +345,7 @@ export const ManagerDashboardPage: React.FC = () => {
           rowKey="id"
           pagination={false}
           size="middle"
-          locale={{ emptyText: 'No recent movements recorded' }}
+          locale={{ emptyText: 'Chưa có biến động kho nào gần đây' }}
         />
       </Card>
     </div>

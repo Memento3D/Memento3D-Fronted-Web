@@ -35,6 +35,7 @@ import { useWarehouseContext } from '../../warehouse/context/WarehouseContext';
 import { materialApi } from '../../material/api/materialApi';
 import { warehouseApi } from '../../warehouse/api/warehouseApi';
 import { useAuth } from '../../auth/hooks/useAuth';
+import { getStatusLabel } from '../../../locales/i18n';
 
 const { Title, Text } = Typography;
 
@@ -75,19 +76,19 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: wmsEnterpriseApi.createGoodsReceipt,
     onSuccess: () => {
-      message.success('Goods receipt draft created successfully');
+      message.success('Tạo bản nháp phiếu nhập kho thành công');
       setIsCreateModalOpen(false);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['goods-receipts'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
-    onError: (err: any) => message.error(err.message || 'Failed to create receipt'),
+    onError: (err: any) => message.error(err.message || 'Tạo phiếu nhập kho thất bại'),
   });
 
   const submitMutation = useMutation({
     mutationFn: wmsEnterpriseApi.submitGoodsReceipt,
     onSuccess: () => {
-      message.success('Receipt submitted for manager approval');
+      message.success('Đã gửi phiếu nhập kho để quản lý phê duyệt');
       queryClient.invalidateQueries({ queryKey: ['goods-receipts'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -97,7 +98,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
   const approveMutation = useMutation({
     mutationFn: wmsEnterpriseApi.approveGoodsReceipt,
     onSuccess: () => {
-      message.success('Receipt approved! Ready for completion.');
+      message.success('Đã phê duyệt phiếu nhập kho! Sẵn sàng hoàn tất nhập kho.');
       queryClient.invalidateQueries({ queryKey: ['goods-receipts'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -107,7 +108,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
   const completeMutation = useMutation({
     mutationFn: wmsEnterpriseApi.completeGoodsReceipt,
     onSuccess: () => {
-      message.success('Receipt completed! Inventory increased and ledger updated.');
+      message.success('Đã hoàn tất nhập kho! Số dư tồn kho và sổ cái đã được cập nhật.');
       queryClient.invalidateQueries({ queryKey: ['goods-receipts'] });
       queryClient.invalidateQueries({ queryKey: ['inventory-balances'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
@@ -118,7 +119,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
   const cancelMutation = useMutation({
     mutationFn: wmsEnterpriseApi.cancelGoodsReceipt,
     onSuccess: () => {
-      message.warning('Receipt cancelled');
+      message.warning('Đã hủy phiếu nhập kho');
       queryClient.invalidateQueries({ queryKey: ['goods-receipts'] });
       queryClient.invalidateQueries({ queryKey: ['manager-dashboard'] });
     },
@@ -143,12 +144,12 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
 
   const getStatusTag = (status: GoodsReceiptStatus) => {
     switch (status) {
-      case 'DRAFT': return <Tag color="default">DRAFT</Tag>;
-      case 'SUBMITTED': return <Tag color="blue">SUBMITTED</Tag>;
-      case 'APPROVED': return <Tag color="gold">APPROVED</Tag>;
-      case 'COMPLETED': return <Tag color="green">COMPLETED</Tag>;
-      case 'CANCELLED': return <Tag color="red">CANCELLED</Tag>;
-      default: return <Tag>{status}</Tag>;
+      case 'DRAFT': return <Tag color="default">{getStatusLabel('DRAFT')}</Tag>;
+      case 'SUBMITTED': return <Tag color="blue">{getStatusLabel('SUBMITTED')}</Tag>;
+      case 'APPROVED': return <Tag color="gold">{getStatusLabel('APPROVED')}</Tag>;
+      case 'COMPLETED': return <Tag color="green">{getStatusLabel('COMPLETED')}</Tag>;
+      case 'CANCELLED': return <Tag color="red">{getStatusLabel('CANCELLED')}</Tag>;
+      default: return <Tag>{getStatusLabel(status)}</Tag>;
     }
   };
 
@@ -156,7 +157,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
 
   const columns = [
     {
-      title: 'Receipt Code',
+      title: 'Mã phiếu nhập',
       dataIndex: 'receiptCode',
       key: 'receiptCode',
       render: (code: string, r: GoodsReceipt) => (
@@ -166,46 +167,46 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
       ),
     },
     {
-      title: 'Warehouse',
+      title: 'Kho hàng',
       dataIndex: 'warehouseName',
       key: 'warehouseName',
-      render: (name: string) => <Text strong style={{ color: '#e2e8f0' }}>{name || 'Warehouse'}</Text>,
+      render: (name: string) => <Text strong style={{ color: '#e2e8f0' }}>{name || 'Kho hàng'}</Text>,
     },
     {
-      title: 'Supplier / Ref',
+      title: 'Nhà cung cấp / Tham chiếu',
       key: 'supplierRef',
       render: (_: any, r: GoodsReceipt) => (
         <div>
           <div style={{ color: '#cbd5e1' }}>{r.supplierName || '—'}</div>
-          {r.referenceNumber && <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Ref: {r.referenceNumber}</div>}
+          {r.referenceNumber && <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Mã tham chiếu: {r.referenceNumber}</div>}
         </div>
       ),
     },
     {
-      title: 'Items',
+      title: 'Mặt hàng',
       dataIndex: 'items',
       key: 'items',
-      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} line items</Text>,
+      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} mặt hàng</Text>,
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: GoodsReceiptStatus) => getStatusTag(status),
     },
     {
-      title: 'Created At',
+      title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (val: string) => <Text style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(val).toLocaleDateString()}</Text>,
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_: any, r: GoodsReceipt) => (
         <Space size="small">
           <Button size="small" icon={<Eye size={13} />} onClick={() => setViewReceipt(r)}>
-            View
+            Xem
           </Button>
 
           {r.status === 'DRAFT' && (
@@ -215,7 +216,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
               icon={<Send size={13} />} 
               onClick={() => submitMutation.mutate(r.id)}
             >
-              Submit
+              Gửi duyệt
             </Button>
           )}
 
@@ -226,24 +227,31 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
               icon={<Check size={13} />} 
               onClick={() => approveMutation.mutate(r.id)}
             >
-              Approve
+              Phê duyệt
             </Button>
           )}
 
           {r.status === 'APPROVED' && (
             <Popconfirm 
-              title="Complete Receipt?" 
-              description="This will atomically increase inventory balances and write to the stock ledger."
+              title="Hoàn tất nhập kho?" 
+              description="Thao tác này sẽ ghi tăng số dư tồn kho và ghi nhận vào sổ cái hệ thống."
+              okText="Đồng ý"
+              cancelText="Hủy"
               onConfirm={() => completeMutation.mutate(r.id)}
             >
               <Button size="small" type="primary" style={{ background: '#10b981', borderColor: '#10b981' }} icon={<CheckCircle2 size={13} />}>
-                Complete (Stock In)
+                Hoàn tất nhập kho
               </Button>
             </Popconfirm>
           )}
 
           {(r.status === 'DRAFT' || (r.status === 'SUBMITTED' && isManager)) && (
-            <Popconfirm title="Cancel Receipt?" onConfirm={() => cancelMutation.mutate(r.id)}>
+            <Popconfirm 
+              title="Hủy phiếu nhập kho?" 
+              okText="Đồng ý"
+              cancelText="Quay lại"
+              onConfirm={() => cancelMutation.mutate(r.id)}
+            >
               <Button size="small" danger icon={<XCircle size={13} />} />
             </Popconfirm>
           )}
@@ -258,25 +266,25 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
-            Goods Receipts (Stock In)
+            Quản lý phiếu nhập kho
           </Title>
           <Text style={{ color: '#94a3b8' }}>
-            Receiving workflow: DRAFT → SUBMITTED → APPROVED → COMPLETED (Atomic Inventory Addition)
+            Quy trình nhập kho: BẢN NHÁP → ĐÃ GỬI DUYỆT → ĐÃ PHÊ DUYỆT → HOÀN TẤT
           </Text>
         </div>
         <Space>
           <Select
-            placeholder="Filter by Status"
+            placeholder="Lọc theo trạng thái"
             allowClear
             value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
-            style={{ width: 160 }}
+            style={{ width: 180 }}
           >
-            <Select.Option value="DRAFT">Draft</Select.Option>
-            <Select.Option value="SUBMITTED">Submitted</Select.Option>
-            <Select.Option value="APPROVED">Approved</Select.Option>
-            <Select.Option value="COMPLETED">Completed</Select.Option>
-            <Select.Option value="CANCELLED">Cancelled</Select.Option>
+            <Select.Option value="DRAFT">Bản nháp</Select.Option>
+            <Select.Option value="SUBMITTED">Đã gửi duyệt</Select.Option>
+            <Select.Option value="APPROVED">Đã phê duyệt</Select.Option>
+            <Select.Option value="COMPLETED">Hoàn tất</Select.Option>
+            <Select.Option value="CANCELLED">Đã hủy</Select.Option>
           </Select>
           <Button 
             type="primary" 
@@ -284,7 +292,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
             style={{ background: '#3b82f6', borderColor: '#3b82f6', borderRadius: 8, fontWeight: 600 }}
             onClick={() => setIsCreateModalOpen(true)}
           >
-            Create Receipt
+            Tạo phiếu nhập
           </Button>
         </Space>
       </div>
@@ -307,15 +315,15 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
 
       {/* Create Modal */}
       <Modal
-        title="Create New Goods Receipt"
+        title="Tạo phiếu nhập kho mới"
         open={isCreateModalOpen}
         onCancel={() => setIsCreateModalOpen(false)}
         footer={null}
         width={720}
       >
         <Form form={form} layout="vertical" onFinish={handleCreateSubmit} initialValues={{ warehouseId: activeWarehouse?.id, items: [{}] }}>
-          <Form.Item name="warehouseId" label="Target Warehouse" rules={[{ required: true, message: 'Please select warehouse' }]}>
-            <Select placeholder="Select warehouse">
+          <Form.Item name="warehouseId" label="Kho tiếp nhận" rules={[{ required: true, message: 'Vui lòng chọn kho' }]}>
+            <Select placeholder="Chọn kho tiếp nhận">
               {warehousesData?.content?.map((w: any) => (
                 <Select.Option key={w.id} value={w.id}>{w.name} ({w.code})</Select.Option>
               ))}
@@ -323,19 +331,19 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
           </Form.Item>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <Form.Item name="supplierName" label="Supplier / Vendor">
-              <Input placeholder="e.g. Polymaker Official" />
+            <Form.Item name="supplierName" label="Nhà cung cấp / Đơn vị giao">
+              <Input placeholder="VD: Creality Chính Hãng, Polymaker" />
             </Form.Item>
-            <Form.Item name="referenceNumber" label="PO / Invoice Ref #">
-              <Input placeholder="e.g. PO-2026-081" />
+            <Form.Item name="referenceNumber" label="Số đơn đặt hàng (PO) / Hóa đơn">
+              <Input placeholder="VD: PO-2026-081" />
             </Form.Item>
           </div>
 
-          <Form.Item name="notes" label="Notes">
-            <Input.TextArea rows={2} placeholder="Delivery conditions, batch inspection details..." />
+          <Form.Item name="notes" label="Ghi chú">
+            <Input.TextArea rows={2} placeholder="Điều kiện giao nhận, kiểm tra tình trạng lô hàng..." />
           </Form.Item>
 
-          <Divider style={{ color: '#94a3b8' }}>Line Items</Divider>
+          <Divider style={{ color: '#94a3b8' }}>Danh sách mặt hàng nhập</Divider>
 
           <Form.List name="items">
             {(fields, { add, remove }) => (
@@ -345,13 +353,13 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
                     <Form.Item
                       {...restField}
                       name={[name, 'materialId']}
-                      rules={[{ required: true, message: 'Select material' }]}
+                      rules={[{ required: true, message: 'Vui lòng chọn vật liệu' }]}
                       style={{ flex: 3, margin: 0 }}
                     >
-                      <Select placeholder="Material SKU / Name" showSearch optionFilterProp="children">
+                      <Select placeholder="Mã SKU / Tên vật liệu" showSearch optionFilterProp="children">
                         {materialsData?.content?.map((m: any) => (
                           <Select.Option key={m.id} value={m.id}>
-                            [{m.sku}] {m.name} ({m.color || 'Standard'})
+                            [{m.sku}] {m.name} ({m.color || 'Tiêu chuẩn'})
                           </Select.Option>
                         ))}
                       </Select>
@@ -360,10 +368,10 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
                     <Form.Item
                       {...restField}
                       name={[name, 'quantity']}
-                      rules={[{ required: true, message: 'Qty' }]}
+                      rules={[{ required: true, message: 'Số lượng' }]}
                       style={{ flex: 1.5, margin: 0 }}
                     >
-                      <InputNumber min={0.01} step={1} placeholder="Quantity" style={{ width: '100%' }} />
+                      <InputNumber min={0.01} step={1} placeholder="Số lượng" style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Form.Item
@@ -371,23 +379,23 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
                       name={[name, 'unitCost']}
                       style={{ flex: 1.5, margin: 0 }}
                     >
-                      <InputNumber min={0} placeholder="Cost" style={{ width: '100%' }} />
+                      <InputNumber min={0} placeholder="Đơn giá" style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Button type="text" danger icon={<Trash2 size={16} />} onClick={() => remove(name)} />
                   </div>
                 ))}
                 <Button type="dashed" onClick={() => add()} block style={{ marginTop: 8 }}>
-                  + Add Item
+                  + Thêm mặt hàng
                 </Button>
               </>
             )}
           </Form.List>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24 }}>
-            <Button onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
+            <Button onClick={() => setIsCreateModalOpen(false)}>Hủy</Button>
             <Button type="primary" htmlType="submit" loading={createMutation.isPending}>
-              Create Draft Receipt
+              Tạo bản nháp phiếu nhập
             </Button>
           </div>
         </Form>
@@ -395,24 +403,24 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
 
       {/* Details Modal */}
       <Modal
-        title={`Goods Receipt: ${viewReceipt?.receiptCode}`}
+        title={`Chi tiết phiếu nhập: ${viewReceipt?.receiptCode}`}
         open={!!viewReceipt}
         onCancel={() => setViewReceipt(null)}
         footer={[
-          <Button key="close" onClick={() => setViewReceipt(null)}>Close</Button>,
+          <Button key="close" onClick={() => setViewReceipt(null)}>Đóng</Button>,
           viewReceipt?.status === 'DRAFT' && (
             <Button key="submit" type="primary" onClick={() => { submitMutation.mutate(viewReceipt.id); setViewReceipt(null); }}>
-              Submit for Approval
+              Gửi phê duyệt
             </Button>
           ),
           viewReceipt?.status === 'SUBMITTED' && isManager && (
             <Button key="approve" style={{ background: '#f59e0b', color: '#fff' }} onClick={() => { approveMutation.mutate(viewReceipt.id); setViewReceipt(null); }}>
-              Approve
+              Phê duyệt
             </Button>
           ),
           viewReceipt?.status === 'APPROVED' && (
             <Button key="complete" type="primary" style={{ background: '#10b981' }} onClick={() => { completeMutation.mutate(viewReceipt.id); setViewReceipt(null); }}>
-              Complete Receipt (Stock In)
+              Hoàn tất nhập kho
             </Button>
           )
         ]}
@@ -421,28 +429,28 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
         {viewReceipt && (
           <div>
             <Descriptions bordered size="small" column={2} style={{ marginBottom: 16 }}>
-              <Descriptions.Item label="Status">{getStatusTag(viewReceipt.status)}</Descriptions.Item>
-              <Descriptions.Item label="Warehouse">{viewReceipt.warehouseName}</Descriptions.Item>
-              <Descriptions.Item label="Supplier">{viewReceipt.supplierName || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Reference">{viewReceipt.referenceNumber || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Submitted By">{viewReceipt.submittedBy || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Approved By">{viewReceipt.approvedBy || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Created At">{new Date(viewReceipt.createdAt).toLocaleString()}</Descriptions.Item>
-              <Descriptions.Item label="Completed At">{viewReceipt.completedAt ? new Date(viewReceipt.completedAt).toLocaleString() : '—'}</Descriptions.Item>
+              <Descriptions.Item label="Trạng thái">{getStatusTag(viewReceipt.status)}</Descriptions.Item>
+              <Descriptions.Item label="Kho tiếp nhận">{viewReceipt.warehouseName}</Descriptions.Item>
+              <Descriptions.Item label="Nhà cung cấp">{viewReceipt.supplierName || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Mã tham chiếu">{viewReceipt.referenceNumber || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Người gửi duyệt">{viewReceipt.submittedBy || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Người phê duyệt">{viewReceipt.approvedBy || '—'}</Descriptions.Item>
+              <Descriptions.Item label="Thời gian tạo">{new Date(viewReceipt.createdAt).toLocaleString()}</Descriptions.Item>
+              <Descriptions.Item label="Thời gian hoàn tất">{viewReceipt.completedAt ? new Date(viewReceipt.completedAt).toLocaleString() : '—'}</Descriptions.Item>
             </Descriptions>
 
-            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Receipt Items</Title>
+            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Danh sách mặt hàng nhập kho</Title>
             <Table
               dataSource={viewReceipt.items || []}
               rowKey="id"
               pagination={false}
               size="small"
               columns={[
-                { title: 'SKU', dataIndex: 'materialSku', key: 'sku' },
-                { title: 'Material Name', dataIndex: 'materialName', key: 'name' },
-                { title: 'Quantity', dataIndex: 'quantity', key: 'quantity', render: (q: number) => <Text strong style={{ color: '#10b981' }}>+{q}</Text> },
-                { title: 'Unit Cost', dataIndex: 'unitCost', key: 'cost', render: (c: number) => c ? `$${c.toFixed(2)}` : '—' },
-                { title: 'Batch #', dataIndex: 'batchNumber', key: 'batch' },
+                { title: 'Mã SKU', dataIndex: 'materialSku', key: 'sku' },
+                { title: 'Tên vật liệu', dataIndex: 'materialName', key: 'name' },
+                { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity', render: (q: number) => <Text strong style={{ color: '#10b981' }}>+{q}</Text> },
+                { title: 'Đơn giá', dataIndex: 'unitCost', key: 'cost', render: (c: number) => c ? `${c.toLocaleString()} VNĐ` : '—' },
+                { title: 'Số lô', dataIndex: 'batchNumber', key: 'batch' },
               ]}
             />
           </div>

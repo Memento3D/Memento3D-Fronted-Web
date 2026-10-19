@@ -122,18 +122,18 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ portalConfig, children }
           }}
         >
           <Text style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginBottom: 6 }}>
-            Switch Access Portal:
+            Chuyển đổi cổng truy cập:
           </Text>
           <Space size={[8, 4]} wrap style={{ justifyContent: 'center' }}>
-            <Link to="/login" style={{ fontSize: '0.75rem', color: '#38bdf8' }}>Client</Link>
+            <Link to="/login" style={{ fontSize: '0.75rem', color: '#38bdf8' }}>Khách hàng</Link>
             <span style={{ color: '#334155' }}>•</span>
-            <Link to="/warehouse/login" style={{ fontSize: '0.75rem', color: '#06b6d4' }}>Warehouse</Link>
+            <Link to="/warehouse/login" style={{ fontSize: '0.75rem', color: '#06b6d4' }}>Thủ kho</Link>
             <span style={{ color: '#334155' }}>•</span>
-            <Link to="/operator/login" style={{ fontSize: '0.75rem', color: '#a855f7' }}>Operator</Link>
+            <Link to="/operator/login" style={{ fontSize: '0.75rem', color: '#a855f7' }}>Kỹ thuật viên</Link>
             <span style={{ color: '#334155' }}>•</span>
-            <Link to="/manager/login" style={{ fontSize: '0.75rem', color: '#f59e0b' }}>Manager</Link>
+            <Link to="/manager/login" style={{ fontSize: '0.75rem', color: '#f59e0b' }}>Quản lý</Link>
             <span style={{ color: '#334155' }}>•</span>
-            <Link to="/admin/login" style={{ fontSize: '0.75rem', color: '#f97316' }}>Admin</Link>
+            <Link to="/admin/login" style={{ fontSize: '0.75rem', color: '#f97316' }}>Quản trị viên</Link>
           </Space>
         </div>
 
@@ -141,7 +141,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ portalConfig, children }
         <div style={{ textAlign: 'center', marginTop: 16 }}>
           <Space size={6} style={{ color: '#64748b', fontSize: '0.75rem' }}>
             <ShieldCheck orientation="vertical" size={14} color="#10b981" />
-            <span>Spring Security 6.x & PostgreSQL ACID Certified</span>
+            <span>Hệ thống bảo mật Spring Security 6.x & Chuẩn CSDL ACID</span>
           </Space>
         </div>
       </div>

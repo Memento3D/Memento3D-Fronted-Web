@@ -17,13 +17,13 @@ export const BenefitsSection: React.FC = () => {
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div className="section-badge">
             <DeploymentUnitOutlined />
-            <span>Why Memento3D</span>
+            <span>Tại sao chọn Memento3D</span>
           </div>
           <h2 className="section-title">
-            Engineered for <span className="gradient-text-indigo">Emotional Longevity</span>
+            Kiến tạo cho <span className="gradient-text-indigo">Giá trị Cảm xúc Bền vững</span>
           </h2>
           <p className="section-subtitle">
-            We bridge state-of-the-art AI photogrammetry with precision additive manufacturing to create keepsakes that honor what photos cannot hold.
+            Chúng tôi kết hợp công nghệ tái tạo AI 3D tiên tiến với quy trình in đắp lớp chính xác để tạo ra những kỷ vật mà bức ảnh 2D thông thường không thể lưu giữ trọn vẹn.
           </p>
         </div>
 
@@ -59,15 +59,15 @@ export const BenefitsSection: React.FC = () => {
               </div>
 
               <Tag color="purple" style={{ borderRadius: 6, fontWeight: 700, marginBottom: 12 }}>
-                Neural Photogrammetry
+                Thị giác Máy tính Neural
               </Tag>
 
               <h3 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ffffff', marginBottom: 12, lineHeight: 1.25 }}>
-                AI-Powered 3D Reconstruction Pipeline
+                Quy trình Tái tạo Mô hình 3D tự động bằng AI
               </h3>
 
               <p style={{ fontSize: '0.95rem', color: '#94a3b8', lineHeight: 1.6, maxWidth: 640 }}>
-                Traditional 3D sculpture requires hundreds of hours of manual digital sculpting by 3D artists. Memento3D automates volumetric depth estimation and geometric triangulation, delivering ready-to-print manifold meshes directly from ordinary multi-angle photographs.
+                Điêu khắc 3D truyền thống đòi hỏi hàng trăm giờ tạo hình thủ công bởi họa sĩ 3D. Memento3D tự động hóa việc ước lượng thể tích và lưới đa giác, tạo ra file 3D khép kín sẵn sàng in trực tiếp từ những bức ảnh chụp đa góc.
               </p>
             </div>
 
@@ -82,16 +82,16 @@ export const BenefitsSection: React.FC = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>Geometry</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc' }}>Watertight Manifold</div>
+                <div style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>Hình học</div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc' }}>Lưới khép kín 100%</div>
               </div>
               <div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>Processing</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#38bdf8' }}>Cloud Accelerated</div>
+                <div style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>Xử lý</div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#38bdf8' }}>GPU Đám mây tốc độ cao</div>
               </div>
               <div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>Manual CAD Needed</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#10b981' }}>Zero Hours</div>
+                <div style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>Dựng CAD thủ công</div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#10b981' }}>0 Giờ thao tác</div>
               </div>
             </div>
           </div>
@@ -125,20 +125,20 @@ export const BenefitsSection: React.FC = () => {
               </div>
 
               <Tag color="cyan" style={{ borderRadius: 6, fontWeight: 700, marginBottom: 12 }}>
-                Frictionless Upload
+                Tải ảnh dễ dàng
               </Tag>
 
               <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', marginBottom: 10 }}>
-                Any Smartphone Photo
+                Mọi bức ảnh từ Điện thoại
               </h3>
 
               <p style={{ fontSize: '0.9rem', color: '#94a3b8', lineHeight: 1.6 }}>
-                You do not need specialized LiDAR scanners or 3D cameras. Just upload your favorite portraits, candids, or pet photos straight from your camera roll.
+                Bạn không cần máy quét LiDAR hay camera 3D đắt tiền. Chỉ cần tải lên những bức ảnh chân dung, ảnh đời thường hoặc thú cưng ngay từ thư viện điện thoại của bạn.
               </p>
             </div>
 
             <div style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 600 }}>
-              Supports iOS, Android & Desktop web
+              Hỗ trợ iOS, Android và máy tính
             </div>
           </div>
 
@@ -171,20 +171,20 @@ export const BenefitsSection: React.FC = () => {
               </div>
 
               <Tag color="magenta" style={{ borderRadius: 6, fontWeight: 700, marginBottom: 12 }}>
-                Personalized
+                Cá nhân hóa
               </Tag>
 
               <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', marginBottom: 10 }}>
-                Emotional Tactile Artifacts
+                Vật phẩm Lưu niệm Giàu cảm xúc
               </h3>
 
               <p style={{ fontSize: '0.875rem', color: '#94a3b8', lineHeight: 1.6 }}>
-                Add custom inscribed names, dates, or coordinate coordinates laser-engraved onto solid walnut and brushed brass pedestals.
+                Khắc laser tên, ngày kỷ niệm hoặc tọa độ ý nghĩa lên đế trưng bày gỗ Walnut hoặc đá tự nhiên sang trọng.
               </p>
             </div>
 
             <div style={{ fontSize: '0.78rem', color: '#f43f5e', fontWeight: 600 }}>
-              Individually personalized per order
+              Cá nhân hóa riêng biệt theo từng đơn hàng
             </div>
           </div>
 
@@ -217,20 +217,20 @@ export const BenefitsSection: React.FC = () => {
               </div>
 
               <Tag color="green" style={{ borderRadius: 6, fontWeight: 700, marginBottom: 12 }}>
-                Industrial Farm
+                Xưởng in Công nghiệp
               </Tag>
 
               <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', marginBottom: 10 }}>
-                Calibrated Print Farms
+                Hệ thống Máy in Hiệu chuẩn Cao
               </h3>
 
               <p style={{ fontSize: '0.875rem', color: '#94a3b8', lineHeight: 1.6 }}>
-                Managed via regional OctoPrint hubs and automated spool humidity chambers. Every job undergoes strict optical QC before dispatch.
+                Vận hành qua hệ thống điều phối thông minh và buồng sấy kiểm soát độ ẩm khắt khe. Mỗi tác phẩm đều trải qua khâu kiểm tra chất lượng (QC) quang học trước khi xuất xưởng.
               </p>
             </div>
 
             <div style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600 }}>
-              SLA photopolymer & bio-composite FDM
+              Nhựa quang hóa SLA & Vật liệu sinh học FDM
             </div>
           </div>
 
@@ -263,20 +263,20 @@ export const BenefitsSection: React.FC = () => {
               </div>
 
               <Tag color="gold" style={{ borderRadius: 6, fontWeight: 700, marginBottom: 12 }}>
-                Archival Grade
+                Chuẩn Lưu trữ Lâu dài
               </Tag>
 
               <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', marginBottom: 10 }}>
-                Heirloom Material Longevity
+                Độ bền Vật liệu Vượt thời gian
               </h3>
 
               <p style={{ fontSize: '0.875rem', color: '#94a3b8', lineHeight: 1.6 }}>
-                Treated with UV inhibitors and non-toxic protective sealants to prevent discoloration, yellowing, or structural degradation over decades.
+                Được xử lý lớp phủ kháng tia UV và sáp bảo vệ không độc hại để chống ố vàng, bạc màu hay suy giảm chất lượng qua nhiều thập kỷ.
               </p>
             </div>
 
             <div style={{ fontSize: '0.78rem', color: '#eab308', fontWeight: 600 }}>
-              UV-sealed & impact-resistant finishes
+              Phủ bảo vệ kháng tia UV & chịu lực va đập
             </div>
           </div>
         </div>
@@ -284,3 +284,4 @@ export const BenefitsSection: React.FC = () => {
     </section>
   );
 };
+export default BenefitsSection;

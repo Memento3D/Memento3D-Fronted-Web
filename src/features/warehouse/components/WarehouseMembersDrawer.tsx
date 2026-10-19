@@ -31,6 +31,7 @@ import type {
   WarehouseRole,
   AssignMemberPayload,
 } from '../types/warehouse.types';
+import { getRoleLabel, getStatusLabel } from '../../../locales/i18n';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -59,32 +60,32 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
 
   const assignMutation = useMutation({
     mutationFn: (payload: AssignMemberPayload) => {
-      if (!warehouseId) throw new Error('Warehouse not selected');
+      if (!warehouseId) throw new Error('Chưa chọn cơ sở kho');
       return warehouseApi.assignMember(warehouseId, payload);
     },
     onSuccess: (newMember) => {
-      message.success(`Assigned ${newMember.userEmail} as ${newMember.role}`);
+      message.success(`Đã phân công ${newMember.userEmail} vai trò ${getRoleLabel(newMember.role)}`);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['warehouse-members', warehouseId] });
       queryClient.invalidateQueries({ queryKey: ['my-warehouses'] });
     },
     onError: (err: any) => {
-      message.error(err.message || 'Failed to assign warehouse member');
+      message.error(err.message || 'Phân công nhân viên thất bại');
     },
   });
 
   const revokeMutation = useMutation({
     mutationFn: (targetUserId: string) => {
-      if (!warehouseId) throw new Error('Warehouse not selected');
+      if (!warehouseId) throw new Error('Chưa chọn cơ sở kho');
       return warehouseApi.revokeMember(warehouseId, targetUserId);
     },
     onSuccess: () => {
-      message.success('Member access revoked successfully');
+      message.success('Đã thu hồi quyền truy cập kho thành công');
       queryClient.invalidateQueries({ queryKey: ['warehouse-members', warehouseId] });
       queryClient.invalidateQueries({ queryKey: ['my-warehouses'] });
     },
     onError: (err: any) => {
-      message.error(err.message || 'Failed to revoke warehouse member');
+      message.error(err.message || 'Thu hồi quyền nhân viên thất bại');
     },
   });
 
@@ -94,19 +95,19 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
 
   const columns: ColumnsType<WarehouseMember> = [
     {
-      title: 'Staff Member',
+      title: 'Nhân viên',
       key: 'user',
       render: (_, record) => (
         <div>
           <Text strong style={{ color: '#f8fafc' }}>
-            {record.userFullName || 'Staff User'}
+            {record.userFullName || 'Nhân viên'}
           </Text>
           <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{record.userEmail}</div>
         </div>
       ),
     },
     {
-      title: 'Warehouse Role',
+      title: 'Vai trò trong kho',
       dataIndex: 'role',
       key: 'role',
       render: (role: WarehouseRole) => {
@@ -116,13 +117,13 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
         if (role === 'PRINT_OPERATOR') color = 'purple';
         return (
           <Tag color={color} style={{ fontWeight: 600 }}>
-            {role}
+            {getRoleLabel(role)}
           </Tag>
         );
       },
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
@@ -130,12 +131,12 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
           icon={status === 'ACTIVE' ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
           color={status === 'ACTIVE' ? 'success' : 'error'}
         >
-          {status}
+          {getStatusLabel(status)}
         </Tag>
       ),
     },
     {
-      title: 'Assigned Date',
+      title: 'Ngày phân công',
       dataIndex: 'assignedAt',
       key: 'assignedAt',
       render: (date: string) => (
@@ -145,19 +146,19 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       ),
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_, record) => {
         if (record.status === 'REVOKED') {
-          return <Text type="secondary" style={{ fontSize: '0.75rem' }}>Revoked</Text>;
+          return <Text type="secondary" style={{ fontSize: '0.75rem' }}>Đã thu hồi</Text>;
         }
         return (
           <Popconfirm
-            title="Revoke Warehouse Access"
-            description={`Revoke access for ${record.userEmail}? Even with an active JWT, access will be blocked immediately.`}
+            title="Thu hồi quyền truy cập kho"
+            description={`Thu hồi quyền truy cập kho của ${record.userEmail}? Tài khoản sẽ bị ngắt quyền ngay lập tức.`}
             onConfirm={() => revokeMutation.mutate(record.userId)}
-            okText="Revoke Access"
-            cancelText="Cancel"
+            okText="Thu hồi quyền"
+            cancelText="Hủy"
             okButtonProps={{ danger: true, loading: revokeMutation.isPending }}
           >
             <Button
@@ -166,7 +167,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
               size="small"
               icon={<StopOutlined />}
             >
-              Revoke
+              Thu hồi
             </Button>
           </Popconfirm>
         );
@@ -179,7 +180,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       title={
         <Space>
           <SafetyCertificateOutlined style={{ color: '#0ea5e9' }} />
-          <span>Warehouse Access Control – {warehouse?.code}</span>
+          <span>Kiểm soát Quyền Truy cập Kho – {warehouse?.code}</span>
         </Space>
       }
       placement="right"
@@ -188,12 +189,12 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       open={open}
     >
       <Paragraph type="secondary" style={{ marginBottom: 20 }}>
-        Role-based warehouse membership scoping (F01). Staff only have visibility and operational rights over warehouses they are actively assigned to.
+        Phân quyền kho theo vai trò (RBAC). Nhân viên chỉ có quyền xem và thao tác trên cơ sở kho mà họ được phân công trực tiếp.
       </Paragraph>
 
       <Card
         size="small"
-        title={<span style={{ fontSize: '0.875rem' }}>Assign Staff to Facility</span>}
+        title={<span style={{ fontSize: '0.875rem' }}>Phân công Nhân viên vào Kho</span>}
         style={{ marginBottom: 24, background: 'rgba(15, 23, 42, 0.6)' }}
       >
         <Form
@@ -206,24 +207,24 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: 'User email is required' },
-              { type: 'email', message: 'Enter a valid email' },
+              { required: true, message: 'Email nhân viên không được để trống' },
+              { type: 'email', message: 'Email không đúng định dạng' },
             ]}
             style={{ flex: 1, minWidth: 220 }}
           >
-            <Input placeholder="Staff email (e.g. operator@memento3d.vn)" />
+            <Input placeholder="Email nhân viên (ví dụ: operator@memento3d.vn)" />
           </Form.Item>
 
           <Form.Item
             name="role"
-            rules={[{ required: true, message: 'Select role' }]}
-            style={{ width: 170 }}
+            rules={[{ required: true, message: 'Vui lòng chọn vai trò' }]}
+            style={{ width: 180 }}
           >
             <Select
               options={[
-                { value: 'WAREHOUSE_STAFF', label: 'Warehouse Staff' },
-                { value: 'MANAGER', label: 'Warehouse Manager' },
-                { value: 'PRINT_OPERATOR', label: 'Print Operator' },
+                { value: 'WAREHOUSE_STAFF', label: 'Nhân viên kho' },
+                { value: 'MANAGER', label: 'Quản lý kho' },
+                { value: 'PRINT_OPERATOR', label: 'Kỹ thuật viên in' },
               ]}
             />
           </Form.Item>
@@ -235,7 +236,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
               icon={<UserAddOutlined />}
               loading={assignMutation.isPending}
             >
-              Assign Scope
+              Phân công
             </Button>
           </Form.Item>
         </Form>
@@ -244,7 +245,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       <Divider style={{ margin: '16px 0' }} />
 
       <Title level={5} style={{ marginBottom: 12 }}>
-        Active & Revoked Memberships ({members.length})
+        Danh sách Thành viên & Quyền truy cập ({members.length})
       </Title>
 
       <Table

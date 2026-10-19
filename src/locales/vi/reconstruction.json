@@ -1,0 +1,19 @@
+{
+  "title": "Tái tạo mô hình 3D",
+  "subtitle": "Chuyển đổi hình ảnh kỷ vật thành mô hình 3D vật lý chính xác cao bằng AI",
+  "preview": "Bản xem trước",
+  "highQuality": "Chất lượng cao",
+  "watermarkNotice": "Bản xem trước có watermark (Độ phân giải thấp)",
+  "unlockedNotice": "Bản chính thức độ phân giải cao 4K",
+  "processing": "Đang xử lý tái tạo 3D...",
+  "completed": "Tái tạo mô hình 3D hoàn tất!",
+  "materialSelection": "Lựa chọn vật liệu in 3D",
+  "sizeSelection": "Lựa chọn kích thước vật lý",
+  "proceedToOrder": "Tiến hành đặt hàng in 3D",
+  "downloadModel": "Tải xuống tệp 3D",
+  "materials": {
+    "PLA": "Nhựa PLA sinh học (Tiết kiệm, bảo vệ môi trường)",
+    "RESIN": "Nhựa quang hóa Resin cao cấp (Chi tiết sắc nét tối đa)",
+    "FULL_COLOR": "Composite màu nguyên bản (Tái hiện màu sắc sống động)"
+  }
+}

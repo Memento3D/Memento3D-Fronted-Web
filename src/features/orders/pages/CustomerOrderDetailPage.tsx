@@ -533,11 +533,14 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       title: 'Trạng thái',
                       dataIndex: 'status',
                       key: 'status',
-                      render: (st) => (
-                        <Tag color={st === 'PAID' || st === 'SUCCESS' ? 'green' : st === 'PENDING' ? 'gold' : 'red'}>
-                          {st}
-                        </Tag>
-                      ),
+                      render: (st) => {
+                        const label = st === 'PAID' || st === 'SUCCESS' ? 'Thành công' : st === 'PENDING' ? 'Chờ xử lý' : st === 'FAILED' ? 'Thất bại' : st;
+                        return (
+                          <Tag color={st === 'PAID' || st === 'SUCCESS' ? 'green' : st === 'PENDING' ? 'gold' : 'red'}>
+                            {label}
+                          </Tag>
+                        );
+                      },
                     },
                     {
                       title: 'Thời gian',
@@ -574,7 +577,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#94a3b8' }}>Trạng thái thanh toán:</span>
                   <Tag color={isPaid ? 'green' : 'gold'}>
-                    {order.paymentStatus || 'PENDING'}
+                    {order.paymentStatus === 'PAID' ? 'Đã thanh toán' : order.paymentStatus === 'PENDING' ? 'Chờ thanh toán' : order.paymentStatus || 'Chờ thanh toán'}
                   </Tag>
                 </div>
 
@@ -644,13 +647,13 @@ export const CustomerOrderDetailPage: React.FC = () => {
         confirmLoading={updateOrderMutation.isPending}
       >
         <Form form={form} layout="vertical" onFinish={handleUpdateShipping}>
-          <Form.Item name="recipientName" label="Người nhận" rules={[{ required: true }]}>
+          <Form.Item name="recipientName" label="Người nhận" rules={[{ required: true, message: 'Vui lòng nhập tên người nhận' }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true }]}>
+          <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="shippingAddress" label="Địa chỉ" rules={[{ required: true }]}>
+          <Form.Item name="shippingAddress" label="Địa chỉ" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ nhận hàng' }]}>
             <Input.TextArea rows={3} />
           </Form.Item>
         </Form>

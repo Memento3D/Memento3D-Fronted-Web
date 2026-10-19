@@ -25,7 +25,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
       window.location.href = url;
     } catch (err: any) {
       setLoading(false);
-      message.error(err.message || 'Failed to initiate Google authentication');
+      message.error(err.message || 'Không thể khởi tạo phiên đăng nhập Google');
     }
   };
 
@@ -46,7 +46,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
         color: '#f8fafc',
       }}
     >
-      Continue with Google
+      Đăng nhập bằng Google
     </Button>
   );
 };

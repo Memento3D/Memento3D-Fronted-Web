@@ -12,10 +12,12 @@ const { Title, Text, Paragraph } = Typography;
 export const CategoryListPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const { data: categories = [], isLoading } = useQuery({
+  const { data: rawCategories = [], isLoading } = useQuery({
     queryKey: ['categories-public-list'],
     queryFn: () => categoryApi.list(true),
   });
+
+  const categories = Array.isArray(rawCategories) ? rawCategories : [];
 
   return (
     <div style={{ minHeight: '100vh', background: '#050811', color: '#f8fafc' }}>

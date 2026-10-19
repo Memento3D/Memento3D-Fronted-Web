@@ -73,11 +73,11 @@ export const PrintJobOperationsPage: React.FC = () => {
         estimatedGram: Number(values.estimatedGram),
         estimatedDurationSeconds: 7200,
       });
-      message.success('Print Job registered in queue!');
+      message.success('Đã lên lịch lệnh in vào hàng đợi!');
       setIsCreateOpen(false);
       createForm.resetFields();
     } catch (err: any) {
-      message.error(err.message || 'Failed to create job');
+      message.error(err.message || 'Lỗi khi tạo lệnh in');
     }
   };
 
@@ -85,10 +85,10 @@ export const PrintJobOperationsPage: React.FC = () => {
     if (!selectedJob) return;
     try {
       await reserveMutation.mutateAsync({ id: selectedJob.id, payload });
-      message.success(`Material reserved from warehouse for Job #${selectedJob.jobNumber}`);
+      message.success(`Đã giữ chỗ vật liệu từ kho cho lệnh in #${selectedJob.jobNumber}`);
       setActiveModal(null);
     } catch (err: any) {
-      message.error(err.message || 'Reservation failed');
+      message.error(err.message || 'Giữ chỗ thất bại');
     }
   };
 
@@ -96,19 +96,19 @@ export const PrintJobOperationsPage: React.FC = () => {
     if (!selectedJob) return;
     try {
       await issueMutation.mutateAsync({ id: selectedJob.id, payload });
-      message.success(`Material issued to printer for Job #${selectedJob.jobNumber}`);
+      message.success(`Đã xuất cấp vật liệu lên máy in cho lệnh in #${selectedJob.jobNumber}`);
       setActiveModal(null);
     } catch (err: any) {
-      message.error(err.message || 'Issue failed');
+      message.error(err.message || 'Xuất cấp thất bại');
     }
   };
 
   const handleStartPrint = async (jobId: string, jobNumber: string) => {
     try {
       await startMutation.mutateAsync(jobId);
-      message.success(`Job #${jobNumber} is now printing!`);
+      message.success(`Lệnh in #${jobNumber} đang bắt đầu in!`);
     } catch (err: any) {
-      message.error(err.message || 'Failed to start print');
+      message.error(err.message || 'Không thể bắt đầu in');
     }
   };
 
@@ -116,27 +116,27 @@ export const PrintJobOperationsPage: React.FC = () => {
     if (!selectedJob) return;
     try {
       await reconcileMutation.mutateAsync({ id: selectedJob.id, payload });
-      message.success(`Consumption reconciled and closed for Job #${selectedJob.jobNumber}`);
+      message.success(`Đã quyết toán tiêu hao và đóng sổ cho lệnh in #${selectedJob.jobNumber}`);
       setActiveModal(null);
     } catch (err: any) {
-      message.error(err.message || 'Reconciliation failed');
+      message.error(err.message || 'Quyết toán thất bại');
     }
   };
 
   const renderStatusTag = (status: PrintJobStatus) => {
     switch (status) {
       case 'CREATED':
-        return <Tag color="default">QUEUED</Tag>;
+        return <Tag color="default">HÀNG ĐỢI</Tag>;
       case 'RESERVED':
-        return <Tag color="warning">RESERVED</Tag>;
+        return <Tag color="warning">ĐÃ GIỮ CHỖ</Tag>;
       case 'ISSUED':
-        return <Tag color="processing">MATERIAL ISSUED</Tag>;
+        return <Tag color="processing">ĐÃ CẤP MÁY</Tag>;
       case 'PRINTING':
-        return <Tag color="blue">PRINTING</Tag>;
+        return <Tag color="blue">ĐANG IN</Tag>;
       case 'COMPLETED':
-        return <Tag color="success">COMPLETED</Tag>;
+        return <Tag color="success">HOÀN THÀNH</Tag>;
       case 'FAILED':
-        return <Tag color="error">FAILED</Tag>;
+        return <Tag color="error">THẤT BẠI</Tag>;
       default:
         return <Tag>{status}</Tag>;
     }
@@ -144,7 +144,7 @@ export const PrintJobOperationsPage: React.FC = () => {
 
   const columns: ColumnsType<PrintJob> = [
     {
-      title: 'Job Number',
+      title: 'Mã lệnh in',
       dataIndex: 'jobNumber',
       key: 'jobNumber',
       render: (num: string) => (
@@ -155,10 +155,10 @@ export const PrintJobOperationsPage: React.FC = () => {
       ),
     },
     {
-      title: 'Filament Profile',
+      title: 'Hồ sơ vật liệu in',
       key: 'material',
       render: (_, record) => (
-        <Space orientation="vertical" size={2}>
+        <Space direction="vertical" size={2}>
           <Space>
             <Tag color="cyan">{record.materialSku}</Tag>
             <span>{record.materialColor}</span>
@@ -168,32 +168,32 @@ export const PrintJobOperationsPage: React.FC = () => {
       ),
     },
     {
-      title: 'G-Code Weight',
+      title: 'Khối lượng G-Code',
       dataIndex: 'estimatedGram',
       key: 'estimatedGram',
       sorter: (a, b) => a.estimatedGram - b.estimatedGram,
       render: (gram: number) => <Text strong>{gram} g</Text>,
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: PrintJobStatus) => renderStatusTag(status),
     },
     {
-      title: 'Printer Station',
+      title: 'Trạm máy in 3D',
       dataIndex: 'printerName',
       key: 'printerName',
-      render: (val: string) => val || 'Auto Dispatch Bed',
+      render: (val: string) => val || 'Bàn in điều phối tự động',
     },
     {
-      title: 'Operations & Handover',
+      title: 'Vận hành & Bàn giao',
       key: 'actions',
       align: 'right',
       render: (_, record) => (
         <Space>
           {record.status === 'CREATED' && (
-            <Tooltip title="Allocate & reserve warehouse stock">
+            <Tooltip title="Phân bổ và giữ chỗ tồn kho">
               <Button
                 type="primary"
                 size="small"
@@ -203,13 +203,13 @@ export const PrintJobOperationsPage: React.FC = () => {
                   setActiveModal('RESERVE');
                 }}
               >
-                Reserve
+                Giữ chỗ kho
               </Button>
             </Tooltip>
           )}
 
           {record.status === 'RESERVED' && (
-            <Tooltip title="Pick & handover material to machine">
+            <Tooltip title="Lấy hàng và cấp vật liệu lên máy in">
               <Button
                 type="primary"
                 size="small"
@@ -219,13 +219,13 @@ export const PrintJobOperationsPage: React.FC = () => {
                   setActiveModal('ISSUE');
                 }}
               >
-                Issue to Bed
+                Xuất cấp máy
               </Button>
             </Tooltip>
           )}
 
           {record.status === 'ISSUED' && (
-            <Tooltip title="Trigger extrusion start">
+            <Tooltip title="Kích hoạt bắt đầu in">
               <Button
                 type="primary"
                 size="small"
@@ -233,13 +233,13 @@ export const PrintJobOperationsPage: React.FC = () => {
                 icon={<PlayCircleOutlined />}
                 onClick={() => handleStartPrint(record.id, record.jobNumber)}
               >
-                Start Print
+                Bắt đầu in
               </Button>
             </Tooltip>
           )}
 
           {(record.status === 'PRINTING' || record.status === 'COMPLETED') && (
-            <Tooltip title="Reconcile model weight, purge waste, and remnants">
+            <Tooltip title="Quyết toán khối lượng mô hình, support và cuộn nhựa thu hồi">
               <Button
                 size="small"
                 icon={<RedoOutlined />}
@@ -248,7 +248,7 @@ export const PrintJobOperationsPage: React.FC = () => {
                   setActiveModal('RECONCILE');
                 }}
               >
-                Reconcile
+                Quyết toán
               </Button>
             </Tooltip>
           )}
@@ -263,15 +263,15 @@ export const PrintJobOperationsPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
-            Print Job Material Lifecycle (F06, F07)
+            Vận hành Lệnh in 3D & Vòng đời Vật liệu (F06, F07)
           </Title>
           <Text type="secondary">
-            Manage material reservation, warehouse picking, printer issuance, and mass reconciliation.
+            Quản lý đặt trước vật liệu, xuất kho cấp máy in và quyết toán tiêu hao thực tế.
           </Text>
         </div>
         <Space wrap>
           <Button icon={<ReloadOutlined spin={isFetching} />} onClick={() => refetch()}>
-            Refresh
+            Làm mới
           </Button>
           <Button
             type="primary"
@@ -279,7 +279,7 @@ export const PrintJobOperationsPage: React.FC = () => {
             size="large"
             onClick={() => setIsCreateOpen(true)}
           >
-            New Print Job
+            Tạo lệnh in 3D
           </Button>
         </Space>
       </div>
@@ -289,32 +289,32 @@ export const PrintJobOperationsPage: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Active Production Jobs"
+              title="Lệnh in đang vận hành"
               value={jobs.length}
               prefix={<PrinterOutlined style={{ color: '#0ea5e9' }} />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Orders</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Lệnh in</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Reserved & Ready"
+              title="Đã giữ chỗ & Sẵn sàng"
               value={jobs.filter((j) => j.status === 'RESERVED' || j.status === 'ISSUED').length}
               valueStyle={{ color: '#fbbf24' }}
               prefix={<LockOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>In Staging</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Trong kho đệm</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
           <Card>
             <Statistic
-              title="Extruding on Bed"
+              title="Đang in trên bàn máy"
               value={jobs.filter((j) => j.status === 'PRINTING').length}
               valueStyle={{ color: '#10b981' }}
               prefix={<PlayCircleOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Printing</Text>}
+              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Đang in</Text>}
             />
           </Card>
         </Col>
@@ -333,20 +333,22 @@ export const PrintJobOperationsPage: React.FC = () => {
 
       {/* Create Job Modal */}
       <Modal
-        title="Schedule New Print Job"
+        title="Lên lịch Lệnh in 3D mới"
         open={isCreateOpen}
         onCancel={() => setIsCreateOpen(false)}
         onOk={() => createForm.submit()}
         confirmLoading={createMutation.isPending}
+        okText="Tạo lệnh in"
+        cancelText="Hủy"
         destroyOnClose
       >
         <Form form={createForm} layout="vertical" onFinish={handleCreateJob}>
           <Form.Item
             name="materialId"
-            label="Required Filament Profile"
-            rules={[{ required: true, message: 'Please select material' }]}
+            label="Hồ sơ vật liệu in yêu cầu"
+            rules={[{ required: true, message: 'Vui lòng chọn vật liệu in' }]}
           >
-            <Select placeholder="Select material SKU">
+            <Select placeholder="Chọn SKU vật liệu">
               {materials.map((mat) => (
                 <Select.Option key={mat.id} value={mat.id}>
                   [{mat.sku}] {mat.name} ({mat.color})
@@ -357,11 +359,11 @@ export const PrintJobOperationsPage: React.FC = () => {
 
           <Form.Item
             name="estimatedGram"
-            label="Estimated G-Code Filament Weight (Grams)"
-            rules={[{ required: true, message: 'Weight is required' }]}
+            label="Khối lượng vật liệu dự kiến theo G-Code (Gram)"
+            rules={[{ required: true, message: 'Vui lòng nhập khối lượng' }]}
             initialValue={400}
           >
-            <InputNumber style={{ width: '100%' }} addonAfter="grams" min={1} />
+            <InputNumber style={{ width: '100%' }} addonAfter="g" min={1} />
           </Form.Item>
         </Form>
       </Modal>
@@ -397,3 +399,5 @@ export const PrintJobOperationsPage: React.FC = () => {
     </div>
   );
 };
+
+export default PrintJobOperationsPage;

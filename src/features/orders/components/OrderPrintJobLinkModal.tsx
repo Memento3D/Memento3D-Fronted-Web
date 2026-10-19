@@ -32,14 +32,14 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
   const createJobMutation = useMutation({
     mutationFn: printJobApi.create,
     onSuccess: () => {
-      message.success('Đã tạo Print Job và liên kết với đơn hàng thành công!');
+      message.success('Đã tạo Lệnh in 3D và liên kết với đơn hàng thành công!');
       queryClient.invalidateQueries({ queryKey: ['print-jobs'] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       if (onSuccess) onSuccess();
       onClose();
     },
     onError: (err: any) => {
-      message.error(err.message || 'Không thể tạo Print Job');
+      message.error(err.message || 'Không thể tạo Lệnh in 3D');
     },
   });
 
@@ -92,7 +92,7 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
           <Select
             placeholder="Chọn vật liệu trong kho..."
             loading={loadingMaterials}
-            options={materialsData?.content.map((m) => ({
+            options={(materialsData?.content || []).map((m) => ({
               label: `${m.name} (${m.materialType} - ${m.color}) [SKU: ${m.sku}]`,
               value: m.id,
             }))}
@@ -140,7 +140,7 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
               borderRadius: 8,
             }}
           >
-            Tạo Print Job
+            Tạo Lệnh in 3D
           </Button>
         </div>
       </Form>

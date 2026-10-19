@@ -31,6 +31,7 @@ import {
 } from '../api/wmsEnterpriseApi';
 import { useWarehouseContext } from '../../warehouse/context/WarehouseContext';
 import { warehouseApi } from '../../warehouse/api/warehouseApi';
+import { getStatusLabel } from '../../../locales/i18n';
 
 const { Title, Text } = Typography;
 
@@ -64,18 +65,18 @@ export const StockCountsPage: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: wmsEnterpriseApi.createStockCount,
     onSuccess: () => {
-      message.success('Stock count session initialized');
+      message.success('Khởi tạo phiên kiểm kê kho thành công');
       setIsCreateModalOpen(false);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['stock-counts'] });
     },
-    onError: (err: any) => message.error(err.message || 'Failed to initialize count'),
+    onError: (err: any) => message.error(err.message || 'Khởi tạo phiên kiểm kê thất bại'),
   });
 
   const startMutation = useMutation({
     mutationFn: wmsEnterpriseApi.startStockCount,
     onSuccess: (updated) => {
-      message.success('Stock count session is now active (COUNTING)');
+      message.success('Phiên kiểm kê đã bắt đầu (ĐANG KIỂM KÊ)');
       queryClient.invalidateQueries({ queryKey: ['stock-counts'] });
       if (activeCount?.id === updated.id) {
         setActiveCount(updated);
@@ -87,7 +88,7 @@ export const StockCountsPage: React.FC = () => {
   const updateItemsMutation = useMutation({
     mutationFn: ({ id, items }: { id: string; items: any[] }) => wmsEnterpriseApi.updateCountItems(id, items),
     onSuccess: (updated) => {
-      message.success('Counted physical items saved');
+      message.success('Đã lưu số lượng kiểm đếm thực tế');
       setActiveCount(updated);
       queryClient.invalidateQueries({ queryKey: ['stock-counts'] });
     },
@@ -97,7 +98,7 @@ export const StockCountsPage: React.FC = () => {
   const completeMutation = useMutation({
     mutationFn: wmsEnterpriseApi.completeStockCount,
     onSuccess: () => {
-      message.success('Stock count completed and locked');
+      message.success('Đã hoàn tất và khóa phiên kiểm kê');
       setActiveCount(null);
       queryClient.invalidateQueries({ queryKey: ['stock-counts'] });
     },
@@ -123,18 +124,18 @@ export const StockCountsPage: React.FC = () => {
 
   const getStatusTag = (status: StockCountStatus) => {
     switch (status) {
-      case 'DRAFT': return <Tag color="default">DRAFT</Tag>;
-      case 'COUNTING': return <Tag color="processing">COUNTING IN PROGRESS</Tag>;
-      case 'REVIEW': return <Tag color="gold">UNDER REVIEW</Tag>;
-      case 'COMPLETED': return <Tag color="green">COMPLETED</Tag>;
-      case 'CANCELLED': return <Tag color="red">CANCELLED</Tag>;
-      default: return <Tag>{status}</Tag>;
+      case 'DRAFT': return <Tag color="default">{getStatusLabel('DRAFT')}</Tag>;
+      case 'COUNTING': return <Tag color="processing">Đang kiểm đếm</Tag>;
+      case 'REVIEW': return <Tag color="gold">Chờ đối soát</Tag>;
+      case 'COMPLETED': return <Tag color="green">{getStatusLabel('COMPLETED')}</Tag>;
+      case 'CANCELLED': return <Tag color="red">{getStatusLabel('CANCELLED')}</Tag>;
+      default: return <Tag>{getStatusLabel(status)}</Tag>;
     }
   };
 
   const columns = [
     {
-      title: 'Count Code',
+      title: 'Mã kiểm kê',
       dataIndex: 'countCode',
       key: 'code',
       render: (code: string, r: StockCount) => (
@@ -144,48 +145,54 @@ export const StockCountsPage: React.FC = () => {
       ),
     },
     {
-      title: 'Warehouse',
+      title: 'Kho hàng',
       dataIndex: 'warehouseName',
       key: 'warehouse',
       render: (name: string) => <Text style={{ color: '#e2e8f0' }}>{name}</Text>,
     },
     {
-      title: 'Scope',
+      title: 'Quy mô',
       dataIndex: 'items',
       key: 'items',
-      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} materials</Text>,
+      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} loại vật liệu</Text>,
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: StockCountStatus) => getStatusTag(status),
     },
     {
-      title: 'Created At',
+      title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (val: string) => <Text style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(val).toLocaleDateString()}</Text>,
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_: any, r: StockCount) => (
         <Space size="small">
           <Button size="small" icon={<Eye size={13} />} onClick={() => { setActiveCount(r); setCountItemsForm({}); }}>
-            View / Count
+            Xem / Kiểm đếm
           </Button>
 
           {r.status === 'DRAFT' && (
             <Button size="small" type="primary" icon={<Play size={13} />} onClick={() => startMutation.mutate(r.id)}>
-              Start Count
+              Bắt đầu kiểm kê
             </Button>
           )}
 
           {r.status === 'COUNTING' && (
-            <Popconfirm title="Complete Audit Session?" description="Finalizes stock count and locks variances." onConfirm={() => completeMutation.mutate(r.id)}>
+            <Popconfirm 
+              title="Hoàn tất phiên kiểm kê?" 
+              description="Khóa số liệu kiểm kê và ghi nhận chênh lệch." 
+              okText="Đồng ý"
+              cancelText="Hủy"
+              onConfirm={() => completeMutation.mutate(r.id)}
+            >
               <Button size="small" type="primary" style={{ background: '#10b981', borderColor: '#10b981' }} icon={<CheckCircle2 size={13} />}>
-                Complete Audit
+                Hoàn tất kiểm kê
               </Button>
             </Popconfirm>
           )}
@@ -199,23 +206,23 @@ export const StockCountsPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
-            Physical Stock Counts & Audits
+            Kiểm kê & Đối soát tồn kho thực tế
           </Title>
           <Text style={{ color: '#94a3b8' }}>
-            Audit verification workflow: DRAFT → COUNTING → REVIEW → COMPLETED (Variance tracking)
+            Quy trình đối soát: BẢN NHÁP → ĐANG KIỂM KÊ → CHỜ DUYỆT → HOÀN TẤT
           </Text>
         </div>
         <Space>
           <Select
-            placeholder="Filter by Status"
+            placeholder="Lọc theo trạng thái"
             allowClear
             value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
-            style={{ width: 160 }}
+            style={{ width: 180 }}
           >
-            <Select.Option value="DRAFT">Draft</Select.Option>
-            <Select.Option value="COUNTING">Counting</Select.Option>
-            <Select.Option value="COMPLETED">Completed</Select.Option>
+            <Select.Option value="DRAFT">Bản nháp</Select.Option>
+            <Select.Option value="COUNTING">Đang kiểm đếm</Select.Option>
+            <Select.Option value="COMPLETED">Hoàn tất</Select.Option>
           </Select>
           <Button 
             type="primary" 
@@ -223,7 +230,7 @@ export const StockCountsPage: React.FC = () => {
             style={{ background: '#3b82f6', borderColor: '#3b82f6', borderRadius: 8, fontWeight: 600 }}
             onClick={() => setIsCreateModalOpen(true)}
           >
-            New Stock Audit
+            Phiên kiểm kê mới
           </Button>
         </Space>
       </div>
@@ -245,29 +252,29 @@ export const StockCountsPage: React.FC = () => {
 
       {/* Create Modal */}
       <Modal
-        title="Initialize Warehouse Stock Audit"
+        title="Khởi tạo phiên kiểm kê kho"
         open={isCreateModalOpen}
         onCancel={() => setIsCreateModalOpen(false)}
         footer={null}
         width={560}
       >
         <Form form={form} layout="vertical" onFinish={handleCreateSubmit} initialValues={{ warehouseId: activeWarehouse?.id }}>
-          <Form.Item name="warehouseId" label="Warehouse to Audit" rules={[{ required: true, message: 'Select warehouse' }]}>
-            <Select placeholder="Target warehouse">
+          <Form.Item name="warehouseId" label="Kho hàng cần kiểm kê" rules={[{ required: true, message: 'Vui lòng chọn kho hàng' }]}>
+            <Select placeholder="Kho cần kiểm kê">
               {warehousesData?.content?.map((w: any) => (
                 <Select.Option key={w.id} value={w.id}>{w.name} ({w.code})</Select.Option>
               ))}
             </Select>
           </Form.Item>
 
-          <Form.Item name="notes" label="Audit Scope & Notes">
-            <Input.TextArea rows={3} placeholder="e.g. Month-end full physical count for SLA compliance..." />
+          <Form.Item name="notes" label="Phạm vi kiểm kê & Ghi chú">
+            <Input.TextArea rows={3} placeholder="VD: Kiểm kê toàn diện cuối tháng để đối soát SLA..." />
           </Form.Item>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24 }}>
-            <Button onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
+            <Button onClick={() => setIsCreateModalOpen(false)}>Hủy</Button>
             <Button type="primary" htmlType="submit" loading={createMutation.isPending}>
-              Initialize Session
+              Khởi tạo phiên kiểm kê
             </Button>
           </div>
         </Form>
@@ -275,25 +282,25 @@ export const StockCountsPage: React.FC = () => {
 
       {/* Audit Detail & Counting Sheet Modal */}
       <Modal
-        title={`Stock Count Session: ${activeCount?.countCode}`}
+        title={`Phiên kiểm kê kho: ${activeCount?.countCode}`}
         open={!!activeCount}
         onCancel={() => setActiveCount(null)}
         width={850}
         footer={[
-          <Button key="close" onClick={() => setActiveCount(null)}>Close</Button>,
+          <Button key="close" onClick={() => setActiveCount(null)}>Đóng</Button>,
           activeCount?.status === 'DRAFT' && (
             <Button key="start" type="primary" onClick={() => startMutation.mutate(activeCount.id)}>
-              Start Physical Count
+              Bắt đầu kiểm đếm
             </Button>
           ),
           activeCount?.status === 'COUNTING' && (
             <Button key="save" icon={<Save size={14} />} onClick={handleSaveItems} loading={updateItemsMutation.isPending}>
-              Save Physical Counts
+              Lưu số liệu kiểm đếm
             </Button>
           ),
           activeCount?.status === 'COUNTING' && (
             <Button key="complete" type="primary" style={{ background: '#10b981' }} onClick={() => completeMutation.mutate(activeCount.id)}>
-              Finalize Audit
+              Hoàn tất kiểm kê
             </Button>
           ),
         ]}
@@ -301,24 +308,24 @@ export const StockCountsPage: React.FC = () => {
         {activeCount && (
           <div>
             <Descriptions bordered size="small" column={2} style={{ marginBottom: 16 }}>
-              <Descriptions.Item label="Status">{getStatusTag(activeCount.status)}</Descriptions.Item>
-              <Descriptions.Item label="Warehouse">{activeCount.warehouseName}</Descriptions.Item>
-              <Descriptions.Item label="Started At">{activeCount.startedAt ? new Date(activeCount.startedAt).toLocaleString() : 'Not started'}</Descriptions.Item>
-              <Descriptions.Item label="Completed At">{activeCount.completedAt ? new Date(activeCount.completedAt).toLocaleString() : '—'}</Descriptions.Item>
+              <Descriptions.Item label="Trạng thái">{getStatusTag(activeCount.status)}</Descriptions.Item>
+              <Descriptions.Item label="Kho hàng">{activeCount.warehouseName}</Descriptions.Item>
+              <Descriptions.Item label="Thời gian bắt đầu">{activeCount.startedAt ? new Date(activeCount.startedAt).toLocaleString() : 'Chưa bắt đầu'}</Descriptions.Item>
+              <Descriptions.Item label="Thời gian hoàn tất">{activeCount.completedAt ? new Date(activeCount.completedAt).toLocaleString() : '—'}</Descriptions.Item>
             </Descriptions>
 
-            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Count Items & Discrepancies</Title>
+            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Danh sách kiểm đếm & Sai lệch</Title>
             <Table
               dataSource={activeCount.items || []}
               rowKey="id"
               pagination={false}
               size="small"
               columns={[
-                { title: 'SKU', dataIndex: 'materialSku', key: 'sku' },
-                { title: 'Material Name', dataIndex: 'materialName', key: 'name' },
-                { title: 'System Qty', dataIndex: 'systemQuantity', key: 'sysQty' },
+                { title: 'Mã SKU', dataIndex: 'materialSku', key: 'sku' },
+                { title: 'Tên vật liệu', dataIndex: 'materialName', key: 'name' },
+                { title: 'SL trên hệ thống', dataIndex: 'systemQuantity', key: 'sysQty' },
                 { 
-                  title: 'Counted Physical Qty', 
+                  title: 'SL kiểm đếm thực tế', 
                   key: 'countedQty', 
                   render: (_: any, r: StockCountItem) => (
                     activeCount.status === 'COUNTING' ? (
@@ -333,7 +340,7 @@ export const StockCountsPage: React.FC = () => {
                   )
                 },
                 { 
-                  title: 'Variance', 
+                  title: 'Chênh lệch', 
                   key: 'variance', 
                   render: (_: any, r: StockCountItem) => {
                     const counted = countItemsForm[r.materialId] ?? r.countedQuantity ?? r.systemQuantity;

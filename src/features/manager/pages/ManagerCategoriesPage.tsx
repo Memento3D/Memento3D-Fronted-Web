@@ -242,7 +242,7 @@ export const ManagerCategoriesPage: React.FC = () => {
         confirmLoading={createMutation.isPending || updateMutation.isPending}
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item name="name" label="Tên danh mục" rules={[{ required: true }]}>
+          <Form.Item name="name" label="Tên danh mục" rules={[{ required: true, message: 'Vui lòng nhập tên danh mục' }]}>
             <Input placeholder="Mini Keepsake, Figurines, Figurine..." />
           </Form.Item>
 

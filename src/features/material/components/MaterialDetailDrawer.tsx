@@ -2,6 +2,7 @@ import React from 'react';
 import { Drawer, Descriptions, Tag, Typography, Space, Button, Divider, Alert } from 'antd';
 import { EditOutlined, FireOutlined, ExperimentOutlined, DollarOutlined } from '@ant-design/icons';
 import type { Material } from '../types/material.types';
+import { getStatusLabel } from '../../../locales/i18n';
 
 const { Text, Title } = Typography;
 
@@ -36,7 +37,7 @@ export const MaterialDetailDrawer: React.FC<MaterialDetailDrawerProps> = ({
           />
           <span>{material.name}</span>
           <Tag color={material.status === 'ACTIVE' ? 'success' : 'default'}>
-            {material.status}
+            {getStatusLabel(material.status)}
           </Tag>
         </Space>
       }
@@ -53,14 +54,14 @@ export const MaterialDetailDrawer: React.FC<MaterialDetailDrawerProps> = ({
             onEdit(material);
           }}
         >
-          Edit Material
+          Chỉnh sửa vật liệu
         </Button>
       }
     >
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
         {material.description && (
           <Alert
-            message="Description & Notes"
+            message="Mô tả & Ghi chú"
             description={material.description}
             type="info"
             showIcon
@@ -68,16 +69,16 @@ export const MaterialDetailDrawer: React.FC<MaterialDetailDrawerProps> = ({
         )}
 
         <Title level={5}>
-          <ExperimentOutlined /> Identification & Classification
+          <ExperimentOutlined /> Định danh & Phân loại
         </Title>
         <Descriptions bordered column={1} size="small">
-          <Descriptions.Item label="SKU Code">
+          <Descriptions.Item label="Mã SKU">
             <Text code copyable>{material.sku}</Text>
           </Descriptions.Item>
-          <Descriptions.Item label="Material Type">
+          <Descriptions.Item label="Loại vật liệu">
             <Tag color="cyan">{material.materialType}</Tag>
           </Descriptions.Item>
-          <Descriptions.Item label="Color">
+          <Descriptions.Item label="Màu sắc">
             <Space>
               <span
                 style={{
@@ -92,10 +93,10 @@ export const MaterialDetailDrawer: React.FC<MaterialDetailDrawerProps> = ({
               {material.colorHex && <Text type="secondary">({material.colorHex})</Text>}
             </Space>
           </Descriptions.Item>
-          <Descriptions.Item label="Density">
-            {material.density ? `${material.density} g/cm³` : 'Standard (~1.24 g/cm³)'}
+          <Descriptions.Item label="Khối lượng riêng">
+            {material.density ? `${material.density} g/cm³` : 'Tiêu chuẩn (~1.24 g/cm³)'}
           </Descriptions.Item>
-          <Descriptions.Item label="Diameter">
+          <Descriptions.Item label="Đường kính sợi">
             {material.diameter ? `${material.diameter} mm` : '1.75 mm'}
           </Descriptions.Item>
         </Descriptions>
@@ -103,21 +104,21 @@ export const MaterialDetailDrawer: React.FC<MaterialDetailDrawerProps> = ({
         <Divider style={{ margin: '12px 0' }} />
 
         <Title level={5}>
-          <FireOutlined /> Thermal & Print Profile
+          <FireOutlined /> Thông số Nhiệt độ In
         </Title>
         <Descriptions bordered column={1} size="small">
-          <Descriptions.Item label="Nozzle Printing Window">
+          <Descriptions.Item label="Dải nhiệt độ đầu phun">
             {material.printTempMin && material.printTempMax ? (
               <Tag color="volcano">{material.printTempMin}°C — {material.printTempMax}°C</Tag>
             ) : (
-              '190°C — 220°C (Default)'
+              '190°C — 220°C (Tiêu chuẩn)'
             )}
           </Descriptions.Item>
-          <Descriptions.Item label="Heated Bed Window">
+          <Descriptions.Item label="Dải nhiệt độ bàn in">
             {material.bedTempMin && material.bedTempMax ? (
               <Tag color="orange">{material.bedTempMin}°C — {material.bedTempMax}°C</Tag>
             ) : (
-              '50°C — 60°C (Default)'
+              '50°C — 60°C (Tiêu chuẩn)'
             )}
           </Descriptions.Item>
         </Descriptions>
@@ -125,24 +126,24 @@ export const MaterialDetailDrawer: React.FC<MaterialDetailDrawerProps> = ({
         <Divider style={{ margin: '12px 0' }} />
 
         <Title level={5}>
-          <DollarOutlined /> Financial & Audit
+          <DollarOutlined /> Định giá & Kiểm toán
         </Title>
         <Descriptions bordered column={1} size="small">
-          <Descriptions.Item label="Unit Cost per Gram">
+          <Descriptions.Item label="Đơn giá mỗi gram">
             <Text strong style={{ color: '#10b981' }}>
               {Number(material.unitCost).toLocaleString()} VND / gram
             </Text>
             <Text type="secondary" style={{ marginLeft: 8 }}>
-              (~{(Number(material.unitCost) * 1000).toLocaleString()} VND / 1kg Spool)
+              (~{(Number(material.unitCost) * 1000).toLocaleString()} VND / Cuộn 1kg)
             </Text>
           </Descriptions.Item>
-          <Descriptions.Item label="Created At">
-            {new Date(material.createdAt).toLocaleString()}
+          <Descriptions.Item label="Ngày tạo">
+            {new Date(material.createdAt).toLocaleString('vi-VN')}
           </Descriptions.Item>
-          <Descriptions.Item label="Last Updated">
-            {new Date(material.updatedAt).toLocaleString()}
+          <Descriptions.Item label="Cập nhật lần cuối">
+            {new Date(material.updatedAt).toLocaleString('vi-VN')}
           </Descriptions.Item>
-          <Descriptions.Item label="System ID">
+          <Descriptions.Item label="Mã định danh hệ thống">
             <Text type="secondary" style={{ fontSize: 11 }} copyable>
               {material.id}
             </Text>

@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { HomeOutlined, ArrowRightOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { warehouseApi } from '../../warehouse/api/warehouseApi';
 import type { Warehouse } from '../../warehouse/types/warehouse.types';
+import { getStatusLabel } from '../../../locales/i18n';
 
 const { Title, Paragraph } = Typography;
 
@@ -32,7 +33,7 @@ export const WarehouseSelectPage: React.FC = () => {
           background: '#090d16',
         }}
       >
-        <Spin size="large" tip="Loading authorized warehouse facilities..." />
+        <Spin size="large" tip="Đang tải danh sách cơ sở kho được ủy quyền..." />
       </div>
     );
   }
@@ -51,11 +52,11 @@ export const WarehouseSelectPage: React.FC = () => {
       >
         <Result
           status="warning"
-          title="No Warehouse Facility Membership"
-          subTitle="Your account has not been assigned to any regional warehouse hub. Contact an Administrator to grant facility membership."
+          title="Chưa có quyền thành viên kho"
+          subTitle="Tài khoản của bạn chưa được phân công vào bất kỳ trung tâm kho khu vực nào. Vui lòng liên hệ Quản trị viên để được cấp quyền."
           extra={[
             <Button type="primary" key="home" onClick={() => navigate('/manager/inventory')}>
-              Go to Overview
+              Đến cổng tổng quan
             </Button>,
           ]}
         />
@@ -93,10 +94,10 @@ export const WarehouseSelectPage: React.FC = () => {
             <HomeOutlined style={{ fontSize: 28, color: '#ffffff' }} />
           </div>
           <Title level={2} style={{ color: '#f8fafc', margin: 0, fontWeight: 800 }}>
-            Select Operating Warehouse
+            Chọn cơ sở kho làm việc
           </Title>
           <Paragraph style={{ color: '#94a3b8', fontSize: '0.95rem', marginTop: 8 }}>
-            You maintain active operational memberships across multiple 3D manufacturing hubs. Select the facility you are operating in today.
+            Bạn đang phụ trách hoạt động tại nhiều trung tâm chế tác 3D. Vui lòng chọn cơ sở kho bạn làm việc hôm nay.
           </Paragraph>
         </div>
 
@@ -120,7 +121,7 @@ export const WarehouseSelectPage: React.FC = () => {
                     {wh.code}
                   </Tag>
                   <Tag color={wh.status === 'ACTIVE' ? 'success' : 'default'}>
-                    {wh.status}
+                    {getStatusLabel(wh.status)}
                   </Tag>
                 </div>
 
@@ -147,7 +148,7 @@ export const WarehouseSelectPage: React.FC = () => {
                     marginTop: 12,
                   }}
                 >
-                  Enter Facility Terminal
+                  Vào không gian kho này
                 </Button>
               </Card>
             </Col>

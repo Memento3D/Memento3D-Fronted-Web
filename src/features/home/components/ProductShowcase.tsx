@@ -12,13 +12,14 @@ import { productApi } from '../../products/api/productApi';
 import { categoryApi } from '../../products/api/categoryApi';
 import { useCart } from '../../cart/context/CartContext';
 import { formatCurrency } from '../../orders/utils/orderFormatters';
+import type { ProductCategory } from '../../products/types/product.types';
 
 export const ProductShowcase: React.FC = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
   // Categories from Backend API
-  const { data: categories = [] } = useQuery({
+  const { data: rawCategories } = useQuery({
     queryKey: ['home-categories'],
     queryFn: () => categoryApi.list(true),
     staleTime: 10 * 60 * 1000,
@@ -31,7 +32,20 @@ export const ProductShowcase: React.FC = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  const products = productsData?.content || [];
+  // Safe data extraction handling Spring Boot Page vs List vs Null/Undefined/Invalid
+  const categories = React.useMemo<ProductCategory[]>(() => {
+    if (Array.isArray(rawCategories)) return rawCategories as ProductCategory[];
+    if (rawCategories && Array.isArray((rawCategories as any).content)) {
+      return (rawCategories as any).content as ProductCategory[];
+    }
+    return [];
+  }, [rawCategories]);
+
+  const products = React.useMemo(() => {
+    if (Array.isArray(productsData?.content)) return productsData.content;
+    if (Array.isArray(productsData)) return productsData;
+    return [];
+  }, [productsData]);
 
   return (
     <section id="products" className="products-wrapper" style={{ padding: '80px 0', background: '#050811' }}>
@@ -61,7 +75,7 @@ export const ProductShowcase: React.FC = () => {
         {/* Categories Grid */}
         {categories.length > 0 && (
           <Row gutter={[20, 20]} style={{ marginBottom: 60 }}>
-            {categories.slice(0, 4).map((cat) => (
+            {categories.slice(0, 4).map((cat: ProductCategory) => (
               <Col xs={12} sm={12} md={6} key={cat.id}>
                 <div
                   onClick={() => navigate(`/products?category=${cat.slug}`)}

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AntdConfig } from './components/AntdConfig';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { AppLayout } from './components/layout/AppLayout';
 import { AuthProvider } from './features/auth/context/AuthContext';
 import { RealTimeProvider } from './shared/realtime';
@@ -62,7 +63,8 @@ export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AntdConfig>
-        <AuthProvider>
+        <ErrorBoundary>
+          <AuthProvider>
           <RealTimeProvider>
             <CartProvider>
               <WarehouseProvider>
@@ -354,6 +356,7 @@ export const App: React.FC = () => {
           </CartProvider>
           </RealTimeProvider>
         </AuthProvider>
+        </ErrorBoundary>
       </AntdConfig>
     </QueryClientProvider>
   );

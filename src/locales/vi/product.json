@@ -1,0 +1,23 @@
+{
+  "products": "Sản phẩm",
+  "product": "Sản phẩm",
+  "categories": "Danh mục",
+  "category": "Danh mục",
+  "cart": "Giỏ hàng",
+  "addToCart": "Thêm vào giỏ hàng",
+  "buyNow": "Mua ngay",
+  "outOfStock": "Hết hàng",
+  "inStock": "Còn hàng",
+  "price": "Giá",
+  "startingPrice": "Giá khởi điểm",
+  "viewDetails": "Xem chi tiết",
+  "specifications": "Thông số kỹ thuật",
+  "materials": "Vật liệu chế tác",
+  "resolution": "Độ phân giải in",
+  "featured": "Nổi bật",
+  "newest": "Mới nhất",
+  "priceAsc": "Giá: Thấp đến Cao",
+  "priceDesc": "Giá: Cao đến Thấp",
+  "popular": "Phổ biến nhất",
+  "allCategories": "Tất cả danh mục"
+}

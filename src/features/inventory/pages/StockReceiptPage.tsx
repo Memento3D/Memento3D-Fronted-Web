@@ -85,7 +85,7 @@ export const StockReceiptPage: React.FC = () => {
       };
 
       const res = await receiptMutation.mutateAsync(payload);
-      message.success(`Receipt #${res.receiptNumber} successfully booked into warehouse!`);
+      message.success(`Phiếu nhập kho #${res.receiptNumber} đã được ghi nhận vào kho thành công!`);
       setIsConfirmOpen(false);
       form.resetFields();
       form.setFieldsValue({
@@ -96,7 +96,7 @@ export const StockReceiptPage: React.FC = () => {
       });
       setSpoolCount(2);
     } catch (err: any) {
-      message.error(err.message || 'Failed to submit receipt');
+      message.error(err.message || 'Gửi phiếu nhập kho thất bại');
     }
   };
 
@@ -105,7 +105,7 @@ export const StockReceiptPage: React.FC = () => {
 
   const columns: ColumnsType<StockReceipt> = [
     {
-      title: 'Receipt #',
+      title: 'Mã phiếu nhập',
       dataIndex: 'receiptNumber',
       key: 'receiptNumber',
       render: (num: string) => (
@@ -115,13 +115,13 @@ export const StockReceiptPage: React.FC = () => {
       ),
     },
     {
-      title: 'Warehouse',
+      title: 'Kho hàng',
       dataIndex: 'warehouseCode',
       key: 'warehouseCode',
       render: (code: string) => <Tag color="blue">{code}</Tag>,
     },
     {
-      title: 'Material SKU',
+      title: 'Mã SKU / Vật liệu',
       dataIndex: 'materialSku',
       key: 'materialSku',
       render: (sku: string, record) => (
@@ -132,7 +132,7 @@ export const StockReceiptPage: React.FC = () => {
       ),
     },
     {
-      title: 'Inbound Qty',
+      title: 'Khối lượng nhập',
       dataIndex: 'quantityGram',
       key: 'quantityGram',
       render: (qty: number) => (
@@ -142,25 +142,25 @@ export const StockReceiptPage: React.FC = () => {
       ),
     },
     {
-      title: 'Batch / Lot',
+      title: 'Số lô sản xuất',
       dataIndex: 'batchNumber',
       key: 'batchNumber',
-      render: (batch: string) => <Text code>{batch || 'N/A'}</Text>,
+      render: (batch: string) => <Text code>{batch || 'Không có'}</Text>,
     },
     {
-      title: 'Supplier',
+      title: 'Nhà cung cấp',
       dataIndex: 'supplier',
       key: 'supplier',
-      render: (sup: string) => sup || 'Default Supplier',
+      render: (sup: string) => sup || 'Nhà cung cấp mặc định',
     },
     {
-      title: 'Timestamp',
+      title: 'Thời gian',
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (val: string) => new Date(val).toLocaleString(),
     },
     {
-      title: 'Print Slip',
+      title: 'In phiếu',
       key: 'print',
       align: 'right',
       render: () => (
@@ -179,14 +179,14 @@ export const StockReceiptPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
-            Inbound Stock Receipt (F04)
+            Nhập kho vật liệu (F04)
           </Title>
           <Text type="secondary">
-            Receive incoming filament consignments, verify QC metrics, and register serial batch tags.
+            Tiếp nhận lô hàng vật liệu in, kiểm tra chất lượng QC và đăng ký thông tin số lô.
           </Text>
         </div>
         <Button icon={<PrinterOutlined />} onClick={() => window.print()}>
-          Print Receiving Slip
+          In phiếu tiếp nhận
         </Button>
       </div>
 
@@ -195,7 +195,7 @@ export const StockReceiptPage: React.FC = () => {
         title={
           <Space>
             <InboxOutlined style={{ color: '#0ea5e9' }} />
-            <span>Goods Receipt Form</span>
+            <span>Biểu mẫu nhập kho</span>
           </Space>
         }
       >
@@ -215,10 +215,10 @@ export const StockReceiptPage: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="warehouseId"
-                label="Destination Warehouse Facility"
-                rules={[{ required: true, message: 'Please select destination warehouse' }]}
+                label="Kho hàng tiếp nhận"
+                rules={[{ required: true, message: 'Vui lòng chọn kho tiếp nhận' }]}
               >
-                <Select placeholder="Select warehouse destination">
+                <Select placeholder="Chọn kho tiếp nhận">
                   {warehouses.map((wh) => (
                     <Select.Option key={wh.id} value={wh.id}>
                       {wh.code} — {wh.name}
@@ -230,11 +230,11 @@ export const StockReceiptPage: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="materialId"
-                label="Material Profile (Filament)"
-                rules={[{ required: true, message: 'Please select material SKU' }]}
+                label="Hồ sơ vật liệu in"
+                rules={[{ required: true, message: 'Vui lòng chọn mã SKU vật liệu' }]}
               >
                 <Select
-                  placeholder="Select material SKU"
+                  placeholder="Chọn mã SKU vật liệu"
                   showSearch
                   optionFilterProp="children"
                   onChange={handleMaterialChange}
@@ -262,10 +262,10 @@ export const StockReceiptPage: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <Space>
                 <CalculatorOutlined style={{ color: '#0ea5e9' }} />
-                <Text strong style={{ color: '#38bdf8' }}>Spool Counter & Presets</Text>
+                <Text strong style={{ color: '#38bdf8' }}>Bộ tính nhanh cuộn nhựa</Text>
               </Space>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                Calculated at 1,000 grams per standard spool
+                Tính toán dựa trên 1.000 gam cho mỗi cuộn tiêu chuẩn
               </Text>
             </div>
             <Space wrap>
@@ -276,7 +276,7 @@ export const StockReceiptPage: React.FC = () => {
                   type={spoolCount === c ? 'primary' : 'default'}
                   onClick={() => handleSpoolPreset(c)}
                 >
-                  {c} {c === 1 ? 'Spool' : 'Spools'} ({c}kg)
+                  {c} Cuộn ({c}kg)
                 </Button>
               ))}
             </Space>
@@ -286,16 +286,16 @@ export const StockReceiptPage: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="quantityGram"
-                label="Total Inbound Quantity (Grams)"
+                label="Tổng khối lượng nhập (Gam)"
                 rules={[
-                  { required: true, message: 'Quantity is required' },
-                  { type: 'number', min: 1, message: 'Must be > 0' },
+                  { required: true, message: 'Khối lượng là bắt buộc' },
+                  { type: 'number', min: 1, message: 'Khối lượng phải > 0' },
                 ]}
               >
                 <InputNumber
                   style={{ width: '100%' }}
                   step={100}
-                  addonAfter="grams"
+                  addonAfter="gam"
                   onChange={(val) => {
                     const num = Number(val);
                     if (num > 0) setSpoolCount(Number((num / 1000).toFixed(2)));
@@ -306,12 +306,12 @@ export const StockReceiptPage: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="unitCost"
-                label="Unit Cost per Gram (VND)"
-                rules={[{ required: true, message: 'Unit cost is required' }]}
+                label="Đơn giá mỗi gam (VNĐ)"
+                rules={[{ required: true, message: 'Đơn giá là bắt buộc' }]}
               >
                 <InputNumber
                   style={{ width: '100%' }}
-                  addonAfter="VND / g"
+                  addonAfter="đ / g"
                   formatter={(val) => `${val}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 />
               </Form.Item>
@@ -320,17 +320,17 @@ export const StockReceiptPage: React.FC = () => {
 
           <Row gutter={16}>
             <Col xs={24} md={12}>
-              <Form.Item name="supplier" label="Supplier / Consignor">
-                <Input placeholder="e.g. Creality Vietnam Distribution" />
+              <Form.Item name="supplier" label="Nhà cung cấp / Đơn vị giao">
+                <Input placeholder="VD: Creality Việt Nam, eSUN Chính Hãng" />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
               <Form.Item
                 name="batchNumber"
-                label="Batch / Lot Identification Tag"
-                rules={[{ required: true, message: 'Batch number is required' }]}
+                label="Mã định danh số lô sản xuất"
+                rules={[{ required: true, message: 'Số lô sản xuất là bắt buộc' }]}
               >
-                <Input placeholder="e.g. LOT-202610-881" />
+                <Input placeholder="VD: LOT-202610-881" />
               </Form.Item>
             </Col>
           </Row>
@@ -340,27 +340,27 @@ export const StockReceiptPage: React.FC = () => {
             label={
               <Space>
                 <SafetyCertificateOutlined style={{ color: '#10b981' }} />
-                <span>Quality Inspection Checklist</span>
+                <span>Danh mục kiểm tra chất lượng (QC Checklist)</span>
               </Space>
             }
           >
             <Checkbox.Group style={{ width: '100%' }}>
               <Row gutter={[16, 8]}>
                 <Col xs={24} sm={8}>
-                  <Checkbox value="vacuum_seal">Vacuum seal packaging intact</Checkbox>
+                  <Checkbox value="vacuum_seal">Bao bì hút chân không nguyên vẹn</Checkbox>
                 </Col>
                 <Col xs={24} sm={8}>
-                  <Checkbox value="desiccant">Silica desiccant packet present</Checkbox>
+                  <Checkbox value="desiccant">Có túi hút ẩm kèm theo</Checkbox>
                 </Col>
                 <Col xs={24} sm={8}>
-                  <Checkbox value="visual_pass">Color swatch & 1.75mm diameter verified</Checkbox>
+                  <Checkbox value="visual_pass">Đã kiểm tra màu sắc & đường kính 1.75mm</Checkbox>
                 </Col>
               </Row>
             </Checkbox.Group>
           </Form.Item>
 
-          <Form.Item name="note" label="Receipt Notes & Waybill Details">
-            <Input.TextArea rows={2} placeholder="Optional delivery notes or courier tracking number..." />
+          <Form.Item name="note" label="Ghi chú phiếu nhập & Mã vận đơn">
+            <Input.TextArea rows={2} placeholder="Ghi chú giao hàng hoặc mã theo dõi bưu kiện..." />
           </Form.Item>
 
           <Button
@@ -371,7 +371,7 @@ export const StockReceiptPage: React.FC = () => {
             loading={receiptMutation.isPending}
             style={{ width: '100%', marginTop: 8 }}
           >
-            Review & Commit Inbound Stock Receipt
+            Xem lại & Xác nhận nhập kho
           </Button>
         </Form>
       </Card>
@@ -381,7 +381,7 @@ export const StockReceiptPage: React.FC = () => {
         title={
           <Space>
             <HistoryOutlined style={{ color: '#0ea5e9' }} />
-            <span>Recent Goods Receipts Audit History</span>
+            <span>Lịch sử kiểm toán phiếu nhập kho gần đây</span>
           </Space>
         }
       >
@@ -399,47 +399,48 @@ export const StockReceiptPage: React.FC = () => {
         title={
           <Space>
             <CheckCircleOutlined style={{ color: '#10b981' }} />
-            <span>Verify & Commit Receipt</span>
+            <span>Xác minh & Xác nhận nhập kho</span>
           </Space>
         }
         open={isConfirmOpen}
         onCancel={() => setIsConfirmOpen(false)}
         onOk={handleCommitReceipt}
         confirmLoading={receiptMutation.isPending}
-        okText="Confirm ACID Receipt"
+        okText="Xác nhận nhập kho"
+        cancelText="Hủy"
         width={560}
       >
         <Alert
-          message="Atomic Database Write"
-          description="Confirming will increase warehouse on-hand stock balance and record an immutable RECEIPT entry in the inventory ledger."
+          message="Ghi nhận tức thời vào cơ sở dữ liệu"
+          description="Xác nhận sẽ tăng số dư tồn kho thực tế và tạo bản ghi NHẬP KHO bất biến trong sổ cái."
           type="info"
           showIcon
           style={{ marginBottom: 16 }}
         />
 
         <Descriptions bordered column={1} size="small">
-          <Descriptions.Item label="Target Warehouse">
+          <Descriptions.Item label="Kho tiếp nhận">
             <Tag color="blue">{selectedWarehouse?.code}</Tag> {selectedWarehouse?.name}
           </Descriptions.Item>
-          <Descriptions.Item label="Material SKU">
+          <Descriptions.Item label="Mã SKU vật liệu">
             <Tag color="cyan">{selectedMaterial?.sku}</Tag> {selectedMaterial?.name}
           </Descriptions.Item>
-          <Descriptions.Item label="Inbound Quantity">
+          <Descriptions.Item label="Khối lượng nhập">
             <Text strong style={{ color: '#10b981', fontSize: 16 }}>
-              {Number(pendingValues?.quantityGram || 0).toLocaleString()} grams
+              {Number(pendingValues?.quantityGram || 0).toLocaleString()} gam
             </Text>{' '}
-            ({(Number(pendingValues?.quantityGram || 0) / 1000).toFixed(2)} kg / {spoolCount} spools)
+            ({(Number(pendingValues?.quantityGram || 0) / 1000).toFixed(2)} kg / {spoolCount} cuộn)
           </Descriptions.Item>
-          <Descriptions.Item label="Total Batch Valuation">
+          <Descriptions.Item label="Tổng định giá lô hàng">
             <Text strong style={{ color: '#fbbf24' }}>
-              {(Number(pendingValues?.quantityGram || 0) * Number(pendingValues?.unitCost || 0)).toLocaleString()} VND
+              {(Number(pendingValues?.quantityGram || 0) * Number(pendingValues?.unitCost || 0)).toLocaleString()} VNĐ
             </Text>
           </Descriptions.Item>
-          <Descriptions.Item label="Batch / Lot Tag">
+          <Descriptions.Item label="Số lô sản xuất">
             <Text code>{pendingValues?.batchNumber}</Text>
           </Descriptions.Item>
-          <Descriptions.Item label="Supplier">
-            {pendingValues?.supplier || 'N/A'}
+          <Descriptions.Item label="Nhà cung cấp">
+            {pendingValues?.supplier || 'Không có'}
           </Descriptions.Item>
         </Descriptions>
       </Modal>

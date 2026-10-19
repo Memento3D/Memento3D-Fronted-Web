@@ -31,10 +31,10 @@ const MOCK_PROVIDER_ORDERS: ProviderOrder[] = [
   {
     id: '1',
     orderCode: 'ORD-2026-8812',
-    customerRef: 'CUST-0912',
-    productName: 'Cyberpunk Mecha Keepsake',
-    material: 'High-Detail Tough Resin (Navy Blue)',
-    layerHeight: '0.05 mm (Ultra-fine)',
+    customerRef: 'KH-0912',
+    productName: 'Kỷ vật 3D Cyberpunk Mecha',
+    material: 'Resin kỹ thuật độ nét cao (Xanh Navy)',
+    layerHeight: '0.05 mm (Siêu mịn)',
     quantity: 1,
     assignedAt: '2026-10-18 10:15',
     deadline: '2026-10-20 18:00',
@@ -44,9 +44,9 @@ const MOCK_PROVIDER_ORDERS: ProviderOrder[] = [
   {
     id: '2',
     orderCode: 'ORD-2026-8815',
-    customerRef: 'CUST-0442',
-    productName: 'Architectural Heritage Facade',
-    material: 'Architectural Stone PLA (Warm White)',
+    customerRef: 'KH-0442',
+    productName: 'Mặt đứng kiến trúc di sản',
+    material: 'PLA vân đá tự nhiên (Trắng ngà)',
     layerHeight: '0.12 mm',
     quantity: 2,
     assignedAt: '2026-10-18 12:30',
@@ -57,9 +57,9 @@ const MOCK_PROVIDER_ORDERS: ProviderOrder[] = [
   {
     id: '3',
     orderCode: 'ORD-2026-8809',
-    customerRef: 'CUST-0129',
-    productName: 'Personalized Bronze Bust Figurine',
-    material: 'Bronze Infused Composite',
+    customerRef: 'KH-0129',
+    productName: 'Tượng chân dung bán thân giả đồng',
+    material: 'Vật liệu Composite pha bột đồng',
     layerHeight: '0.08 mm',
     quantity: 1,
     assignedAt: '2026-10-17 15:40',
@@ -70,9 +70,9 @@ const MOCK_PROVIDER_ORDERS: ProviderOrder[] = [
   {
     id: '4',
     orderCode: 'ORD-2026-8798',
-    customerRef: 'CUST-0881',
-    productName: 'Mechanical Chronograph Enclosure',
-    material: 'Carbon Fiber PETG (Matte Black)',
+    customerRef: 'KH-0881',
+    productName: 'Vỏ đồng hồ cơ khí Chronograph',
+    material: 'PETG sợi Carbon (Đen nhám)',
     layerHeight: '0.15 mm',
     quantity: 3,
     assignedAt: '2026-10-16 09:00',
@@ -96,12 +96,20 @@ export const ProviderOrdersPage: React.FC = () => {
     setOrders((prev) =>
       prev.map((ord) => (ord.id === id ? { ...ord, status: nextStatus } : ord))
     );
-    message.success(`Order status updated to ${nextStatus.replace(/_/g, ' ')}`);
+    const statusText =
+      nextStatus === 'IN_PRODUCTION'
+        ? 'Đã tiếp nhận sản xuất'
+        : nextStatus === 'QC_PASSED'
+        ? 'Đã kiểm tra QC đạt chuẩn'
+        : nextStatus === 'READY_FOR_PICKUP'
+        ? 'Sẵn sàng bàn giao tài xế'
+        : nextStatus;
+    message.success(`Trạng thái gia công cập nhật: ${statusText}`);
   };
 
   const columns = [
     {
-      title: 'Order Ref & Item',
+      title: 'Mã đơn & Sản phẩm',
       key: 'orderCode',
       render: (_: unknown, record: ProviderOrder) => (
         <div>
@@ -112,58 +120,58 @@ export const ProviderOrdersPage: React.FC = () => {
             {record.productName}
           </div>
           <div style={{ color: '#64748b', fontSize: '0.75rem' }}>
-            Qty: {record.quantity} &bull; Client: {record.customerRef}
+            SL: {record.quantity} &bull; Khách: {record.customerRef}
           </div>
         </div>
       ),
     },
     {
-      title: 'Specifications',
+      title: 'Thông số kỹ thuật & Vật liệu',
       key: 'specs',
       render: (_: unknown, record: ProviderOrder) => (
         <div>
           <div style={{ color: '#e2e8f0', fontSize: '0.825rem' }}>{record.material}</div>
-          <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Precision: {record.layerHeight}</div>
+          <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Độ mịn lớp in: {record.layerHeight}</div>
         </div>
       ),
     },
     {
-      title: 'Priority & SLA Deadline',
+      title: 'Mức độ ưu tiên & Hạn giao',
       key: 'deadline',
       render: (_: unknown, record: ProviderOrder) => (
         <div>
           {record.priority === 'RUSH' && (
             <Tag color="error" icon={<Flame size={12} style={{ marginRight: 4 }} />}>
-              RUSH SLA
+              HỎA TỐC
             </Tag>
           )}
-          {record.priority === 'HIGH' && <Tag color="warning">High Priority</Tag>}
-          {record.priority === 'NORMAL' && <Tag color="default">Standard SLA</Tag>}
+          {record.priority === 'HIGH' && <Tag color="warning">Ưu tiên cao</Tag>}
+          {record.priority === 'NORMAL' && <Tag color="default">Tiêu chuẩn</Tag>}
           <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: 4 }}>
-            Due: {record.deadline}
+            Hạn giao: {record.deadline}
           </div>
         </div>
       ),
     },
     {
-      title: 'Production State',
+      title: 'Tiến độ gia công',
       dataIndex: 'status',
       key: 'status',
       render: (status: ProviderOrder['status']) => {
         switch (status) {
           case 'PENDING_ACCEPT':
-            return <Badge status="warning" text={<span style={{ color: '#f59e0b' }}>Pending Acceptance</span>} />;
+            return <Badge status="warning" text={<span style={{ color: '#f59e0b' }}>Chờ tiếp nhận đơn</span>} />;
           case 'IN_PRODUCTION':
-            return <Badge status="processing" text={<span style={{ color: '#38bdf8' }}>3D Printing & Post-cure</span>} />;
+            return <Badge status="processing" text={<span style={{ color: '#38bdf8' }}>Đang in 3D & Xử lý hậu kỳ</span>} />;
           case 'QC_PASSED':
-            return <Badge status="success" text={<span style={{ color: '#10b981' }}>QC Inspection Passed</span>} />;
+            return <Badge status="success" text={<span style={{ color: '#10b981' }}>Đã đạt chuẩn QC</span>} />;
           case 'READY_FOR_PICKUP':
-            return <Badge status="default" text={<span style={{ color: '#a855f7' }}>Awaiting Courier Dispatch</span>} />;
+            return <Badge status="default" text={<span style={{ color: '#a855f7' }}>Chờ tài xế đến lấy</span>} />;
         }
       },
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_: unknown, record: ProviderOrder) => (
         <Space size="small">
@@ -173,7 +181,7 @@ export const ProviderOrdersPage: React.FC = () => {
               size="small"
               onClick={() => handleUpdateStatus(record.id, 'IN_PRODUCTION')}
             >
-              Accept Order
+              Tiếp nhận đơn
             </Button>
           )}
           {record.status === 'IN_PRODUCTION' && (
@@ -182,7 +190,7 @@ export const ProviderOrdersPage: React.FC = () => {
               style={{ borderColor: '#10b981', color: '#10b981' }}
               onClick={() => handleUpdateStatus(record.id, 'QC_PASSED')}
             >
-              Mark QC Passed
+              Xác nhận đạt QC
             </Button>
           )}
           {record.status === 'QC_PASSED' && (
@@ -191,12 +199,12 @@ export const ProviderOrdersPage: React.FC = () => {
               type="dashed"
               onClick={() => handleUpdateStatus(record.id, 'READY_FOR_PICKUP')}
             >
-              Ready For Courier
+              Sẵn sàng bàn giao
             </Button>
           )}
           {record.status === 'READY_FOR_PICKUP' && (
             <Tag color="cyan" icon={<Truck size={12} style={{ marginRight: 4 }} />}>
-              Manifest Generated
+              Đã lập phiếu giao hàng
             </Tag>
           )}
         </Space>
@@ -231,14 +239,14 @@ export const ProviderOrdersPage: React.FC = () => {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <h1 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700, color: '#fff' }}>
-                Manufacturing Partner Hub
+                Cổng Đối tác Sản xuất & Gia công
               </h1>
               <Tag color="geekblue" style={{ borderRadius: 6, fontWeight: 600 }}>
-                ROLE_PROVIDER
+                ROLE_PROVIDER (Đối tác sản xuất)
               </Tag>
             </div>
             <p style={{ margin: '2px 0 0', color: '#94a3b8', fontSize: '0.8rem' }}>
-              Connected as: <strong style={{ color: '#e2e8f0' }}>{user?.fullName || 'Partner Provider'}</strong> ({user?.email})
+              Đang kết nối: <strong style={{ color: '#e2e8f0' }}>{user?.fullName || 'Đối tác gia công'}</strong> ({user?.email})
             </p>
           </div>
         </div>
@@ -250,7 +258,7 @@ export const ProviderOrdersPage: React.FC = () => {
             onClick={handleLogout}
             style={{ borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6 }}
           >
-            Sign Out
+            Đăng xuất
           </Button>
         </div>
       </div>
@@ -264,14 +272,14 @@ export const ProviderOrdersPage: React.FC = () => {
           padding: 20 
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
-            <span>Active Batch Workload</span>
+            <span>Đơn hàng gia công hiện tại</span>
             <Layers size={18} color="#38bdf8" />
           </div>
           <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
-            {orders.length} Orders
+            {orders.length} Đơn hàng
           </div>
           <div style={{ color: '#38bdf8', fontSize: '0.75rem', marginTop: 4 }}>
-            1 waiting for partner confirmation
+            1 đơn chờ đối tác tiếp nhận
           </div>
         </div>
 
@@ -282,14 +290,14 @@ export const ProviderOrdersPage: React.FC = () => {
           padding: 20 
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
-            <span>In Print Chambers</span>
+            <span>Đang trong buồng in 3D</span>
             <Clock size={18} color="#f59e0b" />
           </div>
           <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
             {orders.filter((o) => o.status === 'IN_PRODUCTION').length}
           </div>
           <div style={{ color: '#f59e0b', fontSize: '0.75rem', marginTop: 4 }}>
-            Curing & post-processing running
+            Đang sấy UV & xử lý hậu kỳ
           </div>
         </div>
 
@@ -300,14 +308,14 @@ export const ProviderOrdersPage: React.FC = () => {
           padding: 20 
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
-            <span>QC Passed & Packaged</span>
+            <span>Đã qua kiểm định QC</span>
             <CheckCircle2 size={18} color="#10b981" />
           </div>
           <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
             {orders.filter((o) => o.status === 'QC_PASSED' || o.status === 'READY_FOR_PICKUP').length}
           </div>
           <div style={{ color: '#10b981', fontSize: '0.75rem', marginTop: 4 }}>
-            Ready for delivery courier handoff
+            Sẵn sàng bàn giao tài xế
           </div>
         </div>
 
@@ -318,14 +326,14 @@ export const ProviderOrdersPage: React.FC = () => {
           padding: 20 
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
-            <span>SLA On-Time Fulfillment</span>
+            <span>Đúng tiến độ cam kết (SLA)</span>
             <FileCheck size={18} color="#a855f7" />
           </div>
           <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
             99.4%
           </div>
           <div style={{ color: '#a855f7', fontSize: '0.75rem', marginTop: 4 }}>
-            High reliability tier partner
+            Đối tác độ tin cậy cấp cao
           </div>
         </div>
       </div>
@@ -340,10 +348,10 @@ export const ProviderOrdersPage: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
             <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#f8fafc' }}>
-              Contract 3D Print Work Orders
+              Danh sách lệnh in gia công nhận thầu
             </h3>
             <p style={{ margin: '2px 0 0', color: '#94a3b8', fontSize: '0.8rem' }}>
-              Manage assigned external production jobs, material consumption, and dispatch handoffs.
+              Quản lý lệnh in phân bổ cho đối tác ngoài, tiêu hao vật liệu và bàn giao vận chuyển.
             </p>
           </div>
         </div>

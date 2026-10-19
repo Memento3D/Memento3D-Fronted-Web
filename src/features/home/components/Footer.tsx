@@ -47,13 +47,13 @@ export const Footer: React.FC = () => {
             </div>
 
             <p style={{ fontSize: '0.875rem', color: '#94a3b8', lineHeight: 1.6, marginBottom: 20, maxWidth: 320 }}>
-              Physical keepsakes crafted from personal moments. Combining AI neural photogrammetry with precision additive manufacturing.
+              Kỷ vật hữu hình được chế tác từ những khoảnh khắc cá nhân. Kết hợp công nghệ thị giác máy tính AI với quy trình in 3D công nghiệp độ chính xác cao.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.825rem', color: '#64748b' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <EnvironmentOutlined style={{ color: '#06b6d4' }} />
-                <span>Ho Chi Minh City, Vietnam</span>
+                <span>TP. Hồ Chí Minh, Việt Nam</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <MailOutlined style={{ color: '#818cf8' }} />
@@ -65,27 +65,27 @@ export const Footer: React.FC = () => {
           {/* Column: Products */}
           <Col xs={12} sm={8} md={5}>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>
-              Keepsakes
+              Dòng Kỷ vật
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <li>
                 <span className="nav-link" onClick={() => scrollTo('products')} style={{ fontSize: '0.875rem' }}>
-                  Standard Desk Busts
+                  Tượng chân dung để bàn
                 </span>
               </li>
               <li>
                 <span className="nav-link" onClick={() => scrollTo('products')} style={{ fontSize: '0.875rem' }}>
-                  Mini Pocket Charms
+                  Móc khóa charm bỏ túi
                 </span>
               </li>
               <li>
                 <span className="nav-link" onClick={() => scrollTo('products')} style={{ fontSize: '0.875rem' }}>
-                  Signature Memorials
+                  Kỷ vật tưởng niệm cao cấp
                 </span>
               </li>
               <li>
                 <span className="nav-link" onClick={() => scrollTo('products')} style={{ fontSize: '0.875rem' }}>
-                  Spatial 3D Assets (.GLB)
+                  Mô hình 3D số hóa (.GLB)
                 </span>
               </li>
             </ul>
@@ -94,27 +94,27 @@ export const Footer: React.FC = () => {
           {/* Column: Technology */}
           <Col xs={12} sm={8} md={5}>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>
-              Technology
+              Công nghệ
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <li>
                 <span className="nav-link" onClick={() => scrollTo('how-it-works')} style={{ fontSize: '0.875rem' }}>
-                  Neural Photogrammetry
+                  Thị giác máy tính AI
                 </span>
               </li>
               <li>
                 <span className="nav-link" onClick={() => scrollTo('experience')} style={{ fontSize: '0.875rem' }}>
-                  Real-Time 3D Studio
+                  Trình diễn 3D thời gian thực
                 </span>
               </li>
               <li>
                 <span className="nav-link" onClick={() => scrollTo('benefits')} style={{ fontSize: '0.875rem' }}>
-                  OctoPrint Farm Fleet
+                  Hệ thống máy in điều phối
                 </span>
               </li>
               <li>
                 <span className="nav-link" onClick={() => scrollTo('benefits')} style={{ fontSize: '0.875rem' }}>
-                  Material QC System
+                  Kiểm soát chất lượng vật liệu
                 </span>
               </li>
             </ul>
@@ -123,32 +123,32 @@ export const Footer: React.FC = () => {
           {/* Column: Portals & Navigation */}
           <Col xs={24} sm={8} md={6}>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>
-              Actor Portals
+              Cổng Đăng nhập Phân quyền
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <li>
                 <a href="/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  Client Portal
+                  Cổng Khách hàng
                 </a>
               </li>
               <li>
                 <a href="/manager/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  Operations & Facility
+                  Quản lý Vận hành & Phê duyệt
                 </a>
               </li>
               <li>
                 <a href="/warehouse/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  Warehouse & WMS Terminal
+                  Thủ kho & Quản lý tồn kho
                 </a>
               </li>
               <li>
                 <a href="/operator/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  Print Farm Station
+                  Kỹ thuật viên Vận hành in 3D
                 </a>
               </li>
               <li>
                 <a href="/admin/login" style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-                  System Admin Console
+                  Bảng Quản trị Hệ thống
                 </a>
               </li>
             </ul>
@@ -171,7 +171,7 @@ export const Footer: React.FC = () => {
           }}
         >
           <div>
-            © {new Date().getFullYear()} Memento3D. All rights reserved. Memories, Reimagined in 3D.
+            © {new Date().getFullYear()} Memento3D. Bản quyền thuộc về Memento3D. Kỷ niệm của bạn, hiện thực hóa bằng 3D.
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -184,10 +184,11 @@ export const Footer: React.FC = () => {
                 boxShadow: '0 0 8px #10b981',
               }}
             />
-            <span style={{ color: '#94a3b8' }}>Platform Status: Connected to Spring Boot & Vite</span>
+            <span style={{ color: '#94a3b8' }}>Trạng thái hệ thống: Sẵn sàng hoạt động</span>
           </div>
         </div>
       </div>
     </footer>
   );
 };
+export default Footer;
