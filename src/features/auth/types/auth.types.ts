@@ -16,6 +16,61 @@ export interface User {
   role: UserRole;
   provider: AuthProviderType;
   avatarUrl?: string;
+  emailVerified?: boolean;
+  status?: 'ACTIVE' | 'PENDING_VERIFICATION' | 'SUSPENDED';
+}
+
+export interface RegisterPayload {
+  fullName: string;
+  email: string;
+  password: string;
+  agreeTerms: boolean;
+  termsVersion?: string;
+  marketingConsent?: boolean;
+}
+
+export interface RegisterResponse {
+  message: string;
+  email: string;
+  userId?: string;
+  verificationRequired: boolean;
+  verificationToken?: string;
+}
+
+export interface VerifyEmailPayload {
+  token: string;
+}
+
+export interface VerifyEmailResponse {
+  message: string;
+  email: string;
+  emailVerified: boolean;
+}
+
+export interface ResendVerificationPayload {
+  email: string;
+}
+
+export interface ResendVerificationResponse {
+  message: string;
+  expiresAt: string;
+  verificationToken?: string;
+}
+
+export interface ConsentPayload {
+  agreeTerms: boolean;
+  termsVersion: string;
+  marketingConsent?: boolean;
+}
+
+export interface LegalDocument {
+  id: string;
+  type: 'TERMS' | 'PRIVACY';
+  version: string;
+  title: string;
+  content: string;
+  effectiveAt: string;
+  active: boolean;
 }
 
 export interface AuthResponse {

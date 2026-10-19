@@ -2,6 +2,14 @@ import { apiClient, BASE_URL } from '../../../services/apiClient';
 import type {
   AuthResponse,
   LoginPayload,
+  RegisterPayload,
+  RegisterResponse,
+  VerifyEmailPayload,
+  VerifyEmailResponse,
+  ResendVerificationPayload,
+  ResendVerificationResponse,
+  ConsentPayload,
+  LegalDocument,
   RefreshTokenPayload,
   LogoutPayload,
   LogoutResponse,
@@ -11,6 +19,36 @@ import type {
 export const authApi = {
   login: async (payload: LoginPayload): Promise<AuthResponse> => {
     const res = await apiClient.post<AuthResponse>('/auth/login', payload);
+    return res.data;
+  },
+
+  register: async (payload: RegisterPayload): Promise<RegisterResponse> => {
+    const res = await apiClient.post<RegisterResponse>('/auth/register', payload);
+    return res.data;
+  },
+
+  verifyEmail: async (payload: VerifyEmailPayload): Promise<VerifyEmailResponse> => {
+    const res = await apiClient.post<VerifyEmailResponse>('/auth/email/verify', payload);
+    return res.data;
+  },
+
+  resendVerification: async (payload: ResendVerificationPayload): Promise<ResendVerificationResponse> => {
+    const res = await apiClient.post<ResendVerificationResponse>('/auth/email/resend-verification', payload);
+    return res.data;
+  },
+
+  completeConsents: async (payload: ConsentPayload): Promise<{ message: string; termsVersion: string; acceptedAt: string }> => {
+    const res = await apiClient.post<{ message: string; termsVersion: string; acceptedAt: string }>('/auth/consents', payload);
+    return res.data;
+  },
+
+  getTerms: async (): Promise<LegalDocument> => {
+    const res = await apiClient.get<LegalDocument>('/legal/terms/current');
+    return res.data;
+  },
+
+  getPrivacy: async (): Promise<LegalDocument> => {
+    const res = await apiClient.get<LegalDocument>('/legal/privacy/current');
     return res.data;
   },
 

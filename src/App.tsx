@@ -2,9 +2,12 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AntdConfig } from './components/AntdConfig';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { AppLayout } from './components/layout/AppLayout';
 import { AuthProvider } from './features/auth/context/AuthContext';
+import { useAuth } from './features/auth/hooks/useAuth';
+import { getRoleHomeRoute } from './utils/roleHomeRoutes';
 import { RealTimeProvider } from './shared/realtime';
 import { CartProvider } from './features/cart/context/CartContext';
 import { WarehouseProvider } from './features/warehouse/context/WarehouseContext';
@@ -12,6 +15,12 @@ import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 import { RoleGuard } from './features/auth/components/RoleGuard';
 import { GuestRoute } from './features/auth/components/GuestRoute';
 import { LoginPage } from './features/auth/pages/LoginPage';
+import { RegisterPage } from './features/auth/pages/RegisterPage';
+import { EmailVerificationPage } from './features/auth/pages/EmailVerificationPage';
+import { VerifyEmailResultPage } from './features/auth/pages/VerifyEmailResultPage';
+import { CompleteRegistrationPage } from './features/auth/pages/CompleteRegistrationPage';
+import { TermsPage } from './features/legal/pages/TermsPage';
+import { PrivacyPolicyPage } from './features/legal/pages/PrivacyPolicyPage';
 import { OAuthCallbackPage } from './features/auth/pages/OAuthCallbackPage';
 import { ForbiddenPage } from './features/auth/pages/ForbiddenPage';
 import { WarehouseSelectPage } from './features/auth/pages/WarehouseSelectPage';
@@ -23,6 +32,29 @@ import { ProductListPage } from './features/products/pages/ProductListPage';
 import { ProductDetailPage } from './features/products/pages/ProductDetailPage';
 import { CategoryListPage } from './features/products/pages/CategoryListPage';
 import { CartPage } from './features/cart/pages/CartPage';
+
+// Actor Home Pages (Dedicated per Actor)
+const ManagerHomePage = React.lazy(() =>
+  import('./features/manager/pages/ManagerHomePage').then((m) => ({ default: m.ManagerHomePage }))
+);
+const OperatorHomePage = React.lazy(() =>
+  import('./features/operator/pages/OperatorHomePage').then((m) => ({ default: m.OperatorHomePage }))
+);
+const WarehouseHomePage = React.lazy(() =>
+  import('./features/warehouse/pages/WarehouseHomePage').then((m) => ({ default: m.WarehouseHomePage }))
+);
+const AdminHomePage = React.lazy(() =>
+  import('./features/admin/pages/AdminHomePage').then((m) => ({ default: m.AdminHomePage }))
+);
+const CustomerHomePage = React.lazy(() =>
+  import('./features/customer/pages/CustomerHomePage').then((m) => ({ default: m.CustomerHomePage }))
+);
+const ProviderHomePage = React.lazy(() =>
+  import('./features/provider/pages/ProviderHomePage').then((m) => ({ default: m.ProviderHomePage }))
+);
+const DriverHomePage = React.lazy(() =>
+  import('./features/driver/pages/DriverHomePage').then((m) => ({ default: m.DriverHomePage }))
+);
 
 // Code-split / Lazy-loaded Heavy Feature Pages
 const MaterialManagementPage = React.lazy(() =>
@@ -128,18 +160,62 @@ const RouteLoadingFallback: React.FC = () => (
   </div>
 );
 
+/**
+ * Root Route handler:
+ * - Unauthenticated: Public Landing Page (HomePage)
+ * - Authenticated: Actor Home Page (based on current user role)
+ */
+const RootRoute: React.FC = () => {
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <RouteLoadingFallback />;
+  }
+
+  if (isAuthenticated && user) {
+    return <Navigate to={getRoleHomeRoute(user.role)} replace />;
+  }
+
+  return <HomePage />;
+};
+
 export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AntdConfig>
-        <ErrorBoundary>
-          <AuthProvider>
-          <RealTimeProvider>
-            <CartProvider>
-              <WarehouseProvider>
+      <ThemeProvider>
+        <AntdConfig>
+          <ErrorBoundary>
+            <AuthProvider>
+            <RealTimeProvider>
+              <CartProvider>
+                <WarehouseProvider>
               <BrowserRouter>
                 <React.Suspense fallback={<RouteLoadingFallback />}>
                 <Routes>
+                  {/* Guest Customer Register & Email Verification Routes */}
+                  <Route
+                    path="/register"
+                    element={
+                      <GuestRoute>
+                        <RegisterPage />
+                      </GuestRoute>
+                    }
+                  />
+                  <Route path="/verify-email" element={<EmailVerificationPage />} />
+                  <Route path="/verify-email/confirm" element={<VerifyEmailResultPage />} />
+                  <Route
+                    path="/complete-registration"
+                    element={
+                      <ProtectedRoute>
+                        <CompleteRegistrationPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Public Legal Documents */}
+                  <Route path="/terms" element={<TermsPage />} />
+                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+
                   {/* Guest Actor Login Routes */}
                   <Route
                     path="/login"
@@ -221,8 +297,10 @@ export const App: React.FC = () => {
                     }
                   />
 
+                  {/* Root Route: Actor Home if authenticated, Public Storefront if guest */}
+                  <Route path="/" element={<RootRoute />} />
+
                   {/* Public Storefront Routes */}
-                  <Route path="/" element={<HomePage />} />
                   <Route path="/products" element={<ProductListPage />} />
                   <Route path="/products/:slug" element={<ProductDetailPage />} />
                   <Route path="/categories" element={<CategoryListPage />} />
@@ -230,7 +308,17 @@ export const App: React.FC = () => {
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/payment/result" element={<PaymentResultPage />} />
 
-                  {/* Customer / Client Portal */}
+                  {/* Dedicated Customer Home & Portal */}
+                  <Route
+                    path="/customer/home"
+                    element={
+                      <ProtectedRoute>
+                        <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_ADMIN', 'ROLE_MANAGER']}>
+                          <CustomerHomePage />
+                        </RoleGuard>
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/orders"
                     element={
@@ -277,6 +365,16 @@ export const App: React.FC = () => {
 
                   {/* Manufacturing Partner Portal */}
                   <Route
+                    path="/provider/home"
+                    element={
+                      <ProtectedRoute>
+                        <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_PROVIDER']}>
+                          <ProviderHomePage />
+                        </RoleGuard>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="/provider/orders"
                     element={
                       <ProtectedRoute>
@@ -289,6 +387,16 @@ export const App: React.FC = () => {
 
                   {/* Logistics & Delivery Driver Portal */}
                   <Route
+                    path="/driver/home"
+                    element={
+                      <ProtectedRoute>
+                        <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_DRIVER']}>
+                          <DriverHomePage />
+                        </RoleGuard>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="/driver/deliveries"
                     element={
                       <ProtectedRoute>
@@ -298,6 +406,56 @@ export const App: React.FC = () => {
                       </ProtectedRoute>
                     }
                   />
+
+                  {/* Admin Portal */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute>
+                        <RoleGuard allowedRoles={['ROLE_ADMIN']}>
+                          <AppLayout />
+                        </RoleGuard>
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<Navigate to="/admin/home" replace />} />
+                    <Route path="home" element={<AdminHomePage />} />
+                    <Route path="dashboard" element={<AdminDashboardPage />} />
+                  </Route>
+
+                  {/* Operator Portal */}
+                  <Route
+                    path="/operator"
+                    element={
+                      <ProtectedRoute>
+                        <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_OPERATOR']}>
+                          <AppLayout />
+                        </RoleGuard>
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<Navigate to="/operator/home" replace />} />
+                    <Route path="home" element={<OperatorHomePage />} />
+                    <Route path="jobs" element={<PrintJobOperationsPage />} />
+                  </Route>
+
+                  {/* Warehouse Portal */}
+                  <Route
+                    path="/warehouse"
+                    element={
+                      <ProtectedRoute>
+                        <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_WAREHOUSE']}>
+                          <AppLayout />
+                        </RoleGuard>
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<Navigate to="/warehouse/home" replace />} />
+                    <Route path="home" element={<WarehouseHomePage />} />
+                    <Route path="inventory" element={<WarehouseDashboardPage />} />
+                    <Route path="receipts" element={<GoodsReceiptsManagementPage />} />
+                    <Route path="issues" element={<StockIssuesManagementPage />} />
+                  </Route>
 
                   {/* Protected Management & WMS Portal */}
                   <Route
@@ -310,7 +468,15 @@ export const App: React.FC = () => {
                       </ProtectedRoute>
                     }
                   >
-                    <Route index element={<Navigate to="/manager/dashboard" replace />} />
+                    <Route index element={<Navigate to="/manager/home" replace />} />
+                    <Route
+                      path="home"
+                      element={
+                        <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER']}>
+                          <ManagerHomePage />
+                        </RoleGuard>
+                      }
+                    />
 
                     {/* Executive & Governance */}
                     <Route
@@ -416,7 +582,7 @@ export const App: React.FC = () => {
                       }
                     />
 
-                    <Route path="*" element={<Navigate to="/manager/dashboard" replace />} />
+                    <Route path="*" element={<Navigate to="/manager/home" replace />} />
                   </Route>
 
                   {/* Fallback */}
@@ -429,7 +595,8 @@ export const App: React.FC = () => {
           </RealTimeProvider>
         </AuthProvider>
         </ErrorBoundary>
-      </AntdConfig>
+        </AntdConfig>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };

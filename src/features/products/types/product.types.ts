@@ -19,6 +19,12 @@ export interface Product {
   description?: string;
   shortDescription?: string;
   price: number;
+  salePrice?: number;
+  originalPrice?: number;
+  rating?: number;
+  reviewCount?: number;
+  badge?: 'Hot' | 'New' | 'Best Seller' | 'Sale' | string;
+  soldCount?: number;
   thumbnailUrl?: string;
   images: string[];
   category?: ProductCategory;

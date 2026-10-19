@@ -19,7 +19,7 @@ export const WarehouseSelectPage: React.FC = () => {
 
   const handleSelectWarehouse = (warehouse: Warehouse) => {
     localStorage.setItem('memento3d_active_warehouse_id', warehouse.id);
-    navigate('/manager/inventory', { replace: true });
+    navigate('/warehouse/home', { replace: true });
   };
 
   if (isLoading) {

@@ -110,30 +110,52 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ portalConfig, children }
           {children}
         </Card>
 
-        {/* Portal Quick Switcher */}
+        {/* Portal Quick Switcher for All Actors */}
         <div
           style={{
             marginTop: 20,
-            padding: '12px 16px',
-            background: 'rgba(15, 23, 42, 0.5)',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            borderRadius: '10px',
+            padding: '14px 16px',
+            background: 'rgba(15, 23, 42, 0.65)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '12px',
             textAlign: 'center',
           }}
         >
-          <Text style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginBottom: 6 }}>
-            Chuyển đổi cổng truy cập:
+          <Text style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: 8, fontWeight: 500 }}>
+            Chuyển đổi cổng truy cập tác nhân:
           </Text>
-          <Space size={[8, 4]} wrap style={{ justifyContent: 'center' }}>
-            <Link to="/login" style={{ fontSize: '0.75rem', color: '#38bdf8' }}>Khách hàng</Link>
-            <span style={{ color: '#334155' }}>•</span>
-            <Link to="/warehouse/login" style={{ fontSize: '0.75rem', color: '#06b6d4' }}>Thủ kho</Link>
-            <span style={{ color: '#334155' }}>•</span>
-            <Link to="/operator/login" style={{ fontSize: '0.75rem', color: '#a855f7' }}>Kỹ thuật viên</Link>
-            <span style={{ color: '#334155' }}>•</span>
-            <Link to="/manager/login" style={{ fontSize: '0.75rem', color: '#f59e0b' }}>Quản lý</Link>
-            <span style={{ color: '#334155' }}>•</span>
-            <Link to="/admin/login" style={{ fontSize: '0.75rem', color: '#f97316' }}>Quản trị viên</Link>
+          <Space size={[8, 6]} wrap style={{ justifyContent: 'center' }}>
+            {[
+              { actor: 'customer', path: '/login', label: 'Khách hàng', color: '#38bdf8' },
+              { actor: 'warehouse', path: '/warehouse/login', label: 'Thủ kho', color: '#06b6d4' },
+              { actor: 'operator', path: '/operator/login', label: 'Kỹ thuật viên', color: '#a855f7' },
+              { actor: 'manager', path: '/manager/login', label: 'Quản lý', color: '#f59e0b' },
+              { actor: 'admin', path: '/admin/login', label: 'Quản trị viên', color: '#f97316' },
+              { actor: 'provider', path: '/provider/login', label: 'Đối tác 3D', color: '#3b82f6' },
+              { actor: 'driver', path: '/driver/login', label: 'Tài xế', color: '#10b981' },
+            ].map((item, idx, arr) => {
+              const isActive = portalConfig.actor === item.actor;
+              return (
+                <React.Fragment key={item.actor}>
+                  <Link
+                    to={item.path}
+                    style={{
+                      fontSize: '0.75rem',
+                      color: isActive ? '#ffffff' : item.color,
+                      fontWeight: isActive ? 700 : 500,
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      background: isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+                      border: isActive ? `1px solid ${item.color}` : '1px solid transparent',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                  {idx < arr.length - 1 && <span style={{ color: '#334155' }}>•</span>}
+                </React.Fragment>
+              );
+            })}
           </Space>
         </div>
 

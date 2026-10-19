@@ -129,7 +129,7 @@ export const CustomerOrdersPage: React.FC = () => {
           <Space wrap>
             <Button
               icon={<HomeOutlined />}
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/customer/home')}
               style={{
                 background: 'rgba(255, 255, 255, 0.05)',
                 borderColor: 'rgba(255, 255, 255, 0.1)',
