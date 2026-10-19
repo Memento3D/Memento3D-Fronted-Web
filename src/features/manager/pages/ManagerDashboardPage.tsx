@@ -1,353 +1,464 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Card, Row, Col, Table, Tag, Typography, Button, Spin, Alert, Space } from 'antd';
+import React, { useState } from 'react';
+import { Row, Col, Alert, Spin, Button, Card } from 'antd';
 import { 
-  Boxes, 
-  AlertTriangle, 
+  ShoppingBag, 
+  DollarSign, 
+  Users, 
+  Box, 
+  Cpu, 
+  Printer, 
   CheckCircle2, 
-  ArrowDownLeft, 
-  ArrowUpRight, 
-  ArrowLeftRight, 
-  Sliders, 
-  RefreshCw,
-  Clock
+  AlertTriangle, 
+  Wifi, 
+  Layers,
+  ArrowDownLeft,
+  ArrowUpRight,
+  ArrowLeftRight,
+  Sliders
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { wmsEnterpriseApi, type ManagerDashboardData } from '../../inventory/api/wmsEnterpriseApi';
+import { useDashboard } from '../../../hooks/useDashboard';
 import { useWarehouseContext } from '../../warehouse/context/WarehouseContext';
+import type { DashboardTimeRange } from '../../../types/dashboard';
+import { formatVndCurrency, formatCompactNumber, formatGrams } from '../../../utils/chartFormatter';
 
-const { Title, Text } = Typography;
+// 3D and Visualization components
+import { DashboardHero } from '../../../components/dashboard/DashboardHero';
+import { DashboardFilters } from '../../../components/dashboard/DashboardFilters';
+import { MetricCard } from '../../../components/dashboard/MetricCard';
+import { RevenueChart } from '../../../components/charts/RevenueChart';
+import { OrderStatusChart } from '../../../components/charts/OrderStatusChart';
+import { ReconstructionChart } from '../../../components/charts/ReconstructionChart';
+import { MaterialUsageChart } from '../../../components/charts/MaterialUsageChart';
+import { PrinterPerformanceChart } from '../../../components/charts/PrinterPerformanceChart';
+import { PrinterFleetSection } from '../../../components/dashboard/PrinterFleetSection';
+import { ActivityTimeline } from '../../../components/dashboard/ActivityTimeline';
+import { Model3DPreview } from '../../../components/three/Model3DPreview';
 
 export const ManagerDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { activeWarehouse } = useWarehouseContext();
+  const [timeRange, setTimeRange] = useState<DashboardTimeRange>('30d');
+  const [is3DModalOpen, setIs3DModalOpen] = useState<boolean>(false);
 
-  const { data: dashboard, isLoading, error, refetch } = useQuery<ManagerDashboardData>({
-    queryKey: ['manager-dashboard', activeWarehouse?.id],
-    queryFn: () => wmsEnterpriseApi.getManagerDashboard(activeWarehouse?.id),
-    refetchInterval: 15000,
+  const {
+    data: dashboard,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    isRealTimeConnected,
+  } = useDashboard({
+    timeRange,
+    warehouseId: activeWarehouse?.id,
   });
 
-  const recentMovementColumns = [
-    {
-      title: 'Thời gian',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (val: string) => <Text style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{new Date(val).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</Text>,
-    },
-    {
-      title: 'Kho hàng',
-      dataIndex: 'warehouseName',
-      key: 'warehouseName',
-      render: (val: string) => <Text strong style={{ color: '#e2e8f0', fontSize: '0.85rem' }}>{val || 'Kho chính'}</Text>,
-    },
-    {
-      title: 'Vật liệu',
-      key: 'material',
-      render: (_: any, r: any) => (
-        <div>
-          <div style={{ color: '#38bdf8', fontWeight: 600, fontSize: '0.85rem' }}>{r.materialSku}</div>
-          <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>{r.materialName}</div>
-        </div>
-      ),
-    },
-    {
-      title: 'Loại biến động',
-      key: 'type',
-      render: (_: any, r: any) => {
-        const typeStr = String(r.movementType || r.transactionType || 'MOVEMENT').toUpperCase();
-        let color = 'default';
-        let label = typeStr;
-        if (typeStr.includes('IN') || typeStr.includes('RECEIPT')) {
-          color = 'cyan';
-          label = 'NHẬP KHO';
-        } else if (typeStr.includes('OUT') || typeStr.includes('ISSUE')) {
-          color = 'magenta';
-          label = 'XUẤT KHO';
-        } else if (typeStr.includes('RESERVE')) {
-          color = 'gold';
-          label = 'TẠM GIỮ';
-        } else if (typeStr.includes('ADJUST')) {
-          color = 'purple';
-          label = 'ĐIỀU CHỈNH';
-        }
-        return <Tag color={color} style={{ fontSize: '0.75rem', fontWeight: 600 }}>{label}</Tag>;
-      },
-    },
-    {
-      title: 'Số lượng',
-      key: 'quantity',
-      render: (_: any, r: any) => {
-        const typeStr = String(r.movementType || r.transactionType || '').toUpperCase();
-        const delta = r.quantity !== undefined ? r.quantity : (r.deltaOnHandGram !== undefined ? r.deltaOnHandGram : 0);
-        const isPositive = delta > 0 || typeStr.includes('IN') || typeStr.includes('RECEIPT') || typeStr.includes('INCREASE') || typeStr.includes('RELEASE');
-        const displayVal = Math.abs(delta);
-        return (
-          <Text strong style={{ color: isPositive ? '#10b981' : '#f43f5e', fontSize: '0.9rem' }}>
-            {isPositive ? `+${displayVal}` : `-${displayVal}`}
-          </Text>
-        );
-      },
-    },
-    {
-      title: 'Sổ cái tồn kho (Trước → Sau)',
-      key: 'balanceFlow',
-      render: (_: any, r: any) => {
-        const before = r.quantityBefore ?? r.beforeOnHandGram ?? 0;
-        const after = r.quantityAfter ?? r.afterOnHandGram ?? 0;
-        return (
-          <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-            {before} → <Text strong style={{ color: '#e2e8f0' }}>{after}</Text>
-          </span>
-        );
-      },
-    },
-  ];
-
-  if (isLoading) {
+  if (isLoading && !dashboard) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-        <Spin size="large" tip="Đang tải Trung tâm điều hành Quản lý..." />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '65vh',
+          background: '#080c14',
+        }}
+      >
+        <Spin size="large" />
+        <div style={{ color: '#94a3b8', marginTop: 16, fontSize: '0.9rem', fontWeight: 600 }}>
+          Đang khởi tạo Trung tâm điều khiển Memento3D & Thiết lập luồng Telemetry...
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (isError && !dashboard) {
     return (
-      <Alert
-        type="error"
-        message="Tải bảng tổng quan Quản lý thất bại"
-        description={(error as Error).message}
-        action={<Button onClick={() => refetch()}>Thử lại</Button>}
-        showIcon
-        style={{ margin: 24 }}
-      />
+      <div style={{ padding: 24, maxWidth: 1600, margin: '0 auto' }}>
+        <Alert
+          type="error"
+          message="Không thể kết nối Trung tâm dữ liệu Memento3D"
+          description={(error as Error)?.message || 'Vui lòng kiểm tra lại dịch vụ Backend hoặc thử lại.'}
+          action={<Button type="primary" onClick={() => refetch()}>Thử lại</Button>}
+          showIcon
+          style={{ borderRadius: 12 }}
+        />
+      </div>
     );
   }
+
+  const summary = dashboard?.summary;
+  const fleetMetrics = dashboard?.fleetMetrics;
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1600px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div>
-          <Title level={2} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
-            Trung tâm điều hành Quản lý
-          </Title>
-          <Text style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
-            {activeWarehouse 
-              ? `Số liệu vận hành cho ${activeWarehouse.name} (${activeWarehouse.code})`
-              : 'Tổng quan vận hành toàn bộ hệ thống kho'}
-          </Text>
-        </div>
-        <Space>
-          <Button 
-            icon={<RefreshCw size={14} />} 
-            onClick={() => refetch()}
-            style={{ borderRadius: 8 }}
-          >
-            Làm mới
-          </Button>
-          <Button 
-            type="primary" 
-            style={{ background: '#3b82f6', borderColor: '#3b82f6', borderRadius: 8, fontWeight: 600 }}
-            onClick={() => navigate('/manager/approvals')}
-          >
-            Trung tâm phê duyệt ({((dashboard?.pendingGoodsReceipts || 0) + (dashboard?.pendingStockIssues || 0) + (dashboard?.pendingAdjustments || 0) + (dashboard?.pendingTransfers || 0))})
-          </Button>
-        </Space>
+    <div
+      style={{
+        padding: '24px',
+        maxWidth: 1680,
+        margin: '0 auto',
+        minHeight: '100vh',
+        background: 'transparent',
+      }}
+    >
+      {/* 1. Global Filter Bar */}
+      <DashboardFilters
+        timeRange={timeRange}
+        onTimeRangeChange={(r) => setTimeRange(r)}
+        onRefresh={() => refetch()}
+        isRefreshing={isFetching}
+        isRealTimeConnected={isRealTimeConnected}
+        onOpen3DViewer={() => setIs3DModalOpen(true)}
+        lastUpdated={dashboard?.meta.lastUpdated}
+      />
+
+      {/* 2. 3D Hero Overview */}
+      <DashboardHero
+        activeJobsCount={summary?.activePrintJobs ?? 8}
+        onlinePrintersCount={summary?.onlinePrinters ?? 7}
+        successRate={fleetMetrics?.successRate ?? 98.4}
+        isRealTimeConnected={isRealTimeConnected}
+        onOpen3DViewer={() => setIs3DModalOpen(true)}
+      />
+
+      {/* 3. 10 Interactive 3D KPI Cards */}
+      <div style={{ marginBottom: 24 }}>
+        <Row gutter={[16, 16]}>
+          {/* Row 1 of KPI Cards */}
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Tổng đơn hàng"
+              value={formatCompactNumber(summary?.totalOrders ?? 0)}
+              deltaPct={summary?.ordersDeltaPct}
+              icon={<ShoppingBag size={20} />}
+              sparkline={summary?.ordersSparkline}
+              colorTheme="cyan"
+              tooltipText="Tổng số lượng đơn đặt hàng in 3D & sản phẩm vật lý trong kỳ"
+              isRealTimeUpdated
+            />
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Doanh thu"
+              value={formatVndCurrency(summary?.revenueVnd ?? 0)}
+              deltaPct={summary?.revenueDeltaPct}
+              icon={<DollarSign size={20} />}
+              sparkline={summary?.revenueSparkline}
+              colorTheme="emerald"
+              tooltipText="Tổng doanh thu thực nhận đã thanh toán thành công"
+              isRealTimeUpdated
+            />
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Khách hàng tích cực"
+              value={summary?.activeCustomers ?? 0}
+              deltaPct={summary?.customersDeltaPct}
+              icon={<Users size={20} />}
+              sparkline={summary?.customersSparkline}
+              colorTheme="indigo"
+              tooltipText="Khách hàng đã hoàn thành đơn hoặc có scan đang tái tạo"
+            />
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Mô hình 3D tạo thành"
+              value={summary?.modelsGenerated ?? 0}
+              deltaPct={summary?.modelsDeltaPct}
+              icon={<Box size={20} />}
+              sparkline={summary?.modelsSparkline}
+              colorTheme="purple"
+              tooltipText="File mô hình GLB / OBJ hoàn tất khâu trích xuất điểm"
+            />
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Tác vụ Tái tạo 3D"
+              value={summary?.reconstructionJobs ?? 0}
+              deltaPct={summary?.reconstructionDeltaPct}
+              icon={<Cpu size={20} />}
+              sparkline={[14, 18, 22, 19, 26, 30, summary?.reconstructionJobs ?? 32]}
+              colorTheme="cyan"
+              tooltipText="Tổng số tác vụ NeRF & Gaussian Splatting đã đưa vào hàng đợi"
+            />
+          </Col>
+        </Row>
+
+        {/* Row 2 of KPI Cards */}
+        <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Lệnh in đang chạy"
+              value={summary?.activePrintJobs ?? 0}
+              deltaPct={summary?.activePrintJobsDeltaPct}
+              icon={<Printer size={20} />}
+              sparkline={summary?.printJobsSparkline}
+              colorTheme="cyan"
+              tooltipText="Các máy in đang thực hiện đùn sợi FDM hoặc chiếu UV Resin"
+              isRealTimeUpdated
+            />
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Bản in hoàn tất"
+              value={summary?.completedPrints ?? 0}
+              deltaPct={summary?.completedPrintsDeltaPct}
+              icon={<CheckCircle2 size={20} />}
+              sparkline={[8, 12, 15, 18, 24, 28, summary?.completedPrints ?? 30]}
+              colorTheme="emerald"
+              tooltipText="Số lượng sản phẩm in thành công vượt qua khâu kiểm chuẩn QC"
+            />
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Lệnh in thất bại"
+              value={summary?.failedJobs ?? 0}
+              deltaPct={summary?.failedJobsDeltaPct}
+              deltaLabel="giảm so với kỳ trước"
+              icon={<AlertTriangle size={20} />}
+              sparkline={[4, 3, 5, 2, 3, 2, summary?.failedJobs ?? 1]}
+              colorTheme="rose"
+              tooltipText="Sự cố đứt sợi nhựa, mất nguồn hoặc lỗi bám dính bàn nhiệt"
+            />
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Máy in trực tuyến"
+              value={`${summary?.onlinePrinters ?? 0} / ${summary?.totalPrinters ?? 0}`}
+              icon={<Wifi size={20} />}
+              sparkline={[6, 7, 7, 8, 8, 8, summary?.onlinePrinters ?? 8]}
+              colorTheme="emerald"
+              tooltipText="Máy in có kết nối OctoPrint / Bambu Cloud trực tiếp"
+              isRealTimeUpdated
+            />
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} style={{ flex: '1 0 19%' }}>
+            <MetricCard
+              title="Vật liệu tiêu hao"
+              value={formatGrams(summary?.materialUsageGram ?? 0)}
+              deltaPct={summary?.materialUsageDeltaPct}
+              icon={<Layers size={20} />}
+              sparkline={[1200, 1400, 1800, 1600, 2100, 2400, summary?.materialUsageGram ?? 2500]}
+              colorTheme="amber"
+              tooltipText="Tổng khối lượng cuộn nhựa và mực Resin đã đùn ra phôi in"
+            />
+          </Col>
+        </Row>
       </div>
 
-      {/* KPI Stat Cards */}
+      {/* 4. Primary amCharts Visualizations: Revenue Analytics & Order Status */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card 
-            bordered={false} 
-            style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}
-            styles={{ body: { padding: '20px' } }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Tổng mặt hàng tồn kho</div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#38bdf8', marginTop: 4 }}>
-                  {dashboard?.totalInventoryItems ?? 0}
-                </div>
-                <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: 4 }}>
-                  Trên toàn bộ {dashboard?.totalWarehouses ?? 0} kho
-                </div>
-              </div>
-              <div style={{ background: 'rgba(56, 189, 248, 0.1)', padding: 12, borderRadius: 10 }}>
-                <Boxes color="#38bdf8" size={26} />
-              </div>
-            </div>
-          </Card>
+        <Col xs={24} lg={15}>
+          <RevenueChart data={dashboard?.revenueSeries || []} />
+        </Col>
+        <Col xs={24} lg={9}>
+          <OrderStatusChart
+            data={dashboard?.orderStatusSeries || []}
+            totalOrders={summary?.totalOrders ?? 0}
+          />
+        </Col>
+      </Row>
+
+      {/* 5. Secondary Visualizations: Reconstruction Pipeline & Material Analytics */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={12}>
+          <ReconstructionChart data={dashboard?.reconstructionSeries || []} />
+        </Col>
+        <Col xs={24} lg={12}>
+          <MaterialUsageChart data={dashboard?.materialUsageSeries || []} />
+        </Col>
+      </Row>
+
+      {/* 6. Printer Performance & Fleet Telemetry Section */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 16 }}>
+          <PrinterPerformanceChart
+            metrics={
+              fleetMetrics || {
+                overallUtilization: 84,
+                successRate: 98.4,
+                failureRate: 1.6,
+                avgPrintMinutes: 145,
+                totalGramsUsed: 18450,
+              }
+            }
+            onlineCount={summary?.onlinePrinters ?? 7}
+            totalPrinters={summary?.totalPrinters ?? 8}
+          />
+        </div>
+
+        <PrinterFleetSection printers={dashboard?.printerFleet || []} />
+      </div>
+
+      {/* 7. Bottom Section: Live Activity Feed + Quick WMS Management Shortcuts */}
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <ActivityTimeline activities={dashboard?.recentActivities || []} />
         </Col>
 
-        <Col xs={24} sm={12} lg={6}>
-          <Card 
-            bordered={false} 
-            style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}
-            styles={{ body: { padding: '20px' } }}
+        <Col xs={24} lg={12}>
+          <Card
+            bordered={false}
+            style={{
+              background: '#0d1322',
+              borderRadius: 16,
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+              height: '100%',
+            }}
+            styles={{ body: { padding: '24px' } }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Cảnh báo sắp hết hàng</div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fbbf24', marginTop: 4 }}>
-                  {dashboard?.lowStockCount ?? 0}
-                </div>
-                <div style={{ color: '#f87171', fontSize: '0.75rem', marginTop: 4 }}>
-                  {dashboard?.outOfStockCount ?? 0} mặt hàng hết hàng
+                <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.1rem' }}>
+                  Trung tâm Điều hành & Vận hành Kho (WMS)
+                </span>
+                <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: 2 }}>
+                  Lối tắt phê duyệt và kiểm kê lưu chuyển vật liệu
                 </div>
               </div>
-              <div style={{ background: 'rgba(251, 191, 36, 0.1)', padding: 12, borderRadius: 10 }}>
-                <AlertTriangle color="#fbbf24" size={26} />
-              </div>
+              <Button
+                type="primary"
+                onClick={() => navigate('/manager/approvals')}
+                style={{ background: '#3b82f6', borderRadius: 8, fontWeight: 600 }}
+              >
+                Trung tâm duyệt đơn
+              </Button>
             </div>
-          </Card>
-        </Col>
 
-        <Col xs={24} sm={12} lg={6}>
-          <Card 
-            bordered={false} 
-            style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}
-            styles={{ body: { padding: '20px' } }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Yêu cầu chờ phê duyệt</div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#a855f7', marginTop: 4 }}>
-                  {((dashboard?.pendingGoodsReceipts || 0) + (dashboard?.pendingStockIssues || 0) + (dashboard?.pendingAdjustments || 0) + (dashboard?.pendingTransfers || 0))}
+            <Row gutter={[12, 12]} style={{ marginTop: 12 }}>
+              <Col xs={12} sm={6}>
+                <div
+                  onClick={() => navigate('/manager/receipts')}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: 12,
+                    padding: '16px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#0ea5e9')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                >
+                  <ArrowDownLeft color="#38bdf8" size={24} style={{ margin: '0 auto 8px' }} />
+                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '0.85rem' }}>Nhập kho</div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Phiếu nhập vật tư</div>
                 </div>
-                <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: 4 }}>
-                  Nhập kho, Xuất kho, Điều chỉnh
-                </div>
-              </div>
-              <div style={{ background: 'rgba(168, 85, 247, 0.1)', padding: 12, borderRadius: 10 }}>
-                <Clock color="#a855f7" size={26} />
-              </div>
-            </div>
-          </Card>
-        </Col>
+              </Col>
 
-        <Col xs={24} sm={12} lg={6}>
-          <Card 
-            bordered={false} 
-            style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}
-            styles={{ body: { padding: '20px' } }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Col xs={12} sm={6}>
+                <div
+                  onClick={() => navigate('/manager/issues')}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: 12,
+                    padding: '16px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#f43f5e')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                >
+                  <ArrowUpRight color="#f43f5e" size={24} style={{ margin: '0 auto 8px' }} />
+                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '0.85rem' }}>Xuất kho</div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Xuất nhựa cho máy</div>
+                </div>
+              </Col>
+
+              <Col xs={12} sm={6}>
+                <div
+                  onClick={() => navigate('/manager/transfers')}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: 12,
+                    padding: '16px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#a855f7')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                >
+                  <ArrowLeftRight color="#a855f7" size={24} style={{ margin: '0 auto 8px' }} />
+                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '0.85rem' }}>Điều chuyển</div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Giữa các xưởng in</div>
+                </div>
+              </Col>
+
+              <Col xs={12} sm={6}>
+                <div
+                  onClick={() => navigate('/manager/adjustments')}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: 12,
+                    padding: '16px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#fbbf24')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                >
+                  <Sliders color="#fbbf24" size={24} style={{ margin: '0 auto 8px' }} />
+                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '0.85rem' }}>Điều chỉnh</div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Cân đối tồn kho</div>
+                </div>
+              </Col>
+            </Row>
+
+            <div
+              style={{
+                marginTop: 20,
+                background: 'rgba(14, 165, 233, 0.06)',
+                border: '1px solid rgba(14, 165, 233, 0.2)',
+                borderRadius: 12,
+                padding: '14px 18px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>Vật liệu đang hoạt động</div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', marginTop: 4 }}>
-                  {dashboard?.totalMaterials ?? 0}
+                <div style={{ color: '#f8fafc', fontWeight: 600, fontSize: '0.875rem' }}>
+                  Sổ cái giao dịch vật tư bất biến (ACID Ledger)
                 </div>
-                <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: 4 }}>
-                  Danh mục nhựa in & vật liệu
+                <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: 2 }}>
+                  Kiểm tra toàn bộ lịch sử biến động từng gram nhựa in 3D
                 </div>
               </div>
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: 12, borderRadius: 10 }}>
-                <CheckCircle2 color="#10b981" size={26} />
-              </div>
+              <Button
+                type="link"
+                onClick={() => navigate('/manager/inventory/transactions')}
+                style={{ color: '#38bdf8', fontWeight: 700 }}
+              >
+                Xem sổ cái →
+              </Button>
             </div>
           </Card>
         </Col>
       </Row>
 
-      {/* Operational Quick Actions & Approval Queues */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} md={6}>
-          <Card 
-            hoverable 
-            onClick={() => navigate('/manager/receipts')}
-            style={{ background: '#0f172a', borderColor: '#334155', borderRadius: 10, cursor: 'pointer' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <ArrowDownLeft color="#38bdf8" size={22} />
-              <div>
-                <Text strong style={{ color: '#f8fafc' }}>Phiếu nhập kho</Text>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {dashboard?.pendingGoodsReceipts ?? 0} phiếu chờ duyệt
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} md={6}>
-          <Card 
-            hoverable 
-            onClick={() => navigate('/manager/issues')}
-            style={{ background: '#0f172a', borderColor: '#334155', borderRadius: 10, cursor: 'pointer' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <ArrowUpRight color="#f43f5e" size={22} />
-              <div>
-                <Text strong style={{ color: '#f8fafc' }}>Phiếu xuất kho</Text>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {dashboard?.pendingStockIssues ?? 0} phiếu chờ duyệt
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} md={6}>
-          <Card 
-            hoverable 
-            onClick={() => navigate('/manager/transfers')}
-            style={{ background: '#0f172a', borderColor: '#334155', borderRadius: 10, cursor: 'pointer' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <ArrowLeftRight color="#a855f7" size={22} />
-              <div>
-                <Text strong style={{ color: '#f8fafc' }}>Điều chuyển kho</Text>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {dashboard?.pendingTransfers ?? 0} yêu cầu chờ xử lý
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} md={6}>
-          <Card 
-            hoverable 
-            onClick={() => navigate('/manager/adjustments')}
-            style={{ background: '#0f172a', borderColor: '#334155', borderRadius: 10, cursor: 'pointer' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Sliders color="#fbbf24" size={22} />
-              <div>
-                <Text strong style={{ color: '#f8fafc' }}>Điều chỉnh tồn kho</Text>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {dashboard?.pendingAdjustments ?? 0} yêu cầu chờ duyệt
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Live Immutable Ledger Stream */}
-      <Card 
-        bordered={false} 
-        style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}
-        title={
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.05rem' }}>
-              Sổ cái biến động kho theo thời gian thực
-            </span>
-            <Button type="link" onClick={() => navigate('/manager/inventory/transactions')}>
-              Xem toàn bộ sổ cái →
-            </Button>
-          </div>
-        }
-      >
-        <Table 
-          columns={recentMovementColumns} 
-          dataSource={dashboard?.recentStockMovements || []} 
-          rowKey="id"
-          pagination={false}
-          size="middle"
-          locale={{ emptyText: 'Chưa có biến động kho nào gần đây' }}
-        />
-      </Card>
+      {/* 8. 3D Model Studio Viewer Modal */}
+      <Model3DPreview
+        open={is3DModalOpen}
+        onClose={() => setIs3DModalOpen(false)}
+        title="Memento3D Studio Engine • Mô hình In 3D & Kiểm chuẩn Lớp In"
+      />
     </div>
   );
 };

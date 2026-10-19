@@ -38,6 +38,15 @@ export default defineConfig({
             if (id.includes('lucide-react')) {
               return 'vendor-icons';
             }
+            if (id.includes('@amcharts')) {
+              return 'vendor-amcharts';
+            }
+            if (id.includes('three')) {
+              return 'vendor-three';
+            }
+            if (id.includes('framer-motion')) {
+              return 'vendor-framer';
+            }
             return 'vendor-misc';
           }
         },
