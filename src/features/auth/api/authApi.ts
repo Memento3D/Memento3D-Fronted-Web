@@ -1,4 +1,4 @@
-import { apiClient } from '../../../services/apiClient';
+import { apiClient, BASE_URL } from '../../../services/apiClient';
 import type {
   AuthResponse,
   LoginPayload,
@@ -36,7 +36,7 @@ export const authApi = {
     } catch {
       // Fallback to standard spring security oauth2 endpoint
     }
-    const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'http://localhost:8080';
+    const baseUrl = BASE_URL.replace(/\/api\/v1\/?$/, '').replace(/\/api\/?$/, '');
     return `${baseUrl}/oauth2/authorization/google`;
   },
 };

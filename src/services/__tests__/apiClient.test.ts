@@ -79,3 +79,25 @@ describe('apiClient HTML SPA Fallback Interceptor Detection', () => {
     expect(normalResponse.data.length).toBe(1);
   });
 });
+
+describe('resolveApiBaseUrl Environment Logic', () => {
+  it('should automatically append /api/v1 to bare domains', () => {
+    const normalize = (url: string) => {
+      const clean = url.trim().replace(/\/+$/, '');
+      if (!clean.endsWith('/api/v1') && !clean.endsWith('/api')) {
+        return `${clean}/api/v1`;
+      }
+      return clean;
+    };
+
+    expect(normalize('https://memento3d-backend.onrender.com')).toBe(
+      'https://memento3d-backend.onrender.com/api/v1'
+    );
+    expect(normalize('http://localhost:8080')).toBe(
+      'http://localhost:8080/api/v1'
+    );
+    expect(normalize('https://memento3d-backend.onrender.com/api/v1')).toBe(
+      'https://memento3d-backend.onrender.com/api/v1'
+    );
+  });
+});

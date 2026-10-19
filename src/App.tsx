@@ -17,37 +17,92 @@ import { ForbiddenPage } from './features/auth/pages/ForbiddenPage';
 import { WarehouseSelectPage } from './features/auth/pages/WarehouseSelectPage';
 import { NoWarehouseAccessPage } from './features/auth/pages/NoWarehouseAccessPage';
 
-import { MaterialManagementPage } from './features/material/pages/MaterialManagementPage';
-import { WarehouseManagementPage } from './features/warehouse/pages/WarehouseManagementPage';
-import { WarehouseDashboardPage } from './features/inventory/pages/WarehouseDashboardPage';
-import { StockReceiptPage } from './features/inventory/pages/StockReceiptPage';
-import { StockIssuePage } from './features/inventory/pages/StockIssuePage';
-import { StockMovementReportPage } from './features/inventory/pages/StockMovementReportPage';
-import { GoodsReceiptsManagementPage } from './features/inventory/pages/GoodsReceiptsManagementPage';
-import { StockIssuesManagementPage } from './features/inventory/pages/StockIssuesManagementPage';
-import { WarehouseTransfersPage } from './features/inventory/pages/WarehouseTransfersPage';
-import { StockAdjustmentsPage } from './features/inventory/pages/StockAdjustmentsPage';
-import { StockCountsPage } from './features/inventory/pages/StockCountsPage';
-import { ManagerDashboardPage } from './features/manager/pages/ManagerDashboardPage';
-import { ManagerApprovalsCenterPage } from './features/manager/pages/ManagerApprovalsCenterPage';
-import { AdminDashboardPage } from './features/admin/pages/AdminDashboardPage';
-import { PrintJobOperationsPage } from './features/printjob/pages/PrintJobOperationsPage';
+import { Spin } from 'antd';
 import { HomePage } from './features/home/pages/HomePage';
 import { ProductListPage } from './features/products/pages/ProductListPage';
 import { ProductDetailPage } from './features/products/pages/ProductDetailPage';
 import { CategoryListPage } from './features/products/pages/CategoryListPage';
 import { CartPage } from './features/cart/pages/CartPage';
-import { CustomerOrdersPage } from './features/customer/pages/CustomerOrdersPage';
-import { CustomerOrderDetailPage } from './features/orders/pages/CustomerOrderDetailPage';
-import { CheckoutPage } from './features/orders/pages/CheckoutPage';
-import { PaymentResultPage } from './features/payment/pages/PaymentResultPage';
-import { ScanReconstructionPage } from './features/reconstruction/pages/ScanReconstructionPage';
-import { ManagerOrdersPage } from './features/orders/pages/ManagerOrdersPage';
-import { ManagerOrderDetailPage } from './features/orders/pages/ManagerOrderDetailPage';
-import { ManagerProductsPage } from './features/manager/pages/ManagerProductsPage';
-import { ManagerCategoriesPage } from './features/manager/pages/ManagerCategoriesPage';
-import { ProviderOrdersPage } from './features/provider/pages/ProviderOrdersPage';
-import { DriverDeliveriesPage } from './features/driver/pages/DriverDeliveriesPage';
+
+// Code-split / Lazy-loaded Heavy Feature Pages
+const MaterialManagementPage = React.lazy(() =>
+  import('./features/material/pages/MaterialManagementPage').then((m) => ({ default: m.MaterialManagementPage }))
+);
+const WarehouseManagementPage = React.lazy(() =>
+  import('./features/warehouse/pages/WarehouseManagementPage').then((m) => ({ default: m.WarehouseManagementPage }))
+);
+const WarehouseDashboardPage = React.lazy(() =>
+  import('./features/inventory/pages/WarehouseDashboardPage').then((m) => ({ default: m.WarehouseDashboardPage }))
+);
+const StockReceiptPage = React.lazy(() =>
+  import('./features/inventory/pages/StockReceiptPage').then((m) => ({ default: m.StockReceiptPage }))
+);
+const StockIssuePage = React.lazy(() =>
+  import('./features/inventory/pages/StockIssuePage').then((m) => ({ default: m.StockIssuePage }))
+);
+const StockMovementReportPage = React.lazy(() =>
+  import('./features/inventory/pages/StockMovementReportPage').then((m) => ({ default: m.StockMovementReportPage }))
+);
+const GoodsReceiptsManagementPage = React.lazy(() =>
+  import('./features/inventory/pages/GoodsReceiptsManagementPage').then((m) => ({ default: m.GoodsReceiptsManagementPage }))
+);
+const StockIssuesManagementPage = React.lazy(() =>
+  import('./features/inventory/pages/StockIssuesManagementPage').then((m) => ({ default: m.StockIssuesManagementPage }))
+);
+const WarehouseTransfersPage = React.lazy(() =>
+  import('./features/inventory/pages/WarehouseTransfersPage').then((m) => ({ default: m.WarehouseTransfersPage }))
+);
+const StockAdjustmentsPage = React.lazy(() =>
+  import('./features/inventory/pages/StockAdjustmentsPage').then((m) => ({ default: m.StockAdjustmentsPage }))
+);
+const StockCountsPage = React.lazy(() =>
+  import('./features/inventory/pages/StockCountsPage').then((m) => ({ default: m.StockCountsPage }))
+);
+const ManagerDashboardPage = React.lazy(() =>
+  import('./features/manager/pages/ManagerDashboardPage').then((m) => ({ default: m.ManagerDashboardPage }))
+);
+const ManagerApprovalsCenterPage = React.lazy(() =>
+  import('./features/manager/pages/ManagerApprovalsCenterPage').then((m) => ({ default: m.ManagerApprovalsCenterPage }))
+);
+const AdminDashboardPage = React.lazy(() =>
+  import('./features/admin/pages/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage }))
+);
+const PrintJobOperationsPage = React.lazy(() =>
+  import('./features/printjob/pages/PrintJobOperationsPage').then((m) => ({ default: m.PrintJobOperationsPage }))
+);
+const CustomerOrdersPage = React.lazy(() =>
+  import('./features/customer/pages/CustomerOrdersPage').then((m) => ({ default: m.CustomerOrdersPage }))
+);
+const CustomerOrderDetailPage = React.lazy(() =>
+  import('./features/orders/pages/CustomerOrderDetailPage').then((m) => ({ default: m.CustomerOrderDetailPage }))
+);
+const CheckoutPage = React.lazy(() =>
+  import('./features/orders/pages/CheckoutPage').then((m) => ({ default: m.CheckoutPage }))
+);
+const PaymentResultPage = React.lazy(() =>
+  import('./features/payment/pages/PaymentResultPage').then((m) => ({ default: m.PaymentResultPage }))
+);
+const ScanReconstructionPage = React.lazy(() =>
+  import('./features/reconstruction/pages/ScanReconstructionPage').then((m) => ({ default: m.ScanReconstructionPage }))
+);
+const ManagerOrdersPage = React.lazy(() =>
+  import('./features/orders/pages/ManagerOrdersPage').then((m) => ({ default: m.ManagerOrdersPage }))
+);
+const ManagerOrderDetailPage = React.lazy(() =>
+  import('./features/orders/pages/ManagerOrderDetailPage').then((m) => ({ default: m.ManagerOrderDetailPage }))
+);
+const ManagerProductsPage = React.lazy(() =>
+  import('./features/manager/pages/ManagerProductsPage').then((m) => ({ default: m.ManagerProductsPage }))
+);
+const ManagerCategoriesPage = React.lazy(() =>
+  import('./features/manager/pages/ManagerCategoriesPage').then((m) => ({ default: m.ManagerCategoriesPage }))
+);
+const ProviderOrdersPage = React.lazy(() =>
+  import('./features/provider/pages/ProviderOrdersPage').then((m) => ({ default: m.ProviderOrdersPage }))
+);
+const DriverDeliveriesPage = React.lazy(() =>
+  import('./features/driver/pages/DriverDeliveriesPage').then((m) => ({ default: m.DriverDeliveriesPage }))
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,6 +114,20 @@ const queryClient = new QueryClient({
   },
 });
 
+const RouteLoadingFallback: React.FC = () => (
+  <div
+    style={{
+      minHeight: '60vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#050811',
+    }}
+  >
+    <Spin size="large" />
+  </div>
+);
+
 export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -69,6 +138,7 @@ export const App: React.FC = () => {
             <CartProvider>
               <WarehouseProvider>
               <BrowserRouter>
+                <React.Suspense fallback={<RouteLoadingFallback />}>
                 <Routes>
                   {/* Guest Actor Login Routes */}
                   <Route
@@ -179,6 +249,7 @@ export const App: React.FC = () => {
                   />
                   <Route path="/customer/orders" element={<Navigate to="/orders" replace />} />
                   <Route path="/customer/orders/:id" element={<Navigate to="/orders/:id" replace />} />
+                  <Route path="/dashboard" element={<Navigate to="/manager/dashboard" replace />} />
                   <Route
                     path="/checkout"
                     element={
@@ -351,6 +422,7 @@ export const App: React.FC = () => {
                   {/* Fallback */}
                   <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>
+                </React.Suspense>
               </BrowserRouter>
             </WarehouseProvider>
           </CartProvider>
