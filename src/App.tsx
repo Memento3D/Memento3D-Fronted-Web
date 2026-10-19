@@ -96,8 +96,41 @@ const ManagerDashboardPage = React.lazy(() =>
 const ManagerApprovalsCenterPage = React.lazy(() =>
   import('./features/manager/pages/ManagerApprovalsCenterPage').then((m) => ({ default: m.ManagerApprovalsCenterPage }))
 );
+const AdminLayout = React.lazy(() =>
+  import('./features/admin/components/AdminLayout').then((m) => ({ default: m.AdminLayout }))
+);
 const AdminDashboardPage = React.lazy(() =>
   import('./features/admin/pages/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage }))
+);
+const AdminUsersPage = React.lazy(() =>
+  import('./features/admin/pages/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage }))
+);
+const AdminUserDetailPage = React.lazy(() =>
+  import('./features/admin/pages/AdminUserDetailPage').then((m) => ({ default: m.AdminUserDetailPage }))
+);
+const AdminOrdersPage = React.lazy(() =>
+  import('./features/admin/pages/AdminOrdersPage').then((m) => ({ default: m.AdminOrdersPage }))
+);
+const AdminProductsPage = React.lazy(() =>
+  import('./features/admin/pages/AdminProductsPage').then((m) => ({ default: m.AdminProductsPage }))
+);
+const AdminReconstructionPage = React.lazy(() =>
+  import('./features/admin/pages/AdminReconstructionPage').then((m) => ({ default: m.AdminReconstructionPage }))
+);
+const AdminPrintJobsPage = React.lazy(() =>
+  import('./features/admin/pages/AdminPrintJobsPage').then((m) => ({ default: m.AdminPrintJobsPage }))
+);
+const AdminPrintersPage = React.lazy(() =>
+  import('./features/admin/pages/AdminPrintersPage').then((m) => ({ default: m.AdminPrintersPage }))
+);
+const AdminPaymentsPage = React.lazy(() =>
+  import('./features/admin/pages/AdminPaymentsPage').then((m) => ({ default: m.AdminPaymentsPage }))
+);
+const AdminAuditLogsPage = React.lazy(() =>
+  import('./features/admin/pages/AdminAuditLogsPage').then((m) => ({ default: m.AdminAuditLogsPage }))
+);
+const AdminSystemHealthPage = React.lazy(() =>
+  import('./features/admin/pages/AdminSystemHealthPage').then((m) => ({ default: m.AdminSystemHealthPage }))
 );
 const PrintJobOperationsPage = React.lazy(() =>
   import('./features/printjob/pages/PrintJobOperationsPage').then((m) => ({ default: m.PrintJobOperationsPage }))
@@ -413,7 +446,7 @@ export const App: React.FC = () => {
                     element={
                       <ProtectedRoute>
                         <RoleGuard allowedRoles={['ROLE_ADMIN']}>
-                          <AppLayout />
+                          <AdminLayout />
                         </RoleGuard>
                       </ProtectedRoute>
                     }
@@ -421,6 +454,16 @@ export const App: React.FC = () => {
                     <Route index element={<Navigate to="/admin/home" replace />} />
                     <Route path="home" element={<AdminHomePage />} />
                     <Route path="dashboard" element={<AdminDashboardPage />} />
+                    <Route path="users" element={<AdminUsersPage />} />
+                    <Route path="users/:id" element={<AdminUserDetailPage />} />
+                    <Route path="orders" element={<AdminOrdersPage />} />
+                    <Route path="products" element={<AdminProductsPage />} />
+                    <Route path="reconstruction" element={<AdminReconstructionPage />} />
+                    <Route path="print-jobs" element={<AdminPrintJobsPage />} />
+                    <Route path="printers" element={<AdminPrintersPage />} />
+                    <Route path="payments" element={<AdminPaymentsPage />} />
+                    <Route path="audit-logs" element={<AdminAuditLogsPage />} />
+                    <Route path="system" element={<AdminSystemHealthPage />} />
                   </Route>
 
                   {/* Operator Portal */}

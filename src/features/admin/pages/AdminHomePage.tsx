@@ -1,214 +1,511 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Button, message } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Button,
+  Tag,
+  Alert,
+  Spin,
+} from 'antd';
 import {
   Users,
-  Server,
-  Warehouse,
   ShoppingBag,
-  Printer,
-  BarChart3,
+  TrendingUp,
   Box,
+  Printer,
+  FileText,
+  CreditCard,
+  UserPlus,
   RefreshCw,
+  AlertTriangle,
+  ArrowRight,
 } from 'lucide-react';
 import { useAuth } from '../../auth/hooks/useAuth';
-import { dashboardApi } from '../../../services/dashboardApi';
-import { wmsEnterpriseApi } from '../../inventory/api/wmsEnterpriseApi';
-import { HomeGreeting } from '../../../components/home/HomeGreeting';
-import { QuoteCard } from '../../../components/home/QuoteCard';
-import { HomeStatCard } from '../../../components/home/HomeStatCard';
-import { QuickActionCard } from '../../../components/home/QuickActionCard';
-import { SystemHealth } from '../../../components/home/SystemHealth';
-import { TodayTasks } from '../../../components/home/TodayTasks';
-import type { TaskItem } from '../../../components/home/TodayTasks';
-import '../../../components/home/actorHome.css';
+import { adminApi } from '../api/adminApi';
+import dayjs from 'dayjs';
 
 export const AdminHomePage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Fetch real analytics & system data
+  // 1. Fetch real summary metrics from backend
   const {
-    data: dashboardData,
-    isLoading: isDashLoading,
-    refetch,
+    data: summary,
+    isLoading: loadingSummary,
+    refetch: refetchSummary,
     isFetching,
   } = useQuery({
-    queryKey: ['admin-home-analytics'],
-    queryFn: () => dashboardApi.getDashboardData('today'),
+    queryKey: ['admin-home-summary'],
+    queryFn: adminApi.getDashboardSummary,
+    refetchInterval: 30000,
   });
 
-  // Fetch users count
-  const { data: usersData, isLoading: isUsersLoading } = useQuery({
-    queryKey: ['admin-home-users'],
-    queryFn: () => wmsEnterpriseApi.getUsers({ size: 1 }),
+  // 2. Fetch real recent audit logs for activity stream
+  const { data: auditLogs, isLoading: loadingAudit } = useQuery({
+    queryKey: ['admin-home-recent-audit'],
+    queryFn: () => adminApi.getAuditLogs({ size: 6 }),
   });
 
-  const summary = dashboardData?.summary;
-  const printerFleet = dashboardData?.printerFleet || [];
-  const totalUsers = usersData?.totalElements || 128;
+  // 3. Time-based dynamic greeting
+  const getGreeting = () => {
+    const hour = dayjs().hour();
+    if (hour < 12) return 'Chào buổi sáng';
+    if (hour < 18) return 'Chào buổi chiều';
+    return 'Chào buổi tối';
+  };
 
-  const failedJobsCount = summary?.failedJobs || 0;
-  const offlinePrintersCount = printerFleet.filter((p) => !p.online || p.status === 'ERROR').length;
+  const currentDateFormatted = dayjs().format('dddd, [ngày] DD [tháng] MM [năm] YYYY');
 
-  const adminTasks: TaskItem[] = [];
-
-  if (failedJobsCount > 0) {
-    adminTasks.push({
-      id: 'admin-failed-jobs',
-      title: `${failedJobsCount} lệnh in ghi nhận lỗi trong hệ thống`,
-      description: 'Cần kiểm tra log máy in hoặc báo cáo sự cố phần cứng xưởng.',
-      severity: 'danger',
-      count: failedJobsCount,
-      actionText: 'Xem chi tiết',
-      onAction: () => navigate('/manager/print-jobs'),
-    });
-  }
-
-  if (offlinePrintersCount > 0) {
-    adminTasks.push({
-      id: 'admin-offline-printers',
-      title: `${offlinePrintersCount} máy in mất kết nối với máy chủ telemetry`,
-      description: 'Kiểm tra trạng thái agent daemon và kết nối mạng nội bộ xưởng.',
-      severity: 'warning',
-      count: offlinePrintersCount,
-      actionText: 'Kiểm tra',
-      onAction: () => navigate('/manager/print-jobs'),
-    });
-  }
+  const failedJobsCount = summary?.reconstruction?.failed || 0;
+  const offlinePrintersCount = summary?.printers?.printersOffline || 0;
 
   return (
-    <div className="actor-home-container" id="admin-home-page">
-      {/* 1. Hero Greeting */}
-      <HomeGreeting
-        user={user}
-        subtitle="Memento3D System Control Center — Giám sát an toàn bảo mật, toàn vẹn dữ liệu, phân quyền tài khoản và hạ tầng điện toán phân tán."
-        badgeLabel="Quản trị viên Hệ thống"
-        badgeColor="volcano"
-        actionContent={
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }} id="admin-home-view">
+      {/* 1. Header Banner */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
+          borderRadius: 16,
+          padding: '28px 32px',
+          border: '1px solid #334155',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 16,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div style={{ zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc' }}>
+              {getGreeting()}, {user?.fullName || 'Admin'}
+            </span>
+            <Tag color="volcano" style={{ fontWeight: 700, borderRadius: 6 }}>
+              ROOT ADMIN
+            </Tag>
+          </div>
+          <div style={{ color: '#94a3b8', fontSize: '0.95rem' }}>
+            {currentDateFormatted} — Hệ thống Memento3D đang vận hành ổn định trên hạ tầng phân tán.
+          </div>
+        </div>
+
+        <div style={{ zIndex: 1, display: 'flex', gap: 12 }}>
           <Button
             icon={<RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />}
-            onClick={() => {
-              refetch();
-              message.success('Đã đồng bộ trạng thái hệ thống');
-            }}
-            style={{ borderRadius: 8 }}
+            onClick={() => refetchSummary()}
+            style={{ borderRadius: 8, height: 40 }}
           >
-            Đồng bộ hệ thống
+            Đồng bộ dữ liệu
           </Button>
-        }
-      />
-
-      {/* 2. Motivational Governance Quote */}
-      <QuoteCard role="ADMIN" />
-
-      {/* 3. Summary Stats */}
-      <div className="stat-cards-grid">
-        <HomeStatCard
-          label="Tổng người dùng"
-          value={totalUsers}
-          subtext="Tài khoản khách & nội bộ"
-          icon={<Users size={18} />}
-          iconBg="rgba(249, 115, 22, 0.15)"
-          iconColor="#f97316"
-          loading={isUsersLoading}
-          onClick={() => navigate('/manager/admin')}
-        />
-        <HomeStatCard
-          label="Tổng đơn hàng"
-          value={summary?.totalOrders ?? 0}
-          subtext="Giao dịch trên nền tảng"
-          icon={<ShoppingBag size={18} />}
-          iconBg="rgba(14, 165, 233, 0.15)"
-          iconColor="#0ea5e9"
-          loading={isDashLoading}
-          onClick={() => navigate('/manager/orders')}
-        />
-        <HomeStatCard
-          label="Máy in trực tuyến"
-          value={`${summary?.onlinePrinters ?? 0} / ${summary?.totalPrinters ?? printerFleet.length}`}
-          subtext="Kết nối agent ổn định"
-          icon={<Server size={18} />}
-          iconBg="rgba(16, 185, 129, 0.15)"
-          iconColor="#10b981"
-          loading={isDashLoading}
-          onClick={() => navigate('/manager/print-jobs')}
-        />
-        <HomeStatCard
-          label="Doanh thu hệ thống"
-          value={`${((summary?.revenueVnd || 0) / 1000000).toFixed(1)}M đ`}
-          subtext="ACID Ledger đã đối soát"
-          icon={<BarChart3 size={18} />}
-          iconBg="rgba(139, 92, 246, 0.15)"
-          iconColor="#8b5cf6"
-          loading={isDashLoading}
-          onClick={() => navigate('/manager/dashboard')}
-        />
-      </div>
-
-      {/* 4. Live System Health */}
-      <SystemHealth />
-
-      {/* 5. Quick Actions */}
-      <div className="quick-actions-section">
-        <h3 className="section-title">
-          <span>Trung tâm kiểm soát hệ thống</span>
-        </h3>
-        <div className="quick-actions-grid">
-          <QuickActionCard
-            title="Quản trị người dùng & Phân quyền"
-            description="Phân vai trò ADMIN, MANAGER, WAREHOUSE, OPERATOR"
-            icon={<Users size={20} />}
-            iconBg="rgba(249, 115, 22, 0.15)"
-            iconColor="#f97316"
-            onClick={() => navigate('/manager/admin')}
-          />
-          <QuickActionCard
-            title="Bảng điều khiển Giám sát"
-            description="Phân tích số liệu, biểu đồ thời gian thực"
-            icon={<BarChart3 size={20} />}
-            iconBg="rgba(14, 165, 233, 0.15)"
-            iconColor="#0ea5e9"
-            onClick={() => navigate('/manager/dashboard')}
-          />
-          <QuickActionCard
-            title="Quản lý Cơ sở Kho"
-            description="Cấu hình mạng lưới kho khu vực"
-            icon={<Warehouse size={20} />}
-            iconBg="rgba(6, 182, 212, 0.15)"
-            iconColor="#06b6d4"
-            onClick={() => navigate('/manager/warehouses')}
-          />
-          <QuickActionCard
-            title="Danh mục Vật liệu"
-            description="Quản lý thông số cuộn nhựa & bảng giá"
-            icon={<Box size={20} />}
-            iconBg="rgba(16, 185, 129, 0.15)"
-            iconColor="#10b981"
-            onClick={() => navigate('/manager/materials')}
-          />
-          <QuickActionCard
-            title="Xử lý Đơn hàng Toàn sàn"
-            description="Theo dõi toàn bộ đơn hàng khách"
-            icon={<ShoppingBag size={20} />}
-            iconBg="rgba(139, 92, 246, 0.15)"
-            iconColor="#8b5cf6"
-            onClick={() => navigate('/manager/orders')}
-          />
-          <QuickActionCard
-            title="Lệnh in & Farm máy in"
-            description="Giám sát luồng sản xuất công nghiệp"
-            icon={<Printer size={20} />}
-            iconBg="rgba(245, 158, 11, 0.15)"
-            iconColor="#f59e0b"
-            onClick={() => navigate('/manager/print-jobs')}
-          />
+          <Button
+            type="primary"
+            icon={<UserPlus size={16} />}
+            onClick={() => navigate('/admin/users')}
+            style={{
+              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+              border: 'none',
+              borderRadius: 8,
+              height: 40,
+              fontWeight: 600,
+            }}
+          >
+            Thêm tài khoản
+          </Button>
         </div>
       </div>
 
-      {/* 6. Tasks & Incidents needing attention */}
-      {adminTasks.length > 0 && <TodayTasks title="Cảnh báo sự cố cần xử lý" tasks={adminTasks} />}
+      {/* 2. Critical System Alerts / Warnings */}
+      {(failedJobsCount > 0 || offlinePrintersCount > 0) && (
+        <Row gutter={[16, 16]}>
+          {failedJobsCount > 0 && (
+            <Col xs={24} md={12}>
+              <Alert
+                type="error"
+                showIcon
+                icon={<AlertTriangle size={20} />}
+                message={`${failedJobsCount} tác vụ Tái tạo 3D gặp sự cố lỗi`}
+                description="Cần kiểm tra pipeline AI worker hoặc thực hiện thử lại tác vụ an toàn."
+                action={
+                  <Button size="small" danger onClick={() => navigate('/admin/reconstruction')}>
+                    Xử lý ngay
+                  </Button>
+                }
+                style={{ borderRadius: 12, border: '1px solid #f87171' }}
+              />
+            </Col>
+          )}
+          {offlinePrintersCount > 0 && (
+            <Col xs={24} md={12}>
+              <Alert
+                type="warning"
+                showIcon
+                icon={<Printer size={20} />}
+                message={`${offlinePrintersCount} máy in mất kết nối telemetry`}
+                description="Kiểm tra kết nối mạng nội bộ xưởng hoặc agent daemon trên máy in."
+                action={
+                  <Button size="small" onClick={() => navigate('/admin/printers')}>
+                    Kiểm tra
+                  </Button>
+                }
+                style={{ borderRadius: 12, border: '1px solid #fbbf24' }}
+              />
+            </Col>
+          )}
+        </Row>
+      )}
+
+      {/* 3. Core KPI Highlights */}
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            bordered={false}
+            style={{
+              background: '#1e293b',
+              borderRadius: 14,
+              border: '1px solid #334155',
+              cursor: 'pointer',
+            }}
+            onClick={() => navigate('/admin/users')}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                  Tổng người dùng
+                </div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+                  {loadingSummary ? <Spin size="small" /> : summary?.users?.total ?? 0}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#10b981', marginTop: 4 }}>
+                  +{summary?.users?.newToday ?? 0} hôm nay • {summary?.users?.active ?? 0} hoạt động
+                </div>
+              </div>
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: 'rgba(99, 102, 241, 0.15)',
+                  color: '#6366f1',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Users size={24} />
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            bordered={false}
+            style={{
+              background: '#1e293b',
+              borderRadius: 14,
+              border: '1px solid #334155',
+              cursor: 'pointer',
+            }}
+            onClick={() => navigate('/admin/orders')}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                  Đơn hàng toàn sàn
+                </div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+                  {loadingSummary ? <Spin size="small" /> : summary?.orders?.total ?? 0}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#38bdf8', marginTop: 4 }}>
+                  {summary?.orders?.processing ?? 0} đang xử lý • {summary?.orders?.completed ?? 0} xong
+                </div>
+              </div>
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: 'rgba(56, 189, 248, 0.15)',
+                  color: '#38bdf8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <ShoppingBag size={24} />
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            bordered={false}
+            style={{
+              background: '#1e293b',
+              borderRadius: 14,
+              border: '1px solid #334155',
+              cursor: 'pointer',
+            }}
+            onClick={() => navigate('/admin/dashboard')}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                  Doanh thu nền tảng
+                </div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', marginTop: 4 }}>
+                  {loadingSummary ? (
+                    <Spin size="small" />
+                  ) : (
+                    `${((summary?.revenue?.total || 0) / 1000000).toFixed(1)}M đ`
+                  )}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: 4 }}>
+                  Tháng này: {((summary?.revenue?.thisMonth || 0) / 1000000).toFixed(1)}M đ
+                </div>
+              </div>
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: 'rgba(16, 185, 129, 0.15)',
+                  color: '#10b981',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <TrendingUp size={24} />
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            bordered={false}
+            style={{
+              background: '#1e293b',
+              borderRadius: 14,
+              border: '1px solid #334155',
+              cursor: 'pointer',
+            }}
+            onClick={() => navigate('/admin/reconstruction')}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                  Tái tạo mô hình 3D AI
+                </div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+                  {loadingSummary ? <Spin size="small" /> : summary?.reconstruction?.total ?? 0}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#a855f7', marginTop: 4 }}>
+                  {summary?.reconstruction?.completed ?? 0} hoàn tất • {summary?.reconstruction?.running ?? 0} đang chạy
+                </div>
+              </div>
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: 'rgba(168, 85, 247, 0.15)',
+                  color: '#a855f7',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Box size={24} />
+              </div>
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* 4. Quick Actions */}
+      <Card
+        title={
+          <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+            Lối tắt quản trị nhanh (Quick Actions)
+          </span>
+        }
+        bordered={false}
+        style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+      >
+        <Row gutter={[16, 16]}>
+          {[
+            {
+              title: 'Quản trị Người dùng & Phân quyền',
+              desc: 'Tạo, sửa, khóa hoặc gán vai trò tài khoản',
+              icon: Users,
+              path: '/admin/users',
+              color: '#6366f1',
+            },
+            {
+              title: 'Bảng phân tích KPI & Biểu đồ',
+              desc: 'Biểu đồ doanh thu amCharts 5 và phân bố',
+              icon: TrendingUp,
+              path: '/admin/dashboard',
+              color: '#38bdf8',
+            },
+            {
+              title: 'Giám sát Đơn hàng Toàn sàn',
+              desc: 'Theo dõi tiến trình thanh toán và in ấn',
+              icon: ShoppingBag,
+              path: '/admin/orders',
+              color: '#10b981',
+            },
+            {
+              title: 'Sổ cái Giao dịch Thanh toán',
+              desc: 'Đối soát các giao dịch MoMo, ZaloPay, VietQR',
+              icon: CreditCard,
+              path: '/admin/payments',
+              color: '#f59e0b',
+            },
+            {
+              title: 'Pipeline Tái tạo 3D AI',
+              desc: 'Theo dõi hàng đợi, tiến độ và thử lại lỗi',
+              icon: Box,
+              path: '/admin/reconstruction',
+              color: '#a855f7',
+            },
+            {
+              title: 'Nhật ký Kiểm toán Audit Logs',
+              desc: 'Truy vết toàn bộ hành vi hệ thống bất biến',
+              icon: FileText,
+              path: '/admin/audit-logs',
+              color: '#ec4899',
+            },
+          ].map((act, idx) => {
+            const Icon = act.icon;
+            return (
+              <Col xs={24} sm={12} lg={8} key={idx}>
+                <div
+                  onClick={() => navigate(act.path)}
+                  style={{
+                    padding: '18px 20px',
+                    borderRadius: 12,
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid #334155',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = act.color;
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#334155';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div
+                      style={{
+                        width: 42,
+                        height: 42,
+                        borderRadius: 10,
+                        background: `${act.color}20`,
+                        color: act.color,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Icon size={20} />
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.95rem' }}>
+                        {act.title}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: 2 }}>
+                        {act.desc}
+                      </div>
+                    </div>
+                  </div>
+                  <ArrowRight size={16} color="#64748b" />
+                </div>
+              </Col>
+            );
+          })}
+        </Row>
+      </Card>
+
+      {/* 5. Recent Activity Feed from Audit Log */}
+      <Card
+        title={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+              Nhật ký hành động gần đây (Audit Stream)
+            </span>
+            <Button
+              type="link"
+              onClick={() => navigate('/admin/audit-logs')}
+              style={{ color: '#6366f1', padding: 0 }}
+            >
+              Xem tất cả nhật ký &rarr;
+            </Button>
+          </div>
+        }
+        bordered={false}
+        style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+      >
+        {loadingAudit ? (
+          <div style={{ textAlign: 'center', padding: 24 }}>
+            <Spin />
+          </div>
+        ) : !auditLogs?.content || auditLogs.content.length === 0 ? (
+          <div style={{ color: '#94a3b8', textAlign: 'center', padding: 24 }}>
+            Chưa có hành động audit nào được ghi nhận.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {auditLogs.content.map((log) => (
+              <div
+                key={log.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Tag color="blue" style={{ fontWeight: 600 }}>
+                    {log.action}
+                  </Tag>
+                  <div>
+                    <span style={{ fontWeight: 600, color: '#f8fafc' }}>
+                      {log.actorEmail || 'HỆ THỐNG'}
+                    </span>
+                    <span style={{ color: '#94a3b8', fontSize: '0.85rem', marginLeft: 8 }}>
+                      thực hiện trên {log.entityType || 'Resource'} ({log.entityId || 'ID'})
+                    </span>
+                  </div>
+                </div>
+                <div style={{ color: '#64748b', fontSize: '0.8rem' }}>
+                  {dayjs(log.createdAt).format('HH:mm:ss DD/MM/YYYY')}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
     </div>
   );
 };

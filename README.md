@@ -1,103 +1,118 @@
-# Memento3D — Manager Web Portal (Material, Inventory & Warehouse Operations)
+# Memento3D — Web Client & Multi-Role Management Portals
 
 ![React](https://img.shields.io/badge/React-19.x-blue.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x%2F6.x-blue.svg)
 ![Vite](https://img.shields.io/badge/Vite-8.x-purple.svg)
 ![TanStack Query](https://img.shields.io/badge/TanStack%20Query-5.x-red.svg)
 ![Axios](https://img.shields.io/badge/Axios-1.x-yellow.svg)
-![License](https://img.shields.io/badge/License-Proprietary-lightgrey.svg)
+![Design System](https://img.shields.io/badge/Design-Deep%20Slate%20%26%20Cyber%20Forge-cyan.svg)
 
 ---
 
 ## 📌 1. Giới Thiệu (Overview)
 
-**Memento3D Web Portal** là phân hệ quản trị dành riêng cho **Quản lý xưởng in (Manager / Operator)** trong hệ sinh thái Memento3D. Cổng thông tin hỗ trợ vận hành chuỗi cung ứng vật liệu, quản lý hệ thống kho bãi, theo dõi mức tồn kho khả dụng theo thời gian thực và đồng bộ với các lệnh in 3D (Print Jobs).
+**Memento3D Web Frontend** là ứng dụng Single Page Application (SPA) hợp nhất toàn diện, phục vụ cả khách hàng cá nhân (**Customer E-Commerce & 3D Order**) lẫn 6 phân hệ quản trị vận hành chuyên sâu (**Admin, Manager, Warehouse, Operator, Provider, Driver**) trong toàn bộ hệ sinh thái in 3D Memento3D.
 
-Dự án được xây dựng với **React + TypeScript + Vite**, kết hợp cùng thư viện **TanStack Query (React Query)** và phong cách thiết kế cao cấp **Deep Slate & Cyber Forge** (Dark Mode, Glassmorphism, CSS Custom Properties).
-
----
-
-## 🚀 2. Các Tính Năng Nghiệp Vụ (Core Features)
-
-### **F01 – Material Catalog (Danh Mục Vật Liệu)**
-- **Khai báo vật liệu in 3D:** Hỗ trợ đầy đủ các loại filament và resin (`PLA`, `PETG`, `ABS`, `RESIN`, `TPU`, `NYLON`, `OTHER`).
-- **Thông số kỹ thuật chuẩn xưởng:** Đường kính (1.75mm, 2.85mm), mật độ nhựa ($g/cm^3$), dải nhiệt độ đầu đùn (Nozzle Temp) và bàn nhiệt (Bed Temp).
-- **Mã màu trực quan (Color Swatch):** Nhận diện màu sắc vật lý qua nhãn màu và bảng mã HEX.
-- **Ràng buộc SKU duy nhất:** Kiểm tra tính duy nhất của mã SKU không phân biệt hoa thường.
-- **Đơn giá & Định giá vốn:** Theo dõi đơn giá vốn theo gram ($VND/g$) phục vụ tính toán chi phí in tự động.
-- **Vô hiệu hóa an toàn:** Hỗ trợ Soft Deactivate để bảo vệ lịch sử in ấn quá khứ.
-
-### **F02 – Warehouse Management (Quản Lý Cơ Sở Kho)**
-- **Mạng lưới kho xưởng:** Đăng ký và quản lý các cơ sở sản xuất, kho trung chuyển với mã kho duy nhất (`code`).
-- **Địa chỉ & Định vị:** Lưu vết địa chỉ thực tế và vị trí kho.
-- **Bảo vệ hủy kho (Deactivate Guard):** Ngăn chặn tuyệt đối việc đóng hoặc vô hiệu hóa kho khi trong kho vẫn còn hàng tồn thực tế (`onHandGram > 0`) hoặc đang có lượng vật liệu được giữ cho lệnh in (`reservedGram > 0`).
-
-### **F03 - F08 – Inventory Control & Print Job Roadmap**
-- **F03 – Tồn kho khả dụng (Available Gram):** Công thức $\text{Available} = \text{On-Hand} - \text{Reserved}$.
-- **F04 – Nhập kho (Goods Receipt):** Tăng tồn kho nguyên tử kèm mã Idempotency chống gửi lặp.
-- **F05 – Xuất kho (Manual Issue):** Xuất hủy/kiểm định với lý do bắt buộc và khóa dòng chống race condition.
-- **F06 – Giữ vật liệu cho Job (Reservation):** Khóa tạm thời lượng nhựa trước khi in.
-- **F07 – Cấp phát & Đối soát tiêu hao (Reconciliation):** Đối soát $\text{Issued} = \text{Used} + \text{Waste} + \text{Returned}$.
-- **F08 – Sổ cái bất biến (Immutable Ledger):** Lịch sử biến động kho kiểm toán minh bạch.
+Hệ thống được phát triển trên nền tảng **React 19 + TypeScript + Vite**, tích hợp **TanStack Query (v5)** để đồng bộ trạng thái server thời gian thực, **Axios Interceptor** xử lý xác thực JWT đa cổng, và hệ thống giao diện **Deep Slate & Cyber Forge** (Dark Mode, Glassmorphism cao cấp, viền phát sáng gradient vi mô).
 
 ---
 
-## 🎨 3. Phong Cách Thiết Kế (Design System)
+## 👥 2. Hệ Thống 7 Vai Trò & Cổng Truy Cập (7 Actors & Portals)
 
-Tuân thủ quy chuẩn thiết kế **Deep Slate & Cyber Forge**:
-- **Bảng màu:** Nền tối sâu Slate (`#080c14`, `#0d121f`), điểm nhấn Cyan Cyber (`#0ea5e9`, `#38bdf8`) và viền phát sáng vi mô.
-- **Glassmorphism:** Sử dụng `backdrop-filter: blur(16px)` trên nền bán trong suốt để tạo chiều sâu giao diện.
-- **Typography:** Phông chữ hiện đại `Plus Jakarta Sans` cho văn bản điều hướng và `JetBrains Mono` cho mã SKU, số liệu kỹ thuật và đơn giá.
-- **Micro-interactions:** Hiệu ứng hover mượt mà, phản hồi toast, loading indicator và dialog xác nhận thao tác rủi ro.
+Hệ thống phân tách không gian làm việc chuyên biệt theo từng vai trò nghiệp vụ với URL đăng nhập và trang chủ riêng biệt:
+
+| Actor | Vai Trò | Cổng Đăng Nhập | Trang Chủ Sau Đăng Nhập | Tài Khoản Test Chuẩn | Mật Khẩu |
+|---|---|---|---|---|:---:|
+| **Customer** | Khách hàng mua sắm & đặt in 3D | `/login` | `/customer/home` | `customer@memento3d.vn` | `123456` |
+| **Admin** | Quản trị viên hệ thống & phân quyền | `/admin/login` | `/admin/home` | `admin@memento3d.vn` | `123456` |
+| **Manager** | Quản lý sản xuất, vật tư & kho | `/manager/login` | `/manager/home` | `manager@memento3d.vn` | `123456` |
+| **Warehouse** | Thủ kho, nhập/xuất & kiểm kê | `/warehouse/login` | `/warehouse/home` | `warehouse@memento3d.vn` | `123456` |
+| **Operator** | Kỹ thuật viên vận hành máy in 3D | `/operator/login` | `/operator/home` | `operator@memento3d.vn` | `123456` |
+| **Provider** | Nhà cung cấp vật tư & máy móc | `/provider/login` | `/provider/home` | `provider@memento3d.vn` | `123456` |
+| **Driver** | Tài xế / Đơn vị giao nhận hàng | `/driver/login` | `/driver/home` | `driver@memento3d.vn` | `123456` |
+
+*(Lưu ý: Hệ thống cũng hỗ trợ domain dự phòng song song `@memento3d.com` với mật khẩu chung `123456`)*.
 
 ---
 
-## 🏗️ 4. Cấu Trúc Mã Nguồn (Project Structure)
+## 🚀 3. Các Phân Hệ Chức Năng Chính (Core Modules)
+
+### 🛍️ A. Phân Hệ Khách Hàng (Customer E-Commerce & 3D Orders)
+- **Customer Home (`/customer/home`):** Tải trực tiếp danh mục ngành hàng thực tế từ API `/product-categories`, hiển thị bộ sưu tập sản phẩm in 3D nổi bật.
+- **Product Catalog (`/products`):** Tìm kiếm, lọc theo chất liệu, công nghệ in và xem chi tiết sản phẩm 3D.
+- **Customer Auth:** Đăng ký tài khoản mới (`/register`), đăng nhập bảo mật bằng Email/Password hoặc Google OAuth2.
+
+### 🏭 B. Quản Lý Vật Liệu & Kho Hàng (Materials & Warehouses - F01 -> F08)
+- **Material Catalog (F01):** Khai báo và quản lý chủng loại filament/resin (`PLA`, `PETG`, `ABS`, `RESIN`, `TPU`), thông số kỹ thuật (đường kính, nhiệt độ đầu đùn, bàn nhiệt), mã màu trực quan (Color Swatch) và giá vốn theo gram ($VND/g$).
+- **Warehouse Management (F02):** Đăng ký cơ sở kho, quản lý địa chỉ, kiểm soát an toàn trước khi đóng kho (Deactivate Guard - chặn xóa khi `onHandGram > 0` hoặc `reservedGram > 0`).
+- **Inventory Ledger & Print Jobs (F03 - F08):** Tính toán tồn khả dụng ($\text{Available} = \text{On-Hand} - \text{Reserved}$), phiếu nhập kho nguyên tử (Goods Receipt), xuất kho kiểm định (Manual Issue) và khóa giữ vật liệu cho lệnh in 3D.
+
+### 🛡️ C. Đăng Nhập & Bảo Mật Dữ Liệu Thật (Real-Data Authentication)
+- Form đăng nhập sạch sẽ, chuyên nghiệp, kết nối 100% với PostgreSQL Database và Spring Security backend.
+- Phân biệt vai trò chính xác, chuyển hướng đúng cổng điều hành sau khi xác thực thành công.
+- Lưu trữ access token an toàn, cơ chế refresh token và tự động xử lý khi hết hạn phiên làm việc.
+
+---
+
+## 🎨 4. Phong Cách Thiết Kế (Design System)
+
+Tuân thủ chặt chẽ tiêu chuẩn thẩm mỹ **Deep Slate & Cyber Forge**:
+- **Bảng Màu Sang Trọng:** Nền tối sâu Slate (`#080c14`, `#0d121f`), điểm nhấn Cyber Cyan (`#0ea5e9`, `#38bdf8`) và Emerald (`#10b981`) cho trạng thái thành công.
+- **Hiệu Ứng Glassmorphism:** Lớp nền bán trong suốt với `backdrop-filter: blur(16px)` tạo chiều sâu không gian đa lớp.
+- **Typography Hiện Đại:** Phông chữ `Plus Jakarta Sans` cho văn bản điều hướng và `JetBrains Mono` cho mã SKU, thông số kỹ thuật, số dư tồn kho và giá tiền.
+- **Micro-Interactions:** Hiệu ứng hover nhấp nháy tinh tế, thẻ thống kê KPI phát sáng, modal chuyển tiếp mượt mà.
+
+---
+
+## 🏗️ 5. Cấu Trúc Mã Nguồn (Project Structure)
 
 ```text
 Memento3D-Fronted-Web/
 ├── index.html                      # HTML root với Google Fonts (Plus Jakarta Sans, JetBrains Mono)
-├── package.json                    # Cấu hình dependencies và build scripts
-├── tsconfig.json                   # TypeScript compiler configuration (Strict Mode)
+├── package.json                    # Cấu hình dependencies và scripts
+├── tsconfig.json                   # Cấu hình TypeScript Strict Mode
 ├── vite.config.ts                  # Vite build tooling
 ├── src/
 │   ├── main.tsx                    # Entry point gắn kết React DOM
 │   ├── App.tsx                     # React Router & QueryClient Provider
 │   ├── index.css                   # Custom CSS Design Tokens & Utilities
-│   ├── types/                      # Định nghĩa kiểu dữ liệu TypeScript
-│   │   ├── material.ts             # Material, MaterialType, DTO payloads
-│   │   └── warehouse.ts            # Warehouse, WarehouseStatus, DTO payloads
-│   ├── services/                   # Tầng gọi API qua HTTP Client
-│   │   ├── apiClient.ts            # Axios instance có JWT Interceptor và Error Handler
-│   │   ├── materialService.ts      # CRUD API call cho Material Catalog (F01)
-│   │   └── warehouseService.ts     # CRUD API call cho Warehouse Facilities (F02)
-│   ├── components/                 # Các component dùng chung
-│   │   └── layout/
-│   │       └── AppLayout.tsx       # Sidebar navigation, Topbar, Role indicator
-│   └── pages/                      # Các trang chức năng
-│       ├── materials/
-│       │   ├── MaterialListPage.tsx # Bảng danh mục vật liệu, bộ lọc, thẻ KPI
-│       │   └── MaterialModal.tsx    # Modal tạo / sửa thông số vật liệu
-│       └── warehouses/
-│           ├── WarehouseListPage.tsx # Danh sách kho bãi, kiểm tra tồn trước khi xóa
-│           └── WarehouseModal.tsx    # Modal tạo / sửa cơ sở kho
+│   ├── features/                   # Tính năng chia theo Domain
+│   │   ├── auth/                   # Authentication (LoginForm, RegisterForm, GoogleAuth)
+│   │   ├── customer/               # Customer Home & Customer Portal
+│   │   ├── products/               # Danh mục sản phẩm & chi tiết sản phẩm
+│   │   ├── materials/              # Quản lý vật liệu in 3D (F01)
+│   │   └── warehouses/             # Quản lý cơ sở kho (F02)
+│   ├── pages/                      # Các trang Dashboard và Home theo từng Actor
+│   │   ├── AdminHomePage.tsx       # /admin/home
+│   │   ├── ManagerHomePage.tsx     # /manager/home
+│   │   ├── WarehouseHomePage.tsx   # /warehouse/home
+│   │   ├── OperatorHomePage.tsx    # /operator/home
+│   │   ├── ProviderHomePage.tsx    # /provider/home
+│   │   └── DriverHomePage.tsx      # /driver/home
+│   ├── services/                   # Tầng gọi API qua Axios
+│   │   ├── apiClient.ts            # Axios instance, Interceptors & Error handling
+│   │   ├── authApi.ts              # API xác thực, đăng ký, đăng nhập
+│   │   ├── categoryApi.ts          # API danh mục sản phẩm (Categories)
+│   │   ├── productApi.ts           # API sản phẩm in 3D
+│   │   ├── materialService.ts      # API danh mục vật liệu (F01)
+│   │   └── warehouseService.ts     # API cơ sở kho bãi (F02)
+│   └── components/                 # Các component dùng chung (Layout, Navbar, Modal...)
 ```
 
 ---
 
-## 💻 5. Hướng Dẫn Cài Đặt & Khởi Chạy (Getting Started)
+## 💻 6. Cài Đặt & Khởi Chạy (Getting Started)
 
 ### **Yêu cầu hệ thống**
-- **Node.js:** phiên bản `18.x` trở lên (Khuyến nghị Node `20+` hoặc `24.x`).
-- **npm:** phiên bản `9.x` trở lên.
+- **Node.js:** `18.x` trở lên (Khuyến nghị `20+`).
+- **npm:** `9.x` trở lên.
 
 ### **1. Cài đặt thư viện**
 ```bash
 npm install
 ```
 
-### **2. Cấu hình biến môi trường**
-Tạo file `.env` tại thư mục gốc:
+### **2. Cấu hình biến môi trường (`.env`)**
 ```env
 VITE_API_BASE_URL=http://localhost:8080/api/v1
 ```
@@ -106,32 +121,28 @@ VITE_API_BASE_URL=http://localhost:8080/api/v1
 ```bash
 npm run dev
 ```
-Truy cập: `http://localhost:5173`
+Truy cập: `http://localhost:5173` (hoặc cổng hiển thị trên terminal).
 
-### **4. Kiểm tra TypeScript & Đóng gói Production**
+### **4. Kiểm tra mã nguồn & Đóng gói Production**
 ```bash
 npm run build
 ```
 
 ---
 
-## 📡 6. Bảng Ánh Xạ Endpoint Backend
+## 📡 7. Bảng Ánh Xạ Endpoint Backend
 
-| Chức năng | Phương thức | Endpoint Backend | Quyền hạn yêu cầu |
+| Chức năng | Phương thức | Endpoint Backend | Vai trò cho phép |
 |---|---|---|---|
-| Danh sách vật liệu | `GET` | `/api/v1/materials` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
-| Tạo vật liệu mới | `POST` | `/api/v1/materials` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
-| Chi tiết vật liệu | `GET` | `/api/v1/materials/:id` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
-| Sửa vật liệu | `PATCH` | `/api/v1/materials/:id` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
-| Vô hiệu hóa vật liệu | `DELETE`| `/api/v1/materials/:id` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
-| Danh sách kho | `GET` | `/api/v1/warehouses` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
-| Tạo kho mới | `POST` | `/api/v1/warehouses` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
-| Chi tiết kho | `GET` | `/api/v1/warehouses/:id` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
-| Sửa kho | `PATCH` | `/api/v1/warehouses/:id` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
-| Vô hiệu hóa kho | `DELETE`| `/api/v1/warehouses/:id` | `ROLE_ADMIN`, `ROLE_OPERATOR` |
+| Đăng nhập tài khoản | `POST` | `/api/v1/auth/login` | Mọi vai trò |
+| Đăng ký khách hàng | `POST` | `/api/v1/auth/register` | Khách vãng lai |
+| Danh mục ngành hàng | `GET` | `/api/v1/product-categories` | Public / Customer |
+| Danh sách sản phẩm | `GET` | `/api/v1/products` | Public / Customer |
+| Danh mục vật liệu | `GET` / `POST` | `/api/v1/materials` | `MANAGER`, `OPERATOR`, `ADMIN` |
+| Quản lý kho bãi | `GET` / `POST` | `/api/v1/warehouses` | `MANAGER`, `WAREHOUSE`, `ADMIN` |
 
 ---
 
-## 👥 7. Đội Ngũ Phát Triển
-- **Technical Lead & Architect:** Lê Tuấn Kiệt (KietLT)
+## 👥 8. Đội Ngũ Phát Triển
+- **Technical Lead & Front-End Architect:** Lê Tuấn Kiệt (KietLT)
 - **Repository:** [Memento3D-Fronted-Web](https://github.com/Memento3D/Memento3D-Fronted-Web)
