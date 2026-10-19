@@ -49,6 +49,7 @@ export const ProductListPage: React.FC = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ['categories-active'],
     queryFn: () => categoryApi.list(true),
+    staleTime: 10 * 60 * 1000,
   });
 
   // Products Query

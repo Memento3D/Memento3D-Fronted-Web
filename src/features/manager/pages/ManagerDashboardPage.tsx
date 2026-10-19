@@ -53,26 +53,28 @@ export const ManagerDashboardPage: React.FC = () => {
     },
     {
       title: 'Type',
-      dataIndex: 'movementType',
-      key: 'movementType',
-      render: (val: string) => {
+      key: 'type',
+      render: (_: any, r: any) => {
+        const typeStr = String(r.movementType || r.transactionType || 'MOVEMENT').toUpperCase();
         let color = 'default';
-        if (val.includes('IN')) color = 'cyan';
-        else if (val.includes('OUT')) color = 'magenta';
-        else if (val.includes('RESERVE')) color = 'gold';
-        else if (val.includes('ADJUST')) color = 'purple';
-        return <Tag color={color} style={{ fontSize: '0.75rem', fontWeight: 600 }}>{val}</Tag>;
+        if (typeStr.includes('IN') || typeStr.includes('RECEIPT')) color = 'cyan';
+        else if (typeStr.includes('OUT') || typeStr.includes('ISSUE')) color = 'magenta';
+        else if (typeStr.includes('RESERVE')) color = 'gold';
+        else if (typeStr.includes('ADJUST')) color = 'purple';
+        return <Tag color={color} style={{ fontSize: '0.75rem', fontWeight: 600 }}>{typeStr}</Tag>;
       },
     },
     {
       title: 'Quantity',
-      dataIndex: 'quantity',
       key: 'quantity',
-      render: (val: number, r: any) => {
-        const isPositive = r.movementType.includes('IN') || r.movementType.includes('INCREASE') || r.movementType.includes('RELEASE');
+      render: (_: any, r: any) => {
+        const typeStr = String(r.movementType || r.transactionType || '').toUpperCase();
+        const delta = r.quantity !== undefined ? r.quantity : (r.deltaOnHandGram !== undefined ? r.deltaOnHandGram : 0);
+        const isPositive = delta > 0 || typeStr.includes('IN') || typeStr.includes('RECEIPT') || typeStr.includes('INCREASE') || typeStr.includes('RELEASE');
+        const displayVal = Math.abs(delta);
         return (
           <Text strong style={{ color: isPositive ? '#10b981' : '#f43f5e', fontSize: '0.9rem' }}>
-            {isPositive ? `+${val}` : `-${val}`}
+            {isPositive ? `+${displayVal}` : `-${displayVal}`}
           </Text>
         );
       },
@@ -80,11 +82,15 @@ export const ManagerDashboardPage: React.FC = () => {
     {
       title: 'Stock Ledger (Before -> After)',
       key: 'balanceFlow',
-      render: (_: any, r: any) => (
-        <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-          {r.quantityBefore} → <Text strong style={{ color: '#e2e8f0' }}>{r.quantityAfter}</Text>
-        </span>
-      ),
+      render: (_: any, r: any) => {
+        const before = r.quantityBefore ?? r.beforeOnHandGram ?? 0;
+        const after = r.quantityAfter ?? r.afterOnHandGram ?? 0;
+        return (
+          <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+            {before} → <Text strong style={{ color: '#e2e8f0' }}>{after}</Text>
+          </span>
+        );
+      },
     },
   ];
 

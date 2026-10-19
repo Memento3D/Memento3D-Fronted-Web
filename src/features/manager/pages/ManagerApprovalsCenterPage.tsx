@@ -29,26 +29,35 @@ const { Title, Text } = Typography;
 export const ManagerApprovalsCenterPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { activeWarehouse } = useWarehouseContext();
+  const [activeTab, setActiveTab] = React.useState('receipts');
 
-  // Queries for SUBMITTED entities
+  // Queries for SUBMITTED entities with lazy per-tab fetching
   const { data: receiptsData, isLoading: loadingReceipts } = useQuery({
     queryKey: ['pending-receipts', activeWarehouse?.id],
     queryFn: () => wmsEnterpriseApi.getGoodsReceipts({ warehouseId: activeWarehouse?.id, status: 'SUBMITTED', size: 50 }),
+    enabled: activeTab === 'receipts',
+    staleTime: 60 * 1000,
   });
 
   const { data: issuesData, isLoading: loadingIssues } = useQuery({
     queryKey: ['pending-issues', activeWarehouse?.id],
     queryFn: () => wmsEnterpriseApi.getStockIssues({ warehouseId: activeWarehouse?.id, status: 'SUBMITTED', size: 50 }),
+    enabled: activeTab === 'issues',
+    staleTime: 60 * 1000,
   });
 
   const { data: adjustmentsData, isLoading: loadingAdjustments } = useQuery({
     queryKey: ['pending-adjustments', activeWarehouse?.id],
     queryFn: () => wmsEnterpriseApi.getAdjustments({ warehouseId: activeWarehouse?.id, status: 'SUBMITTED', size: 50 }),
+    enabled: activeTab === 'adjustments',
+    staleTime: 60 * 1000,
   });
 
   const { data: transfersData, isLoading: loadingTransfers } = useQuery({
     queryKey: ['pending-transfers', activeWarehouse?.id],
     queryFn: () => wmsEnterpriseApi.getTransfers({ warehouseId: activeWarehouse?.id, status: 'SUBMITTED', size: 50 }),
+    enabled: activeTab === 'transfers',
+    staleTime: 60 * 1000,
   });
 
   // Approvals Mutations
@@ -283,7 +292,8 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
 
       <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
         <Tabs
-          defaultActiveKey="receipts"
+          activeKey={activeTab}
+          onChange={setActiveTab}
           items={[
             {
               key: 'receipts',

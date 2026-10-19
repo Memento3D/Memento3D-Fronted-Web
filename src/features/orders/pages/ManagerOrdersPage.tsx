@@ -19,6 +19,7 @@ import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import { OrderPrintJobLinkModal } from '../components/OrderPrintJobLinkModal';
 import { formatCurrency, formatOrderDate } from '../utils/orderFormatters';
 import type { OrderResponse, OrderStatus } from '../types/order.types';
+import { useEventSubscription } from '../../../shared/realtime';
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,10 @@ export const ManagerOrdersPage: React.FC = () => {
     page,
     limit: pageSize,
   });
+
+  // Real-time automatic updates on order/payment changes
+  useEventSubscription('ORDER_STATUS_CHANGED', () => refetch());
+  useEventSubscription('PAYMENT_STATUS_CHANGED', () => refetch());
 
   const rawOrders = data?.orders || [];
   const filteredOrders = rawOrders.filter((order) => {

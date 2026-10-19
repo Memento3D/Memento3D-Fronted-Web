@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { warehouseApi } from '../api/warehouseApi';
 import type { Warehouse } from '../types/warehouse.types';
+import { tokenStorage } from '../../auth/utils/tokenStorage';
 
 interface WarehouseContextValue {
   activeWarehouseId: string | null;
@@ -39,6 +40,7 @@ export const WarehouseProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
       }
     },
+    enabled: !!tokenStorage.getAccessToken(),
     staleTime: 60000,
   });
 

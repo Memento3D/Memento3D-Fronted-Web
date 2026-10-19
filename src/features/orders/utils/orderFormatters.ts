@@ -49,6 +49,12 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusMeta> = {
     badgeStatus: 'warning',
     description: 'Đơn hàng đã khởi tạo, đang chờ khách hàng thanh toán.',
   },
+  MODEL_APPROVAL_PENDING: {
+    label: 'Chờ duyệt mô hình 3D',
+    color: '#8b5cf6',
+    badgeStatus: 'warning',
+    description: 'Mô hình 3D đã sẵn sàng, đang chờ khách hàng xem trước và phê duyệt.',
+  },
   CONFIRMED: {
     label: 'Đã xác nhận',
     color: '#06b6d4',

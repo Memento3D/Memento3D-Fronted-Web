@@ -6,6 +6,7 @@ export const useMaterials = (params?: MaterialListParams) => {
   return useQuery({
     queryKey: ['materials', params],
     queryFn: () => materialApi.list(params),
+    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -14,6 +15,7 @@ export const useMaterialDetails = (id?: string) => {
     queryKey: ['material', id],
     queryFn: () => (id ? materialApi.getById(id) : null),
     enabled: !!id,
+    staleTime: 5 * 60 * 1000,
   });
 };
 

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AntdConfig } from './components/AntdConfig';
 import { AppLayout } from './components/layout/AppLayout';
 import { AuthProvider } from './features/auth/context/AuthContext';
+import { RealTimeProvider } from './shared/realtime';
 import { CartProvider } from './features/cart/context/CartContext';
 import { WarehouseProvider } from './features/warehouse/context/WarehouseContext';
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
@@ -39,6 +40,7 @@ import { CustomerOrdersPage } from './features/customer/pages/CustomerOrdersPage
 import { CustomerOrderDetailPage } from './features/orders/pages/CustomerOrderDetailPage';
 import { CheckoutPage } from './features/orders/pages/CheckoutPage';
 import { PaymentResultPage } from './features/payment/pages/PaymentResultPage';
+import { ScanReconstructionPage } from './features/reconstruction/pages/ScanReconstructionPage';
 import { ManagerOrdersPage } from './features/orders/pages/ManagerOrdersPage';
 import { ManagerOrderDetailPage } from './features/orders/pages/ManagerOrderDetailPage';
 import { ManagerProductsPage } from './features/manager/pages/ManagerProductsPage';
@@ -61,8 +63,9 @@ export const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <AntdConfig>
         <AuthProvider>
-          <CartProvider>
-            <WarehouseProvider>
+          <RealTimeProvider>
+            <CartProvider>
+              <WarehouseProvider>
               <BrowserRouter>
                 <Routes>
                   {/* Guest Actor Login Routes */}
@@ -179,6 +182,22 @@ export const App: React.FC = () => {
                     element={
                       <ProtectedRoute>
                         <CheckoutPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/scans/:scanId"
+                    element={
+                      <ProtectedRoute>
+                        <ScanReconstructionPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/reconstruction/:scanId"
+                    element={
+                      <ProtectedRoute>
+                        <ScanReconstructionPage />
                       </ProtectedRoute>
                     }
                   />
@@ -333,6 +352,7 @@ export const App: React.FC = () => {
               </BrowserRouter>
             </WarehouseProvider>
           </CartProvider>
+          </RealTimeProvider>
         </AuthProvider>
       </AntdConfig>
     </QueryClientProvider>

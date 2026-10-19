@@ -25,6 +25,11 @@ import {
   EnvironmentOutlined,
   UserOutlined,
   DollarCircleOutlined,
+  CheckCircleOutlined,
+  EyeOutlined,
+  InboxOutlined,
+  PrinterOutlined,
+  CarOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useOrderDetail } from '../hooks/useOrderDetail';
@@ -38,6 +43,8 @@ import { formatCurrency, formatOrderDate } from '../utils/orderFormatters';
 import { canCustomerCancel } from '../utils/orderStateMachine';
 import { Navbar } from '../../home/components/Navbar';
 import { Footer } from '../../home/components/Footer';
+import { useEventSubscription } from '../../../shared/realtime';
+import { modelReviewService } from '../../../services/modelReviewService';
 
 export const CustomerOrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -56,6 +63,39 @@ export const CustomerOrderDetailPage: React.FC = () => {
   const [editAddressOpen, setEditAddressOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [form] = Form.useForm();
+
+  const [modelReviewModalOpen, setModelReviewModalOpen] = useState(false);
+  const [revisionModalOpen, setRevisionModalOpen] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [revisionForm] = Form.useForm();
+
+  // Real-time event subscriptions
+  useEventSubscription('ORDER_STATUS_CHANGED', (event) => {
+    if (event.resourceId === id || event.data?.orderId === id) {
+      message.info(`Cập nhật đơn hàng: Trạng thái ${event.data?.status || 'đã được thay đổi'}`);
+      refetch();
+    }
+  });
+
+  useEventSubscription('PAYMENT_STATUS_CHANGED', (event) => {
+    if (event.data?.orderId === id || event.resourceId === id) {
+      message.success('Thanh toán đơn hàng đã được cập nhật thành công!');
+      refetch();
+    }
+  });
+
+  useEventSubscription('MODEL_APPROVAL_REQUIRED', (event) => {
+    if (event.data?.orderId === id || event.resourceId === id) {
+      message.info('Mô hình 3D cho đơn hàng đã sẵn sàng để bạn duyệt!');
+      refetch();
+    }
+  });
+
+  useEventSubscription('PRINT_JOB_UPDATED', (event) => {
+    if (event.data?.orderId === id) {
+      refetch();
+    }
+  });
 
   if (isLoading) {
     return (
@@ -114,6 +154,37 @@ export const CustomerOrderDetailPage: React.FC = () => {
       refetch();
     } catch (err: any) {
       message.error(err.message || 'Không thể hủy đơn hàng');
+    }
+  };
+
+  const handleApproveModel = async () => {
+    try {
+      setReviewLoading(true);
+      const targetVersionId = (order as any).modelApprovalVersionId || (order as any).modelVersionId || id;
+      await modelReviewService.approveVersion(targetVersionId, 'Khách hàng phê duyệt in 3D');
+      message.success('Đã duyệt mô hình 3D thành công! Đơn hàng được chuyển sang hàng đợi in.');
+      setModelReviewModalOpen(false);
+      refetch();
+    } catch (err: any) {
+      message.error(err.message || 'Không thể duyệt mô hình');
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const handleRequestRevision = async (values: { reason: string; notes?: string }) => {
+    try {
+      setReviewLoading(true);
+      const targetVersionId = (order as any).modelApprovalVersionId || (order as any).modelVersionId || id;
+      await modelReviewService.requestRevision(targetVersionId, values.reason, values.notes);
+      message.success('Đã gửi yêu cầu chỉnh sửa tới đội ngũ kỹ thuật Memento3D.');
+      setRevisionModalOpen(false);
+      setModelReviewModalOpen(false);
+      refetch();
+    } catch (err: any) {
+      message.error(err.message || 'Không thể gửi yêu cầu chỉnh sửa');
+    } finally {
+      setReviewLoading(false);
     }
   };
 
@@ -195,6 +266,78 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
         {/* Timeline Steps */}
         <OrderTimeline status={order.status} createdAt={order.createdAt} updatedAt={order.updatedAt} />
+
+        {/* Model Approval Pending Alert Banner */}
+        {(order.status === 'MODEL_APPROVAL_PENDING' || (order as any).requiresModelApproval) && (
+          <Alert
+            message="Mô hình 3D đã sẵn sàng duyệt"
+            description={
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginTop: 8 }}>
+                <span>Đội ngũ kỹ thuật Memento3D đã hoàn tất tái tạo mô hình 3D. Vui lòng kiểm tra và phê duyệt trước khi chuyển sang công đoạn in ấn vật lý.</span>
+                <Button
+                  type="primary"
+                  icon={<EyeOutlined />}
+                  onClick={() => setModelReviewModalOpen(true)}
+                  style={{
+                    background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+                    borderColor: 'transparent',
+                    fontWeight: 700,
+                  }}
+                >
+                  Xem & Duyệt mô hình 3D
+                </Button>
+              </div>
+            }
+            type="warning"
+            showIcon
+            icon={<InboxOutlined style={{ fontSize: 24, color: '#f59e0b' }} />}
+            style={{
+              background: 'rgba(245, 158, 11, 0.08)',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              borderRadius: 12,
+              marginBottom: 24,
+            }}
+          />
+        )}
+
+        {/* Real-Time Printing Banner */}
+        {order.status === 'PRINTING' && (
+          <Alert
+            message={
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
+                <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 10px #22c55e' }} />
+                Đang in 3D thời gian thực tại xưởng Memento3D
+              </span>
+            }
+            description="Lệnh in của bạn đang được thực thi trên máy in 3D công nghiệp. Hệ thống sẽ tự động cập nhật khi quá trình hoàn tất và chuyển sang kiểm định chất lượng (QC)."
+            type="info"
+            showIcon
+            icon={<PrinterOutlined style={{ fontSize: 20, color: '#38bdf8' }} />}
+            style={{
+              background: 'rgba(14, 165, 233, 0.08)',
+              border: '1px solid rgba(14, 165, 233, 0.3)',
+              borderRadius: 12,
+              marginBottom: 24,
+            }}
+          />
+        )}
+
+        {/* Shipping Banner */}
+        {order.status === 'SHIPPED' && (
+          <Alert
+            message="Đơn hàng đang được giao tới bạn"
+            description="Kiện hàng đã xuất kho và đang trên đường vận chuyển tới địa chỉ nhận hàng của bạn."
+            type="success"
+            showIcon
+            icon={<CarOutlined style={{ fontSize: 20, color: '#22c55e' }} />}
+            style={{
+              background: 'rgba(34, 197, 94, 0.08)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              borderRadius: 12,
+              marginBottom: 24,
+            }}
+          />
+        )}
 
         {/* Cash Notice if applicable */}
         {isCash && !isPaid && (
@@ -524,6 +667,105 @@ export const CustomerOrderDetailPage: React.FC = () => {
         cancelText="Đóng"
       >
         <p>Bạn có chắc chắn muốn hủy đơn hàng này không?</p>
+      </Modal>
+
+      {/* 3D Model Review Modal */}
+      <Modal
+        open={modelReviewModalOpen}
+        onCancel={() => setModelReviewModalOpen(false)}
+        title={<span style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 700 }}>Duyệt mô hình 3D trước khi in</span>}
+        width={720}
+        footer={[
+          <Button key="close" onClick={() => setModelReviewModalOpen(false)}>
+            Đóng
+          </Button>,
+          <Button
+            key="revision"
+            danger
+            onClick={() => setRevisionModalOpen(true)}
+            loading={reviewLoading}
+          >
+            Yêu cầu chỉnh sửa
+          </Button>,
+          <Button
+            key="approve"
+            type="primary"
+            icon={<CheckCircleOutlined />}
+            onClick={() => handleApproveModel()}
+            loading={reviewLoading}
+            style={{
+              background: 'linear-gradient(135deg, #10b981 0%, #22c55e 100%)',
+              borderColor: 'transparent',
+              fontWeight: 700,
+            }}
+          >
+            Duyệt & Cho phép in
+          </Button>,
+        ]}
+      >
+        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+          <div
+            style={{
+              height: 280,
+              background: 'radial-gradient(circle at center, #1e293b 0%, #0f172a 100%)',
+              borderRadius: 12,
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 20,
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            <div style={{ fontSize: '3.5rem', marginBottom: 12 }}>🗿</div>
+            <div style={{ color: '#f8fafc', fontWeight: 600, fontSize: '1.1rem' }}>
+              Bản dựng 3D chi tiết (Đã qua xử lý Watermark)
+            </div>
+            <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: 4 }}>
+              Độ phân giải cao | Sẵn sàng cho máy in 3D công nghiệp
+            </div>
+            {(order as any).previewUrl && (
+              <a
+                href={(order as any).previewUrl}
+                target="_blank"
+                rel="noreferrer"
+                style={{ marginTop: 12, color: '#38bdf8', textDecoration: 'underline' }}
+              >
+                Tải bản xem trước GLB
+              </a>
+            )}
+          </div>
+
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem', textAlign: 'left', lineHeight: 1.6 }}>
+            Bằng việc bấm <strong>"Duyệt & Cho phép in"</strong>, bạn xác nhận đồng ý với hình dáng, tỷ lệ và chất lượng bản dựng 3D này. Xưởng in Memento3D sẽ tự động cấp phát vật liệu và xếp lịch in máy.
+          </p>
+        </div>
+      </Modal>
+
+      {/* Revision Request Modal */}
+      <Modal
+        open={revisionModalOpen}
+        onCancel={() => setRevisionModalOpen(false)}
+        title="Yêu cầu chỉnh sửa mô hình 3D"
+        onOk={() => revisionForm.submit()}
+        confirmLoading={reviewLoading}
+        okText="Gửi yêu cầu"
+        cancelText="Hủy"
+      >
+        <Form form={revisionForm} layout="vertical" onFinish={handleRequestRevision}>
+          <Form.Item
+            name="reason"
+            label="Lý do cần chỉnh sửa"
+            rules={[{ required: true, message: 'Vui lòng chọn hoặc nhập lý do' }]}
+          >
+            <Input placeholder="Ví dụ: Cần làm mịn bề mặt khuôn mặt, chi tiết tay áo chưa khớp..." />
+          </Form.Item>
+          <Form.Item name="notes" label="Ghi chú chi tiết cho Kỹ sư AI / 3D">
+            <Input.TextArea rows={4} placeholder="Mô tả cụ thể những điểm cần điều chỉnh..." />
+          </Form.Item>
+        </Form>
       </Modal>
 
       <Footer />

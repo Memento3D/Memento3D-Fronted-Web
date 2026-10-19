@@ -6,6 +6,7 @@ export const useWarehouses = (params?: WarehouseListParams) => {
   return useQuery({
     queryKey: ['warehouses', params],
     queryFn: () => warehouseApi.list(params),
+    staleTime: 5 * 60 * 1000,
   });
 };
 
