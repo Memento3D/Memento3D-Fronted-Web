@@ -88,7 +88,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({
 
   return (
     <Modal
-      title={material ? `Chỉnh sửa vật liệu: ${material.sku}` : 'Thêm mới vật liệu in 3D'}
+      title={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700 }}>{material ? `Chỉnh sửa vật liệu: ${material.sku}` : 'Thêm mới vật liệu in 3D'}</span>}
       open={open}
       onCancel={onCancel}
       onOk={() => form.submit()}

@@ -24,15 +24,19 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
       title: 'Kho',
       dataIndex: 'warehouseCode',
       key: 'warehouseCode',
-      render: (code: string) => <Tag color="blue">{code}</Tag>,
+      render: (code: string) => (
+        <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary-system, #5F3ADD)', border: '1px solid var(--border-default, #E2D9F7)', fontWeight: 600 }}>
+          {code}
+        </Tag>
+      ),
     },
     {
       title: 'Mã SKU vật liệu',
       dataIndex: 'materialSku',
       key: 'materialSku',
       render: (sku: string, record) => (
-        <Space orientation="vertical" size={2}>
-          <Text strong style={{ color: '#38bdf8' }}>{sku}</Text>
+        <Space direction="vertical" size={2}>
+          <Text strong style={{ color: 'var(--primary, #7C5CFC)' }}>{sku}</Text>
           <Text type="secondary" style={{ fontSize: 11 }}>{record.materialName}</Text>
         </Space>
       ),
@@ -45,7 +49,15 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
       render: (gram: number) => {
         const isCritical = gram <= 500;
         return (
-          <Tag color={isCritical ? 'error' : 'warning'} style={{ fontWeight: 600 }}>
+          <Tag
+            style={{
+              borderRadius: 'var(--radius-pill, 9999px)',
+              background: isCritical ? 'var(--error-container, #FFDAD6)' : 'var(--secondary-peach, #FFBFAE)',
+              color: isCritical ? 'var(--on-error-container, #93000A)' : '#7C3F2E',
+              border: 'none',
+              fontWeight: 600,
+            }}
+          >
             {gram} g ({(gram / 1000).toFixed(2)} cuộn)
           </Tag>
         );
@@ -59,8 +71,8 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
         const spools = Math.ceil(neededGram / 1000);
         return (
           <Space>
-            <ShoppingCartOutlined style={{ color: '#f59e0b' }} />
-            <Text strong style={{ color: '#fbbf24' }}>
+            <ShoppingCartOutlined style={{ color: '#E07A5F' }} />
+            <Text strong style={{ color: '#E07A5F' }}>
               +{spools} cuộn ({spools} kg)
             </Text>
           </Space>
@@ -76,6 +88,7 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
           type="primary"
           size="small"
           icon={<PlusCircleOutlined />}
+          style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--primary, #7C5CFC)' }}
           onClick={() => onOpenReceipt(record.materialId, record.warehouseId)}
         >
           Nhập kho
@@ -87,10 +100,11 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
   if (lowStockItems.length === 0) {
     return (
       <Card
+        style={{ borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}
         title={
           <Space>
-            <CheckCircleOutlined style={{ color: '#10b981' }} />
-            <span>Cảnh báo Thiếu hụt & Tồn kho Thấp</span>
+            <CheckCircleOutlined style={{ color: 'var(--tertiary, #466253)' }} />
+            <span style={{ fontWeight: 600, color: 'var(--text-primary, #28243D)' }}>Cảnh báo Thiếu hụt & Tồn kho Thấp</span>
           </Space>
         }
       >
@@ -98,6 +112,7 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
           message="Tất cả định mức tồn kho vật liệu đang nằm trong ngưỡng đệm an toàn (> 1.5kg khả dụng mỗi SKU)."
           type="success"
           showIcon
+          style={{ borderRadius: 'var(--radius-default, 16px)', background: 'var(--tertiary-mint, #C9E8D5)', border: 'none', color: 'var(--tertiary, #466253)' }}
         />
       </Card>
     );
@@ -105,14 +120,17 @@ export const ShortageReportCard: React.FC<ShortageReportCardProps> = ({
 
   return (
     <Card
+      style={{ borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}
       title={
         <Space>
-          <AlertOutlined style={{ color: '#ef4444' }} />
-          <span>Cảnh báo Tồn kho Thấp & Đề xuất Nhập thêm ({lowStockItems.length})</span>
+          <AlertOutlined style={{ color: 'var(--error, #BA1A1A)' }} />
+          <span style={{ fontWeight: 600, color: 'var(--text-primary, #28243D)' }}>Cảnh báo Tồn kho Thấp & Đề xuất Nhập thêm ({lowStockItems.length})</span>
         </Space>
       }
       extra={
-        <Tag color="error">Cần xử lý: {lowStockItems.length} mã SKU sắp hết</Tag>
+        <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--error-container, #FFDAD6)', color: 'var(--on-error-container, #93000A)', border: 'none', fontWeight: 600 }}>
+          Cần xử lý: {lowStockItems.length} mã SKU sắp hết
+        </Tag>
       }
     >
       <Table

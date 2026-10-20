@@ -82,7 +82,7 @@ export const ResetPasswordPage: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'radial-gradient(ellipse at 50% 20%, #0f172a 0%, #020617 100%)',
+        background: 'radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 191, 174, 0.12) 0%, transparent 40%), var(--bg-app, #F8F5FF)',
         padding: '24px 16px',
         position: 'relative',
         overflow: 'hidden',
@@ -91,11 +91,10 @@ export const ResetPasswordPage: React.FC = () => {
       <div style={{ width: '100%', maxWidth: '480px', zIndex: 1 }}>
         <Card
           style={{
-            background: 'rgba(15, 23, 42, 0.85)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '16px',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            background: 'var(--surface-card, #FFFFFF)',
+            border: '1px solid var(--border-default, #E2D9F7)',
+            borderRadius: 'var(--radius-card-feature, 28px)',
+            boxShadow: 'var(--shadow-floating)',
           }}
           styles={{ body: { padding: '40px 32px' } }}
         >
@@ -109,9 +108,8 @@ export const ResetPasswordPage: React.FC = () => {
                   width: '72px',
                   height: '72px',
                   borderRadius: '50%',
-                  background: 'rgba(16, 185, 129, 0.15)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  color: '#10b981',
+                  background: 'var(--mint-accent, #C9E8D5)',
+                  color: 'var(--tertiary, #466253)',
                   fontSize: '32px',
                   marginBottom: '20px',
                 }}
@@ -119,11 +117,11 @@ export const ResetPasswordPage: React.FC = () => {
                 <CheckCircleOutlined />
               </div>
 
-              <Title level={3} style={{ color: '#fff', marginBottom: '8px', fontWeight: 700 }}>
+              <Title level={3} style={{ color: 'var(--text-primary, #28243D)', marginBottom: '8px', fontWeight: 700 }}>
                 Thiết lập mật khẩu thành công!
               </Title>
 
-              <Paragraph style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
+              <Paragraph style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
                 Mật khẩu mới đã được cập nhật an toàn. Mọi phiên đăng nhập cũ trên các thiết bị khác đã được vô hiệu hóa để bảo vệ tài khoản của bạn.
               </Paragraph>
 
@@ -133,11 +131,12 @@ export const ResetPasswordPage: React.FC = () => {
                 block
                 onClick={() => navigate('/login')}
                 style={{
-                  height: '44px',
-                  borderRadius: '8px',
+                  height: '46px',
+                  borderRadius: 'var(--radius-full, 9999px)',
                   fontWeight: 700,
-                  background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+                  background: 'var(--primary, #7C5CFC)',
                   border: 'none',
+                  boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.3)',
                 }}
               >
                 Đăng nhập ngay
@@ -150,10 +149,10 @@ export const ResetPasswordPage: React.FC = () => {
                 showIcon
                 message="Thiếu mã khôi phục"
                 description="Liên kết đặt lại mật khẩu không hợp lệ hoặc thiếu mã token xác thực. Vui lòng bấm vào liên kết trong email hoặc gửi lại yêu cầu mới."
-                style={{ marginBottom: 24, textAlign: 'left' }}
+                style={{ marginBottom: 24, textAlign: 'left', borderRadius: 'var(--radius-default, 16px)' }}
               />
               <Link to="/forgot-password">
-                <Button type="primary" block style={{ height: '42px', borderRadius: '8px', fontWeight: 600 }}>
+                <Button type="primary" block style={{ height: '46px', borderRadius: 'var(--radius-full, 9999px)', fontWeight: 600, background: 'var(--primary, #7C5CFC)' }}>
                   Yêu cầu liên kết mới
                 </Button>
               </Link>
@@ -169,26 +168,26 @@ export const ResetPasswordPage: React.FC = () => {
                     width: '64px',
                     height: '64px',
                     borderRadius: '50%',
-                    background: 'rgba(14, 165, 233, 0.15)',
-                    border: '1px solid rgba(14, 165, 233, 0.3)',
-                    color: '#38bdf8',
+                    background: 'var(--surface-container, #F1EBFF)',
+                    border: '1px solid var(--border-default, #E2D9F7)',
+                    color: 'var(--primary, #7C5CFC)',
                     fontSize: '28px',
                     marginBottom: '16px',
                   }}
                 >
                   <LockOutlined />
                 </div>
-                <Title level={3} style={{ color: '#fff', marginBottom: '6px', fontWeight: 700 }}>
+                <Title level={3} style={{ color: 'var(--text-primary, #28243D)', marginBottom: '6px', fontWeight: 700 }}>
                   Đặt lại mật khẩu
                 </Title>
-                <Text style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+                <Text style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.9rem' }}>
                   Thiết lập mật khẩu mới an toàn cho tài khoản Memento3D của bạn.
                 </Text>
               </div>
 
               <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={false}>
                 <Form.Item
-                  label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu mới</span>}
+                  label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Mật khẩu mới</span>}
                   name="newPassword"
                   rules={[
                     { required: true, message: 'Vui lòng nhập mật khẩu mới' },
@@ -196,11 +195,11 @@ export const ResetPasswordPage: React.FC = () => {
                   ]}
                 >
                   <Input.Password
-                    prefix={<LockOutlined style={{ color: '#64748b' }} />}
+                    prefix={<LockOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
                     placeholder="Tối thiểu 12 ký tự"
                     size="large"
                     autoComplete="new-password"
-                    style={{ borderRadius: '8px' }}
+                    style={{ borderRadius: 'var(--radius-input, 20px)' }}
                     onChange={(e) => setPasswordValue(e.target.value)}
                   />
                 </Form.Item>
@@ -208,17 +207,17 @@ export const ResetPasswordPage: React.FC = () => {
                 {passwordValue && (
                   <div style={{ marginBottom: 16 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: '0.8rem' }}>
-                      <span style={{ color: '#94a3b8' }}>Độ mạnh mật khẩu:</span>
-                      <span style={{ color: strength.status === 'success' ? '#10b981' : strength.status === 'active' ? '#38bdf8' : '#f59e0b', fontWeight: 600 }}>
+                      <span style={{ color: 'var(--text-secondary, #6A6282)' }}>Độ mạnh mật khẩu:</span>
+                      <span style={{ color: strength.status === 'success' ? '#466253' : strength.status === 'active' ? '#7C5CFC' : '#BA1A1A', fontWeight: 600 }}>
                         {strength.label}
                       </span>
                     </div>
-                    <Progress percent={strength.percent} status={strength.status} showInfo={false} size="small" />
+                    <Progress percent={strength.percent} status={strength.status} showInfo={false} size="small" strokeColor="#7C5CFC" />
                   </div>
                 )}
 
                 <Form.Item
-                  label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Xác nhận mật khẩu mới</span>}
+                  label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Xác nhận mật khẩu mới</span>}
                   name="confirmPassword"
                   dependencies={['newPassword']}
                   rules={[
@@ -234,17 +233,17 @@ export const ResetPasswordPage: React.FC = () => {
                   ]}
                 >
                   <Input.Password
-                    prefix={<LockOutlined style={{ color: '#64748b' }} />}
+                    prefix={<LockOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
                     placeholder="Nhập lại mật khẩu mới"
                     size="large"
                     autoComplete="new-password"
-                    style={{ borderRadius: '8px' }}
+                    style={{ borderRadius: 'var(--radius-input, 20px)' }}
                   />
                 </Form.Item>
 
                 <div style={{ marginBottom: 20 }}>
-                  <Text style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <SafetyCertificateOutlined style={{ color: '#38bdf8' }} /> Tiêu chuẩn NIST: Tối thiểu 12 ký tự, khuyến khích kết hợp chữ hoa, chữ thường, chữ số và ký tự đặc biệt.
+                  <Text style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6A6282)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <SafetyCertificateOutlined style={{ color: 'var(--primary, #7C5CFC)' }} /> Tiêu chuẩn NIST: Tối thiểu 12 ký tự, khuyến khích kết hợp chữ hoa, chữ thường, chữ số và ký tự đặc biệt.
                   </Text>
                 </div>
 
@@ -256,12 +255,12 @@ export const ResetPasswordPage: React.FC = () => {
                     block
                     loading={loading}
                     style={{
-                      height: '44px',
-                      borderRadius: '8px',
+                      height: '46px',
+                      borderRadius: 'var(--radius-full, 9999px)',
                       fontWeight: 700,
-                      background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+                      background: 'var(--primary, #7C5CFC)',
                       border: 'none',
-                      boxShadow: '0 4px 14px rgba(14, 165, 233, 0.4)',
+                      boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.3)',
                     }}
                   >
                     Lưu mật khẩu mới
@@ -275,8 +274,9 @@ export const ResetPasswordPage: React.FC = () => {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px',
-                      color: '#94a3b8',
+                      color: 'var(--text-secondary, #6A6282)',
                       fontSize: '0.875rem',
+                      fontWeight: 600,
                       textDecoration: 'none',
                     }}
                   >

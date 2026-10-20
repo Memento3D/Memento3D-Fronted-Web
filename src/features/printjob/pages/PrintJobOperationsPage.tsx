@@ -126,19 +126,19 @@ export const PrintJobOperationsPage: React.FC = () => {
   const renderStatusTag = (status: PrintJobStatus) => {
     switch (status) {
       case 'CREATED':
-        return <Tag color="default">HÀNG ĐỢI</Tag>;
+        return <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--text-secondary, #6A6282)', border: '1px solid var(--border-default, #E2D9F7)' }}>HÀNG ĐỢI</Tag>;
       case 'RESERVED':
-        return <Tag color="warning">ĐÃ GIỮ CHỖ</Tag>;
+        return <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--peach-accent, #FFBFAE)', color: 'var(--text-primary, #28243D)', border: 'none', fontWeight: 600 }}>ĐÃ GIỮ CHỖ</Tag>;
       case 'ISSUED':
-        return <Tag color="processing">ĐÃ CẤP MÁY</Tag>;
+        return <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--surface-high, #EBE4FF)', color: 'var(--primary, #7C5CFC)', border: 'none', fontWeight: 600 }}>ĐÃ CẤP MÁY</Tag>;
       case 'PRINTING':
-        return <Tag color="blue">ĐANG IN</Tag>;
+        return <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)', color: '#ffffff', border: 'none', fontWeight: 600 }}>ĐANG IN</Tag>;
       case 'COMPLETED':
-        return <Tag color="success">HOÀN THÀNH</Tag>;
+        return <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--mint-accent, #C9E8D5)', color: 'var(--tertiary, #466253)', border: 'none', fontWeight: 600 }}>HOÀN THÀNH</Tag>;
       case 'FAILED':
-        return <Tag color="error">THẤT BẠI</Tag>;
+        return <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--error-container, #FFDAD6)', color: 'var(--on-error-container, #93000A)', border: 'none', fontWeight: 600 }}>THẤT BẠI</Tag>;
       default:
-        return <Tag>{status}</Tag>;
+        return <Tag style={{ borderRadius: 'var(--radius-full, 9999px)' }}>{status}</Tag>;
     }
   };
 
@@ -149,8 +149,8 @@ export const PrintJobOperationsPage: React.FC = () => {
       key: 'jobNumber',
       render: (num: string) => (
         <Space>
-          <PrinterOutlined style={{ color: '#0ea5e9' }} />
-          <Text strong copyable style={{ color: '#38bdf8' }}>{num}</Text>
+          <PrinterOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
+          <Text strong copyable style={{ color: 'var(--primary, #7C5CFC)' }}>{num}</Text>
         </Space>
       ),
     },
@@ -160,10 +160,10 @@ export const PrintJobOperationsPage: React.FC = () => {
       render: (_, record) => (
         <Space direction="vertical" size={2}>
           <Space>
-            <Tag color="cyan">{record.materialSku}</Tag>
-            <span>{record.materialColor}</span>
+            <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary, #7C5CFC)', border: '1px solid var(--border-default, #E2D9F7)' }}>{record.materialSku}</Tag>
+            <span style={{ color: 'var(--text-primary, #28243D)' }}>{record.materialColor}</span>
           </Space>
-          <Text type="secondary" style={{ fontSize: 11 }}>{record.materialName}</Text>
+          <Text type="secondary" style={{ fontSize: 11, color: 'var(--text-secondary, #6A6282)' }}>{record.materialName}</Text>
         </Space>
       ),
     },
@@ -172,7 +172,7 @@ export const PrintJobOperationsPage: React.FC = () => {
       dataIndex: 'estimatedGram',
       key: 'estimatedGram',
       sorter: (a, b) => a.estimatedGram - b.estimatedGram,
-      render: (gram: number) => <Text strong>{gram} g</Text>,
+      render: (gram: number) => <Text strong style={{ color: 'var(--text-primary, #28243D)' }}>{gram} g</Text>,
     },
     {
       title: 'Trạng thái',
@@ -184,7 +184,7 @@ export const PrintJobOperationsPage: React.FC = () => {
       title: 'Trạm máy in 3D',
       dataIndex: 'printerName',
       key: 'printerName',
-      render: (val: string) => val || 'Bàn in điều phối tự động',
+      render: (val: string) => <span style={{ color: 'var(--text-primary, #28243D)' }}>{val || 'Bàn in điều phối tự động'}</span>,
     },
     {
       title: 'Vận hành & Bàn giao',
@@ -198,6 +198,7 @@ export const PrintJobOperationsPage: React.FC = () => {
                 type="primary"
                 size="small"
                 icon={<LockOutlined />}
+                style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}
                 onClick={() => {
                   setSelectedJob(record);
                   setActiveModal('RESERVE');
@@ -214,6 +215,7 @@ export const PrintJobOperationsPage: React.FC = () => {
                 type="primary"
                 size="small"
                 icon={<ExportOutlined />}
+                style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}
                 onClick={() => {
                   setSelectedJob(record);
                   setActiveModal('ISSUE');
@@ -229,7 +231,7 @@ export const PrintJobOperationsPage: React.FC = () => {
               <Button
                 type="primary"
                 size="small"
-                style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                style={{ backgroundColor: 'var(--mint-accent, #C9E8D5)', borderColor: 'transparent', color: 'var(--tertiary, #466253)', fontWeight: 700, borderRadius: 'var(--radius-full, 9999px)' }}
                 icon={<PlayCircleOutlined />}
                 onClick={() => handleStartPrint(record.id, record.jobNumber)}
               >
@@ -243,6 +245,7 @@ export const PrintJobOperationsPage: React.FC = () => {
               <Button
                 size="small"
                 icon={<RedoOutlined />}
+                style={{ borderRadius: 'var(--radius-full, 9999px)' }}
                 onClick={() => {
                   setSelectedJob(record);
                   setActiveModal('RECONCILE');
@@ -262,15 +265,15 @@ export const PrintJobOperationsPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary, #28243D)' }}>
             Vận hành Lệnh in 3D & Vòng đời Vật liệu (F06, F07)
           </Title>
-          <Text type="secondary">
+          <Text type="secondary" style={{ color: 'var(--text-secondary, #6A6282)' }}>
             Quản lý đặt trước vật liệu, xuất kho cấp máy in và quyết toán tiêu hao thực tế.
           </Text>
         </div>
         <Space wrap>
-          <Button icon={<ReloadOutlined spin={isFetching} />} onClick={() => refetch()}>
+          <Button icon={<ReloadOutlined spin={isFetching} />} onClick={() => refetch()} style={{ borderRadius: 'var(--radius-full, 9999px)' }}>
             Làm mới
           </Button>
           <Button
@@ -278,6 +281,7 @@ export const PrintJobOperationsPage: React.FC = () => {
             icon={<PlusOutlined />}
             size="large"
             onClick={() => setIsCreateOpen(true)}
+            style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}
           >
             Tạo lệnh in 3D
           </Button>
@@ -287,34 +291,35 @@ export const PrintJobOperationsPage: React.FC = () => {
       {/* KPI Cards */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Lệnh in đang vận hành"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Lệnh in đang vận hành</span>}
               value={jobs.length}
-              prefix={<PrinterOutlined style={{ color: '#0ea5e9' }} />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Lệnh in</Text>}
+              valueStyle={{ color: 'var(--text-primary, #28243D)', fontWeight: 800 }}
+              prefix={<PrinterOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Lệnh in</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Đã giữ chỗ & Sẵn sàng"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Đã giữ chỗ & Sẵn sàng</span>}
               value={jobs.filter((j) => j.status === 'RESERVED' || j.status === 'ISSUED').length}
-              valueStyle={{ color: '#fbbf24' }}
-              prefix={<LockOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Trong kho đệm</Text>}
+              valueStyle={{ color: 'var(--text-primary, #28243D)', fontWeight: 800 }}
+              prefix={<LockOutlined style={{ color: 'var(--peach-accent, #FFBFAE)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Trong kho đệm</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Đang in trên bàn máy"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Đang in trên bàn máy</span>}
               value={jobs.filter((j) => j.status === 'PRINTING').length}
-              valueStyle={{ color: '#10b981' }}
-              prefix={<PlayCircleOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Đang in</Text>}
+              valueStyle={{ color: 'var(--primary, #7C5CFC)', fontWeight: 800 }}
+              prefix={<PlayCircleOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Đang in</Text>}
             />
           </Card>
         </Col>

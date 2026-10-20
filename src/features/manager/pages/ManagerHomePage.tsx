@@ -118,7 +118,7 @@ export const ManagerHomePage: React.FC = () => {
         user={user}
         subtitle="Hôm nay là một ngày mới để đưa Memento3D tiến thêm một bước. Kiểm soát hệ thống, thúc đẩy quy trình và nâng cao năng suất."
         badgeLabel="Quản lý Vận hành"
-        badgeColor="gold"
+        badgeColor="purple"
         actionContent={
           <Button
             icon={<RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />}
@@ -126,7 +126,7 @@ export const ManagerHomePage: React.FC = () => {
               refetch();
               message.success('Đã làm mới dữ liệu vận hành');
             }}
-            style={{ borderRadius: 8 }}
+            style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
           >
             Làm mới
           </Button>
@@ -143,8 +143,8 @@ export const ManagerHomePage: React.FC = () => {
           value={summary?.totalOrders ?? 0}
           subtext="Đơn đặt in & kỷ vật"
           icon={<ShoppingBag size={18} />}
-          iconBg="rgba(14, 165, 233, 0.15)"
-          iconColor="#0ea5e9"
+          iconBg="var(--surface-container, #F1EBFF)"
+          iconColor="var(--primary, #7C5CFC)"
           loading={isDashLoading}
           onClick={() => navigate('/manager/orders')}
         />
@@ -153,8 +153,8 @@ export const ManagerHomePage: React.FC = () => {
           value={runningJobsCount}
           subtext={`${summary?.completedPrints ?? 0} lệnh đã hoàn thành`}
           icon={<Printer size={18} />}
-          iconBg="rgba(139, 92, 246, 0.15)"
-          iconColor="#8b5cf6"
+          iconBg="var(--surface-container, #F1EBFF)"
+          iconColor="var(--primary, #7C5CFC)"
           loading={isDashLoading}
           onClick={() => navigate('/manager/print-jobs')}
         />
@@ -163,8 +163,8 @@ export const ManagerHomePage: React.FC = () => {
           value={`${activePrintersCount} / ${totalPrintersCount}`}
           subtext="Trực tuyến trên xưởng"
           icon={<Cpu size={18} />}
-          iconBg="rgba(16, 185, 129, 0.15)"
-          iconColor="#10b981"
+          iconBg="var(--surface-container, #F1EBFF)"
+          iconColor="var(--tertiary, #466253)"
           loading={isDashLoading}
           onClick={() => navigate('/manager/print-jobs')}
         />
@@ -173,8 +173,8 @@ export const ManagerHomePage: React.FC = () => {
           value={lowStockCount}
           subtext="Vật liệu chạm ngưỡng"
           icon={<AlertTriangle size={18} />}
-          iconBg="rgba(245, 158, 11, 0.15)"
-          iconColor="#f59e0b"
+          iconBg="var(--error-container, #FFDAD6)"
+          iconColor="var(--error, #BA1A1A)"
           loading={isDashLoading}
           onClick={() => navigate('/manager/inventory')}
         />
@@ -190,48 +190,48 @@ export const ManagerHomePage: React.FC = () => {
             title="Xem đơn hàng"
             description="Xử lý đơn & cập nhật tiến độ"
             icon={<ShoppingBag size={20} />}
-            iconBg="rgba(14, 165, 233, 0.15)"
-            iconColor="#0ea5e9"
+            iconBg="var(--surface-container, #F1EBFF)"
+            iconColor="var(--primary, #7C5CFC)"
             onClick={() => navigate('/manager/orders')}
           />
           <QuickActionCard
             title="Quản lý Print Job"
             description="Phân bổ và điều phối lệnh in"
             icon={<Printer size={20} />}
-            iconBg="rgba(139, 92, 246, 0.15)"
-            iconColor="#8b5cf6"
+            iconBg="var(--surface-container, #F1EBFF)"
+            iconColor="var(--primary, #7C5CFC)"
             onClick={() => navigate('/manager/print-jobs')}
           />
           <QuickActionCard
             title="Kiểm tra máy in"
             description="Trạng thái máy và camera nhiệt"
             icon={<Cpu size={20} />}
-            iconBg="rgba(16, 185, 129, 0.15)"
-            iconColor="#10b981"
+            iconBg="var(--surface-container, #F1EBFF)"
+            iconColor="var(--tertiary, #466253)"
             onClick={() => navigate('/manager/print-jobs')}
           />
           <QuickActionCard
             title="Xem kho & Vật liệu"
             description="Kiểm tra tồn kho và định mức"
             icon={<Layers size={20} />}
-            iconBg="rgba(6, 182, 212, 0.15)"
-            iconColor="#06b6d4"
+            iconBg="var(--surface-container, #F1EBFF)"
+            iconColor="var(--primary-system, #5F3ADD)"
             onClick={() => navigate('/manager/inventory')}
           />
           <QuickActionCard
             title="Xem báo cáo Dashboard"
             description="Phân tích doanh thu & hiệu suất"
             icon={<BarChart3 size={20} />}
-            iconBg="rgba(245, 158, 11, 0.15)"
-            iconColor="#f59e0b"
+            iconBg="var(--surface-container, #F1EBFF)"
+            iconColor="var(--primary, #7C5CFC)"
             onClick={() => navigate('/manager/dashboard')}
           />
           <QuickActionCard
             title="Trung tâm phê duyệt"
             description="Duyệt xuất nhập & điều chuyển"
             icon={<CheckSquare size={20} />}
-            iconBg="rgba(239, 68, 68, 0.15)"
-            iconColor="#ef4444"
+            iconBg="var(--error-container, #FFDAD6)"
+            iconColor="var(--error, #BA1A1A)"
             onClick={() => navigate('/manager/approvals')}
           />
         </div>

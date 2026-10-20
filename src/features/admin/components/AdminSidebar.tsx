@@ -67,16 +67,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed, onToggleC
     <aside
       className={`admin-sidebar ${collapsed ? 'collapsed' : ''}`}
       style={{
-        width: collapsed ? 80 : 260,
-        minWidth: collapsed ? 80 : 260,
+        width: collapsed ? 80 : 268,
+        minWidth: collapsed ? 80 : 268,
         height: '100vh',
         position: 'sticky',
         top: 0,
         left: 0,
         display: 'flex',
         flexDirection: 'column',
-        borderRight: '1px solid var(--border-color, #334155)',
-        background: 'var(--sidebar-bg, #0b1120)',
+        borderRight: '1px solid var(--border-color)',
+        background: 'var(--bg-sidebar)',
+        backdropFilter: 'var(--glass-blur)',
+        WebkitBackdropFilter: 'var(--glass-blur)',
         transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         zIndex: 100,
       }}
@@ -84,36 +86,36 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed, onToggleC
       {/* Brand Header */}
       <div
         style={{
-          height: 64,
-          padding: '0 16px',
+          height: 68,
+          padding: '0 18px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: collapsed ? 'center' : 'space-between',
-          borderBottom: '1px solid var(--border-color, #334155)',
+          borderBottom: '1px solid var(--border-color)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, overflow: 'hidden' }}>
           <div
             style={{
-              width: 38,
-              height: 38,
-              borderRadius: 10,
-              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+              width: 40,
+              height: 40,
+              borderRadius: 12,
+              background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-system) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 16px rgba(99, 102, 241, 0.4)',
+              boxShadow: '0 4px 14px var(--primary-glow)',
               flexShrink: 0,
             }}
           >
-            <ShieldAlert size={20} color="#ffffff" />
+            <ShieldAlert size={20} color="#FFFFFF" />
           </div>
           {!collapsed && (
             <div style={{ whiteSpace: 'nowrap' }}>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#f8fafc', letterSpacing: '-0.02em' }}>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
                 Memento3D
               </div>
-              <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
                 Admin Portal
               </div>
             </div>
@@ -124,36 +126,37 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed, onToggleC
           <button
             onClick={onToggleCollapse}
             style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#94a3b8',
+              background: 'var(--surface-container, #F1EBFF)',
+              border: '1px solid var(--border-color, #E2D9F7)',
+              color: 'var(--text-secondary)',
               cursor: 'pointer',
               padding: 6,
-              borderRadius: 6,
+              borderRadius: 'var(--radius-full)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              transition: 'all var(--transition-fast)',
             }}
             title="Thu gọn menu"
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={16} />
           </button>
         )}
       </div>
 
       {/* Nav Items List */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 8px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 12px' }}>
         {navSections.map((section, idx) => (
           <div key={idx} style={{ marginBottom: 18 }}>
             {!collapsed && (
               <div
                 style={{
                   padding: '4px 12px 8px',
-                  fontSize: '0.68rem',
+                  fontSize: '0.7rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
-                  color: '#64748b',
+                  color: 'var(--text-muted)',
                 }}
               >
                 {section.title}
@@ -170,22 +173,28 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed, onToggleC
                     display: 'flex',
                     alignItems: 'center',
                     gap: 12,
-                    padding: collapsed ? '10px 0' : '10px 14px',
+                    padding: collapsed ? '10px 0' : '10px 16px',
                     justifyContent: collapsed ? 'center' : 'flex-start',
-                    borderRadius: 8,
+                    borderRadius: 'var(--radius-full, 9999px)',
                     marginBottom: 4,
                     textDecoration: 'none',
-                    color: isActive ? '#f8fafc' : '#94a3b8',
+                    color: isActive ? 'var(--primary-system, #5F3ADD)' : 'var(--text-secondary, #6A6282)',
                     background: isActive
-                      ? 'linear-gradient(90deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%)'
+                      ? 'var(--surface-tertiary, #ECE3FF)'
                       : 'transparent',
-                    borderLeft: isActive ? '3px solid #6366f1' : '3px solid transparent',
                     fontWeight: isActive ? 600 : 500,
                     fontSize: '0.875rem',
                     transition: 'all 0.15s ease',
+                    boxShadow: isActive ? '0 2px 8px -2px rgba(124, 92, 252, 0.12)' : 'none',
                   })}
                 >
-                  <Icon size={18} style={{ flexShrink: 0 }} />
+                  <Icon
+                    size={18}
+                    style={{
+                      flexShrink: 0,
+                      color: 'inherit',
+                    }}
+                  />
                   {!collapsed && <span>{item.label}</span>}
                 </NavLink>
               );
@@ -204,20 +213,20 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed, onToggleC
 
       {/* Bottom Toggle when collapsed */}
       {collapsed && (
-        <div style={{ padding: '12px 0', display: 'flex', justifyContent: 'center', borderTop: '1px solid #334155' }}>
+        <div style={{ padding: '14px 0', display: 'flex', justifyContent: 'center', borderTop: '1px solid var(--border-color)' }}>
           <button
             onClick={onToggleCollapse}
             style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#94a3b8',
+              background: 'var(--surface-container, #F1EBFF)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-secondary)',
               cursor: 'pointer',
               padding: 8,
-              borderRadius: 6,
+              borderRadius: 'var(--radius-full)',
             }}
             title="Mở rộng menu"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={16} />
           </button>
         </div>
       )}

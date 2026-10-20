@@ -124,16 +124,16 @@ export const ManagerCategoriesPage: React.FC = () => {
 
   return (
     <div style={{ padding: 24, maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h2 style={{ color: '#fff', margin: 0, fontWeight: 800 }}>Quản lý Danh mục Sản phẩm</h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <h2 style={{ color: 'var(--text-primary, #28243D)', margin: 0, fontWeight: 800, fontFamily: 'var(--font-family, "Plus Jakarta Sans")' }}>Quản lý Danh mục Sản phẩm</h2>
+          <div style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.85rem' }}>
             Phân loại kỷ vật 3D, sắp xếp thứ tự hiển thị ngoài trang chủ và storefront.
           </div>
         </div>
 
-        <Space>
-          <Button icon={<ReloadOutlined spin={isFetching} />} onClick={() => refetch()}>
+        <Space wrap>
+          <Button icon={<ReloadOutlined spin={isFetching} />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} onClick={() => refetch()}>
             Làm mới
           </Button>
           <Button
@@ -141,9 +141,11 @@ export const ManagerCategoriesPage: React.FC = () => {
             icon={<PlusOutlined />}
             onClick={handleOpenCreate}
             style={{
-              background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-              borderColor: 'transparent',
-              fontWeight: 700,
+              background: 'var(--primary, #7C5CFC)',
+              borderRadius: 'var(--radius-pill, 9999px)',
+              fontWeight: 600,
+              boxShadow: 'var(--shadow-primary-sm)',
+              border: 'none',
             }}
           >
             Thêm danh mục
@@ -151,7 +153,7 @@ export const ManagerCategoriesPage: React.FC = () => {
         </Space>
       </div>
 
-      <Card style={{ background: 'var(--card-bg, #0f172a)', borderColor: 'var(--border-color)' }} bodyStyle={{ padding: 0 }}>
+      <Card style={{ background: '#fff', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <Table
           dataSource={categories}
           rowKey="id"
@@ -174,16 +176,16 @@ export const ManagerCategoriesPage: React.FC = () => {
                     <img
                       src={c.imageUrl}
                       alt=""
-                      style={{ width: 40, height: 40, borderRadius: 6, objectFit: 'cover' }}
+                      style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', objectFit: 'cover' }}
                     />
                   ) : (
-                    <div style={{ width: 40, height: 40, borderRadius: 6, background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', background: 'var(--surface-container, #F1EBFF)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       📁
                     </div>
                   )}
                   <div>
-                    <div style={{ fontWeight: 700, color: '#f8fafc' }}>{c.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>slug: {c.slug}</div>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary, #28243D)' }}>{c.name}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #6A6282)' }}>slug: {c.slug}</div>
                   </div>
                 </div>
               ),
@@ -193,7 +195,7 @@ export const ManagerCategoriesPage: React.FC = () => {
               dataIndex: 'description',
               key: 'description',
               render: (desc) => (
-                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{desc || '-'}</span>
+                <span style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.85rem' }}>{desc || '-'}</span>
               ),
             },
             {
@@ -214,7 +216,7 @@ export const ManagerCategoriesPage: React.FC = () => {
               align: 'right',
               render: (_, c: ProductCategory) => (
                 <Space>
-                  <Button size="small" icon={<EditOutlined />} onClick={() => handleOpenEdit(c)}>
+                  <Button size="small" icon={<EditOutlined />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} onClick={() => handleOpenEdit(c)}>
                     Sửa
                   </Button>
                   <Popconfirm
@@ -224,7 +226,7 @@ export const ManagerCategoriesPage: React.FC = () => {
                     okText="Xóa"
                     cancelText="Hủy"
                   >
-                    <Button size="small" danger icon={<DeleteOutlined />} />
+                    <Button size="small" danger icon={<DeleteOutlined />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} />
                   </Popconfirm>
                 </Space>
               ),
@@ -243,23 +245,23 @@ export const ManagerCategoriesPage: React.FC = () => {
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item name="name" label="Tên danh mục" rules={[{ required: true, message: 'Vui lòng nhập tên danh mục' }]}>
-            <Input placeholder="Mini Keepsake, Figurines, Figurine..." />
+            <Input placeholder="Mini Keepsake, Figurines, Figurine..." style={{ borderRadius: 'var(--radius-input, 20px)' }} />
           </Form.Item>
 
           <Form.Item name="slug" label="Slug URL (tùy chọn)">
-            <Input placeholder="mini-keepsake..." />
+            <Input placeholder="mini-keepsake..." style={{ borderRadius: 'var(--radius-input, 20px)' }} />
           </Form.Item>
 
           <Form.Item name="imageUrl" label="URL hình ảnh đại diện">
-            <Input placeholder="https://..." />
+            <Input placeholder="https://..." style={{ borderRadius: 'var(--radius-input, 20px)' }} />
           </Form.Item>
 
           <Form.Item name="displayOrder" label="Thứ tự hiển thị">
-            <InputNumber min={0} style={{ width: '100%' }} />
+            <InputNumber min={0} style={{ width: '100%', borderRadius: 'var(--radius-input, 20px)' }} />
           </Form.Item>
 
           <Form.Item name="description" label="Mô tả danh mục">
-            <TextArea rows={3} placeholder="Mô tả nhóm sản phẩm kỷ vật..." />
+            <TextArea rows={3} placeholder="Mô tả nhóm sản phẩm kỷ vật..." style={{ borderRadius: 'var(--radius-default, 16px)' }} />
           </Form.Item>
 
           {editingCategory && (

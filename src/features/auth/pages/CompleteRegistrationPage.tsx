@@ -57,7 +57,7 @@ export const CompleteRegistrationPage: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'radial-gradient(ellipse at 50% 20%, #0f172a 0%, #020617 100%)',
+        background: 'radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 191, 174, 0.12) 0%, transparent 40%), var(--bg-app, #F8F5FF)',
         padding: '24px 16px',
         position: 'relative',
         overflow: 'hidden',
@@ -66,13 +66,12 @@ export const CompleteRegistrationPage: React.FC = () => {
       <div style={{ width: '100%', maxWidth: '520px', zIndex: 1 }}>
         <Card
           style={{
-            background: 'rgba(15, 23, 42, 0.85)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '16px',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            background: 'var(--surface-card, #FFFFFF)',
+            border: '1px solid var(--border-default, #E2D9F7)',
+            borderRadius: 'var(--radius-card-feature, 28px)',
+            boxShadow: 'var(--shadow-floating)',
           }}
-          bodyStyle={{ padding: '36px 30px' }}
+          styles={{ body: { padding: '36px 30px' } }}
         >
           {/* User Google Identity Badge */}
           <div style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -81,9 +80,9 @@ export const CompleteRegistrationPage: React.FC = () => {
                 size={64}
                 src={user.avatarUrl}
                 style={{
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+                  boxShadow: '0 4px 16px rgba(124, 92, 252, 0.2)',
                   marginBottom: 12,
-                  border: '2px solid #0284c7',
+                  border: '2px solid var(--primary, #7C5CFC)',
                 }}
               />
             ) : (
@@ -95,7 +94,7 @@ export const CompleteRegistrationPage: React.FC = () => {
                   width: '56px',
                   height: '56px',
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.08)',
+                  background: 'var(--surface-container, #F1EBFF)',
                   marginBottom: 12,
                 }}
               >
@@ -103,12 +102,12 @@ export const CompleteRegistrationPage: React.FC = () => {
               </div>
             )}
 
-            <Title level={3} style={{ color: '#ffffff', margin: 0, fontWeight: 700 }}>
+            <Title level={3} style={{ color: 'var(--text-primary, #28243D)', margin: 0, fontWeight: 700 }}>
               Chào mừng đến với Memento3D
             </Title>
 
-            <Paragraph style={{ color: '#94a3b8', fontSize: '0.875rem', marginTop: 6, marginBottom: 0 }}>
-              Xin chào, <strong style={{ color: '#e2e8f0' }}>{user?.fullName || 'Khách hàng'}</strong> ({user?.email})
+            <Paragraph style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.875rem', marginTop: 6, marginBottom: 0 }}>
+              Xin chào, <strong style={{ color: 'var(--text-primary, #28243D)' }}>{user?.fullName || 'Khách hàng'}</strong> ({user?.email})
             </Paragraph>
           </div>
 
@@ -119,9 +118,10 @@ export const CompleteRegistrationPage: React.FC = () => {
             description="Tài khoản Google của bạn đã được xác minh danh tính. Để tuân thủ quy định pháp luật và bảo vệ quyền lợi của bạn, vui lòng đọc và xác nhận đồng ý với Điều khoản sử dụng của Memento3D."
             style={{
               marginBottom: 20,
-              background: 'rgba(2, 132, 199, 0.1)',
-              borderColor: 'rgba(2, 132, 199, 0.25)',
-              color: '#cbd5e1',
+              background: 'var(--surface-container, #F1EBFF)',
+              borderColor: 'var(--border-default, #E2D9F7)',
+              borderRadius: 'var(--radius-default, 16px)',
+              color: 'var(--text-secondary, #6A6282)',
             }}
           />
 
@@ -130,7 +130,7 @@ export const CompleteRegistrationPage: React.FC = () => {
               type="error"
               showIcon
               message={errorMessage}
-              style={{ marginBottom: 20 }}
+              style={{ marginBottom: 20, borderRadius: 'var(--radius-default, 16px)' }}
               closable
               onClose={() => setErrorMessage(null)}
             />
@@ -159,12 +159,12 @@ export const CompleteRegistrationPage: React.FC = () => {
             onClick={handleSubmit}
             style={{
               height: '46px',
-              borderRadius: '8px',
+              borderRadius: 'var(--radius-full, 9999px)',
               fontWeight: 700,
               marginTop: 16,
-              background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+              background: 'var(--primary, #7C5CFC)',
               border: 'none',
-              boxShadow: '0 4px 14px rgba(2, 132, 199, 0.4)',
+              boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.3)',
             }}
           >
             Đồng ý & Bắt đầu trải nghiệm

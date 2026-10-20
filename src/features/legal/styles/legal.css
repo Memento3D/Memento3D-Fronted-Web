@@ -1,0 +1,258 @@
+/* ==========================================================================
+   ATELIER FORGE — LEGAL PAGES (TERMS & PRIVACY)
+   High Contrast & Adaptive Design System Architecture
+   ========================================================================== */
+
+.legal-page-wrapper {
+  min-height: 100vh;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  padding: 32px 16px 80px;
+  transition: background-color var(--transition-normal, 0.25s), color var(--transition-normal, 0.25s);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ambient glow accents */
+.legal-page-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  width: 500px;
+  height: 350px;
+  background: radial-gradient(circle, var(--primary-subtle, rgba(124, 92, 252, 0.12)) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(80px);
+  z-index: 0;
+}
+
+.legal-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Top Action Bar */
+.legal-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legal-btn-ghost {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  border-radius: 10px !important;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.legal-btn-ghost:hover {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.legal-btn-primary {
+  background: var(--primary) !important;
+  border: none !important;
+  color: var(--text-on-primary, #ffffff) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px var(--primary-glow, rgba(124, 92, 252, 0.25));
+  transition: all 0.2s ease;
+}
+
+.legal-btn-primary:hover {
+  background: var(--primary-hover, #6945ED) !important;
+  transform: translateY(-1px);
+}
+
+.legal-link-switch {
+  color: var(--primary) !important;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.legal-link-switch:hover {
+  background: var(--primary-subtle, rgba(124, 92, 252, 0.08));
+}
+
+/* Hero Banner */
+.legal-hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 32px 30px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.legal-hero-card.terms {
+  background: linear-gradient(135deg, var(--primary-subtle, rgba(124, 92, 252, 0.08)) 0%, var(--bg-card) 100%);
+  border-color: var(--border-color);
+}
+
+.legal-hero-card.privacy {
+  background: linear-gradient(135deg, var(--mint-subtle, rgba(70, 98, 83, 0.08)) 0%, var(--bg-card) 100%);
+  border-color: var(--border-color);
+}
+
+.legal-hero-title {
+  color: var(--text-primary) !important;
+  margin: 12px 0 8px 0 !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+}
+
+.legal-hero-desc {
+  color: var(--text-secondary) !important;
+  margin: 0 !important;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Section Cards */
+.legal-section-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.legal-section-card:hover {
+  border-color: var(--border-strong, var(--border-color));
+  box-shadow: var(--shadow-md);
+}
+
+.legal-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px !important;
+  font-weight: 700 !important;
+  font-size: 1.125rem !important;
+}
+
+.legal-section-title.terms-accent {
+  color: var(--primary) !important;
+}
+
+.legal-section-title.privacy-accent {
+  color: var(--tertiary, #466253) !important;
+}
+
+[data-theme='dark'] .legal-section-title.privacy-accent {
+  color: #8EC3A3 !important;
+}
+
+/* High Contrast Content Styling */
+.legal-content-body {
+  line-height: 1.75;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.legal-content-body p,
+.legal-content-body .ant-typography {
+  color: var(--text-secondary) !important;
+  line-height: 1.75 !important;
+  font-size: 0.95rem !important;
+  margin-bottom: 12px !important;
+}
+
+.legal-content-body strong {
+  color: var(--text-primary) !important;
+  font-weight: 700;
+}
+
+.legal-content-body ul,
+.legal-content-body ol {
+  color: var(--text-secondary) !important;
+  line-height: 1.75;
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.legal-content-body li {
+  margin-bottom: 8px;
+}
+
+.legal-content-body a {
+  color: var(--primary) !important;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Sticky Table of Contents Card */
+.legal-toc-card {
+  position: sticky;
+  top: 24px;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  padding: 20px !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.legal-toc-title {
+  color: var(--text-primary) !important;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.legal-toc-card .ant-divider {
+  margin: 10px 0 14px 0 !important;
+  border-color: var(--border-color) !important;
+}
+
+.legal-toc-card .ant-anchor-wrapper {
+  background: transparent !important;
+  padding-left: 4px !important;
+}
+
+.legal-toc-card .ant-anchor-link-title {
+  color: var(--text-secondary) !important;
+  font-size: 0.85rem !important;
+  line-height: 1.5 !important;
+  transition: all 0.2s ease !important;
+  padding: 4px 0 !important;
+  white-space: normal !important;
+}
+
+.legal-toc-card .ant-anchor-link-title:hover {
+  color: var(--primary) !important;
+}
+
+.legal-toc-card .ant-anchor-link-title-active {
+  color: var(--primary) !important;
+  font-weight: 700 !important;
+}
+
+.legal-toc-card .ant-anchor-ink-ball {
+  border-color: var(--primary) !important;
+  background-color: var(--primary) !important;
+}
+
+/* CTA Bottom Card */
+.legal-cta-card {
+  background: linear-gradient(135deg, var(--primary-subtle, rgba(124, 92, 252, 0.1)) 0%, var(--bg-card) 100%) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  text-align: center;
+  margin-top: 16px;
+  box-shadow: var(--shadow-sm);
+}

@@ -98,7 +98,7 @@ export const RegisterForm: React.FC = () => {
       >
         {/* Full Name */}
         <Form.Item
-          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Họ và tên</span>}
+          label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Họ và tên</span>}
           name="fullName"
           rules={[
             { required: true, message: 'Vui lòng nhập họ và tên của bạn' },
@@ -108,16 +108,16 @@ export const RegisterForm: React.FC = () => {
         >
           <Input
             id="register-fullname"
-            prefix={<UserOutlined style={{ color: '#64748b' }} />}
+            prefix={<UserOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
             placeholder="Ví dụ: Nguyễn Văn A"
             size="large"
-            style={{ borderRadius: '8px' }}
+            style={{ borderRadius: 'var(--radius-input, 12px)' }}
           />
         </Form.Item>
 
         {/* Email */}
         <Form.Item
-          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Địa chỉ Email</span>}
+          label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Địa chỉ Email</span>}
           name="email"
           rules={[
             { required: true, message: 'Vui lòng nhập email' },
@@ -126,17 +126,17 @@ export const RegisterForm: React.FC = () => {
         >
           <Input
             id="register-email"
-            prefix={<MailOutlined style={{ color: '#64748b' }} />}
+            prefix={<MailOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
             placeholder="name@example.com"
             size="large"
             autoComplete="email"
-            style={{ borderRadius: '8px' }}
+            style={{ borderRadius: 'var(--radius-input, 12px)' }}
           />
         </Form.Item>
 
         {/* Password */}
         <Form.Item
-          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu</span>}
+          label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Mật khẩu</span>}
           name="password"
           rules={[
             { required: true, message: 'Vui lòng nhập mật khẩu' },
@@ -156,7 +156,7 @@ export const RegisterForm: React.FC = () => {
 
         {/* Confirm Password */}
         <Form.Item
-          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Xác nhận mật khẩu</span>}
+          label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Xác nhận mật khẩu</span>}
           name="confirmPassword"
           dependencies={['password']}
           rules={[
@@ -173,10 +173,10 @@ export const RegisterForm: React.FC = () => {
         >
           <Input.Password
             id="register-confirm-password"
-            prefix={<LockOutlined style={{ color: '#64748b' }} />}
+            prefix={<LockOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
             placeholder="Nhập lại mật khẩu vừa đặt"
             size="large"
-            style={{ borderRadius: '8px' }}
+            style={{ borderRadius: 'var(--radius-input, 12px)' }}
             autoComplete="new-password"
           />
         </Form.Item>

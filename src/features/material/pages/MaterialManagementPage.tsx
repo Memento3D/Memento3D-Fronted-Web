@@ -107,12 +107,12 @@ export const MaterialManagementPage: React.FC = () => {
           <Text
             strong
             copyable
-            style={{ cursor: 'pointer', color: '#38bdf8' }}
+            style={{ cursor: 'pointer', color: 'var(--primary, #7C5CFC)' }}
             onClick={() => handleOpenDetail(record)}
           >
             {sku}
           </Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>
+          <Text type="secondary" style={{ fontSize: 12, color: 'var(--text-secondary, #6A6282)' }}>
             {record.name}
           </Text>
         </Space>
@@ -132,12 +132,20 @@ export const MaterialManagementPage: React.FC = () => {
       ],
       onFilter: (value, record) => record.materialType === value,
       render: (type: MaterialType) => {
-        let color = 'cyan';
-        if (type === 'PETG') color = 'blue';
-        if (type === 'ABS') color = 'volcano';
-        if (type === 'RESIN') color = 'purple';
-        if (type === 'TPU') color = 'green';
-        return <Tag color={color}>{type}</Tag>;
+        return (
+          <Tag
+            style={{
+              borderRadius: 'var(--radius-full, 9999px)',
+              background: 'var(--surface-container, #F1EBFF)',
+              color: 'var(--primary, #7C5CFC)',
+              border: '1px solid var(--border-default, #E2D9F7)',
+              fontWeight: 600,
+              padding: '2px 10px',
+            }}
+          >
+            {type}
+          </Tag>
+        );
       },
     },
     {
@@ -180,7 +188,7 @@ export const MaterialManagementPage: React.FC = () => {
       key: 'unitCost',
       sorter: (a, b) => a.unitCost - b.unitCost,
       render: (cost: number) => (
-        <Text strong style={{ color: '#34d399' }}>
+        <Text strong style={{ color: 'var(--tertiary, #466253)' }}>
           {Number(cost).toLocaleString()} đ/g
         </Text>
       ),
@@ -190,7 +198,7 @@ export const MaterialManagementPage: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
-        <Tag color={status === 'ACTIVE' ? 'success' : 'default'}>
+        <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: status === 'ACTIVE' ? 'var(--mint-accent, #C9E8D5)' : 'var(--surface-container, #F1EBFF)', color: status === 'ACTIVE' ? 'var(--tertiary, #466253)' : 'var(--text-secondary, #6A6282)', border: 'none', fontWeight: 600 }}>
           {getStatusLabel(status)}
         </Tag>
       ),
@@ -222,7 +230,7 @@ export const MaterialManagementPage: React.FC = () => {
               onConfirm={() => handleDeactivate(record.id, record.sku)}
               okText="Ngừng kích hoạt"
               cancelText="Hủy"
-              okButtonProps={{ danger: true }}
+              okButtonProps={{ danger: true, style: { borderRadius: 'var(--radius-full, 9999px)' } }}
             >
               <Tooltip title="Ngừng kích hoạt">
                 <Button type="text" danger icon={<StopOutlined />} />
@@ -239,10 +247,10 @@ export const MaterialManagementPage: React.FC = () => {
       {/* Page Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary, #28243D)' }}>
             Danh mục Vật liệu In 3D
           </Title>
-          <Text type="secondary">
+          <Text type="secondary" style={{ color: 'var(--text-secondary, #6A6282)' }}>
             Cơ sở dữ liệu vật liệu in, thông số nhiệt độ đùn và biểu phí đơn giá.
           </Text>
         </div>
@@ -251,6 +259,7 @@ export const MaterialManagementPage: React.FC = () => {
           icon={<PlusOutlined />}
           size="large"
           onClick={handleOpenCreate}
+          style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}
         >
           Thêm vật liệu mới
         </Button>
@@ -259,56 +268,57 @@ export const MaterialManagementPage: React.FC = () => {
       {/* KPI Statistic Cards */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Tổng số mã vật liệu"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Tổng số mã vật liệu</span>}
               value={materials.length}
-              prefix={<ExperimentOutlined style={{ color: '#0ea5e9' }} />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Loại</Text>}
+              valueStyle={{ color: 'var(--text-primary, #28243D)', fontWeight: 800 }}
+              prefix={<ExperimentOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Loại</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Vật liệu đang kích hoạt"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Vật liệu đang kích hoạt</span>}
               value={activeCount}
-              valueStyle={{ color: '#10b981' }}
-              prefix={<CheckCircleOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Sản xuất</Text>}
+              valueStyle={{ color: 'var(--tertiary, #466253)', fontWeight: 800 }}
+              prefix={<CheckCircleOutlined style={{ color: 'var(--mint-accent, #C9E8D5)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Sản xuất</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Đơn giá trung bình"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Đơn giá trung bình</span>}
               value={avgCost}
-              valueStyle={{ color: '#38bdf8' }}
-              prefix={<DollarCircleOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>VND / g</Text>}
+              valueStyle={{ color: 'var(--primary, #7C5CFC)', fontWeight: 800 }}
+              prefix={<DollarCircleOutlined style={{ color: 'var(--peach-accent, #FFBFAE)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>VND / g</Text>}
             />
           </Card>
         </Col>
       </Row>
 
       {/* Filter Bar & Data Table */}
-      <Card>
+      <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <Space wrap>
             <Input
               placeholder="Tìm kiếm theo mã SKU, tên, màu sắc..."
-              prefix={<SearchOutlined />}
+              prefix={<SearchOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{ width: 260 }}
+              style={{ width: 280, borderRadius: 'var(--radius-input, 20px)' }}
               allowClear
             />
             <Select
               placeholder="Lọc loại nhựa"
               value={typeFilter}
               onChange={(val) => setTypeFilter(val)}
-              style={{ width: 150 }}
+              style={{ width: 160 }}
               allowClear
             >
               <Select.Option value="PLA">PLA</Select.Option>

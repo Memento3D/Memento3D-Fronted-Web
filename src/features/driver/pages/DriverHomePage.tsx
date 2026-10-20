@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Clock,
   Package,
-  LogOut,
   ArrowRight,
   ShieldCheck,
   Navigation,
@@ -20,78 +19,11 @@ import { QuickActionCard } from '../../../components/home/QuickActionCard';
 import '../../../components/home/actorHome.css';
 
 export const DriverHomePage: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
-
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-app)', display: 'flex', flexDirection: 'column' }}>
-      {/* Driver Top Header */}
-      <header
-        style={{
-          background: 'var(--bg-surface)',
-          borderBottom: '1px solid var(--border-color)',
-          padding: '16px 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div
-            style={{
-              width: 38,
-              height: 38,
-              borderRadius: 8,
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 16px rgba(16, 185, 129, 0.4)',
-            }}
-          >
-            <Truck size={20} color="#fff" />
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: '1rem', color: '#fff' }}>
-              Memento3D &bull; Đội ngũ Vận chuyển & Giao vận
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Tuyến giao hàng hỏa tốc và bảo quản kỷ vật an toàn
-            </div>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Button
-            type="primary"
-            onClick={() => navigate('/driver/deliveries')}
-            style={{
-              borderRadius: 8,
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              borderColor: 'transparent',
-              fontWeight: 600,
-            }}
-          >
-            Xem tuyến giao vận &rarr;
-          </Button>
-          <Button
-            danger
-            icon={<LogOut size={16} />}
-            onClick={handleLogout}
-            style={{ borderRadius: 8, display: 'flex', alignItems: 'center', gap: 4 }}
-          >
-            Đăng xuất
-          </Button>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="actor-home-container" id="driver-home-page" style={{ flex: 1, padding: 24 }}>
+    <div className="actor-home-container" id="driver-home-page">
         {/* 1. Hero Greeting */}
         <HomeGreeting
           user={user}
@@ -236,7 +168,6 @@ export const DriverHomePage: React.FC = () => {
             />
           </div>
         </div>
-      </main>
     </div>
   );
 };

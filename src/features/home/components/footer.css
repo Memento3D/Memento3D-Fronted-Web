@@ -1,19 +1,19 @@
 /* ==========================================================================
-   Footer CSS
+   Memento3D Footer Styles (Atelier Forge)
    ========================================================================== */
 
 .memento-footer {
-  background: var(--bg-card);
-  border-top: 1px solid var(--border-color);
+  background: var(--surface-low, #F7F1FF);
+  border-top: 1px solid var(--border-color, #E2D9F7);
   padding: 80px 0 40px;
   position: relative;
   z-index: 1;
 }
 
-body.light-theme .memento-footer,
-[data-theme='light'] .memento-footer {
-  background: #f1f5f9;
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
+[data-theme='dark'] .memento-footer,
+body.dark-theme .memento-footer {
+  background: var(--surface-dim, #151221);
+  border-top: 1px solid var(--border-color, #45405A);
 }
 
 .footer-brand {
@@ -25,20 +25,22 @@ body.light-theme .memento-footer,
 }
 
 .footer-logo-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary, #7C5CFC) 0%, var(--primary-system, #5F3ADD) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  font-size: 18px;
+  font-size: 20px;
+  box-shadow: 0 4px 14px var(--primary-glow);
 }
 
 .footer-brand-name {
   font-size: 1.35rem;
   font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 
@@ -55,7 +57,7 @@ body.light-theme .memento-footer,
   flex-direction: column;
   gap: 10px;
   font-size: 0.825rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .contact-item {
@@ -86,13 +88,13 @@ body.light-theme .memento-footer,
   font-size: 0.875rem;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: color 0.15s ease, transform 0.15s ease;
+  transition: color var(--transition-fast), transform var(--transition-fast);
   display: inline-block;
 }
 
 .footer-links-list li span:hover {
   color: var(--primary);
-  transform: translateX(3px);
+  transform: translateX(4px);
 }
 
 .footer-bottom-bar {
@@ -120,9 +122,9 @@ body.light-theme .memento-footer,
 .footer-badge-item {
   font-size: 0.725rem;
   font-weight: 700;
-  padding: 4px 10px;
+  padding: 6px 14px;
   border-radius: var(--radius-full);
-  background: rgba(14, 165, 233, 0.08);
-  border: 1px solid var(--border-color);
+  background: var(--surface-container, #F1EBFF);
+  border: 1px solid var(--border-color, #E2D9F7);
   color: var(--text-secondary);
 }

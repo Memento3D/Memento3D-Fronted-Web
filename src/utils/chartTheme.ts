@@ -2,52 +2,65 @@ import * as am5 from '@amcharts/amcharts5';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5themes_Dark from '@amcharts/amcharts5/themes/Dark';
 
+/**
+ * Atelier Forge Chart Palette
+ * Violet #7C5CFC, Peach #FFBFAE, Mint #C9E8D5, Lavender #ECE3FF, Deep Ink #28243D
+ */
 export const CHART_COLORS = {
-  primary: am5.color(0x0ea5e9),       // Cyan Neon #0ea5e9
-  primaryLight: am5.color(0x38bdf8),  // Light Cyan #38bdf8
-  accent: am5.color(0x8b5cf6),        // Violet Purple #8b5cf6
-  accentLight: am5.color(0xa855f7),   // Light Purple #a855f7
-  teal: am5.color(0x10b981),          // Emerald Teal #10b981
-  amber: am5.color(0xf59e0b),         // Warning Amber #f59e0b
-  rose: am5.color(0xf43f5e),          // Danger Rose #f43f5e
-  indigo: am5.color(0x6366f1),        // Indigo #6366f1
-  slate: am5.color(0x64748b),         // Slate Muted #64748b
-  darkSurface: am5.color(0x0f172a),   // Deep Slate Surface
-  border: am5.color(0x1e293b),        // Border Color
-  gridLine: am5.color(0x334155),      // Grid line
-  textMuted: am5.color(0x94a3b8),     // Text Muted
-  textLight: am5.color(0xf8fafc),     // Text White
+  primary: am5.color(0x7C5CFC),       // Violet #7C5CFC
+  primaryLight: am5.color(0x9B82FF),  // Soft Violet #9B82FF
+  peach: am5.color(0xFFBFAE),         // Peach Accent #FFBFAE
+  peachLight: am5.color(0xFFD3C7),    // Light Peach #FFD3C7
+  mint: am5.color(0xC9E8D5),          // Mint Success #C9E8D5
+  mintDark: am5.color(0x466253),      // Dark Mint #466253
+  lavender: am5.color(0xECE3FF),      // Lavender #ECE3FF
+  lavenderLight: am5.color(0xF3EEFF),  // Light Lavender #F3EEFF
+  deepInk: am5.color(0x28243D),       // Deep Ink #28243D
+  error: am5.color(0xBA1A1A),         // Semantic Error #BA1A1A
+  errorContainer: am5.color(0xFFDAD6),// Error Container #FFDAD6
+
+  // Canvas elements
+  darkSurface: am5.color(0x1D192B),   // Dark Surface
+  border: am5.color(0xE2D9F7),        // Border Color
+  gridLine: am5.color(0xF1EBFF),      // Light Grid Line
+  textMuted: am5.color(0x6A6282),     // Secondary Text
+  textDark: am5.color(0x28243D),      // Deep Ink Text
+  textLight: am5.color(0xF8F4FF),     // Light Text
 };
 
 export const COLOR_PALETTE_HEX = [
-  '#0ea5e9', // Primary Cyan
-  '#8b5cf6', // Accent Purple
-  '#10b981', // Emerald Teal
-  '#f59e0b', // Amber
-  '#ec4899', // Pink
-  '#6366f1', // Indigo
-  '#14b8a6', // Teal
-  '#f97316', // Orange
+  '#7C5CFC', // Violet
+  '#FFBFAE', // Peach
+  '#C9E8D5', // Mint
+  '#ECE3FF', // Lavender
+  '#28243D', // Deep Ink
+  '#5F3ADD', // Deep Violet
+  '#5F7B6B', // Forest Mint
+  '#FFA994', // Vivid Peach
 ];
 
 /**
- * Creates custom Memento3D high-tech Dark Theme rules for amCharts root
+ * Creates custom Memento3D Atelier Forge Theme rules for amCharts root
  */
-export const applyMementoChartTheme = (root: am5.Root) => {
-  root.setThemes([
-    am5themes_Animated.new(root),
-    am5themes_Dark.new(root),
-  ]);
+export const applyMementoChartTheme = (root: am5.Root, isDark = false) => {
+  const themes: am5.Theme[] = [am5themes_Animated.new(root)];
 
-  // Set default color set to Memento3D palette
+  if (isDark) {
+    themes.push(am5themes_Dark.new(root));
+  }
+
+  root.setThemes(themes);
+
+  // Set default color set to Atelier Forge palette
   const customColorSet = am5.ColorSet.new(root, {
     colors: [
       CHART_COLORS.primary,
-      CHART_COLORS.accent,
-      CHART_COLORS.teal,
-      CHART_COLORS.amber,
-      CHART_COLORS.rose,
-      CHART_COLORS.indigo,
+      CHART_COLORS.peach,
+      CHART_COLORS.mint,
+      CHART_COLORS.lavender,
+      CHART_COLORS.deepInk,
+      CHART_COLORS.primaryLight,
+      CHART_COLORS.peachLight,
     ],
   });
 

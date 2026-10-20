@@ -56,18 +56,18 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({ user, onUserUp
   return (
     <Card
       style={{
-        background: 'rgba(15, 23, 42, 0.7)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        borderRadius: '16px',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 'var(--radius-card)',
+        boxShadow: 'var(--shadow-card)',
       }}
       styles={{ body: { padding: '32px' } }}
     >
       <div style={{ marginBottom: '24px' }}>
-        <Title level={4} style={{ color: '#fff', margin: 0, fontWeight: 700 }}>
+        <Title level={4} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
           Thông tin cơ bản
         </Title>
-        <Text style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+        <Text style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           Quản lý thông tin định danh và liên hệ chính của bạn trên Memento3D.
         </Text>
       </div>
@@ -82,7 +82,7 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({ user, onUserUp
         <Row gutter={24}>
           <Col xs={24} md={12}>
             <Form.Item
-              label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Họ và tên</span>}
+              label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Họ và tên</span>}
               name="fullName"
               rules={[
                 { required: true, message: 'Vui lòng nhập họ và tên của bạn' },
@@ -91,17 +91,17 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({ user, onUserUp
               ]}
             >
               <Input
-                prefix={<UserOutlined style={{ color: '#64748b' }} />}
+                prefix={<UserOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
                 placeholder="Nguyễn Văn A"
                 size="large"
-                style={{ borderRadius: '8px' }}
+                style={{ borderRadius: 'var(--radius-input, 12px)' }}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
             <Form.Item
-              label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Số điện thoại (Việt Nam)</span>}
+              label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Số điện thoại (Việt Nam)</span>}
               name="phone"
               rules={[
                 {
@@ -111,37 +111,37 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({ user, onUserUp
               ]}
             >
               <Input
-                prefix={<PhoneOutlined style={{ color: '#64748b' }} />}
+                prefix={<PhoneOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
                 placeholder="0912 345 678"
                 size="large"
-                style={{ borderRadius: '8px' }}
+                style={{ borderRadius: 'var(--radius-input, 12px)' }}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
             <Form.Item
-              label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Ngày sinh</span>}
+              label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Ngày sinh</span>}
               name="dateOfBirth"
             >
               <DatePicker
                 format="DD/MM/YYYY"
                 placeholder="Chọn ngày sinh"
                 size="large"
-                style={{ width: '100%', borderRadius: '8px' }}
+                style={{ width: '100%', borderRadius: 'var(--radius-input, 12px)' }}
                 disabledDate={(current) => current && current > dayjs().endOf('day')}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Địa chỉ Email</span>}>
+            <Form.Item label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Địa chỉ Email</span>}>
               <Input
-                prefix={<MailOutlined style={{ color: '#64748b' }} />}
+                prefix={<MailOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
                 value={user.email}
                 disabled
                 size="large"
-                style={{ borderRadius: '8px', background: 'rgba(255, 255, 255, 0.04)', color: '#94a3b8' }}
+                style={{ borderRadius: 'var(--radius-input, 12px)' }}
                 suffix={
                   user.emailVerified ? (
                     <Tag color="success" icon={<CheckCircleFilled />}>
@@ -159,13 +159,14 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({ user, onUserUp
         <Alert
           type="info"
           showIcon
-          icon={<InfoCircleOutlined style={{ color: '#38bdf8' }} />}
+          icon={<InfoCircleOutlined style={{ color: 'var(--primary)' }} />}
           message="Chính sách bảo vệ danh tính"
           description="Địa chỉ email là định danh chính của bạn trên Memento3D và không thể tự thay đổi qua biểu mẫu này nhằm đảm bảo tính toàn vẹn và an toàn cho các giao dịch đơn hàng và in ấn 3D."
           style={{
             marginBottom: '24px',
-            background: 'rgba(14, 165, 233, 0.06)',
-            border: '1px solid rgba(14, 165, 233, 0.2)',
+            background: 'var(--surface-container)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 'var(--radius-default)',
           }}
         />
 
@@ -177,11 +178,11 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({ user, onUserUp
             loading={loading}
             icon={<SaveOutlined />}
             style={{
-              borderRadius: '8px',
+              borderRadius: 'var(--radius-full)',
               fontWeight: 700,
-              background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-              border: 'none',
-              boxShadow: '0 4px 14px rgba(14, 165, 233, 0.4)',
+              background: 'var(--primary)',
+              borderColor: 'var(--primary)',
+              boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
               minWidth: '140px',
             }}
           >

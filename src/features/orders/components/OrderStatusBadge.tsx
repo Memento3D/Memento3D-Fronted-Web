@@ -18,15 +18,15 @@ export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({ status, styl
   return (
     <Tag
       style={{
-        borderRadius: 6,
-        padding: '3px 10px',
+        borderRadius: 'var(--radius-full)',
+        padding: '4px 12px',
         fontWeight: 600,
         fontSize: '0.75rem',
         textTransform: 'uppercase',
         letterSpacing: '0.04em',
-        background: `${config.color}1a`,
-        color: config.color,
-        border: `1px solid ${config.color}40`,
+        background: `${config.color}15`,
+        color: config.textColor || config.color,
+        border: `1px solid ${config.color}35`,
         margin: 0,
         ...style,
       }}

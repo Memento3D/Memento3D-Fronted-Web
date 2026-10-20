@@ -99,10 +99,10 @@ export const ProfilePage: React.FC = () => {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050811', color: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
       <Navbar />
 
-      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 24px 60px' }}>
+      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '120px 24px 60px' }}>
         {/* Navigation Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <Breadcrumb
@@ -111,14 +111,14 @@ export const ProfilePage: React.FC = () => {
                 title: (
                   <span
                     onClick={() => navigate('/')}
-                    style={{ cursor: 'pointer', color: '#94a3b8', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                    style={{ cursor: 'pointer', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 4 }}
                   >
                     <HomeOutlined /> Trang chủ
                   </span>
                 ),
               },
               {
-                title: <span style={{ color: '#38bdf8', fontWeight: 600 }}>Hồ sơ & Tài khoản</span>,
+                title: <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Hồ sơ & Tài khoản</span>,
               },
             ]}
           />
@@ -127,7 +127,7 @@ export const ProfilePage: React.FC = () => {
             type="text"
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate(-1)}
-            style={{ color: '#94a3b8' }}
+            style={{ color: 'var(--text-secondary)', borderRadius: 'var(--radius-full)' }}
           >
             Quay lại
           </Button>
@@ -156,7 +156,7 @@ export const ProfilePage: React.FC = () => {
             type="error"
             message="Không thể tải thông tin hồ sơ"
             description="Vui lòng thử đăng nhập lại."
-            style={{ marginTop: 24 }}
+            style={{ marginTop: 24, borderRadius: 'var(--radius-default)' }}
           />
         )}
       </main>

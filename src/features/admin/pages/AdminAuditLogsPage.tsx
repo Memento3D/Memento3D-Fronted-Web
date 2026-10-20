@@ -51,11 +51,11 @@ export const AdminAuditLogsPage: React.FC = () => {
       key: 'actor',
       render: (_: any, r: AdminAuditLog) => (
         <div>
-          <span style={{ fontWeight: 600, color: '#38bdf8' }}>
+          <span style={{ fontWeight: 600, color: 'var(--primary, #7C5CFC)' }}>
             {r.actorEmail || 'HỆ THỐNG'}
           </span>
           {r.actorRole && (
-            <Tag color="volcano" style={{ marginLeft: 6, fontSize: '0.65rem' }}>
+            <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary, #7C5CFC)', border: 'none', marginLeft: 6, fontSize: '0.65rem', fontWeight: 600 }}>
               {r.actorRole}
             </Tag>
           )}
@@ -107,19 +107,19 @@ export const AdminAuditLogsPage: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-audit-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary, #28243D)', margin: 0 }}>
             Nhật ký Kiểm toán Hệ thống Bất biến (System Audit Trail)
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <div style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.85rem' }}>
             Lưu vết toàn bộ thao tác bảo mật, phân quyền, cấu hình và biến động dữ liệu quan trọng
           </div>
         </div>
-        <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
+        <Button icon={<RefreshCw size={14} />} onClick={() => refetch()} style={{ borderRadius: 'var(--radius-full, 9999px)' }}>
           Làm mới
         </Button>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card style={{ background: 'var(--surface-card, #FFFFFF)', borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <Select
             placeholder="Lọc theo hành động"
@@ -158,7 +158,7 @@ export const AdminAuditLogsPage: React.FC = () => {
         </div>
       </Card>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card style={{ background: 'var(--surface-card, #FFFFFF)', borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <Table
           columns={columns}
           dataSource={auditPage?.content || []}
@@ -186,7 +186,7 @@ export const AdminAuditLogsPage: React.FC = () => {
       >
         {selectedLog && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <Descriptions bordered column={1} size="small">
+            <Descriptions bordered column={1} size="small" style={{ borderRadius: 'var(--radius-default, 16px)', overflow: 'hidden' }}>
               <Descriptions.Item label="Thời gian">
                 {dayjs(selectedLog.createdAt).format('DD/MM/YYYY HH:mm:ss')}
               </Descriptions.Item>
@@ -194,14 +194,14 @@ export const AdminAuditLogsPage: React.FC = () => {
                 {selectedLog.actorEmail || 'HỆ THỐNG'} ({selectedLog.actorRole || 'SYSTEM'})
               </Descriptions.Item>
               <Descriptions.Item label="Hành động">
-                <Tag color="blue">{selectedLog.action}</Tag>
+                <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary, #7C5CFC)', border: 'none', fontWeight: 600 }}>{selectedLog.action}</Tag>
               </Descriptions.Item>
               <Descriptions.Item label="Đối tượng">
                 {selectedLog.entityType} ({selectedLog.entityId})
               </Descriptions.Item>
               <Descriptions.Item label="Địa chỉ IP">{selectedLog.ipAddress || '127.0.0.1'}</Descriptions.Item>
               <Descriptions.Item label="User Agent">
-                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #6A6282)' }}>
                   {selectedLog.userAgent || 'API Gateway'}
                 </span>
               </Descriptions.Item>
@@ -210,17 +210,17 @@ export const AdminAuditLogsPage: React.FC = () => {
             {/* Before vs After Payload */}
             <div style={{ display: 'flex', gap: 12 }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#f87171', marginBottom: 4 }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--error, #BA1A1A)', marginBottom: 4 }}>
                   Giá trị trước (Old Value):
                 </div>
                 <pre
                   style={{
-                    background: '#0f172a',
+                    background: 'var(--surface-low, #F7F1FF)',
                     padding: 10,
-                    borderRadius: 8,
-                    border: '1px solid #334155',
+                    borderRadius: 'var(--radius-default, 16px)',
+                    border: '1px solid var(--border-default, #E2D9F7)',
                     fontSize: '0.75rem',
-                    color: '#cbd5e1',
+                    color: 'var(--text-primary, #28243D)',
                     maxHeight: 180,
                     overflowY: 'auto',
                   }}
@@ -230,17 +230,17 @@ export const AdminAuditLogsPage: React.FC = () => {
               </div>
 
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#10b981', marginBottom: 4 }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--tertiary, #466253)', marginBottom: 4 }}>
                   Giá trị mới (New Value):
                 </div>
                 <pre
                   style={{
-                    background: '#0f172a',
+                    background: 'var(--surface-low, #F7F1FF)',
                     padding: 10,
-                    borderRadius: 8,
-                    border: '1px solid #334155',
+                    borderRadius: 'var(--radius-default, 16px)',
+                    border: '1px solid var(--border-default, #E2D9F7)',
                     fontSize: '0.75rem',
-                    color: '#cbd5e1',
+                    color: 'var(--text-primary, #28243D)',
                     maxHeight: 180,
                     overflowY: 'auto',
                   }}

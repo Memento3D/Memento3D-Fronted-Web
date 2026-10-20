@@ -1,0 +1,686 @@
+/* ==========================================================================
+   ATELIER FORGE DESIGN SYSTEM — COMPONENT ARCHITECTURE
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. BUTTON SYSTEM
+   -------------------------------------------------------------------------- */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-peach,
+.btn-soft,
+.btn-ghost,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-normal);
+  white-space: nowrap;
+  outline: none;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Primary Button (Brand Violet Pill) */
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  color: #FFFFFF;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-primary:active:not(:disabled) {
+  background: var(--primary-active);
+  transform: translateY(0) scale(1);
+}
+
+/* Secondary Button (Peach Emotion / Keepsake CTA) */
+.btn-secondary,
+.btn-peach {
+  background: var(--secondary);
+  color: var(--text-on-secondary);
+  border-color: transparent;
+}
+
+.btn-secondary:hover:not(:disabled),
+.btn-peach:hover:not(:disabled) {
+  background: var(--secondary-hover);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: var(--shadow-peach);
+}
+
+.btn-secondary:active:not(:disabled),
+.btn-peach:active:not(:disabled) {
+  background: var(--secondary-active);
+  transform: translateY(0) scale(1);
+}
+
+/* Soft / Ghost Button (Lavender Tint) */
+.btn-soft,
+.btn-ghost {
+  background: var(--surface-container);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-soft:hover:not(:disabled),
+.btn-ghost:hover:not(:disabled) {
+  background: var(--surface-high);
+  color: var(--primary-system);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+
+/* Danger Button (Semantic Error) */
+.btn-danger {
+  background: var(--danger-bg);
+  color: var(--text-on-danger);
+  border-color: var(--danger-border);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--error);
+  color: #FFFFFF;
+  border-color: var(--error);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(186, 26, 26, 0.25);
+}
+
+/* Icon Button */
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-lowest);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-icon:hover:not(:disabled) {
+  background: var(--surface-container);
+  color: var(--primary);
+  border-color: var(--border-hover);
+  transform: translateY(-1px) scale(1.04);
+}
+
+/* --------------------------------------------------------------------------
+   2. INPUT & FORM SYSTEM
+   -------------------------------------------------------------------------- */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.form-control,
+input.atelier-input,
+textarea.atelier-input,
+select.atelier-input {
+  width: 100%;
+  padding: 12px 18px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-input);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.925rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+}
+
+.form-control::placeholder,
+input.atelier-input::placeholder,
+textarea.atelier-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.75;
+}
+
+.form-control:focus,
+input.atelier-input:focus,
+textarea.atelier-input:focus,
+select.atelier-input:focus {
+  background: var(--bg-input-focus);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(124, 92, 252, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   3. CARD SYSTEM
+   -------------------------------------------------------------------------- */
+.atelier-card,
+.card-base {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.atelier-card:hover {
+  box-shadow: var(--shadow-floating);
+  border-color: rgba(124, 92, 252, 0.3);
+}
+
+.atelier-card-feature {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-feature);
+  box-shadow: var(--shadow-card);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.atelier-card-feature:hover {
+  box-shadow: var(--shadow-floating);
+  border-color: var(--primary);
+}
+
+/* 3D Viewport Card */
+.viewport-3d,
+.atelier-card-3d {
+  background: var(--bg-viewport-3d);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-feature);
+  overflow: hidden;
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   4. STATUS BADGE & CHIP SYSTEM
+   -------------------------------------------------------------------------- */
+.status-badge,
+.badge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.775rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition: all var(--transition-fast);
+}
+
+/* Status variants */
+.status-success,
+.badge-active,
+.status-active,
+.status-completed,
+.status-ready {
+  background: var(--success-bg);
+  color: var(--text-on-success);
+  border: 1px solid var(--success-border);
+}
+
+.status-pending,
+.badge-info,
+.status-processing,
+.status-progress {
+  background: var(--info-bg);
+  color: var(--info-text);
+  border: 1px solid var(--info-border);
+}
+
+.status-memory,
+.status-creative,
+.badge-warning,
+.status-peach {
+  background: var(--secondary-container);
+  color: #7A3E2D;
+  border: 1px solid var(--secondary);
+}
+
+[data-theme='dark'] .status-memory,
+[data-theme='dark'] .status-creative,
+[data-theme='dark'] .status-peach {
+  background: var(--secondary-container);
+  color: #FFE5DF;
+  border-color: rgba(229, 168, 152, 0.4);
+}
+
+.status-failed,
+.status-danger,
+.badge-inactive,
+.status-rejected,
+.status-error {
+  background: var(--danger-bg);
+  color: var(--text-on-danger);
+  border: 1px solid var(--danger-border);
+}
+
+.status-neutral,
+.status-disabled,
+.status-archived {
+  background: var(--neutral-chip-bg);
+  color: var(--neutral-chip-text);
+  border: 1px solid var(--neutral-chip-border);
+}
+
+/* --------------------------------------------------------------------------
+   5. TABLE SYSTEM
+   -------------------------------------------------------------------------- */
+.data-table-wrapper,
+.atelier-table-wrapper {
+  overflow-x: auto;
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+}
+
+.data-table,
+.atelier-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.data-table th,
+.atelier-table th {
+  background: var(--surface-low);
+  padding: 14px 20px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th:first-child {
+  border-top-left-radius: var(--radius-card);
+}
+
+.data-table th:last-child {
+  border-top-right-radius: var(--radius-card);
+}
+
+.data-table td,
+.atelier-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  transition: background-color var(--transition-fast);
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:hover td,
+.atelier-table tr:hover td {
+  background: var(--surface-lowest);
+  color: var(--primary-system);
+}
+
+/* --------------------------------------------------------------------------
+   6. SIDEBAR & APP SHELL
+   -------------------------------------------------------------------------- */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-app);
+}
+
+.sidebar {
+  width: 268px;
+  background: var(--bg-sidebar);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: all var(--transition-normal);
+  z-index: 30;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+.topbar {
+  height: 68px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  position: sticky;
+  top: 0;
+  z-index: 25;
+}
+
+.content-body {
+  padding: 32px;
+  flex: 1;
+  max-width: 1480px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  margin: 4px 14px;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background: var(--surface-container);
+  transform: translateX(3px);
+}
+
+.nav-link.active {
+  color: var(--primary-system);
+  background: var(--surface-tertiary);
+  font-weight: 600;
+  box-shadow: 0 2px 8px -2px rgba(124, 92, 252, 0.12);
+}
+
+.nav-link.active svg {
+  color: var(--primary) !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. STAT CARD
+   -------------------------------------------------------------------------- */
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all var(--transition-normal);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-floating);
+  border-color: rgba(124, 92, 252, 0.35);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   8. MODAL SYSTEM
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(40, 36, 61, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-modal);
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-floating);
+  animation: modalEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 32px;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. ANTD OVERRIDES & HARMONIZATION
+   -------------------------------------------------------------------------- */
+.ant-btn {
+  border-radius: var(--radius-full) !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+}
+
+.ant-btn-primary {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #FFFFFF !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.ant-btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  box-shadow: var(--shadow-glow) !important;
+  transform: translateY(-1px) scale(1.02);
+}
+
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector {
+  border-radius: var(--radius-input) !important;
+  font-family: var(--font-sans) !important;
+}
+
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(124, 92, 252, 0.15) !important;
+}
+
+.ant-card {
+  border-radius: var(--radius-card) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.ant-card:hover {
+  border-color: rgba(124, 92, 252, 0.3) !important;
+}
+
+.ant-modal-content {
+  border-radius: var(--radius-modal) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-floating) !important;
+}
+
+.ant-table-wrapper .ant-table {
+  border-radius: var(--radius-card) !important;
+}
+
+.ant-tag {
+  border-radius: var(--radius-full) !important;
+  font-weight: 600 !important;
+  padding: 4px 12px !important;
+}
+
+.ant-tabs-ink-bar {
+  background: var(--primary) !important;
+  height: 3px !important;
+  border-radius: var(--radius-full) !important;
+}
+
+.ant-pagination .ant-pagination-item-active {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+}
+
+.ant-pagination .ant-pagination-item-active a {
+  color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. UNIFIED DASHBOARD LAYOUT & RESPONSIVE BEHAVIOR
+   -------------------------------------------------------------------------- */
+.atelier-sidebar {
+  transition: width var(--transition-normal);
+}
+
+.sidebar-nav-item:hover {
+  background: var(--surface-container) !important;
+  color: var(--color-text-primary) !important;
+  transform: translateX(2px);
+}
+
+.sidebar-nav-item.active {
+  background: var(--primary-subtle) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 2px 8px -2px var(--primary-glow);
+}
+
+.hoverable-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-floating);
+  border-color: var(--primary);
+}
+
+/* Mobile & Tablet Breakpoint (1024px and below) */
+@media (max-width: 1024px) {
+  #desktop-sidebar-root {
+    display: none !important;
+  }
+
+  .mobile-hamburger-btn {
+    display: inline-flex !important;
+  }
+
+  .desktop-expand-btn {
+    display: none !important;
+  }
+
+  .desktop-breadcrumb-prefix {
+    display: none !important;
+  }
+
+  .desktop-only-text {
+    display: none !important;
+  }
+
+  .dashboard-main-content {
+    padding: 16px !important;
+  }
+}
+
+/* Tablet & Mobile Breakpoint (768px and below) */
+@media (max-width: 768px) {
+  .atelier-topbar {
+    padding: 0 16px !important;
+    height: 58px !important;
+  }
+
+  .desktop-user-name {
+    display: none !important;
+  }
+
+  .topbar-warehouse-container {
+    max-width: 130px;
+  }
+
+  .filter-bar-container {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .table-responsive-container {
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+  }
+
+  .form-grid-2col,
+  .form-grid-3col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Small Mobile Breakpoint (430px and below) */
+@media (max-width: 430px) {
+  .dashboard-main-content {
+    padding: 12px !important;
+  }
+
+  .topbar-warehouse-container {
+    display: none !important;
+  }
+}
+

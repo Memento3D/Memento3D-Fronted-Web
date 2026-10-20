@@ -223,9 +223,9 @@ export const ProductDetailPage: React.FC = () => {
                   type="primary"
                   onClick={() => navigate('/checkout')}
                   style={{
-                    background: 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)',
-                    borderColor: 'transparent',
-                    borderRadius: 8,
+                    background: 'var(--primary)',
+                    borderColor: 'var(--primary)',
+                    borderRadius: 'var(--radius-full)',
                   }}
                 >
                   Tùy biến với ảnh
@@ -237,33 +237,33 @@ export const ProductDetailPage: React.FC = () => {
           {/* Right Column: Information & Options */}
           <Col xs={24} md={12}>
             {product.category && (
-              <Tag color="cyan" style={{ marginBottom: 12, borderRadius: 6 }}>
+              <Tag color="purple" style={{ marginBottom: 12, borderRadius: 9999 }}>
                 {product.category.name}
               </Tag>
             )}
 
-            <Title level={2} style={{ color: '#ffffff', margin: '0 0 12px', fontWeight: 800 }}>
+            <Title level={2} style={{ color: 'var(--text-primary)', margin: '0 0 12px', fontWeight: 800 }}>
               {product.name}
             </Title>
 
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 20 }}>
-              <span style={{ fontSize: '2rem', fontWeight: 800, color: '#38bdf8' }}>
+              <span style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)' }}>
                 {formatCurrency(product.price, 'VND')}
               </span>
-              <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>Đã bao gồm VAT & phủ UV bảo vệ</span>
+              <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Đã bao gồm VAT & phủ UV bảo vệ</span>
             </div>
 
-            <Paragraph style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: 1.6 }}>
+            <Paragraph style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>
               {product.description || product.shortDescription}
             </Paragraph>
 
-            <Divider style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
+            <Divider style={{ borderColor: 'var(--border-color)' }} />
 
             {/* Customization Options */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               {/* Option: Size */}
               <div>
-                <Text style={{ color: '#e2e8f0', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                <Text style={{ color: 'var(--text-primary)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
                   Kích thước tỷ lệ:
                 </Text>
                 <Radio.Group
@@ -276,10 +276,10 @@ export const ProductDetailPage: React.FC = () => {
                       key={s}
                       value={s}
                       style={{
-                        background: selectedSize === s ? '#0ea5e9' : 'rgba(255,255,255,0.05)',
-                        borderColor: selectedSize === s ? '#0ea5e9' : 'rgba(255,255,255,0.1)',
-                        color: selectedSize === s ? '#fff' : '#cbd5e1',
-                        borderRadius: 8,
+                        background: selectedSize === s ? 'var(--primary)' : 'var(--surface-container)',
+                        borderColor: selectedSize === s ? 'var(--primary)' : 'var(--border-color)',
+                        color: selectedSize === s ? '#FFFFFF' : 'var(--text-primary)',
+                        borderRadius: 9999,
                       }}
                     >
                       {s}
@@ -290,7 +290,7 @@ export const ProductDetailPage: React.FC = () => {
 
               {/* Option: Material */}
               <div>
-                <Text style={{ color: '#e2e8f0', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                <Text style={{ color: 'var(--text-primary)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
                   Chất liệu chế tác:
                 </Text>
                 <Radio.Group
@@ -303,10 +303,10 @@ export const ProductDetailPage: React.FC = () => {
                       key={m}
                       value={m}
                       style={{
-                        background: selectedMaterial === m ? '#0ea5e9' : 'rgba(255,255,255,0.05)',
-                        borderColor: selectedMaterial === m ? '#0ea5e9' : 'rgba(255,255,255,0.1)',
-                        color: selectedMaterial === m ? '#fff' : '#cbd5e1',
-                        borderRadius: 8,
+                        background: selectedMaterial === m ? 'var(--primary)' : 'var(--surface-container)',
+                        borderColor: selectedMaterial === m ? 'var(--primary)' : 'var(--border-color)',
+                        color: selectedMaterial === m ? '#FFFFFF' : 'var(--text-primary)',
+                        borderRadius: 9999,
                       }}
                     >
                       {m}
@@ -317,7 +317,7 @@ export const ProductDetailPage: React.FC = () => {
 
               {/* Option: Base */}
               <div>
-                <Text style={{ color: '#e2e8f0', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                <Text style={{ color: 'var(--text-primary)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
                   Đế trưng bày:
                 </Text>
                 <Radio.Group
@@ -330,10 +330,10 @@ export const ProductDetailPage: React.FC = () => {
                       key={b}
                       value={b}
                       style={{
-                        background: selectedBase === b ? '#0ea5e9' : 'rgba(255,255,255,0.05)',
-                        borderColor: selectedBase === b ? '#0ea5e9' : 'rgba(255,255,255,0.1)',
-                        color: selectedBase === b ? '#fff' : '#cbd5e1',
-                        borderRadius: 8,
+                        background: selectedBase === b ? 'var(--primary)' : 'var(--surface-container)',
+                        borderColor: selectedBase === b ? 'var(--primary)' : 'var(--border-color)',
+                        color: selectedBase === b ? '#FFFFFF' : 'var(--text-primary)',
+                        borderRadius: 9999,
                       }}
                     >
                       {b}
@@ -344,7 +344,7 @@ export const ProductDetailPage: React.FC = () => {
 
               {/* Option: Customer Note */}
               <div>
-                <Text style={{ color: '#e2e8f0', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                <Text style={{ color: 'var(--text-primary)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
                   Ghi chú chế tác / Khắc chữ đế:
                 </Text>
                 <TextArea
@@ -353,29 +353,29 @@ export const ProductDetailPage: React.FC = () => {
                   value={customerNote}
                   onChange={(e) => setCustomerNote(e.target.value)}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    color: '#fff',
-                    borderRadius: 8,
+                    background: 'var(--bg-input)',
+                    borderColor: 'var(--border-color)',
+                    color: 'var(--text-primary)',
+                    borderRadius: 'var(--radius-default)',
                   }}
                 />
               </div>
 
               {/* Quantity */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <Text style={{ color: '#e2e8f0', fontWeight: 600 }}>Số lượng:</Text>
+                <Text style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Số lượng:</Text>
                 <InputNumber
                   min={1}
                   max={99}
                   value={quantity}
                   onChange={(val) => setQuantity(val || 1)}
                   size="large"
-                  style={{ borderRadius: 8, width: 100 }}
+                  style={{ borderRadius: 20, width: 100 }}
                 />
               </div>
             </div>
 
-            <Divider style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
+            <Divider style={{ borderColor: 'var(--border-color)' }} />
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: 16 }}>
@@ -389,10 +389,10 @@ export const ProductDetailPage: React.FC = () => {
                 style={{
                   flex: 1,
                   height: 50,
-                  borderRadius: 10,
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(255, 255, 255, 0.2)',
-                  color: '#fff',
+                  borderRadius: 'var(--radius-full)',
+                  background: 'var(--surface-container)',
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-primary)',
                   fontWeight: 700,
                 }}
               >
@@ -409,10 +409,11 @@ export const ProductDetailPage: React.FC = () => {
                 style={{
                   flex: 1,
                   height: 50,
-                  borderRadius: 10,
-                  background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                  borderColor: 'transparent',
+                  borderRadius: 'var(--radius-full)',
+                  background: 'var(--primary)',
+                  borderColor: 'var(--primary)',
                   fontWeight: 700,
+                  boxShadow: 'var(--shadow-glow)',
                 }}
               >
                 Mua ngay
@@ -426,26 +427,26 @@ export const ProductDetailPage: React.FC = () => {
                 gridTemplateColumns: '1fr 1fr',
                 gap: 12,
                 marginTop: 28,
-                padding: 16,
-                background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 12,
-                border: '1px solid rgba(255, 255, 255, 0.05)',
+                padding: 18,
+                background: 'var(--surface-container, #F1EBFF)',
+                borderRadius: 'var(--radius-default, 16px)',
+                border: '1px solid var(--border-color, #E2D9F7)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: '#94a3b8' }}>
-                <CheckCircleOutlined style={{ color: '#22c55e' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <CheckCircleOutlined style={{ color: 'var(--tertiary)' }} />
                 <span>Độ chính xác 0.08mm vi mô</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: '#94a3b8' }}>
-                <SafetyCertificateOutlined style={{ color: '#0ea5e9' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <SafetyCertificateOutlined style={{ color: 'var(--primary)' }} />
                 <span>Cam kết hoàn tiền nếu gãy vỡ</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: '#94a3b8' }}>
-                <CarOutlined style={{ color: '#f59e0b' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <CarOutlined style={{ color: 'var(--secondary)' }} />
                 <span>Giao hàng hỏa tốc toàn quốc</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: '#94a3b8' }}>
-                <AppstoreOutlined style={{ color: '#a855f7' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <AppstoreOutlined style={{ color: 'var(--primary-system)' }} />
                 <span>Đóng hộp quà cao cấp miễn phí</span>
               </div>
             </div>

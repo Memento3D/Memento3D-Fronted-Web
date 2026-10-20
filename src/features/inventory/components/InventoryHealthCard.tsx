@@ -17,36 +17,40 @@ export const InventoryHealthCard: React.FC<InventoryHealthCardProps> = ({ balanc
   const availablePercentage = totalOnHand > 0 ? Math.round((totalAvailable / totalOnHand) * 100) : 100;
   const reservedPercentage = totalOnHand > 0 ? Math.round((totalReserved / totalOnHand) * 100) : 0;
 
-  let healthStatus: { label: string; color: string; icon: React.ReactNode } = {
+  let healthStatus: { label: string; bg: string; color: string; icon: React.ReactNode } = {
     label: 'Dung lượng tồn kho tối ưu',
-    color: 'success',
+    bg: 'var(--tertiary-mint, #C9E8D5)',
+    color: 'var(--tertiary, #466253)',
     icon: <CheckCircleOutlined />,
   };
 
   if (availablePercentage < 30) {
     healthStatus = {
       label: 'Cảnh báo: Tồn khả dụng ở mức thấp',
-      color: 'error',
+      bg: 'var(--error-container, #FFDAD6)',
+      color: 'var(--on-error-container, #93000A)',
       icon: <AlertOutlined />,
     };
   } else if (availablePercentage < 60) {
     healthStatus = {
       label: 'Tồn kho ổn định: Đang sản xuất',
-      color: 'warning',
+      bg: 'var(--secondary-peach, #FFBFAE)',
+      color: '#7C3F2E',
       icon: <WarningOutlined />,
     };
   }
 
   return (
     <Card
+      style={{ borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}
       title={
         <Space>
-          <DashboardOutlined style={{ color: '#0ea5e9' }} />
-          <span>Độ ổn định & Ma trận Phân bổ Tồn kho</span>
+          <DashboardOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
+          <span style={{ fontWeight: 600, color: 'var(--text-primary, #28243D)' }}>Độ ổn định & Ma trận Phân bổ Tồn kho</span>
         </Space>
       }
       extra={
-        <Tag color={healthStatus.color} icon={healthStatus.icon}>
+        <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: healthStatus.bg, color: healthStatus.color, border: 'none', fontWeight: 600 }} icon={healthStatus.icon}>
           {healthStatus.label}
         </Tag>
       }
@@ -57,13 +61,13 @@ export const InventoryHealthCard: React.FC<InventoryHealthCardProps> = ({ balanc
             type="dashboard"
             percent={availablePercentage}
             strokeColor={{
-              '0%': '#0ea5e9',
-              '100%': '#10b981',
+              '0%': 'var(--primary, #7C5CFC)',
+              '100%': 'var(--tertiary-mint, #C9E8D5)',
             }}
             format={(percent) => (
               <div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: '#f8fafc' }}>{percent}%</div>
-                <div style={{ fontSize: 12, color: '#94a3b8' }}>Tồn khả dụng</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary, #28243D)' }}>{percent}%</div>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary, #6A6282)' }}>Tồn khả dụng</div>
               </div>
             )}
           />
@@ -74,26 +78,26 @@ export const InventoryHealthCard: React.FC<InventoryHealthCardProps> = ({ balanc
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <Text type="secondary">Khả dụng cho lệnh in mới:</Text>
-                <Text strong style={{ color: '#34d399' }}>
+                <Text strong style={{ color: 'var(--tertiary, #466253)' }}>
                   {(totalAvailable / 1000).toFixed(2)} kg ({availablePercentage}%)
                 </Text>
               </div>
-              <Progress percent={availablePercentage} strokeColor="#10b981" showInfo={false} />
+              <Progress percent={availablePercentage} strokeColor="var(--tertiary, #466253)" showInfo={false} />
             </div>
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <Text type="secondary">Đã giữ cho các lệnh in 3D:</Text>
-                <Text strong style={{ color: '#fbbf24' }}>
+                <Text strong style={{ color: '#E07A5F' }}>
                   {(totalReserved / 1000).toFixed(2)} kg ({reservedPercentage}%)
                 </Text>
               </div>
-              <Progress percent={reservedPercentage} strokeColor="#f59e0b" showInfo={false} />
+              <Progress percent={reservedPercentage} strokeColor="#FFBFAE" showInfo={false} />
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-default, #E2D9F7)', paddingTop: 10 }}>
               <Text type="secondary">Tổng tồn kho vật lý đang lưu trữ:</Text>
-              <Text strong style={{ color: '#38bdf8' }}>
+              <Text strong style={{ color: 'var(--primary, #7C5CFC)' }}>
                 {(totalOnHand / 1000).toFixed(2)} kg (100%)
               </Text>
             </div>

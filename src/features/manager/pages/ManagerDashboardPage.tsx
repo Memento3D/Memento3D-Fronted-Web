@@ -63,11 +63,11 @@ export const ManagerDashboardPage: React.FC = () => {
           justifyContent: 'center',
           alignItems: 'center',
           height: '65vh',
-          background: '#080c14',
+          background: 'var(--bg-app, #F8F5FF)',
         }}
       >
         <Spin size="large" />
-        <div style={{ color: '#94a3b8', marginTop: 16, fontSize: '0.9rem', fontWeight: 600 }}>
+        <div style={{ color: 'var(--text-secondary, #6A6282)', marginTop: 16, fontSize: '0.9rem', fontWeight: 600 }}>
           Đang khởi tạo Trung tâm điều khiển Memento3D & Thiết lập luồng Telemetry...
         </div>
       </div>
@@ -309,27 +309,27 @@ export const ManagerDashboardPage: React.FC = () => {
           <Card
             bordered={false}
             style={{
-              background: '#0d1322',
-              borderRadius: 16,
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+              background: '#fff',
+              borderRadius: 'var(--radius-card, 24px)',
+              border: '1px solid var(--border-default, #E2D9F7)',
+              boxShadow: 'var(--shadow-card)',
               height: '100%',
             }}
             styles={{ body: { padding: '24px' } }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div>
-                <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.1rem' }}>
+                <span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700, fontSize: '1.1rem', fontFamily: 'var(--font-family, "Plus Jakarta Sans")' }}>
                   Trung tâm Điều hành & Vận hành Kho (WMS)
                 </span>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: 2 }}>
+                <div style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.8rem', marginTop: 2 }}>
                   Lối tắt phê duyệt và kiểm kê lưu chuyển vật liệu
                 </div>
               </div>
               <Button
                 type="primary"
                 onClick={() => navigate('/manager/approvals')}
-                style={{ background: '#3b82f6', borderRadius: 8, fontWeight: 600 }}
+                style={{ background: 'var(--primary, #7C5CFC)', borderRadius: 'var(--radius-pill, 9999px)', fontWeight: 600, border: 'none', boxShadow: 'var(--shadow-primary-sm)' }}
               >
                 Trung tâm duyệt đơn
               </Button>
@@ -340,20 +340,20 @@ export const ManagerDashboardPage: React.FC = () => {
                 <div
                   onClick={() => navigate('/manager/receipts')}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 12,
+                    background: 'var(--surface-container, #F1EBFF)',
+                    border: '1px solid var(--border-default, #E2D9F7)',
+                    borderRadius: 'var(--radius-default, 16px)',
                     padding: '16px',
                     textAlign: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#0ea5e9')}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--primary, #7C5CFC)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-default, #E2D9F7)')}
                 >
-                  <ArrowDownLeft color="#38bdf8" size={24} style={{ margin: '0 auto 8px' }} />
-                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '0.85rem' }}>Nhập kho</div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Phiếu nhập vật tư</div>
+                  <ArrowDownLeft color="var(--primary, #7C5CFC)" size={24} style={{ margin: '0 auto 8px' }} />
+                  <div style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700, fontSize: '0.85rem' }}>Nhập kho</div>
+                  <div style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.72rem' }}>Phiếu nhập vật tư</div>
                 </div>
               </Col>
 
@@ -361,20 +361,20 @@ export const ManagerDashboardPage: React.FC = () => {
                 <div
                   onClick={() => navigate('/manager/issues')}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 12,
+                    background: 'var(--surface-container, #F1EBFF)',
+                    border: '1px solid var(--border-default, #E2D9F7)',
+                    borderRadius: 'var(--radius-default, 16px)',
                     padding: '16px',
                     textAlign: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#f43f5e')}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#E07A5F')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-default, #E2D9F7)')}
                 >
-                  <ArrowUpRight color="#f43f5e" size={24} style={{ margin: '0 auto 8px' }} />
-                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '0.85rem' }}>Xuất kho</div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Xuất nhựa cho máy</div>
+                  <ArrowUpRight color="#E07A5F" size={24} style={{ margin: '0 auto 8px' }} />
+                  <div style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700, fontSize: '0.85rem' }}>Xuất kho</div>
+                  <div style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.72rem' }}>Xuất nhựa cho máy</div>
                 </div>
               </Col>
 
@@ -382,20 +382,20 @@ export const ManagerDashboardPage: React.FC = () => {
                 <div
                   onClick={() => navigate('/manager/transfers')}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 12,
+                    background: 'var(--surface-container, #F1EBFF)',
+                    border: '1px solid var(--border-default, #E2D9F7)',
+                    borderRadius: 'var(--radius-default, 16px)',
                     padding: '16px',
                     textAlign: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#a855f7')}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--primary-system, #5F3ADD)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-default, #E2D9F7)')}
                 >
-                  <ArrowLeftRight color="#a855f7" size={24} style={{ margin: '0 auto 8px' }} />
-                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '0.85rem' }}>Điều chuyển</div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Giữa các xưởng in</div>
+                  <ArrowLeftRight color="var(--primary-system, #5F3ADD)" size={24} style={{ margin: '0 auto 8px' }} />
+                  <div style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700, fontSize: '0.85rem' }}>Điều chuyển</div>
+                  <div style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.72rem' }}>Giữa các xưởng in</div>
                 </div>
               </Col>
 
@@ -403,20 +403,20 @@ export const ManagerDashboardPage: React.FC = () => {
                 <div
                   onClick={() => navigate('/manager/adjustments')}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 12,
+                    background: 'var(--surface-container, #F1EBFF)',
+                    border: '1px solid var(--border-default, #E2D9F7)',
+                    borderRadius: 'var(--radius-default, 16px)',
                     padding: '16px',
                     textAlign: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#fbbf24')}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--tertiary, #466253)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-default, #E2D9F7)')}
                 >
-                  <Sliders color="#fbbf24" size={24} style={{ margin: '0 auto 8px' }} />
-                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '0.85rem' }}>Điều chỉnh</div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Cân đối tồn kho</div>
+                  <Sliders color="var(--tertiary, #466253)" size={24} style={{ margin: '0 auto 8px' }} />
+                  <div style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700, fontSize: '0.85rem' }}>Điều chỉnh</div>
+                  <div style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.72rem' }}>Cân đối tồn kho</div>
                 </div>
               </Col>
             </Row>
@@ -424,9 +424,9 @@ export const ManagerDashboardPage: React.FC = () => {
             <div
               style={{
                 marginTop: 20,
-                background: 'rgba(14, 165, 233, 0.06)',
-                border: '1px solid rgba(14, 165, 233, 0.2)',
-                borderRadius: 12,
+                background: 'var(--surface-container, #F1EBFF)',
+                border: '1px solid var(--border-default, #E2D9F7)',
+                borderRadius: 'var(--radius-default, 16px)',
                 padding: '14px 18px',
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -434,17 +434,17 @@ export const ManagerDashboardPage: React.FC = () => {
               }}
             >
               <div>
-                <div style={{ color: '#f8fafc', fontWeight: 600, fontSize: '0.875rem' }}>
+                <div style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600, fontSize: '0.875rem' }}>
                   Sổ cái giao dịch vật tư bất biến (ACID Ledger)
                 </div>
-                <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: 2 }}>
+                <div style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.75rem', marginTop: 2 }}>
                   Kiểm tra toàn bộ lịch sử biến động từng gram nhựa in 3D
                 </div>
               </div>
               <Button
                 type="link"
                 onClick={() => navigate('/manager/inventory/transactions')}
-                style={{ color: '#38bdf8', fontWeight: 700 }}
+                style={{ color: 'var(--primary, #7C5CFC)', fontWeight: 700 }}
               >
                 Xem sổ cái →
               </Button>

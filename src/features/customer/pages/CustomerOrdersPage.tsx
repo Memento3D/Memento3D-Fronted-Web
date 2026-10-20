@@ -10,27 +10,23 @@ import {
   Space,
 } from 'antd';
 import {
-  CodeSandboxOutlined,
   PlusOutlined,
-  HomeOutlined,
-  LogoutOutlined,
   ReloadOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../auth/hooks/useAuth';
 import { useOrders } from '../../orders/hooks/useOrders';
 import { useCancelOrder } from '../../orders/hooks/useCancelOrder';
 import { OrderSummaryCard } from '../../orders/components/OrderSummaryCard';
 import { OrderFilterBar } from '../../orders/components/OrderFilterBar';
 import { OrderPaymentModal } from '../../orders/components/OrderPaymentModal';
+import { PageHeader } from '../../../components/ui/PageHeader';
 import type { OrderResponse, OrderStatus } from '../../orders/types/order.types';
 
 const { Title, Text } = Typography;
 
 export const CustomerOrdersPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
 
   const [page, setPage] = useState<number>(1);
   const pageSize = 10;
@@ -46,11 +42,6 @@ export const CustomerOrdersPage: React.FC = () => {
   });
 
   const cancelOrderMutation = useCancelOrder();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
 
   const handleConfirmCancel = async () => {
     if (!cancellingOrder) return;
@@ -80,104 +71,39 @@ export const CustomerOrdersPage: React.FC = () => {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        background: '#050811',
-        color: '#f8fafc',
-        padding: '32px 24px',
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+        padding: '0 0 32px 0',
+        color: 'var(--color-text-primary)',
       }}
     >
-      <div style={{ maxWidth: 1120, margin: '0 auto' }}>
-        {/* Top Header Bar */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 36,
-            paddingBottom: 20,
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-            flexWrap: 'wrap',
-            gap: 16,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div
-              style={{
-                width: 42,
-                height: 42,
-                borderRadius: 12,
-                background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
-              }}
-            >
-              <CodeSandboxOutlined style={{ fontSize: 24, color: '#ffffff' }} />
-            </div>
-            <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff' }}>
-                Memento3D Client Portal
-              </div>
-              <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                Khách hàng: <span style={{ color: '#06b6d4' }}>{user?.fullName || user?.email}</span>
-              </div>
-            </div>
-          </div>
-
-          <Space wrap>
-            <Button
-              icon={<HomeOutlined />}
-              onClick={() => navigate('/customer/home')}
-              style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                color: '#cbd5e1',
-                borderRadius: 8,
-              }}
-            >
-              Trang chủ
-            </Button>
-            <Button
-              icon={<ReloadOutlined spin={isFetching} />}
-              onClick={() => refetch()}
-              style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                color: '#cbd5e1',
-                borderRadius: 8,
-              }}
-            >
-              Làm mới
-            </Button>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/checkout')}
-              style={{
-                background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                borderColor: 'transparent',
-                fontWeight: 700,
-                borderRadius: 8,
-              }}
-            >
-              Đặt in kỷ vật mới
-            </Button>
-            <Button
-              danger
-              icon={<LogoutOutlined />}
-              onClick={handleLogout}
-              style={{
-                background: 'rgba(239, 68, 68, 0.1)',
-                borderColor: 'rgba(239, 68, 68, 0.3)',
-                borderRadius: 8,
-              }}
-            >
-              Đăng xuất
-            </Button>
-          </Space>
-        </div>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <PageHeader
+          title="Đơn hàng của tôi"
+          description="Theo dõi toàn bộ trạng thái sản xuất, in 3D và tiến độ giao nhận kỷ vật của bạn."
+          extra={
+            <Space wrap>
+              <Button
+                icon={<ReloadOutlined spin={isFetching} />}
+                onClick={() => refetch()}
+                style={{ borderRadius: '9999px' }}
+              >
+                Làm mới
+              </Button>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => navigate('/products')}
+                style={{
+                  borderRadius: '9999px',
+                  background: 'var(--primary)',
+                  borderColor: 'var(--primary)',
+                  fontWeight: 600,
+                }}
+              >
+                Đặt in kỷ vật mới
+              </Button>
+            </Space>
+          }
+        />
 
         {/* Page Title & Intro */}
         <div style={{ marginBottom: 28 }}>

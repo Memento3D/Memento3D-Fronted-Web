@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Personalized 3D Section CSS
+   Personalized 3D Section CSS (Atelier Forge)
    ========================================================================== */
 
 .personalized-section {
@@ -9,13 +9,13 @@
 
 .personalized-hero-card {
   position: relative;
-  border-radius: 24px;
+  border-radius: var(--radius-feature, 28px);
   background: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
   padding: 56px 40px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-floating);
   overflow: hidden;
 }
 
@@ -28,7 +28,7 @@
   border-radius: 50%;
   background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
   pointer-events: none;
-  filter: blur(40px);
+  filter: blur(50px);
   opacity: 0.6;
 }
 
@@ -70,7 +70,8 @@
   font-size: 1.05rem !important;
   font-weight: 700 !important;
   border-radius: var(--radius-full) !important;
-  background: linear-gradient(135deg, var(--primary) 0%, #0284c7 100%) !important;
+  background: var(--primary) !important;
+  border: none !important;
   box-shadow: 0 6px 24px var(--primary-glow) !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -79,13 +80,14 @@
 }
 
 .personalized-cta-btn:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 10px 30px var(--primary-glow) !important;
+  background: var(--primary-hover) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: var(--shadow-glow) !important;
 }
 
 .personalized-cta-hint {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -115,24 +117,20 @@
 
 .step-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-low);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card, 24px);
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body.light-theme .step-card,
-[data-theme='light'] .step-card {
-  background: #ffffff;
-}
-
 .step-card:hover {
   transform: translateY(-4px);
-  border-color: var(--border-color-hover);
-  box-shadow: var(--shadow-md);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-card);
+  background: var(--surface-lowest);
 }
 
 .step-card-header {
@@ -151,10 +149,10 @@ body.light-theme .step-card,
 }
 
 .step-icon-bubble {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  background: rgba(14, 165, 233, 0.12);
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-default);
+  background: var(--surface-container);
   color: var(--primary);
   display: flex;
   align-items: center;
@@ -164,12 +162,12 @@ body.light-theme .step-card,
 
 .step-tag-pill {
   align-self: flex-start;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
-  background: rgba(14, 165, 233, 0.08);
-  border: 1px solid rgba(14, 165, 233, 0.2);
+  background: var(--surface-container);
+  border: 1px solid var(--border-color);
   color: var(--primary);
-  font-size: 0.7rem;
+  font-size: 0.725rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -185,7 +183,7 @@ body.light-theme .step-card,
 
 .step-subtitle {
   font-size: 0.775rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;

@@ -98,8 +98,8 @@ export const WarehouseManagementPage: React.FC = () => {
       sorter: (a, b) => a.code.localeCompare(b.code),
       render: (code: string) => (
         <Space>
-          <HomeOutlined style={{ color: '#0ea5e9' }} />
-          <Text strong copyable style={{ color: '#38bdf8' }}>
+          <HomeOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
+          <Text strong copyable style={{ color: 'var(--primary, #7C5CFC)' }}>
             {code}
           </Text>
         </Space>
@@ -110,7 +110,7 @@ export const WarehouseManagementPage: React.FC = () => {
       dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (name: string) => <Text strong>{name}</Text>,
+      render: (name: string) => <Text strong style={{ color: 'var(--text-primary, #28243D)' }}>{name}</Text>,
     },
     {
       title: 'Địa chỉ kho',
@@ -118,8 +118,8 @@ export const WarehouseManagementPage: React.FC = () => {
       key: 'location',
       render: (loc: string) => (
         <Space>
-          <EnvironmentOutlined style={{ color: '#94a3b8' }} />
-          <span>{loc || 'Trung tâm Chế tác Chính'}</span>
+          <EnvironmentOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />
+          <span style={{ color: 'var(--text-secondary, #6A6282)' }}>{loc || 'Trung tâm Chế tác Chính'}</span>
         </Space>
       ),
     },
@@ -128,7 +128,7 @@ export const WarehouseManagementPage: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
-        <Tag color={status === 'ACTIVE' ? 'success' : 'default'}>
+        <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: status === 'ACTIVE' ? 'var(--mint-accent, #C9E8D5)' : 'var(--surface-container, #F1EBFF)', color: status === 'ACTIVE' ? 'var(--tertiary, #466253)' : 'var(--text-secondary, #6A6282)', border: 'none', fontWeight: 600 }}>
           {getStatusLabel(status)}
         </Tag>
       ),
@@ -149,8 +149,9 @@ export const WarehouseManagementPage: React.FC = () => {
           <Tooltip title="Quản lý nhân viên & Phân quyền kho">
             <Button
               type="text"
-              icon={<TeamOutlined style={{ color: '#38bdf8' }} />}
+              icon={<TeamOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
               onClick={() => handleOpenMembers(record)}
+              style={{ color: 'var(--primary, #7C5CFC)' }}
             >
               Nhân viên
             </Button>
@@ -169,7 +170,7 @@ export const WarehouseManagementPage: React.FC = () => {
               onConfirm={() => handleDeactivate(record.id, record.code)}
               okText="Ngừng kích hoạt"
               cancelText="Hủy"
-              okButtonProps={{ danger: true }}
+              okButtonProps={{ danger: true, style: { borderRadius: 'var(--radius-full, 9999px)' } }}
             >
               <Tooltip title="Ngừng kích hoạt">
                 <Button type="text" danger icon={<StopOutlined />} />
@@ -186,10 +187,10 @@ export const WarehouseManagementPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary, #28243D)' }}>
             Quản lý Cơ sở Kho & Trung tâm Chế tác
           </Title>
-          <Text type="secondary">
+          <Text type="secondary" style={{ color: 'var(--text-secondary, #6A6282)' }}>
             Quản lý các điểm lưu kho vật lý, xưởng in 3D khu vực và cơ sở vật tư.
           </Text>
         </div>
@@ -198,6 +199,7 @@ export const WarehouseManagementPage: React.FC = () => {
           icon={<PlusOutlined />}
           size="large"
           onClick={handleOpenCreate}
+          style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}
         >
           Thêm kho mới
         </Button>
@@ -206,40 +208,41 @@ export const WarehouseManagementPage: React.FC = () => {
       {/* KPI Cards */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Tổng số cơ sở kho"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Tổng số cơ sở kho</span>}
               value={warehouses.length}
-              prefix={<HomeOutlined style={{ color: '#0ea5e9' }} />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Địa điểm</Text>}
+              valueStyle={{ color: 'var(--text-primary, #28243D)', fontWeight: 800 }}
+              prefix={<HomeOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Địa điểm</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Kho đang hoạt động"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Kho đang hoạt động</span>}
               value={activeCount}
-              valueStyle={{ color: '#10b981' }}
-              prefix={<CheckCircleOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Sẵn sàng điều phối</Text>}
+              valueStyle={{ color: 'var(--tertiary, #466253)', fontWeight: 800 }}
+              prefix={<CheckCircleOutlined style={{ color: 'var(--mint-accent, #C9E8D5)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Sẵn sàng điều phối</Text>}
             />
           </Card>
         </Col>
       </Row>
 
       {/* Table Card */}
-      <Card>
+      <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <Input
             placeholder="Tìm kiếm theo mã kho hoặc tên cơ sở..."
-            prefix={<SearchOutlined />}
+            prefix={<SearchOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ width: 320 }}
+            style={{ width: 320, borderRadius: 'var(--radius-input, 20px)' }}
             allowClear
           />
-          <Text type="secondary" style={{ alignSelf: 'center' }}>
+          <Text type="secondary" style={{ alignSelf: 'center', color: 'var(--text-secondary, #6A6282)' }}>
             Hiển thị {warehouses.length} cơ sở kho
           </Text>
         </div>

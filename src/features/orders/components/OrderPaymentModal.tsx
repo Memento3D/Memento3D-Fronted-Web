@@ -87,8 +87,8 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
         onClose();
       }}
       title={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#f8fafc' }}>
-          <QrcodeOutlined style={{ color: '#0ea5e9' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
+          <QrcodeOutlined style={{ color: 'var(--primary)' }} />
           <span>Thanh toán đơn hàng #{orderCode}</span>
         </div>
       }
@@ -98,32 +98,32 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
       <div style={{ padding: '8px 0' }}>
         <div
           style={{
-            background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: 10,
+            background: 'var(--surface-container)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 'var(--radius-default)',
             padding: 16,
             marginBottom: 20,
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ color: '#94a3b8' }}>Mã đơn hàng:</span>
-            <span style={{ color: '#f8fafc', fontWeight: 700 }}>#{orderCode}</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Mã đơn hàng:</span>
+            <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>#{orderCode}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ color: '#94a3b8' }}>Số tiền thanh toán:</span>
-            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#38bdf8' }}>
+            <span style={{ color: 'var(--text-secondary)' }}>Số tiền thanh toán:</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' }}>
               {formatCurrency(totalAmount, order.currency || 'VND')}
             </span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-            <span style={{ color: '#94a3b8' }}>Người nhận:</span>
-            <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{order.recipientName}</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Người nhận:</span>
+            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{order.recipientName}</span>
           </div>
         </div>
 
         {!activePayment ? (
           <div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#e2e8f0', marginBottom: 12 }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>
               Chọn phương thức thanh toán:
             </div>
 
@@ -136,17 +136,17 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               <Radio
                 value="MOMO"
                 style={{
-                  background: method === 'MOMO' ? 'rgba(216, 45, 139, 0.15)' : 'rgba(216, 45, 139, 0.05)',
-                  border: method === 'MOMO' ? '1px solid #d82d8b' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: method === 'MOMO' ? 'rgba(216, 45, 139, 0.08)' : 'var(--surface-container)',
+                  border: method === 'MOMO' ? '1.5px solid #d82d8b' : '1px solid var(--border-default)',
                   padding: '12px 16px',
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-default)',
                   width: '100%',
                   transition: 'all 0.2s ease',
                 }}
               >
                 <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
                   <span style={{ fontWeight: 700, color: '#ec4899' }}>Ví MoMo</span>
-                  <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                     Thanh toán qua quét mã QR hoặc ứng dụng MoMo
                   </span>
                 </div>
@@ -156,17 +156,17 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               <Radio
                 value="ZALOPAY"
                 style={{
-                  background: method === 'ZALOPAY' ? 'rgba(0, 104, 255, 0.15)' : 'rgba(0, 104, 255, 0.05)',
-                  border: method === 'ZALOPAY' ? '1px solid #0068ff' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: method === 'ZALOPAY' ? 'var(--surface-high)' : 'var(--surface-container)',
+                  border: method === 'ZALOPAY' ? '1.5px solid var(--primary)' : '1px solid var(--border-default)',
                   padding: '12px 16px',
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-default)',
                   width: '100%',
                   transition: 'all 0.2s ease',
                 }}
               >
                 <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
-                  <span style={{ fontWeight: 700, color: '#38bdf8' }}>Ví ZaloPay</span>
-                  <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                  <span style={{ fontWeight: 700, color: 'var(--primary)' }}>Ví ZaloPay</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                     Thanh toán qua cổng ZaloPay QR & Thẻ ATM/Visa
                   </span>
                 </div>
@@ -176,19 +176,19 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               <Radio
                 value="CASH"
                 style={{
-                  background: method === 'CASH' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.05)',
-                  border: method === 'CASH' ? '1px solid #22c55e' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: method === 'CASH' ? 'rgba(201, 232, 213, 0.3)' : 'var(--surface-container)',
+                  border: method === 'CASH' ? '1.5px solid var(--tertiary)' : '1px solid var(--border-default)',
                   padding: '12px 16px',
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-default)',
                   width: '100%',
                   transition: 'all 0.2s ease',
                 }}
               >
                 <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
-                  <span style={{ fontWeight: 700, color: '#22c55e', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <DollarCircleOutlined /> Tiền mặt
+                  <span style={{ fontWeight: 700, color: 'var(--tertiary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <DollarCircleOutlined /> Tiền mặt (COD)
                   </span>
-                  <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                     Thanh toán tiền mặt khi nhận hàng / khi đơn hàng hoàn thành
                   </span>
                 </div>
@@ -203,13 +203,11 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               disabled={isSubmitting}
               onClick={handleInitiatePayment}
               style={{
-                background:
-                  method === 'CASH'
-                    ? 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)'
-                    : 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                borderColor: 'transparent',
+                background: 'var(--primary)',
+                borderColor: 'var(--primary)',
                 fontWeight: 700,
-                borderRadius: 8,
+                borderRadius: 'var(--radius-full)',
+                boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
               }}
             >
               {method === 'CASH' ? 'Xác nhận đặt hàng' : 'Tiến hành thanh toán'}
@@ -223,7 +221,7 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               type="info"
               showIcon
               icon={<ClockCircleOutlined />}
-              style={{ marginBottom: 20, textAlign: 'left', borderRadius: 8 }}
+              style={{ marginBottom: 20, textAlign: 'left', borderRadius: 'var(--radius-default)', background: 'var(--surface-container)', border: '1px solid var(--border-default)' }}
             />
 
             {activePayment.qrCodeUrl && (
@@ -231,9 +229,9 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
                 <img
                   src={activePayment.qrCodeUrl}
                   alt="Payment QR"
-                  style={{ width: 180, height: 180, borderRadius: 12, border: '2px solid rgba(255, 255, 255, 0.1)' }}
+                  style={{ width: 180, height: 180, borderRadius: 'var(--radius-default)', border: '2px solid var(--border-default)' }}
                 />
-                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: 8 }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 8 }}>
                   Quét mã QR bằng ứng dụng ngân hàng hoặc ví
                 </div>
               </div>
@@ -247,23 +245,25 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
-                  borderColor: 'transparent',
+                  background: 'var(--primary)',
+                  borderColor: 'var(--primary)',
+                  borderRadius: 'var(--radius-full)',
                   marginRight: 8,
                   marginBottom: 12,
+                  boxShadow: '0 4px 12px rgba(124, 92, 252, 0.25)',
                 }}
               >
                 Mở trang thanh toán ({activePayment.paymentMethod})
               </Button>
             )}
 
-            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: '#94a3b8', fontSize: '0.8rem' }}>
+            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
               <Spin size="small" />
               <span>Đang lắng nghe xác nhận từ ngân hàng...</span>
             </div>
 
             <Button
-              style={{ marginTop: 16 }}
+              style={{ marginTop: 16, borderRadius: 'var(--radius-full)' }}
               onClick={() => {
                 onClose();
                 navigate(`/orders/${order.id}`);

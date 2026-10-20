@@ -99,10 +99,10 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       key: 'user',
       render: (_, record) => (
         <div>
-          <Text strong style={{ color: '#f8fafc' }}>
+          <Text strong style={{ color: 'var(--text-primary, #28243D)' }}>
             {record.userFullName || 'Nhân viên'}
           </Text>
-          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{record.userEmail}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #6A6282)' }}>{record.userEmail}</div>
         </div>
       ),
     },
@@ -111,12 +111,8 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       dataIndex: 'role',
       key: 'role',
       render: (role: WarehouseRole) => {
-        let color = 'blue';
-        if (role === 'MANAGER') color = 'gold';
-        if (role === 'WAREHOUSE_STAFF') color = 'cyan';
-        if (role === 'PRINT_OPERATOR') color = 'purple';
         return (
-          <Tag color={color} style={{ fontWeight: 600 }}>
+          <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary, #7C5CFC)', border: '1px solid var(--border-default, #E2D9F7)', fontWeight: 600 }}>
             {getRoleLabel(role)}
           </Tag>
         );
@@ -129,7 +125,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       render: (status: string) => (
         <Tag
           icon={status === 'ACTIVE' ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
-          color={status === 'ACTIVE' ? 'success' : 'error'}
+          style={{ borderRadius: 'var(--radius-full, 9999px)', background: status === 'ACTIVE' ? 'var(--mint-accent, #C9E8D5)' : 'var(--error-container, #FFDAD6)', color: status === 'ACTIVE' ? 'var(--tertiary, #466253)' : 'var(--on-error-container, #93000A)', border: 'none', fontWeight: 600 }}
         >
           {getStatusLabel(status)}
         </Tag>
@@ -140,7 +136,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       dataIndex: 'assignedAt',
       key: 'assignedAt',
       render: (date: string) => (
-        <span style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6A6282)' }}>
           {dayjs(date).format('YYYY-MM-DD HH:mm')}
         </span>
       ),
@@ -150,7 +146,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       key: 'actions',
       render: (_, record) => {
         if (record.status === 'REVOKED') {
-          return <Text type="secondary" style={{ fontSize: '0.75rem' }}>Đã thu hồi</Text>;
+          return <Text type="secondary" style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #6A6282)' }}>Đã thu hồi</Text>;
         }
         return (
           <Popconfirm
@@ -159,7 +155,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
             onConfirm={() => revokeMutation.mutate(record.userId)}
             okText="Thu hồi quyền"
             cancelText="Hủy"
-            okButtonProps={{ danger: true, loading: revokeMutation.isPending }}
+            okButtonProps={{ danger: true, loading: revokeMutation.isPending, style: { borderRadius: 'var(--radius-full, 9999px)' } }}
           >
             <Button
               type="text"
@@ -179,8 +175,8 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
     <Drawer
       title={
         <Space>
-          <SafetyCertificateOutlined style={{ color: '#0ea5e9' }} />
-          <span>Kiểm soát Quyền Truy cập Kho – {warehouse?.code}</span>
+          <SafetyCertificateOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
+          <span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700 }}>Kiểm soát Quyền Truy cập Kho – {warehouse?.code}</span>
         </Space>
       }
       placement="right"
@@ -188,14 +184,14 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
       onClose={onClose}
       open={open}
     >
-      <Paragraph type="secondary" style={{ marginBottom: 20 }}>
+      <Paragraph type="secondary" style={{ marginBottom: 20, color: 'var(--text-secondary, #6A6282)' }}>
         Phân quyền kho theo vai trò (RBAC). Nhân viên chỉ có quyền xem và thao tác trên cơ sở kho mà họ được phân công trực tiếp.
       </Paragraph>
 
       <Card
         size="small"
-        title={<span style={{ fontSize: '0.875rem' }}>Phân công Nhân viên vào Kho</span>}
-        style={{ marginBottom: 24, background: 'rgba(15, 23, 42, 0.6)' }}
+        title={<span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary, #28243D)' }}>Phân công Nhân viên vào Kho</span>}
+        style={{ marginBottom: 24, background: 'var(--surface-container, #F1EBFF)', border: '1px solid var(--border-default, #E2D9F7)', borderRadius: 'var(--radius-default, 16px)' }}
       >
         <Form
           form={form}
@@ -212,7 +208,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
             ]}
             style={{ flex: 1, minWidth: 220 }}
           >
-            <Input placeholder="Email nhân viên (ví dụ: operator@memento3d.vn)" />
+            <Input placeholder="Email nhân viên (ví dụ: operator@memento3d.vn)" style={{ borderRadius: 'var(--radius-input, 20px)' }} />
           </Form.Item>
 
           <Form.Item
@@ -235,6 +231,7 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
               htmlType="submit"
               icon={<UserAddOutlined />}
               loading={assignMutation.isPending}
+              style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}
             >
               Phân công
             </Button>
@@ -242,9 +239,9 @@ export const WarehouseMembersDrawer: React.FC<WarehouseMembersDrawerProps> = ({
         </Form>
       </Card>
 
-      <Divider style={{ margin: '16px 0' }} />
+      <Divider style={{ margin: '16px 0', borderColor: 'var(--border-default, #E2D9F7)' }} />
 
-      <Title level={5} style={{ marginBottom: 12 }}>
+      <Title level={5} style={{ marginBottom: 12, color: 'var(--text-primary, #28243D)', fontWeight: 700 }}>
         Danh sách Thành viên & Quyền truy cập ({members.length})
       </Title>
 

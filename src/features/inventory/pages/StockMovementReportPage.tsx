@@ -214,18 +214,18 @@ export const StockMovementReportPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary, #28243D)' }}>
             Sổ cái biến động kho & Đối soát (F08)
           </Title>
-          <Text type="secondary">
+          <Text type="secondary" style={{ color: 'var(--text-secondary, #6A6282)' }}>
             Sổ cái tồn kho bất biến theo dõi toàn bộ hoạt động nhập kho, tạm giữ phân bổ và xuất kho.
           </Text>
         </div>
         <Space wrap>
-          <Button icon={<DownloadOutlined />} onClick={handleExportCSV}>
+          <Button icon={<DownloadOutlined />} onClick={handleExportCSV} style={{ borderRadius: 'var(--radius-full, 9999px)' }}>
             Xuất file CSV
           </Button>
-          <Button icon={<PrinterOutlined />} onClick={() => window.print()}>
+          <Button icon={<PrinterOutlined />} onClick={() => window.print()} style={{ borderRadius: 'var(--radius-full, 9999px)' }}>
             In báo cáo
           </Button>
         </Space>
@@ -234,44 +234,45 @@ export const StockMovementReportPage: React.FC = () => {
       {/* KPI Cards */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Tổng số bản ghi sổ cái"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Tổng số bản ghi sổ cái</span>}
               value={transactions.length}
-              prefix={<HistoryOutlined style={{ color: '#0ea5e9' }} />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Bản ghi</Text>}
+              valueStyle={{ color: 'var(--text-primary, #28243D)', fontWeight: 800 }}
+              prefix={<HistoryOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Bản ghi</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Lượt nhập kho đã ghi nhận"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Lượt nhập kho đã ghi nhận</span>}
               value={receiptCount}
-              valueStyle={{ color: '#10b981' }}
-              prefix={<ArrowDownOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Lô hàng</Text>}
+              valueStyle={{ color: 'var(--tertiary, #466253)', fontWeight: 800 }}
+              prefix={<ArrowDownOutlined style={{ color: 'var(--mint-accent, #C9E8D5)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Lô hàng</Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
-              title="Lượt xuất kho & Sản xuất"
+              title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Lượt xuất kho & Sản xuất</span>}
               value={issueCount}
-              valueStyle={{ color: '#ef4444' }}
-              prefix={<ArrowUpOutlined />}
-              suffix={<Text type="secondary" style={{ fontSize: 13 }}>Lượt xuất</Text>}
+              valueStyle={{ color: 'var(--primary, #7C5CFC)', fontWeight: 800 }}
+              prefix={<ArrowUpOutlined style={{ color: 'var(--peach-accent, #FFBFAE)' }} />}
+              suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Lượt xuất</Text>}
             />
           </Card>
         </Col>
       </Row>
 
       {/* Filters and Table */}
-      <Card>
+      <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <Space wrap>
-            <FilterOutlined style={{ color: '#0ea5e9' }} />
+            <FilterOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
             <Select
               placeholder="Tất cả các kho"
               value={warehouseId}
@@ -301,7 +302,7 @@ export const StockMovementReportPage: React.FC = () => {
               <Select.Option value="PRINT_RETURN">HOÀN TRẢ KHO (Dư sau in)</Select.Option>
             </Select>
           </Space>
-          <Text type="secondary" style={{ alignSelf: 'center' }}>
+          <Text type="secondary" style={{ alignSelf: 'center', color: 'var(--text-secondary, #6A6282)' }}>
             Hiển thị {transactions.length} giao dịch kiểm toán
           </Text>
         </div>

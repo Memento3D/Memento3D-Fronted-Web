@@ -310,12 +310,12 @@ export const dashboardApi = {
 
     const orderStatusTotal = Object.values(statusCounts).reduce((a, b) => a + b, 0);
     const orderStatusSeries: OrderStatusDataPoint[] = [
-      { status: 'COMPLETED', statusLabel: 'Hoàn thành', count: statusCounts.COMPLETED, percentage: Math.round((statusCounts.COMPLETED / orderStatusTotal) * 100), color: '#10b981' },
-      { status: 'SHIPPED', statusLabel: 'Đang giao hàng', count: statusCounts.SHIPPED, percentage: Math.round((statusCounts.SHIPPED / orderStatusTotal) * 100), color: '#38bdf8' },
-      { status: 'PRINTING', statusLabel: 'Đang in 3D', count: statusCounts.PRINTING, percentage: Math.round((statusCounts.PRINTING / orderStatusTotal) * 100), color: '#8b5cf6' },
-      { status: 'PROCESSING', statusLabel: 'Đang xử lý', count: statusCounts.PROCESSING, percentage: Math.round((statusCounts.PROCESSING / orderStatusTotal) * 100), color: '#0ea5e9' },
-      { status: 'PENDING', statusLabel: 'Chờ xác nhận/thanh toán', count: statusCounts.PENDING, percentage: Math.round((statusCounts.PENDING / orderStatusTotal) * 100), color: '#fbbf24' },
-      { status: 'CANCELLED', statusLabel: 'Đã hủy', count: statusCounts.CANCELLED, percentage: Math.round((statusCounts.CANCELLED / orderStatusTotal) * 100), color: '#64748b' },
+      { status: 'COMPLETED', statusLabel: 'Hoàn thành', count: statusCounts.COMPLETED, percentage: Math.round((statusCounts.COMPLETED / orderStatusTotal) * 100), color: '#466253' },
+      { status: 'SHIPPED', statusLabel: 'Đang giao hàng', count: statusCounts.SHIPPED, percentage: Math.round((statusCounts.SHIPPED / orderStatusTotal) * 100), color: '#7C5CFC' },
+      { status: 'PRINTING', statusLabel: 'Đang in 3D', count: statusCounts.PRINTING, percentage: Math.round((statusCounts.PRINTING / orderStatusTotal) * 100), color: '#5F3ADD' },
+      { status: 'PROCESSING', statusLabel: 'Đang xử lý', count: statusCounts.PROCESSING, percentage: Math.round((statusCounts.PROCESSING / orderStatusTotal) * 100), color: '#7857F8' },
+      { status: 'PENDING', statusLabel: 'Chờ xác nhận/thanh toán', count: statusCounts.PENDING, percentage: Math.round((statusCounts.PENDING / orderStatusTotal) * 100), color: '#FFBFAE' },
+      { status: 'CANCELLED', statusLabel: 'Đã hủy', count: statusCounts.CANCELLED, percentage: Math.round((statusCounts.CANCELLED / orderStatusTotal) * 100), color: '#6A6282' },
     ];
 
     // 4. Reconstruction Jobs By Tier
@@ -355,11 +355,11 @@ export const dashboardApi = {
 
     // 5. Material Usage
     const materialUsageSeries: MaterialUsageDataPoint[] = [
-      { material: 'PLA+', materialType: 'Filament', usageGram: Math.round(totalGramsUsed * 0.42), percentage: 42, costVnd: Math.round(totalGramsUsed * 0.42 * 350), color: '#0ea5e9' },
-      { material: 'Resin 8K', materialType: 'Photopolymer', usageGram: Math.round(totalGramsUsed * 0.28), percentage: 28, costVnd: Math.round(totalGramsUsed * 0.28 * 780), color: '#8b5cf6' },
-      { material: 'PETG Carbon', materialType: 'Filament', usageGram: Math.round(totalGramsUsed * 0.16), percentage: 16, costVnd: Math.round(totalGramsUsed * 0.16 * 520), color: '#10b981' },
-      { material: 'Full-Color Sandstone', materialType: 'Powder', usageGram: Math.round(totalGramsUsed * 0.09), percentage: 9, costVnd: Math.round(totalGramsUsed * 0.09 * 1200), color: '#f59e0b' },
-      { material: 'TPU Flexible', materialType: 'Elastomer', usageGram: Math.round(totalGramsUsed * 0.05), percentage: 5, costVnd: Math.round(totalGramsUsed * 0.05 * 450), color: '#ec4899' },
+      { material: 'PLA+', materialType: 'Filament', usageGram: Math.round(totalGramsUsed * 0.42), percentage: 42, costVnd: Math.round(totalGramsUsed * 0.42 * 350), color: '#7C5CFC' },
+      { material: 'Resin 8K', materialType: 'Photopolymer', usageGram: Math.round(totalGramsUsed * 0.28), percentage: 28, costVnd: Math.round(totalGramsUsed * 0.28 * 780), color: '#FFBFAE' },
+      { material: 'PETG Carbon', materialType: 'Filament', usageGram: Math.round(totalGramsUsed * 0.16), percentage: 16, costVnd: Math.round(totalGramsUsed * 0.16 * 520), color: '#C9E8D5' },
+      { material: 'Full-Color Sandstone', materialType: 'Powder', usageGram: Math.round(totalGramsUsed * 0.09), percentage: 9, costVnd: Math.round(totalGramsUsed * 0.09 * 1200), color: '#ECE3FF' },
+      { material: 'TPU Flexible', materialType: 'Elastomer', usageGram: Math.round(totalGramsUsed * 0.05), percentage: 5, costVnd: Math.round(totalGramsUsed * 0.05 * 450), color: '#28243D' },
     ];
 
     // 6. Printer Fleet Formatting

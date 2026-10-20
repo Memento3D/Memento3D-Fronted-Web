@@ -65,15 +65,15 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
     <Modal
       title={
         <Space>
-          <RedoOutlined style={{ color: '#10b981' }} />
-          <span>Quyết toán tiêu hao vật liệu sau khi in (F07)</span>
+          <RedoOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
+          <span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700 }}>Quyết toán tiêu hao vật liệu sau khi in (F07)</span>
         </Space>
       }
       open={open}
       onCancel={onCancel}
       onOk={() => form.submit()}
       confirmLoading={loading}
-      okButtonProps={{ disabled: !isValid }}
+      okButtonProps={{ disabled: !isValid, style: { borderRadius: 'var(--radius-full, 9999px)', background: isValid ? 'var(--primary, #7C5CFC)' : undefined } }}
       okText="Quyết toán & Đóng sổ"
       cancelText="Hủy"
       width={600}
@@ -84,15 +84,15 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
         description="Tổng khối lượng: Đã dùng (Mô hình) + Hao phí (Support/Xả nhựa) + Trả lại kho (Dư thừa) phải bằng chính xác khối lượng đã xuất cấp."
         type={isValid ? 'info' : 'warning'}
         showIcon
-        style={{ marginBottom: 16 }}
+        style={{ marginBottom: 16, borderRadius: 'var(--radius-default, 16px)', background: isValid ? 'var(--surface-container, #F1EBFF)' : 'var(--peach-accent, #FFBFAE)', borderColor: 'var(--border-default, #E2D9F7)' }}
       />
 
-      <Descriptions bordered column={1} size="small" style={{ marginBottom: 16 }}>
+      <Descriptions bordered column={1} size="small" style={{ marginBottom: 16, borderRadius: 'var(--radius-default, 16px)', overflow: 'hidden' }}>
         <Descriptions.Item label="Mã lệnh in">
-          <Text strong>{job?.jobNumber}</Text>
+          <Text strong style={{ color: 'var(--primary, #7C5CFC)' }}>{job?.jobNumber}</Text>
         </Descriptions.Item>
         <Descriptions.Item label="Khối lượng đã xuất kho">
-          <Text strong style={{ color: '#0ea5e9', fontSize: 15 }}>{issued} g</Text>
+          <Text strong style={{ color: 'var(--primary, #7C5CFC)', fontSize: 15 }}>{issued} g</Text>
         </Descriptions.Item>
       </Descriptions>
 
@@ -105,7 +105,7 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
               rules={[{ required: true, message: 'Bắt buộc' }]}
             >
               <InputNumber
-                style={{ width: '100%' }}
+                style={{ width: '100%', borderRadius: 'var(--radius-input, 20px)' }}
                 min={0}
                 onChange={(v) => setUsed(Number(v) || 0)}
               />
@@ -118,7 +118,7 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
               rules={[{ required: true, message: 'Bắt buộc' }]}
             >
               <InputNumber
-                style={{ width: '100%' }}
+                style={{ width: '100%', borderRadius: 'var(--radius-input, 20px)' }}
                 min={0}
                 onChange={(v) => setWaste(Number(v) || 0)}
               />
@@ -131,7 +131,7 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
               rules={[{ required: true, message: 'Bắt buộc' }]}
             >
               <InputNumber
-                style={{ width: '100%' }}
+                style={{ width: '100%', borderRadius: 'var(--radius-input, 20px)' }}
                 min={0}
                 onChange={(v) => setReturned(Number(v) || 0)}
               />
@@ -143,24 +143,24 @@ export const ReconcileModal: React.FC<ReconcileModalProps> = ({
         <div
           style={{
             padding: '12px 16px',
-            backgroundColor: isValid ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-            border: `1px solid ${isValid ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-            borderRadius: 8,
+            backgroundColor: isValid ? 'var(--mint-accent, #C9E8D5)' : 'var(--error-container, #FFDAD6)',
+            border: `1px solid ${isValid ? '#A2D4B3' : '#FFB4AB'}`,
+            borderRadius: 'var(--radius-default, 16px)',
             marginBottom: 16,
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Space>
               {isValid ? (
-                <CheckCircleOutlined style={{ color: '#10b981' }} />
+                <CheckCircleOutlined style={{ color: 'var(--tertiary, #466253)' }} />
               ) : (
-                <WarningOutlined style={{ color: '#ef4444' }} />
+                <WarningOutlined style={{ color: 'var(--error, #BA1A1A)' }} />
               )}
-              <Text strong style={{ color: isValid ? '#34d399' : '#f87171' }}>
+              <Text strong style={{ color: isValid ? 'var(--tertiary, #466253)' : 'var(--on-error-container, #93000A)' }}>
                 Cân đối quyết toán: {currentTotal} / {issued} g
               </Text>
             </Space>
-            <Tag color={isValid ? 'success' : 'error'}>
+            <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: isValid ? 'var(--surface-card, #FFFFFF)' : 'var(--error, #BA1A1A)', color: isValid ? 'var(--tertiary, #466253)' : '#FFFFFF', border: 'none', fontWeight: 700 }}>
               {isValid ? 'Khớp 100%' : `Chênh lệch: ${difference > 0 ? `Thiếu ${difference}g` : `Thừa ${Math.abs(difference)}g`}`}
             </Tag>
           </div>

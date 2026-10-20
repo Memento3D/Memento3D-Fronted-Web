@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Timeline, Tag } from 'antd';
+import { Card, Timeline } from 'antd';
 import { 
   History, 
   Printer, 
@@ -8,6 +8,7 @@ import {
   Layers 
 } from 'lucide-react';
 import type { ActivityTimelineItem } from '../../types/dashboard';
+import { StatusBadge } from '../common/StatusBadge';
 
 export interface ActivityTimelineProps {
   activities: ActivityTimelineItem[];
@@ -20,13 +21,14 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ activities }
         return (
           <div
             style={{
-              background: severity === 'success' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(14, 165, 233, 0.2)',
-              color: severity === 'success' ? '#10b981' : '#38bdf8',
+              background: severity === 'success' ? 'var(--success-bg, #C9E8D5)' : 'var(--surface-container, #F1EBFF)',
+              color: severity === 'success' ? 'var(--tertiary, #466253)' : 'var(--primary, #7C5CFC)',
               borderRadius: '50%',
               padding: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              border: '1px solid var(--border-color)',
             }}
           >
             <Printer size={14} />
@@ -36,13 +38,14 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ activities }
         return (
           <div
             style={{
-              background: 'rgba(139, 92, 246, 0.2)',
-              color: '#a855f7',
+              background: 'var(--secondary-container, #FFE5DF)',
+              color: '#7A3E2D',
               borderRadius: '50%',
               padding: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              border: '1px solid var(--secondary)',
             }}
           >
             <ShoppingBag size={14} />
@@ -52,13 +55,14 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ activities }
         return (
           <div
             style={{
-              background: 'rgba(56, 189, 248, 0.2)',
-              color: '#38bdf8',
+              background: 'var(--surface-container, #F1EBFF)',
+              color: 'var(--primary, #7C5CFC)',
               borderRadius: '50%',
               padding: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              border: '1px solid var(--border-color)',
             }}
           >
             <Cpu size={14} />
@@ -69,13 +73,14 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ activities }
         return (
           <div
             style={{
-              background: 'rgba(245, 158, 11, 0.2)',
-              color: '#fbbf24',
+              background: 'var(--surface-high, #EBE4FF)',
+              color: 'var(--primary-system, #5F3ADD)',
               borderRadius: '50%',
               padding: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              border: '1px solid var(--border-color)',
             }}
           >
             <Layers size={14} />
@@ -87,16 +92,16 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ activities }
   const timelineItems = activities.map((act) => ({
     dot: getIcon(act.type, act.severity),
     children: (
-      <div style={{ paddingBottom: 12 }}>
+      <div style={{ paddingBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-          <span style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.875rem' }}>
+          <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.875rem' }}>
             {act.title}
           </span>
-          <span style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: 600 }}>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600 }}>
             {act.timeFormatted}
           </span>
         </div>
-        <div style={{ color: '#94a3b8', fontSize: '0.8rem' }}>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
           {act.description}
         </div>
       </div>
@@ -107,22 +112,35 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ activities }
     <Card
       bordered={false}
       style={{
-        background: '#0d1322',
-        borderRadius: 16,
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+        background: 'var(--bg-card, #FFFFFF)',
+        borderRadius: 'var(--radius-card, 24px)',
+        border: '1px solid var(--border-color, #E2D9F7)',
+        boxShadow: 'var(--shadow-card)',
         height: '100%',
       }}
-      styles={{ body: { padding: '24px' } }}
+      styles={{ body: { padding: '28px' } }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <History size={18} color="#0ea5e9" />
-          <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: '10px',
+              background: 'var(--surface-container, #F1EBFF)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--primary)',
+            }}
+          >
+            <History size={18} color="var(--primary)" />
+          </div>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.15rem' }}>
             Nhật ký Hoạt động Thời gian thực
           </span>
         </div>
-        <Tag color="cyan">Live Feed</Tag>
+        <StatusBadge status="ACTIVE" label="Live Feed" variant="mint" />
       </div>
 
       <div style={{ maxHeight: 380, overflowY: 'auto', paddingRight: 8 }}>

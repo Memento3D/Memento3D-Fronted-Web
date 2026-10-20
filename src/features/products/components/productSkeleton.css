@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Memento3D Skeleton Loaders (Theme Adaptive)
+   Memento3D Skeleton Loaders (Atelier Forge)
    ========================================================================== */
 
 @keyframes mementoShimmer {
@@ -14,30 +14,19 @@
 .memento-skeleton-box {
   background: linear-gradient(
     90deg,
-    var(--border-color) 25%,
-    rgba(255, 255, 255, 0.15) 37%,
-    var(--border-color) 63%
+    var(--surface-container, #F1EBFF) 25%,
+    var(--surface-high, #EBE4FF) 37%,
+    var(--surface-container, #F1EBFF) 63%
   );
   background-size: 400% 100%;
   animation: mementoShimmer 1.5s ease-in-out infinite;
   border-radius: var(--radius-sm);
 }
 
-body.light-theme .memento-skeleton-box,
-[data-theme='light'] .memento-skeleton-box {
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0.06) 25%,
-    rgba(0, 0, 0, 0.12) 37%,
-    rgba(0, 0, 0, 0.06) 63%
-  );
-  background-size: 400% 100%;
-}
-
 .product-card-skeleton {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card, 24px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -47,6 +36,7 @@ body.light-theme .memento-skeleton-box,
   width: 100%;
   padding-top: 85%;
   position: relative;
+  background: var(--bg-viewport-3d, #F3EEFF);
 }
 
 .skeleton-media .memento-skeleton-box {
@@ -59,7 +49,7 @@ body.light-theme .memento-skeleton-box,
 }
 
 .skeleton-body {
-  padding: 16px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -68,9 +58,9 @@ body.light-theme .memento-skeleton-box,
 .category-card-skeleton {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 24px 20px;
+  border-radius: var(--radius-card, 24px);
+  padding: 26px 22px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }

@@ -1,0 +1,224 @@
+/* ==========================================================================
+   ATELIER FORGE DESIGN SYSTEM — GLOBAL THEME & TYPOGRAPHY
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  /* Soft Atelier Ambient Gradients */
+  background-image: 
+    radial-gradient(ellipse at 10% 0%, rgba(124, 92, 252, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 15%, rgba(255, 191, 174, 0.06) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 100%, rgba(201, 232, 213, 0.05) 0%, transparent 55%);
+  background-attachment: fixed;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+body.dark-theme,
+[data-theme='dark'] body {
+  background-image: 
+    radial-gradient(ellipse at 15% 0%, rgba(182, 163, 255, 0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 20%, rgba(229, 168, 152, 0.05) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 100%, rgba(142, 195, 163, 0.04) 0%, transparent 55%);
+}
+
+/* Typography Hierarchy */
+.display-large, h1.display-large {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 56px;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.display-small, h2.display-small {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 44px;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.headline-large, h1:not(.display-large) {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+
+.headline-medium, h2:not(.display-small) {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.headline-small, h3 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  color: var(--text-primary);
+}
+
+.title-text, h4 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--text-primary);
+}
+
+.body-large, p.body-large {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  color: var(--text-secondary);
+}
+
+.body-default, p:not(.body-large) {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--text-secondary);
+}
+
+.label-bold {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--text-primary);
+}
+
+.label-small {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.caption-text {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--text-muted);
+}
+
+code, pre {
+  font-family: var(--font-mono);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-dim);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-secondary);
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Selection Color */
+::selection {
+  background-color: var(--primary-glow);
+  color: var(--primary-system);
+}
+
+[data-theme='dark'] ::selection {
+  background-color: rgba(182, 163, 255, 0.35);
+  color: #FFFFFF;
+}
+
+/* Spatial Glassmorphism */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-normal);
+}
+
+.glass-panel:hover {
+  box-shadow: var(--shadow-floating);
+  border-color: var(--border-hover);
+}
+
+/* Floating Tool Dock / Context Controls */
+.glass-dock {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-floating);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Surface Layer Utilities */
+.surface-lowest { background-color: var(--surface-lowest); }
+.surface-low { background-color: var(--surface-low); }
+.surface-container { background-color: var(--surface-container); }
+.surface-high { background-color: var(--surface-high); }
+.surface-highest { background-color: var(--surface-highest); }
+
+/* Animation Utility */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-enter {
+  animation: fadeInScale 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

@@ -54,19 +54,19 @@ export const OrderStatusDonutChart: React.FC<OrderStatusDonutChartProps> = ({ st
     series.ticks.template.set('visible', false);
 
     series.slices.template.setAll({
-      stroke: isDark ? am5.color('#0f172a') : am5.color('#ffffff'),
+      stroke: isDark ? am5.color('#1D192B') : am5.color('#ffffff'),
       strokeWidth: 2,
       cornerRadius: 6,
       tooltipText: '{category}: [bold]{value} đơn ({valuePercentTotal.formatNumber("0.0")}%) [/]',
     });
 
-    // Custom colors matching status colors
+    // Custom colors matching Atelier Forge status colors
     series.get('colors')?.set('colors', [
-      am5.color('#f59e0b'), // PENDING
-      am5.color('#3b82f6'), // PROCESSING
-      am5.color('#8b5cf6'), // PRINTING
-      am5.color('#10b981'), // COMPLETED
-      am5.color('#ef4444'), // CANCELLED
+      am5.color('#ECE3FF'), // PENDING (Lavender)
+      am5.color('#FFBFAE'), // PROCESSING (Peach)
+      am5.color('#7C5CFC'), // PRINTING (Primary Violet)
+      am5.color('#C9E8D5'), // COMPLETED (Mint)
+      am5.color('#FFDAD6'), // CANCELLED (Error Container)
     ]);
 
     series.data.setAll(chartData);
