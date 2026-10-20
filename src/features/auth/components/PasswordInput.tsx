@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Input, Progress, Typography, Space } from 'antd';
+import { Input, Progress, Space } from 'antd';
 import { LockOutlined, CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
-
-const { Text } = Typography;
 
 interface PasswordInputProps {
   value?: string;
@@ -39,13 +37,13 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   const passedCount = rules.filter((r) => r.valid).length;
   const strengthPercent = Math.min(100, Math.round((passedCount / rules.length) * 100));
 
-  let strengthColor = '#ef4444';
+  let strengthColor = 'var(--error, #BA1A1A)';
   let strengthLabel = 'Yếu';
   if (passedCount >= 4) {
-    strengthColor = '#10b981';
+    strengthColor = 'var(--success, #466253)';
     strengthLabel = 'Mạnh';
   } else if (passedCount >= 2) {
-    strengthColor = '#f59e0b';
+    strengthColor = 'var(--warning, #B35C00)';
     strengthLabel = 'Trung bình';
   }
 
@@ -59,12 +57,12 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         placeholder={placeholder}
         disabled={disabled}
         size="large"
-        prefix={<LockOutlined style={{ color: '#64748b' }} />}
+        prefix={<LockOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
         style={{
-          borderRadius: '8px',
-          background: 'rgba(15, 23, 42, 0.6)',
-          borderColor: 'rgba(255, 255, 255, 0.15)',
-          color: '#f8fafc',
+          borderRadius: 'var(--radius-input, 12px)',
+          background: 'var(--bg-input, #FFFFFF)',
+          borderColor: 'var(--border-color, #E2D9F7)',
+          color: 'var(--text-primary, #28243D)',
         }}
         autoComplete="new-password"
       />
@@ -73,40 +71,44 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         <div
           style={{
             marginTop: 10,
-            padding: '10px 12px',
-            background: 'rgba(15, 23, 42, 0.7)',
-            borderRadius: '8px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '12px 14px',
+            background: 'var(--surface-container, #F1EBFF)',
+            borderRadius: 'var(--radius-input, 12px)',
+            border: '1px solid var(--border-color, #E2D9F7)',
+            boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05))',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <Text style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Độ mạnh mật khẩu:</Text>
-            <Text strong style={{ fontSize: '0.75rem', color: strengthColor }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6A6282)', fontWeight: 600 }}>
+              Độ mạnh mật khẩu:
+            </span>
+            <span style={{ fontSize: '0.8rem', color: strengthColor, fontWeight: 700 }}>
               {strengthLabel}
-            </Text>
+            </span>
           </div>
 
           <Progress
             percent={strengthPercent}
             showInfo={false}
             strokeColor={strengthColor}
-            trailColor="rgba(255, 255, 255, 0.1)"
+            trailColor="var(--border-color, #E2D9F7)"
             size="small"
             style={{ marginBottom: 10 }}
           />
 
-          <Space orientation="vertical" size={4} style={{ width: '100%' }}>
+          <Space direction="vertical" size={4} style={{ width: '100%' }}>
             {rules.map((rule) => (
               <div key={rule.key} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 {rule.valid ? (
-                  <CheckCircleFilled style={{ color: '#10b981', fontSize: '12px' }} />
+                  <CheckCircleFilled style={{ color: 'var(--success, #466253)', fontSize: '13px' }} />
                 ) : (
-                  <CloseCircleFilled style={{ color: '#64748b', fontSize: '12px' }} />
+                  <CloseCircleFilled style={{ color: 'var(--text-tertiary, #8E86A8)', fontSize: '13px' }} />
                 )}
                 <span
                   style={{
-                    fontSize: '0.75rem',
-                    color: rule.valid ? '#e2e8f0' : '#64748b',
+                    fontSize: '0.785rem',
+                    fontWeight: rule.valid ? 600 : 400,
+                    color: rule.valid ? 'var(--text-primary, #28243D)' : 'var(--text-secondary, #6A6282)',
                     transition: 'color 0.2s',
                   }}
                 >

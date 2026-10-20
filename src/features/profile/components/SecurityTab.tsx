@@ -195,22 +195,22 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
         <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={false} style={{ maxWidth: '540px' }}>
           {!isGoogleOnly && (
             <Form.Item
-              label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu hiện tại</span>}
+              label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Mật khẩu hiện tại</span>}
               name="currentPassword"
               rules={[{ required: true, message: 'Vui lòng nhập mật khẩu hiện tại' }]}
             >
               <Input.Password
-                prefix={<KeyOutlined style={{ color: '#64748b' }} />}
+                prefix={<KeyOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
                 placeholder="Nhập mật khẩu đang dùng"
                 size="large"
                 autoComplete="current-password"
-                style={{ borderRadius: '8px' }}
+                style={{ borderRadius: 'var(--radius-input, 12px)' }}
               />
             </Form.Item>
           )}
 
           <Form.Item
-            label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu mới</span>}
+            label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Mật khẩu mới</span>}
             name="newPassword"
             rules={[
               { required: true, message: 'Vui lòng nhập mật khẩu mới' },
@@ -218,11 +218,11 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined style={{ color: '#64748b' }} />}
+              prefix={<LockOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
               placeholder="Tối thiểu 12 ký tự"
               size="large"
               autoComplete="new-password"
-              style={{ borderRadius: '8px' }}
+              style={{ borderRadius: 'var(--radius-input, 12px)' }}
               onChange={(e) => setPasswordValue(e.target.value)}
             />
           </Form.Item>
@@ -230,8 +230,8 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
           {passwordValue && (
             <div style={{ marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: '0.8rem' }}>
-                <span style={{ color: '#94a3b8' }}>Độ mạnh mật khẩu:</span>
-                <span style={{ color: strength.status === 'success' ? '#10b981' : strength.status === 'active' ? '#38bdf8' : '#f59e0b', fontWeight: 600 }}>
+                <span style={{ color: 'var(--text-secondary, #6A6282)' }}>Độ mạnh mật khẩu:</span>
+                <span style={{ color: strength.status === 'success' ? 'var(--success, #466253)' : strength.status === 'active' ? 'var(--primary, #7C5CFC)' : 'var(--warning, #B35C00)', fontWeight: 600 }}>
                   {strength.label}
                 </span>
               </div>
@@ -240,7 +240,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
           )}
 
           <Form.Item
-            label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Xác nhận mật khẩu mới</span>}
+            label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Xác nhận mật khẩu mới</span>}
             name="confirmPassword"
             dependencies={['newPassword']}
             rules={[
@@ -256,11 +256,11 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined style={{ color: '#64748b' }} />}
+              prefix={<LockOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
               placeholder="Nhập lại mật khẩu mới"
               size="large"
               autoComplete="new-password"
-              style={{ borderRadius: '8px' }}
+              style={{ borderRadius: 'var(--radius-input, 12px)' }}
             />
           </Form.Item>
 

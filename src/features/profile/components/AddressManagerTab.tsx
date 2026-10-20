@@ -383,7 +383,7 @@ export const AddressManagerTab: React.FC = () => {
           <Row gutter={16}>
             <Col xs={24} sm={12}>
               <Form.Item
-                label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Tên người nhận</span>}
+                label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Tên người nhận</span>}
                 name="recipientName"
                 rules={[
                   { required: true, message: 'Vui lòng nhập tên người nhận' },
@@ -391,16 +391,16 @@ export const AddressManagerTab: React.FC = () => {
                 ]}
               >
                 <Input
-                  prefix={<UserOutlined style={{ color: '#64748b' }} />}
+                  prefix={<UserOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
                   placeholder="Nguyễn Văn A"
-                  style={{ borderRadius: '8px' }}
+                  style={{ borderRadius: 'var(--radius-input, 12px)' }}
                 />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
               <Form.Item
-                label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Số điện thoại</span>}
+                label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Số điện thoại</span>}
                 name="phone"
                 rules={[
                   { required: true, message: 'Vui lòng nhập số điện thoại người nhận' },
@@ -411,9 +411,9 @@ export const AddressManagerTab: React.FC = () => {
                 ]}
               >
                 <Input
-                  prefix={<PhoneOutlined style={{ color: '#64748b' }} />}
+                  prefix={<PhoneOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
                   placeholder="0912 345 678"
-                  style={{ borderRadius: '8px' }}
+                  style={{ borderRadius: 'var(--radius-input, 12px)' }}
                 />
               </Form.Item>
             </Col>
@@ -422,20 +422,20 @@ export const AddressManagerTab: React.FC = () => {
           <Row gutter={16}>
             <Col xs={24} sm={12}>
               <Form.Item
-                label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Tỉnh / Thành phố</span>}
+                label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Tỉnh / Thành phố</span>}
                 name="province"
                 rules={[{ required: true, message: 'Vui lòng nhập Tỉnh / Thành phố' }]}
               >
-                <Input placeholder="TP. Hồ Chí Minh / Hà Nội..." style={{ borderRadius: '8px' }} />
+                <Input placeholder="TP. Hồ Chí Minh / Hà Nội..." style={{ borderRadius: 'var(--radius-input, 12px)' }} />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
               <Form.Item
-                label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Quận / Huyện</span>}
+                label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Quận / Huyện</span>}
                 name="district"
               >
-                <Input placeholder="Quận 1 / Quận Cầu Giấy..." style={{ borderRadius: '8px' }} />
+                <Input placeholder="Quận 1 / Quận Cầu Giấy..." style={{ borderRadius: 'var(--radius-input, 12px)' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -443,22 +443,22 @@ export const AddressManagerTab: React.FC = () => {
           <Row gutter={16}>
             <Col xs={24} sm={12}>
               <Form.Item
-                label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Phường / Xã</span>}
+                label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Phường / Xã</span>}
                 name="ward"
                 rules={[{ required: true, message: 'Vui lòng nhập Phường / Xã' }]}
               >
-                <Input placeholder="Phường Bến Nghé..." style={{ borderRadius: '8px' }} />
+                <Input placeholder="Phường Bến Nghé..." style={{ borderRadius: 'var(--radius-input, 12px)' }} />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
               <Form.Item
-                label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Loại địa chỉ</span>}
+                label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Loại địa chỉ</span>}
                 name="label"
                 rules={[{ required: true }]}
               >
                 <Select
-                  style={{ borderRadius: '8px' }}
+                  style={{ borderRadius: 'var(--radius-input, 12px)' }}
                   options={[
                     { value: 'HOME', label: 'Nhà riêng' },
                     { value: 'OFFICE', label: 'Văn phòng / Cơ quan' },
@@ -470,19 +470,19 @@ export const AddressManagerTab: React.FC = () => {
           </Row>
 
           <Form.Item
-            label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Địa chỉ chi tiết (Số nhà, tên đường, tòa nhà)</span>}
+            label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Địa chỉ chi tiết (Số nhà, tên đường, tòa nhà)</span>}
             name="streetAddress"
             rules={[{ required: true, message: 'Vui lòng nhập địa chỉ chi tiết' }]}
           >
             <Input.TextArea
               rows={2}
               placeholder="Số 123 Đường Nguyễn Huệ, Chung cư Grand Riverside, Căn 12.04"
-              style={{ borderRadius: '8px' }}
+              style={{ borderRadius: 'var(--radius-input, 12px)' }}
             />
           </Form.Item>
 
           <Form.Item name="isDefault" valuePropName="checked" style={{ marginBottom: 0 }}>
-            <Checkbox style={{ color: '#cbd5e1' }}>Đặt làm địa chỉ nhận hàng mặc định</Checkbox>
+            <Checkbox style={{ color: 'var(--text-secondary, #6A6282)' }}>Đặt làm địa chỉ nhận hàng mặc định</Checkbox>
           </Form.Item>
         </Form>
       </Modal>
