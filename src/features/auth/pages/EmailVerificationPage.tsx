@@ -75,7 +75,7 @@ export const EmailVerificationPage: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'radial-gradient(ellipse at 50% 20%, #0f172a 0%, #020617 100%)',
+        background: 'radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 191, 174, 0.12) 0%, transparent 40%), var(--bg-app, #F8F5FF)',
         padding: '24px 16px',
         position: 'relative',
         overflow: 'hidden',
@@ -84,14 +84,13 @@ export const EmailVerificationPage: React.FC = () => {
       <div style={{ width: '100%', maxWidth: '520px', zIndex: 1 }}>
         <Card
           style={{
-            background: 'rgba(15, 23, 42, 0.8)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '16px',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            background: 'var(--surface-card, #FFFFFF)',
+            border: '1px solid var(--border-default, #E2D9F7)',
+            borderRadius: 'var(--radius-card-feature, 28px)',
+            boxShadow: 'var(--shadow-floating)',
             textAlign: 'center',
           }}
-          bodyStyle={{ padding: '40px 32px' }}
+          styles={{ body: { padding: '40px 32px' } }}
         >
           {/* Icon */}
           <div
@@ -101,33 +100,34 @@ export const EmailVerificationPage: React.FC = () => {
               justifyContent: 'center',
               width: '68px',
               height: '68px',
-              borderRadius: '20px',
-              background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-              boxShadow: '0 8px 24px rgba(2, 132, 199, 0.35)',
+              borderRadius: '24px',
+              background: 'var(--surface-container, #F1EBFF)',
+              border: '1px solid var(--border-default, #E2D9F7)',
+              boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.15)',
               marginBottom: 20,
             }}
           >
-            <MailOutlined style={{ fontSize: '32px', color: '#ffffff' }} />
+            <MailOutlined style={{ fontSize: '32px', color: 'var(--primary, #7C5CFC)' }} />
           </div>
 
-          <Title level={3} style={{ color: '#ffffff', margin: 0, fontWeight: 700 }}>
+          <Title level={3} style={{ color: 'var(--text-primary, #28243D)', margin: 0, fontWeight: 700 }}>
             Xác thực địa chỉ Email
           </Title>
 
-          <Paragraph style={{ color: '#94a3b8', fontSize: '0.925rem', marginTop: 12, marginBottom: 20 }}>
+          <Paragraph style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.925rem', marginTop: 12, marginBottom: 20 }}>
             Hệ thống Memento3D đã gửi liên kết xác thực tới:
           </Paragraph>
 
           <div
             style={{
-              background: 'rgba(2, 132, 199, 0.1)',
-              border: '1px solid rgba(2, 132, 199, 0.3)',
-              borderRadius: '8px',
+              background: 'var(--surface-container, #F1EBFF)',
+              border: '1px solid var(--border-default, #E2D9F7)',
+              borderRadius: 'var(--radius-default, 16px)',
               padding: '10px 16px',
               marginBottom: 24,
             }}
           >
-            <Text strong style={{ color: '#38bdf8', fontSize: '1rem', wordBreak: 'break-all' }}>
+            <Text strong style={{ color: 'var(--primary, #7C5CFC)', fontSize: '1rem', wordBreak: 'break-all' }}>
               {emailParam || 'Email của bạn'}
             </Text>
           </div>
@@ -137,7 +137,7 @@ export const EmailVerificationPage: React.FC = () => {
               type="success"
               showIcon
               message={resendSuccess}
-              style={{ marginBottom: 20, textAlign: 'left' }}
+              style={{ marginBottom: 20, textAlign: 'left', borderRadius: 'var(--radius-default, 16px)' }}
               closable
               onClose={() => setResendSuccess(null)}
             />
@@ -148,7 +148,7 @@ export const EmailVerificationPage: React.FC = () => {
               type="error"
               showIcon
               message={resendError}
-              style={{ marginBottom: 20, textAlign: 'left' }}
+              style={{ marginBottom: 20, textAlign: 'left', borderRadius: 'var(--radius-default, 16px)' }}
               closable
               onClose={() => setResendError(null)}
             />
@@ -159,18 +159,18 @@ export const EmailVerificationPage: React.FC = () => {
             <Alert
               type="info"
               showIcon
-              icon={<CheckCircleOutlined style={{ color: '#38bdf8' }} />}
+              icon={<CheckCircleOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
               message="Chế độ phát triển (Development Token)"
               description={
                 <div>
-                  <Text style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>
+                  <Text style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.8rem' }}>
                     Để thuận tiện kiểm thử, bạn có thể nhấn liên kết xác nhận trực tiếp:
                   </Text>
                   <div style={{ marginTop: 8 }}>
                     <Link
                       to={`/verify-email/confirm?token=${encodeURIComponent(activeDevToken)}`}
                       style={{
-                        color: '#38bdf8',
+                        color: 'var(--primary, #7C5CFC)',
                         textDecoration: 'underline',
                         fontWeight: 600,
                         fontSize: '0.85rem',
@@ -181,24 +181,24 @@ export const EmailVerificationPage: React.FC = () => {
                   </div>
                 </div>
               }
-              style={{ marginBottom: 20, textAlign: 'left', background: 'rgba(15, 23, 42, 0.6)' }}
+              style={{ marginBottom: 20, textAlign: 'left', background: 'var(--surface-container, #F1EBFF)', borderColor: 'var(--border-default, #E2D9F7)', borderRadius: 'var(--radius-default, 16px)' }}
             />
           )}
 
           <div
             style={{
               textAlign: 'left',
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderRadius: '10px',
+              background: 'var(--surface-low, #F7F1FF)',
+              borderRadius: 'var(--radius-default, 16px)',
               padding: '16px 20px',
               marginBottom: 28,
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              border: '1px solid var(--border-default, #E2D9F7)',
             }}
           >
-            <Text strong style={{ color: '#e2e8f0', display: 'block', marginBottom: 8, fontSize: '0.875rem' }}>
+            <Text strong style={{ color: 'var(--text-primary, #28243D)', display: 'block', marginBottom: 8, fontSize: '0.875rem' }}>
               Hướng dẫn tiếp theo:
             </Text>
-            <ul style={{ margin: 0, paddingLeft: 18, color: '#94a3b8', fontSize: '0.825rem', lineHeight: 1.6 }}>
+            <ul style={{ margin: 0, paddingLeft: 18, color: 'var(--text-secondary, #6A6282)', fontSize: '0.825rem', lineHeight: 1.6 }}>
               <li>Kiểm tra hòm thư đến (Inbox) hoặc hòm thư quảng cáo/rác (Spam).</li>
               <li>Nhấp vào nút xác nhận trong email để kích hoạt tài khoản.</li>
               <li>Liên kết có hiệu lực trong vòng <strong>24 giờ</strong>.</li>
@@ -215,12 +215,13 @@ export const EmailVerificationPage: React.FC = () => {
               loading={loading}
               disabled={!canResend}
               style={{
-                height: '44px',
-                borderRadius: '8px',
+                height: '46px',
+                borderRadius: 'var(--radius-full, 9999px)',
                 fontWeight: 600,
-                background: canResend ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                borderColor: 'rgba(255, 255, 255, 0.15)',
-                color: canResend ? '#f8fafc' : '#64748b',
+                background: canResend ? 'var(--primary, #7C5CFC)' : 'var(--surface-high, #EBE4FF)',
+                borderColor: 'var(--border-default, #E2D9F7)',
+                color: canResend ? '#ffffff' : 'var(--text-secondary, #6A6282)',
+                boxShadow: canResend ? '0 8px 24px -4px rgba(124, 92, 252, 0.3)' : 'none',
               }}
             >
               {canResend ? 'Gửi lại email xác minh' : `Gửi lại sau (${resendCooldown}s)`}
@@ -231,7 +232,7 @@ export const EmailVerificationPage: React.FC = () => {
                 block
                 type="text"
                 icon={<ArrowLeftOutlined />}
-                style={{ color: '#38bdf8', fontWeight: 600 }}
+                style={{ color: 'var(--primary, #7C5CFC)', fontWeight: 600 }}
               >
                 Quay lại trang Đăng nhập
               </Button>

@@ -187,10 +187,10 @@ export const AddressManagerTab: React.FC = () => {
   return (
     <Card
       style={{
-        background: 'rgba(15, 23, 42, 0.7)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        borderRadius: '16px',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 'var(--radius-card)',
+        boxShadow: 'var(--shadow-card)',
       }}
       styles={{ body: { padding: '32px' } }}
     >
@@ -205,10 +205,10 @@ export const AddressManagerTab: React.FC = () => {
         }}
       >
         <div>
-          <Title level={4} style={{ color: '#fff', margin: 0, fontWeight: 700 }}>
+          <Title level={4} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
             Sổ địa chỉ nhận hàng
           </Title>
-          <Text style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+          <Text style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Quản lý địa chỉ giao nhận vật phẩm in 3D cá nhân hóa của bạn.
           </Text>
         </div>
@@ -218,10 +218,11 @@ export const AddressManagerTab: React.FC = () => {
           icon={<PlusOutlined />}
           onClick={handleOpenAdd}
           style={{
-            borderRadius: '8px',
+            borderRadius: 'var(--radius-full)',
             fontWeight: 600,
-            background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-            border: 'none',
+            background: 'var(--primary)',
+            borderColor: 'var(--primary)',
+            boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
           }}
         >
           Thêm địa chỉ mới
@@ -235,10 +236,10 @@ export const AddressManagerTab: React.FC = () => {
       ) : addresses.length === 0 ? (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={<span style={{ color: '#94a3b8' }}>Bạn chưa lưu địa chỉ nhận hàng nào.</span>}
+          description={<span style={{ color: 'var(--text-secondary)' }}>Bạn chưa lưu địa chỉ nhận hàng nào.</span>}
           style={{ padding: '40px 0' }}
         >
-          <Button type="primary" onClick={handleOpenAdd} style={{ borderRadius: '8px' }}>
+          <Button type="primary" onClick={handleOpenAdd} style={{ borderRadius: 'var(--radius-full)', background: 'var(--primary)', borderColor: 'var(--primary)' }}>
             Thêm địa chỉ đầu tiên
           </Button>
         </Empty>
@@ -248,39 +249,40 @@ export const AddressManagerTab: React.FC = () => {
             <Col xs={24} md={12} key={addr.id}>
               <div
                 style={{
-                  background: addr.isDefault ? 'rgba(14, 165, 233, 0.06)' : 'rgba(30, 41, 59, 0.4)',
-                  border: addr.isDefault ? '1.5px solid #0ea5e9' : '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '12px',
+                  background: addr.isDefault ? 'var(--surface-high)' : 'var(--bg-card)',
+                  border: addr.isDefault ? '1.5px solid var(--primary)' : '1px solid var(--border-default)',
+                  borderRadius: 'var(--radius-card)',
                   padding: '20px',
                   position: 'relative',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   height: '100%',
+                  boxShadow: addr.isDefault ? 'var(--shadow-card)' : 'none',
                   transition: 'all 0.2s ease',
                 }}
               >
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Text strong style={{ color: '#fff', fontSize: '1.05rem' }}>
+                      <Text strong style={{ color: 'var(--text-primary)', fontSize: '1.05rem' }}>
                         {addr.recipientName}
                       </Text>
                       {getLabelTag(addr.label)}
                     </div>
                     {addr.isDefault && (
-                      <Tag color="success" icon={<StarFilled />} style={{ margin: 0, fontWeight: 600 }}>
+                      <Tag icon={<StarFilled />} style={{ margin: 0, fontWeight: 600, borderRadius: 'var(--radius-full)', background: 'var(--mint-bg)', color: 'var(--mint-text)', border: 'none' }}>
                         Mặc định
                       </Tag>
                     )}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '0.9rem', marginBottom: '8px' }}>
-                    <PhoneOutlined style={{ color: '#38bdf8' }} /> {addr.phone}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>
+                    <PhoneOutlined style={{ color: 'var(--tertiary)' }} /> {addr.phone}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', color: '#cbd5e1', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                    <EnvironmentOutlined style={{ color: '#38bdf8', marginTop: 4, flexShrink: 0 }} />
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', color: 'var(--text-primary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                    <EnvironmentOutlined style={{ color: 'var(--primary)', marginTop: 4, flexShrink: 0 }} />
                     <span>
                       {addr.streetAddress}, {addr.ward}
                       {addr.district ? `, ${addr.district}` : ''}, {addr.province}
@@ -295,7 +297,7 @@ export const AddressManagerTab: React.FC = () => {
                     justifyContent: 'space-between',
                     marginTop: '20px',
                     paddingTop: '14px',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderTop: '1px solid var(--border-default)',
                   }}
                 >
                   <div>
@@ -306,12 +308,12 @@ export const AddressManagerTab: React.FC = () => {
                         icon={<StarOutlined />}
                         loading={actionLoadingId === addr.id}
                         onClick={() => handleSetDefault(addr)}
-                        style={{ padding: 0, color: '#38bdf8' }}
+                        style={{ padding: 0, color: 'var(--primary)' }}
                       >
                         Đặt làm mặc định
                       </Button>
                     ) : (
-                      <span style={{ fontSize: '0.8rem', color: '#10b981' }}>Địa chỉ giao hàng chính</span>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--tertiary)', fontWeight: 600 }}>Địa chỉ giao hàng chính</span>
                     )}
                   </div>
 
@@ -321,7 +323,7 @@ export const AddressManagerTab: React.FC = () => {
                       size="small"
                       icon={<EditOutlined />}
                       onClick={() => handleOpenEdit(addr)}
-                      style={{ color: '#94a3b8' }}
+                      style={{ color: 'var(--text-secondary)', borderRadius: 'var(--radius-full)' }}
                     >
                       Sửa
                     </Button>
@@ -339,6 +341,7 @@ export const AddressManagerTab: React.FC = () => {
                         size="small"
                         icon={<DeleteOutlined />}
                         loading={actionLoadingId === addr.id}
+                        style={{ borderRadius: 'var(--radius-full)' }}
                       >
                         Xóa
                       </Button>

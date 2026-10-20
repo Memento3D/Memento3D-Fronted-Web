@@ -120,13 +120,13 @@ export const StockAdjustmentsPage: React.FC = () => {
 
   const getStatusTag = (status: StockAdjustmentStatus) => {
     switch (status) {
-      case 'DRAFT': return <Tag color="default">{getStatusLabel('DRAFT')}</Tag>;
-      case 'SUBMITTED': return <Tag color="blue">{getStatusLabel('SUBMITTED')}</Tag>;
-      case 'APPROVED': return <Tag color="gold">{getStatusLabel('APPROVED')}</Tag>;
-      case 'APPLIED': return <Tag color="green">{getStatusLabel('APPLIED')}</Tag>;
-      case 'REJECTED': return <Tag color="red">{getStatusLabel('REJECTED')}</Tag>;
-      case 'CANCELLED': return <Tag color="gray">{getStatusLabel('CANCELLED')}</Tag>;
-      default: return <Tag>{getStatusLabel(status)}</Tag>;
+      case 'DRAFT': return <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--text-secondary, #6A6282)', border: 'none' }}>{getStatusLabel('DRAFT')}</Tag>;
+      case 'SUBMITTED': return <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-high, #EBE4FF)', color: 'var(--primary-system, #5F3ADD)', border: 'none', fontWeight: 600 }}>{getStatusLabel('SUBMITTED')}</Tag>;
+      case 'APPROVED': return <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--secondary-peach, #FFBFAE)', color: '#7C3F2E', border: 'none', fontWeight: 600 }}>{getStatusLabel('APPROVED')}</Tag>;
+      case 'APPLIED': return <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--tertiary-mint, #C9E8D5)', color: 'var(--tertiary, #466253)', border: 'none', fontWeight: 600 }}>{getStatusLabel('APPLIED')}</Tag>;
+      case 'REJECTED': return <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--error-container, #FFDAD6)', color: 'var(--on-error-container, #93000A)', border: 'none', fontWeight: 600 }}>{getStatusLabel('REJECTED')}</Tag>;
+      case 'CANCELLED': return <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-high, #EBE4FF)', color: 'var(--text-secondary, #6A6282)', border: 'none' }}>{getStatusLabel('CANCELLED')}</Tag>;
+      default: return <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)' }}>{getStatusLabel(status)}</Tag>;
     }
   };
 
@@ -137,21 +137,21 @@ export const StockAdjustmentsPage: React.FC = () => {
       title: 'Mã điều chỉnh',
       dataIndex: 'adjustmentCode',
       key: 'code',
-      render: (code: string) => <Text strong style={{ color: '#fbbf24' }}>{code}</Text>,
+      render: (code: string) => <Text strong style={{ color: 'var(--primary, #7C5CFC)' }}>{code}</Text>,
     },
     {
       title: 'Kho hàng',
       dataIndex: 'warehouseName',
       key: 'warehouse',
-      render: (name: string) => <Text style={{ color: '#e2e8f0' }}>{name}</Text>,
+      render: (name: string) => <Text style={{ color: 'var(--text-primary, #28243D)' }}>{name}</Text>,
     },
     {
       title: 'Vật liệu',
       key: 'material',
       render: (_: any, r: StockAdjustment) => (
         <div>
-          <span style={{ color: '#38bdf8', fontWeight: 600 }}>{r.materialSku}</span>
-          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{r.materialName}</div>
+          <span style={{ color: 'var(--primary-system, #5F3ADD)', fontWeight: 600 }}>{r.materialSku}</span>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #6A6282)' }}>{r.materialName}</div>
         </div>
       ),
     },
@@ -160,7 +160,7 @@ export const StockAdjustmentsPage: React.FC = () => {
       key: 'qty',
       render: (_: any, r: StockAdjustment) => (
         <span>
-          {r.currentQuantity} → <Text strong style={{ color: '#e2e8f0' }}>{r.actualQuantity}</Text>
+          {r.currentQuantity} → <Text strong style={{ color: 'var(--text-primary, #28243D)' }}>{r.actualQuantity}</Text>
         </span>
       ),
     },
@@ -171,7 +171,7 @@ export const StockAdjustmentsPage: React.FC = () => {
       render: (diff: number) => {
         const isPos = diff > 0;
         return (
-          <Text strong style={{ color: isPos ? '#10b981' : '#f43f5e', fontSize: '0.9rem' }}>
+          <Text strong style={{ color: isPos ? 'var(--tertiary, #466253)' : 'var(--error, #BA1A1A)', fontSize: '0.9rem' }}>
             {isPos ? `+${diff}` : diff}
           </Text>
         );
@@ -181,7 +181,7 @@ export const StockAdjustmentsPage: React.FC = () => {
       title: 'Lý do',
       dataIndex: 'reason',
       key: 'reason',
-      render: (reason: string) => <Text style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>{reason}</Text>,
+      render: (reason: string) => <Text style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.8rem' }}>{reason}</Text>,
     },
     {
       title: 'Trạng thái',
@@ -195,13 +195,13 @@ export const StockAdjustmentsPage: React.FC = () => {
       render: (_: any, r: StockAdjustment) => (
         <Space size="small">
           {r.status === 'DRAFT' && (
-            <Button size="small" type="primary" icon={<Send size={13} />} onClick={() => submitMutation.mutate(r.id)}>
+            <Button size="small" type="primary" icon={<Send size={13} />} style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--primary, #7C5CFC)' }} onClick={() => submitMutation.mutate(r.id)}>
               Gửi duyệt
             </Button>
           )}
 
           {r.status === 'SUBMITTED' && isManager && (
-            <Button size="small" style={{ background: '#f59e0b', color: '#fff', borderColor: '#f59e0b' }} icon={<Check size={13} />} onClick={() => approveMutation.mutate(r.id)}>
+            <Button size="small" style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--secondary-peach, #FFBFAE)', color: '#28243D', border: 'none', fontWeight: 600 }} icon={<Check size={13} />} onClick={() => approveMutation.mutate(r.id)}>
               Phê duyệt
             </Button>
           )}
@@ -214,7 +214,7 @@ export const StockAdjustmentsPage: React.FC = () => {
               cancelText="Hủy"
               onConfirm={() => applyMutation.mutate(r.id)}
             >
-              <Button size="small" type="primary" style={{ background: '#10b981', borderColor: '#10b981' }} icon={<CheckCircle2 size={13} />}>
+              <Button size="small" type="primary" style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--tertiary-mint, #C9E8D5)', color: 'var(--tertiary, #466253)', border: 'none', fontWeight: 600 }} icon={<CheckCircle2 size={13} />}>
                 Áp dụng vào tồn kho
               </Button>
             </Popconfirm>
@@ -225,23 +225,23 @@ export const StockAdjustmentsPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: 24, maxWidth: 1600, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+    <div style={{ padding: 24, maxWidth: 1600, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary, #28243D)', fontWeight: 800, fontFamily: 'var(--font-family, "Plus Jakarta Sans")' }}>
             Điều chỉnh chênh lệch tồn kho
           </Title>
-          <Text style={{ color: '#94a3b8' }}>
+          <Text style={{ color: 'var(--text-secondary, #6A6282)' }}>
             Quy trình điều chỉnh: BẢN NHÁP → GỬI DUYỆT → ĐÃ DUYỆT → ĐÃ ÁP DỤNG
           </Text>
         </div>
-        <Space>
+        <Space wrap>
           <Select
             placeholder="Lọc theo trạng thái"
             allowClear
             value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
-            style={{ width: 180 }}
+            style={{ width: 180, borderRadius: 'var(--radius-input, 20px)' }}
           >
             <Select.Option value="DRAFT">Bản nháp</Select.Option>
             <Select.Option value="SUBMITTED">Đã gửi duyệt</Select.Option>
@@ -252,7 +252,7 @@ export const StockAdjustmentsPage: React.FC = () => {
           <Button 
             type="primary" 
             icon={<Plus size={15} />} 
-            style={{ background: '#fbbf24', borderColor: '#fbbf24', color: '#0f172a', borderRadius: 8, fontWeight: 700 }}
+            style={{ background: 'var(--primary, #7C5CFC)', color: '#fff', borderRadius: 'var(--radius-pill, 9999px)', fontWeight: 600, border: 'none', boxShadow: 'var(--shadow-primary-sm)' }}
             onClick={() => setIsCreateModalOpen(true)}
           >
             Tạo yêu cầu điều chỉnh
@@ -260,7 +260,7 @@ export const StockAdjustmentsPage: React.FC = () => {
         </Space>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card style={{ background: '#fff', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <Table 
           columns={columns} 
           dataSource={adjustmentsData?.content || []} 
@@ -303,20 +303,20 @@ export const StockAdjustmentsPage: React.FC = () => {
           </Form.Item>
 
           <Form.Item name="actualQuantity" label="Số lượng thực tế kiểm kê" rules={[{ required: true, message: 'Vui lòng nhập số lượng thực tế' }]}>
-            <InputNumber min={0} step={1} placeholder="Số lượng thực tế sau kiểm đếm" style={{ width: '100%' }} />
+            <InputNumber min={0} step={1} placeholder="Số lượng thực tế sau kiểm đếm" style={{ width: '100%', borderRadius: 'var(--radius-input, 20px)' }} />
           </Form.Item>
 
           <Form.Item name="reason" label="Lý do chênh lệch" rules={[{ required: true, message: 'Lý do là bắt buộc' }]}>
-            <Input.TextArea rows={3} placeholder="Giải trình chênh lệch (VD: Hỏng cuộn nhựa khi in, sai lệch kiểm kê, hư hại trong kho...)" />
+            <Input.TextArea rows={3} placeholder="Giải trình chênh lệch (VD: Hỏng cuộn nhựa khi in, sai lệch kiểm kê, hư hại trong kho...)" style={{ borderRadius: 'var(--radius-default, 16px)' }} />
           </Form.Item>
 
           <Form.Item name="evidence" label="Tham chiếu kiểm kê / Liên kết bằng chứng">
-            <Input placeholder="Link ảnh, mã phiếu sự cố, số biên bản kiểm kê..." />
+            <Input placeholder="Link ảnh, mã phiếu sự cố, số biên bản kiểm kê..." style={{ borderRadius: 'var(--radius-input, 20px)' }} />
           </Form.Item>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24 }}>
-            <Button onClick={() => setIsCreateModalOpen(false)}>Hủy</Button>
-            <Button type="primary" htmlType="submit" loading={createMutation.isPending} style={{ background: '#fbbf24', borderColor: '#fbbf24', color: '#0f172a', fontWeight: 700 }}>
+            <Button style={{ borderRadius: 'var(--radius-pill, 9999px)' }} onClick={() => setIsCreateModalOpen(false)}>Hủy</Button>
+            <Button type="primary" htmlType="submit" loading={createMutation.isPending} style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--primary, #7C5CFC)', border: 'none', fontWeight: 600 }}>
               Tạo yêu cầu điều chỉnh
             </Button>
           </div>

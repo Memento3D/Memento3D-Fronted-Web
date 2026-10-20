@@ -96,13 +96,13 @@ export const OperatorHomePage: React.FC = () => {
             icon={<Play size={16} style={{ fill: '#fff' }} />}
             onClick={() => navigate('/manager/print-jobs')}
             style={{
-              background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+              background: 'var(--primary, #7C5CFC)',
               borderColor: 'transparent',
               fontWeight: 700,
               height: 44,
               padding: '0 24px',
-              borderRadius: 10,
-              boxShadow: '0 4px 14px rgba(168, 85, 247, 0.4)',
+              borderRadius: 'var(--radius-full, 9999px)',
+              boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.3)',
             }}
           >
             Bắt đầu công việc
@@ -140,8 +140,8 @@ export const OperatorHomePage: React.FC = () => {
           value={printJobs.length}
           subtext={`${queuedCount} lệnh đang chờ`}
           icon={<Printer size={18} />}
-          iconBg="rgba(168, 85, 247, 0.15)"
-          iconColor="#a855f7"
+          iconBg="var(--surface-container, #F1EBFF)"
+          iconColor="var(--primary, #7C5CFC)"
           loading={isJobsLoading}
           onClick={() => navigate('/manager/print-jobs')}
         />
@@ -150,8 +150,8 @@ export const OperatorHomePage: React.FC = () => {
           value={printingCount}
           subtext="Đang gia công đùn nhựa"
           icon={<Cpu size={18} />}
-          iconBg="rgba(14, 165, 233, 0.15)"
-          iconColor="#0ea5e9"
+          iconBg="var(--surface-high, #EBE4FF)"
+          iconColor="var(--primary, #7C5CFC)"
           loading={isJobsLoading}
           onClick={() => navigate('/manager/print-jobs')}
         />
@@ -160,8 +160,8 @@ export const OperatorHomePage: React.FC = () => {
           value={qcPendingCount}
           subtext="Cần kiểm định lớp in"
           icon={<ShieldCheck size={18} />}
-          iconBg="rgba(245, 158, 11, 0.15)"
-          iconColor="#f59e0b"
+          iconBg="var(--peach-accent, #FFBFAE)"
+          iconColor="var(--text-primary, #28243D)"
           loading={isJobsLoading}
           onClick={() => navigate('/manager/print-jobs')}
         />
@@ -170,8 +170,8 @@ export const OperatorHomePage: React.FC = () => {
           value={failedCount}
           subtext="Cần kiểm tra sự cố"
           icon={<AlertOctagon size={18} />}
-          iconBg="rgba(239, 68, 68, 0.15)"
-          iconColor="#ef4444"
+          iconBg="var(--error-container, #FFDAD6)"
+          iconColor="var(--on-error-container, #93000A)"
           loading={isJobsLoading}
           onClick={() => navigate('/manager/print-jobs')}
         />
@@ -180,8 +180,8 @@ export const OperatorHomePage: React.FC = () => {
           value={completedTodayCount}
           subtext="Đạt chuẩn bàn giao"
           icon={<CheckCircle size={18} />}
-          iconBg="rgba(16, 185, 129, 0.15)"
-          iconColor="#10b981"
+          iconBg="var(--mint-accent, #C9E8D5)"
+          iconColor="var(--tertiary, #466253)"
           loading={isJobsLoading}
           onClick={() => navigate('/manager/print-jobs')}
         />
@@ -197,40 +197,40 @@ export const OperatorHomePage: React.FC = () => {
             title="Lệnh in của tôi"
             description="Xem danh sách hàng đợi in"
             icon={<Printer size={20} />}
-            iconBg="rgba(168, 85, 247, 0.15)"
-            iconColor="#a855f7"
+            iconBg="var(--surface-container, #F1EBFF)"
+            iconColor="var(--primary, #7C5CFC)"
             onClick={() => navigate('/manager/print-jobs')}
           />
           <QuickActionCard
             title="Kiểm tra máy in"
             description="Nhiệt độ đùn, bàn in & camera"
             icon={<Cpu size={20} />}
-            iconBg="rgba(14, 165, 233, 0.15)"
-            iconColor="#0ea5e9"
+            iconBg="var(--surface-high, #EBE4FF)"
+            iconColor="var(--primary, #7C5CFC)"
             onClick={() => navigate('/manager/print-jobs')}
           />
           <QuickActionCard
             title="Quality Check (QC)"
             description="Kiểm tra kích thước & độ mịn"
             icon={<ShieldCheck size={20} />}
-            iconBg="rgba(16, 185, 129, 0.15)"
-            iconColor="#10b981"
+            iconBg="var(--mint-accent, #C9E8D5)"
+            iconColor="var(--tertiary, #466253)"
             onClick={() => navigate('/manager/print-jobs')}
           />
           <QuickActionCard
             title="Lịch sử xuất nhập vật tư"
             description="Xem biến động cuộn nhựa"
             icon={<History size={20} />}
-            iconBg="rgba(245, 158, 11, 0.15)"
-            iconColor="#f59e0b"
+            iconBg="var(--peach-accent, #FFBFAE)"
+            iconColor="var(--text-primary, #28243D)"
             onClick={() => navigate('/manager/inventory/transactions')}
           />
           <QuickActionCard
             title="Danh mục vật liệu"
             description="Xem tồn kho cuộn nhựa khả dụng"
             icon={<Layers size={20} />}
-            iconBg="rgba(6, 182, 212, 0.15)"
-            iconColor="#06b6d4"
+            iconBg="var(--surface-container, #F1EBFF)"
+            iconColor="var(--primary, #7C5CFC)"
             onClick={() => navigate('/manager/materials')}
           />
         </div>

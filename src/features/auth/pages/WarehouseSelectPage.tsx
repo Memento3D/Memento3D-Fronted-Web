@@ -30,7 +30,7 @@ export const WarehouseSelectPage: React.FC = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          background: '#090d16',
+          background: 'var(--bg-app, #F8F5FF)',
         }}
       >
         <Spin size="large" tip="Đang tải danh sách cơ sở kho được ủy quyền..." />
@@ -46,7 +46,7 @@ export const WarehouseSelectPage: React.FC = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          background: '#090d16',
+          background: 'var(--bg-app, #F8F5FF)',
           padding: 24,
         }}
       >
@@ -55,7 +55,7 @@ export const WarehouseSelectPage: React.FC = () => {
           title="Chưa có quyền thành viên kho"
           subTitle="Tài khoản của bạn chưa được phân công vào bất kỳ trung tâm kho khu vực nào. Vui lòng liên hệ Quản trị viên để được cấp quyền."
           extra={[
-            <Button type="primary" key="home" onClick={() => navigate('/manager/inventory')}>
+            <Button type="primary" key="home" onClick={() => navigate('/manager/inventory')} style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}>
               Đến cổng tổng quan
             </Button>,
           ]}
@@ -72,7 +72,7 @@ export const WarehouseSelectPage: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'radial-gradient(ellipse at 50% 20%, #0f172a 0%, #020617 100%)',
+        background: 'radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 191, 174, 0.12) 0%, transparent 40%), var(--bg-app, #F8F5FF)',
         padding: '32px 16px',
       }}
     >
@@ -85,18 +85,19 @@ export const WarehouseSelectPage: React.FC = () => {
               justifyContent: 'center',
               width: 56,
               height: 56,
-              borderRadius: 16,
-              background: 'linear-gradient(135deg, #06b6d4 0%, #0284c7 100%)',
-              boxShadow: '0 8px 24px rgba(6, 182, 212, 0.35)',
+              borderRadius: 20,
+              background: 'var(--surface-container, #F1EBFF)',
+              border: '1px solid var(--border-default, #E2D9F7)',
+              boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.15)',
               marginBottom: 16,
             }}
           >
-            <HomeOutlined style={{ fontSize: 28, color: '#ffffff' }} />
+            <HomeOutlined style={{ fontSize: 28, color: 'var(--primary, #7C5CFC)' }} />
           </div>
-          <Title level={2} style={{ color: '#f8fafc', margin: 0, fontWeight: 800 }}>
+          <Title level={2} style={{ color: 'var(--text-primary, #28243D)', margin: 0, fontWeight: 800 }}>
             Chọn cơ sở kho làm việc
           </Title>
-          <Paragraph style={{ color: '#94a3b8', fontSize: '0.95rem', marginTop: 8 }}>
+          <Paragraph style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.95rem', marginTop: 8 }}>
             Bạn đang phụ trách hoạt động tại nhiều trung tâm chế tác 3D. Vui lòng chọn cơ sở kho bạn làm việc hôm nay.
           </Paragraph>
         </div>
@@ -108,29 +109,29 @@ export const WarehouseSelectPage: React.FC = () => {
                 hoverable
                 onClick={() => handleSelectWarehouse(wh)}
                 style={{
-                  background: 'rgba(15, 23, 42, 0.75)',
-                  backdropFilter: 'blur(16px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: 16,
+                  background: 'var(--surface-card, #FFFFFF)',
+                  border: '1px solid var(--border-default, #E2D9F7)',
+                  borderRadius: 'var(--radius-card-standard, 24px)',
+                  boxShadow: 'var(--shadow-card)',
                   transition: 'all 0.25s ease',
                 }}
-                bodyStyle={{ padding: 24 }}
+                styles={{ body: { padding: 24 } }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                  <Tag color="cyan" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '2px 10px', borderRadius: 6 }}>
+                  <Tag style={{ fontSize: '0.85rem', fontWeight: 700, padding: '2px 12px', borderRadius: 'var(--radius-full, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary, #7C5CFC)', border: '1px solid var(--border-default, #E2D9F7)' }}>
                     {wh.code}
                   </Tag>
-                  <Tag color={wh.status === 'ACTIVE' ? 'success' : 'default'}>
+                  <Tag color={wh.status === 'ACTIVE' ? 'success' : 'default'} style={{ borderRadius: 'var(--radius-full, 9999px)' }}>
                     {getStatusLabel(wh.status)}
                   </Tag>
                 </div>
 
-                <Title level={4} style={{ color: '#ffffff', margin: '0 0 8px 0' }}>
+                <Title level={4} style={{ color: 'var(--text-primary, #28243D)', margin: '0 0 8px 0' }}>
                   {wh.name}
                 </Title>
 
                 {wh.location && (
-                  <Space style={{ color: '#94a3b8', fontSize: '0.825rem', marginBottom: 20 }}>
+                  <Space style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.825rem', marginBottom: 20 }}>
                     <EnvironmentOutlined />
                     <span>{wh.location}</span>
                   </Space>
@@ -141,11 +142,13 @@ export const WarehouseSelectPage: React.FC = () => {
                   block
                   icon={<ArrowRightOutlined />}
                   style={{
-                    borderRadius: 8,
-                    fontWeight: 600,
-                    background: 'linear-gradient(135deg, #06b6d4 0%, #0284c7 100%)',
+                    borderRadius: 'var(--radius-full, 9999px)',
+                    fontWeight: 700,
+                    background: 'var(--primary, #7C5CFC)',
                     border: 'none',
                     marginTop: 12,
+                    height: '42px',
+                    boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.25)',
                   }}
                 >
                   Vào không gian kho này

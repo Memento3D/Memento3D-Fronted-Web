@@ -102,18 +102,18 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
       {/* Account Security Overview Card */}
       <Card
         style={{
-          background: 'rgba(15, 23, 42, 0.7)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border-default)',
+          borderRadius: 'var(--radius-card)',
+          boxShadow: 'var(--shadow-card)',
         }}
         styles={{ body: { padding: '32px' } }}
       >
         <div style={{ marginBottom: '20px' }}>
-          <Title level={4} style={{ color: '#fff', margin: 0, fontWeight: 700 }}>
+          <Title level={4} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
             Tình trạng bảo mật tài khoản
           </Title>
-          <Text style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+          <Text style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Thông tin về phương thức đăng nhập và bảo vệ tài khoản của bạn.
           </Text>
         </div>
@@ -121,16 +121,16 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
         <Descriptions
           column={{ xs: 1, sm: 2, md: 3 }}
           style={{ marginTop: '16px' }}
-          labelStyle={{ color: '#94a3b8', fontWeight: 600 }}
-          contentStyle={{ color: '#f8fafc' }}
+          labelStyle={{ color: 'var(--text-secondary)', fontWeight: 600 }}
+          contentStyle={{ color: 'var(--text-primary)' }}
         >
           <Descriptions.Item label="Phương thức đăng nhập">
             {user.provider === 'GOOGLE' ? (
-              <Tag icon={<GoogleOutlined />} color="default" style={{ color: '#38bdf8', borderColor: '#38bdf8' }}>
+              <Tag icon={<GoogleOutlined />} style={{ borderRadius: 'var(--radius-full)', background: 'var(--surface-container)', color: 'var(--primary)', borderColor: 'var(--border-default)' }}>
                 Google OAuth 2.0
               </Tag>
             ) : (
-              <Tag icon={<LockOutlined />} color="blue">
+              <Tag icon={<LockOutlined />} style={{ borderRadius: 'var(--radius-full)', background: 'var(--lavender-bg)', color: 'var(--primary)', border: 'none' }}>
                 Mật khẩu cục bộ (Local)
               </Tag>
             )}
@@ -138,16 +138,18 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
 
           <Descriptions.Item label="Trạng thái xác thực Email">
             {user.emailVerified ? (
-              <Tag color="success" icon={<CheckCircleFilled />}>
+              <Tag style={{ borderRadius: 'var(--radius-full)', background: 'var(--mint-bg)', color: 'var(--mint-text)', border: 'none' }} icon={<CheckCircleFilled />}>
                 Đã bảo vệ bằng xác minh email
               </Tag>
             ) : (
-              <Tag color="warning">Chưa xác minh email</Tag>
+              <Tag style={{ borderRadius: 'var(--radius-full)', background: 'var(--peach-bg)', color: 'var(--peach-text)', border: 'none' }}>
+                Chưa xác minh email
+              </Tag>
             )}
           </Descriptions.Item>
 
           <Descriptions.Item label="Trạng thái tài khoản">
-            <Tag color="green" icon={<ThunderboltFilled />}>
+            <Tag style={{ borderRadius: 'var(--radius-full)', background: 'var(--mint-bg)', color: 'var(--mint-text)', border: 'none' }} icon={<ThunderboltFilled />}>
               {user.status || 'ACTIVE'}
             </Tag>
           </Descriptions.Item>
@@ -157,18 +159,18 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
       {/* Change Password Card */}
       <Card
         style={{
-          background: 'rgba(15, 23, 42, 0.7)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border-default)',
+          borderRadius: 'var(--radius-card)',
+          boxShadow: 'var(--shadow-card)',
         }}
         styles={{ body: { padding: '32px' } }}
       >
         <div style={{ marginBottom: '24px' }}>
-          <Title level={4} style={{ color: '#fff', margin: 0, fontWeight: 700 }}>
+          <Title level={4} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
             {isGoogleOnly ? 'Thiết lập mật khẩu dự phòng' : 'Đổi mật khẩu'}
           </Title>
-          <Text style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+          <Text style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             {isGoogleOnly
               ? 'Tài khoản của bạn được liên kết qua Google OAuth. Bạn có thể thiết lập thêm mật khẩu trực tiếp để đăng nhập linh hoạt.'
               : 'Thay đổi mật khẩu định kỳ để bảo vệ tài khoản khỏi các rủi ro an ninh mạng.'}
@@ -265,13 +267,14 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
           <Alert
             type="warning"
             showIcon
-            icon={<SafetyCertificateOutlined style={{ color: '#f59e0b' }} />}
+            icon={<SafetyCertificateOutlined style={{ color: 'var(--peach-text)' }} />}
             message="Chính sách bảo mật phiên làm việc"
             description="Sau khi đổi mật khẩu thành công, toàn bộ các phiên đăng nhập khác của bạn trên các thiết bị hoặc trình duyệt khác sẽ bị hủy ngay lập tức để bảo đảm an toàn."
             style={{
               marginBottom: 24,
-              background: 'rgba(245, 158, 11, 0.08)',
-              border: '1px solid rgba(245, 158, 11, 0.25)',
+              background: 'var(--peach-bg)',
+              border: '1px solid var(--peach-border)',
+              borderRadius: 'var(--radius-default)',
             }}
           />
 
@@ -281,11 +284,11 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user, onUserUpdated })
             size="large"
             loading={loading}
             style={{
-              borderRadius: '8px',
+              borderRadius: 'var(--radius-full)',
               fontWeight: 700,
-              background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-              border: 'none',
-              boxShadow: '0 4px 14px rgba(14, 165, 233, 0.4)',
+              background: 'var(--primary)',
+              borderColor: 'var(--primary)',
+              boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
               minWidth: '160px',
             }}
           >

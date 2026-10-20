@@ -114,7 +114,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
                 <div style={{ marginTop: 8 }}>
                   <Link
                     to={`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`}
-                    style={{ color: '#38bdf8', fontWeight: 600, textDecoration: 'underline' }}
+                    style={{ color: 'var(--primary, #7C5CFC)', fontWeight: 600, textDecoration: 'underline' }}
                   >
                     Bấm vào đây để tới trang nhận lại email xác minh &rarr;
                   </Link>
@@ -122,7 +122,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
               )}
             </div>
           }
-          style={{ marginBottom: 20 }}
+          style={{ marginBottom: 20, borderRadius: 'var(--radius-default, 16px)' }}
           closable
           onClose={() => setErrorMessage(null)}
         />
@@ -137,7 +137,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
         autoComplete="on"
       >
         <Form.Item
-          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Email {portalConfig.actor === 'customer' ? 'đăng nhập' : 'công việc'}</span>}
+          label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Email {portalConfig.actor === 'customer' ? 'đăng nhập' : 'công việc'}</span>}
           name="email"
           rules={[
             { required: true, message: 'Vui lòng nhập email' },
@@ -145,26 +145,26 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
           ]}
         >
           <Input
-            prefix={<MailOutlined style={{ color: '#64748b' }} />}
+            prefix={<MailOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
             placeholder={portalConfig.actor === 'customer' ? 'email@example.com' : 'user@memento3d.vn'}
             size="large"
             autoComplete="email"
-            style={{ borderRadius: '8px' }}
+            style={{ borderRadius: 'var(--radius-input, 20px)' }}
           />
         </Form.Item>
 
         <Form.Item
-          label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mật khẩu</span>}
+          label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Mật khẩu</span>}
           name="password"
           rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
           style={{ marginBottom: 10 }}
         >
           <Input.Password
-            prefix={<LockOutlined style={{ color: '#64748b' }} />}
+            prefix={<LockOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
             placeholder="Nhập mật khẩu"
             size="large"
             autoComplete="current-password"
-            style={{ borderRadius: '8px' }}
+            style={{ borderRadius: 'var(--radius-input, 20px)' }}
           />
         </Form.Item>
 
@@ -172,9 +172,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
           <Link
             to="/forgot-password"
             style={{
-              color: '#38bdf8',
+              color: 'var(--primary, #7C5CFC)',
               fontSize: '0.85rem',
-              fontWeight: 500,
+              fontWeight: 600,
               textDecoration: 'none',
             }}
           >
@@ -191,12 +191,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
             loading={loading}
             icon={<ArrowRightOutlined />}
             style={{
-              height: '44px',
-              borderRadius: '8px',
+              height: '46px',
+              borderRadius: 'var(--radius-full, 9999px)',
               fontWeight: 700,
-              background: portalConfig.accentGradient,
+              background: 'var(--primary, #7C5CFC)',
               border: 'none',
-              boxShadow: '0 4px 14px rgba(14, 165, 233, 0.4)',
+              boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.3)',
             }}
           >
             Đăng nhập {portalConfig.badge}
@@ -206,8 +206,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
 
       {portalConfig.showGoogleLogin && (
         <>
-          <Divider plain style={{ margin: '18px 0', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-            <span style={{ color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+          <Divider plain style={{ margin: '18px 0', borderColor: 'var(--border-default, #E2D9F7)' }}>
+            <span style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Hoặc đăng nhập với
             </span>
           </Divider>
@@ -221,14 +221,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
 
       {portalConfig.actor === 'customer' && (
         <div style={{ textAlign: 'center', marginTop: 20 }}>
-          <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
+          <span style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.875rem' }}>
             Chưa có tài khoản?{' '}
           </span>
           <Link
             to="/register"
             style={{
-              color: '#38bdf8',
-              fontWeight: 600,
+              color: 'var(--primary, #7C5CFC)',
+              fontWeight: 700,
               fontSize: '0.875rem',
               textDecoration: 'none',
             }}

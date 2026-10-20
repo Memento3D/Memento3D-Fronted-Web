@@ -1,17 +1,17 @@
 /* ==========================================================================
-   Category Card CSS (Memento3D)
+   Category Card CSS (Atelier Forge)
    ========================================================================== */
 
 .memento-category-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 24px 20px;
+  padding: 26px 22px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card, 24px);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-card);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   height: 100%;
@@ -19,8 +19,8 @@
 
 .memento-category-card:hover {
   transform: translateY(-4px);
-  border-color: var(--border-color-hover);
-  box-shadow: var(--shadow-md);
+  border-color: rgba(124, 92, 252, 0.35);
+  box-shadow: var(--shadow-floating);
 }
 
 .category-card-glow {
@@ -41,11 +41,11 @@
 }
 
 .category-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: rgba(14, 165, 233, 0.1);
-  border: 1px solid rgba(14, 165, 233, 0.2);
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-default);
+  background: var(--surface-container);
+  border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,7 +55,8 @@
 
 .memento-category-card:hover .category-icon-wrapper {
   transform: scale(1.1) rotate(4deg);
-  background: rgba(14, 165, 233, 0.2);
+  background: var(--surface-high);
+  border-color: var(--primary);
 }
 
 .category-emoji {
@@ -72,7 +73,7 @@
 }
 
 .category-name {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -84,9 +85,9 @@
 }
 
 .category-description {
-  font-size: 0.8rem;
+  font-size: 0.825rem;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.45;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -99,21 +100,32 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 12px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-subtle);
+  margin-top: auto;
 }
 
-.category-link-cta {
-  font-size: 0.8rem;
+.category-product-count {
+  font-size: 0.775rem;
+  color: var(--text-secondary);
   font-weight: 600;
-  color: var(--primary);
 }
 
-.category-arrow {
-  color: var(--text-muted);
-  transition: transform 0.2s ease, color 0.2s ease;
+.category-arrow-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--surface-container);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  transition: all var(--transition-fast);
 }
 
-.memento-category-card:hover .category-arrow {
-  color: var(--primary);
-  transform: translateX(4px);
+.memento-category-card:hover .category-arrow-btn {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+  transform: translateX(3px);
 }

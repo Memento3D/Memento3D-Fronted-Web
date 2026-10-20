@@ -22,8 +22,9 @@ export const ProductEmptyState: React.FC<ProductEmptyStateProps> = ({
         padding: '56px 24px',
         background: 'var(--bg-card)',
         border: '1px dashed var(--border-color)',
-        borderRadius: 'var(--radius-lg)',
+        borderRadius: 'var(--radius-card, 24px)',
         margin: '20px 0',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       <div
@@ -32,11 +33,12 @@ export const ProductEmptyState: React.FC<ProductEmptyStateProps> = ({
           height: 64,
           margin: '0 auto 16px',
           borderRadius: '50%',
-          background: 'rgba(14, 165, 233, 0.1)',
+          background: 'var(--surface-container, #F1EBFF)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'var(--primary)',
+          color: 'var(--primary, #7C5CFC)',
+          boxShadow: '0 4px 14px var(--primary-glow)',
         }}
       >
         <svg
@@ -84,10 +86,12 @@ export const ProductEmptyState: React.FC<ProductEmptyStateProps> = ({
           icon={<ClearOutlined />}
           onClick={onReset}
           style={{
-            borderRadius: 'var(--radius-md)',
+            borderRadius: 'var(--radius-full, 9999px)',
             fontWeight: 600,
-            padding: '0 20px',
-            height: 38,
+            padding: '0 24px',
+            height: 40,
+            background: 'var(--primary)',
+            borderColor: 'var(--primary)',
           }}
         >
           {resetText}

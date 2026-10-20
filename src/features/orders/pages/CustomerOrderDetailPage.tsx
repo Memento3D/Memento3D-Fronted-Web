@@ -189,17 +189,17 @@ export const CustomerOrderDetailPage: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050811', color: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
       <Navbar />
 
-      <main style={{ maxWidth: 1140, margin: '0 auto', padding: '100px 24px 60px' }}>
+      <main style={{ maxWidth: 1140, margin: '0 auto', padding: '120px 24px 60px' }}>
         {/* Top Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate('/customer/orders')}
-            style={{ color: '#94a3b8', paddingLeft: 0 }}
+            style={{ color: 'var(--text-secondary)', paddingLeft: 0, borderRadius: 'var(--radius-full)' }}
           >
             Danh sách đơn hàng
           </Button>
@@ -209,10 +209,10 @@ export const CustomerOrderDetailPage: React.FC = () => {
               icon={<ReloadOutlined spin={isFetching} />}
               onClick={() => refetch()}
               style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                color: '#cbd5e1',
-                borderRadius: 8,
+                background: 'var(--surface-container)',
+                borderColor: 'var(--border-default)',
+                color: 'var(--text-primary)',
+                borderRadius: 'var(--radius-full)',
               }}
             >
               Cập nhật
@@ -224,10 +224,11 @@ export const CustomerOrderDetailPage: React.FC = () => {
                 icon={<CreditCardOutlined />}
                 onClick={() => setPaymentModalOpen(true)}
                 style={{
-                  background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                  borderColor: 'transparent',
+                  background: 'var(--primary)',
+                  borderColor: 'var(--primary)',
                   fontWeight: 700,
-                  borderRadius: 8,
+                  borderRadius: 'var(--radius-full)',
+                  boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
                 }}
               >
                 Thanh toán lại
@@ -240,9 +241,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                 icon={<StopOutlined />}
                 onClick={() => setCancelModalOpen(true)}
                 style={{
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  borderColor: 'rgba(239, 68, 68, 0.3)',
-                  borderRadius: 8,
+                  borderRadius: 'var(--radius-full)',
                 }}
               >
                 Hủy đơn
@@ -254,10 +253,10 @@ export const CustomerOrderDetailPage: React.FC = () => {
         {/* Order Title & Status */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
-            <h1 style={{ color: '#fff', margin: 0, fontWeight: 800, fontSize: '1.75rem' }}>
+            <h1 style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 800, fontSize: '1.75rem' }}>
               Đơn hàng #{orderCode}
             </h1>
-            <div style={{ color: '#94a3b8', marginTop: 4, fontSize: '0.85rem' }}>
+            <div style={{ color: 'var(--text-secondary)', marginTop: 4, fontSize: '0.85rem' }}>
               Ngày tạo: {formatOrderDate(order.createdAt)}
             </div>
           </div>
@@ -279,9 +278,11 @@ export const CustomerOrderDetailPage: React.FC = () => {
                   icon={<EyeOutlined />}
                   onClick={() => setModelReviewModalOpen(true)}
                   style={{
-                    background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                    borderColor: 'transparent',
+                    background: 'var(--primary)',
+                    borderColor: 'var(--primary)',
                     fontWeight: 700,
+                    borderRadius: 'var(--radius-full)',
+                    boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
                   }}
                 >
                   Xem & Duyệt mô hình 3D
@@ -329,11 +330,11 @@ export const CustomerOrderDetailPage: React.FC = () => {
             description="Kiện hàng đã xuất kho và đang trên đường vận chuyển tới địa chỉ nhận hàng của bạn."
             type="success"
             showIcon
-            icon={<CarOutlined style={{ fontSize: 20, color: '#22c55e' }} />}
+            icon={<CarOutlined style={{ fontSize: 20, color: 'var(--tertiary)' }} />}
             style={{
-              background: 'rgba(34, 197, 94, 0.08)',
-              border: '1px solid rgba(34, 197, 94, 0.3)',
-              borderRadius: 12,
+              background: 'var(--mint-bg)',
+              border: '1px solid var(--mint-border)',
+              borderRadius: 'var(--radius-default)',
               marginBottom: 24,
             }}
           />
@@ -346,11 +347,11 @@ export const CustomerOrderDetailPage: React.FC = () => {
             description="Đơn hàng của bạn sẽ được xưởng in chế tác và giao tới địa chỉ. Bạn sẽ thanh toán tiền mặt trực tiếp cho nhân viên giao hàng hoặc khi nhận sản phẩm."
             type="info"
             showIcon
-            icon={<DollarCircleOutlined style={{ fontSize: 20, color: '#22c55e' }} />}
+            icon={<DollarCircleOutlined style={{ fontSize: 20, color: 'var(--tertiary)' }} />}
             style={{
-              background: 'rgba(34, 197, 94, 0.08)',
-              border: '1px solid rgba(34, 197, 94, 0.3)',
-              borderRadius: 12,
+              background: 'var(--surface-container)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 'var(--radius-default)',
               marginBottom: 24,
             }}
           />
@@ -361,14 +362,15 @@ export const CustomerOrderDetailPage: React.FC = () => {
           <Col xs={24} lg={15}>
             {/* Order Items Table */}
             <Card
-              title={<span style={{ color: '#f8fafc', fontWeight: 700 }}>Danh sách sản phẩm</span>}
+              title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Danh sách sản phẩm</span>}
               style={{
-                background: 'rgba(18, 25, 41, 0.7)',
-                borderColor: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: 14,
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-card)',
+                boxShadow: 'var(--shadow-card)',
                 marginBottom: 24,
               }}
-              bodyStyle={{ padding: 0 }}
+              styles={{ body: { padding: 0 } }}
             >
               {order.items && order.items.length > 0 ? (
                 <Table
@@ -385,19 +387,19 @@ export const CustomerOrderDetailPage: React.FC = () => {
                             <img
                               src={item.thumbnailSnapshot}
                               alt=""
-                              style={{ width: 44, height: 44, borderRadius: 6, objectFit: 'cover' }}
+                              style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', objectFit: 'cover' }}
                             />
                           ) : (
-                            <div style={{ width: 44, height: 44, borderRadius: 6, background: '#090d16', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', background: 'var(--surface-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               📦
                             </div>
                           )}
                           <div>
-                            <div style={{ fontWeight: 600, color: '#f8fafc' }}>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                               {item.productNameSnapshot}
                             </div>
                             {item.customizationSnapshot && Object.keys(item.customizationSnapshot).length > 0 && (
-                              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                                 {Object.entries(item.customizationSnapshot).map(([k, v]) => `${k}: ${v}`).join(' | ')}
                               </div>
                             )}
@@ -424,7 +426,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       key: 'subtotal',
                       align: 'right',
                       render: (sub) => (
-                        <span style={{ fontWeight: 700, color: '#38bdf8' }}>
+                        <span style={{ fontWeight: 700, color: 'var(--primary)' }}>
                           {formatCurrency(sub, order.currency || 'VND')}
                         </span>
                       ),
@@ -432,7 +434,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                   ]}
                 />
               ) : (
-                <div style={{ padding: 20, color: '#94a3b8', textAlign: 'center' }}>
+                <div style={{ padding: 20, color: 'var(--text-secondary)', textAlign: 'center' }}>
                   Kỷ vật 3D cá nhân hóa Memento3D
                 </div>
               )}
@@ -441,7 +443,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
             {/* Delivery Info */}
             <Card
               title={
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#f8fafc' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-primary)' }}>
                   <span>Địa chỉ & Thông tin nhận hàng</span>
                   {isEligibleToPay && (
                     <Button
@@ -456,9 +458,10 @@ export const CustomerOrderDetailPage: React.FC = () => {
                         setEditAddressOpen(true);
                       }}
                       style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        color: '#cbd5e1',
+                        background: 'var(--surface-container)',
+                        borderColor: 'var(--border-default)',
+                        color: 'var(--text-primary)',
+                        borderRadius: 'var(--radius-full)',
                       }}
                     >
                       Sửa
@@ -467,32 +470,34 @@ export const CustomerOrderDetailPage: React.FC = () => {
                 </div>
               }
               style={{
-                background: 'rgba(18, 25, 41, 0.7)',
-                borderColor: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: 14,
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-card)',
+                boxShadow: 'var(--shadow-card)',
                 marginBottom: 24,
               }}
+              styles={{ body: { padding: 24 } }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <UserOutlined style={{ color: '#0ea5e9' }} />
-                  <span style={{ color: '#94a3b8', minWidth: 100 }}>Người nhận:</span>
-                  <span style={{ color: '#f8fafc', fontWeight: 600 }}>{order.recipientName}</span>
+                  <UserOutlined style={{ color: 'var(--primary)' }} />
+                  <span style={{ color: 'var(--text-secondary)', minWidth: 100 }}>Người nhận:</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{order.recipientName}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <PhoneOutlined style={{ color: '#10b981' }} />
-                  <span style={{ color: '#94a3b8', minWidth: 100 }}>Số điện thoại:</span>
-                  <span style={{ color: '#f8fafc', fontWeight: 600 }}>{order.phone}</span>
+                  <PhoneOutlined style={{ color: 'var(--tertiary)' }} />
+                  <span style={{ color: 'var(--text-secondary)', minWidth: 100 }}>Số điện thoại:</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{order.phone}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <EnvironmentOutlined style={{ color: '#f59e0b', marginTop: 4 }} />
-                  <span style={{ color: '#94a3b8', minWidth: 100 }}>Địa chỉ giao:</span>
-                  <span style={{ color: '#cbd5e1' }}>{order.shippingAddress}</span>
+                  <EnvironmentOutlined style={{ color: 'var(--primary-system)', marginTop: 4 }} />
+                  <span style={{ color: 'var(--text-secondary)', minWidth: 100 }}>Địa chỉ giao:</span>
+                  <span style={{ color: 'var(--text-primary)' }}>{order.shippingAddress}</span>
                 </div>
                 {order.note && (
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                    <span style={{ color: '#94a3b8', minWidth: 100 }}>Ghi chú:</span>
-                    <span style={{ color: '#cbd5e1', fontStyle: 'italic' }}>{order.note}</span>
+                    <span style={{ color: 'var(--text-secondary)', minWidth: 100 }}>Ghi chú:</span>
+                    <span style={{ color: 'var(--text-primary)', fontStyle: 'italic' }}>{order.note}</span>
                   </div>
                 )}
               </div>
@@ -501,11 +506,12 @@ export const CustomerOrderDetailPage: React.FC = () => {
             {/* Payment Transactions History */}
             {orderPayments.length > 0 && (
               <Card
-                title={<span style={{ color: '#f8fafc' }}>Lịch sử giao dịch thanh toán</span>}
+                title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Lịch sử giao dịch thanh toán</span>}
                 style={{
-                  background: 'rgba(18, 25, 41, 0.7)',
-                  borderColor: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: 14,
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-default)',
+                  borderRadius: 'var(--radius-card)',
+                  boxShadow: 'var(--shadow-card)',
                 }}
               >
                 <Table
@@ -557,51 +563,60 @@ export const CustomerOrderDetailPage: React.FC = () => {
           {/* Right Column: Order Summary & Payment Info */}
           <Col xs={24} lg={9}>
             <Card
-              title={<span style={{ color: '#f8fafc', fontWeight: 700 }}>Thông tin thanh toán</span>}
+              title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Thông tin thanh toán</span>}
               style={{
-                background: 'linear-gradient(160deg, rgba(18, 25, 41, 0.9) 0%, rgba(11, 16, 28, 0.95) 100%)',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: 14,
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-card)',
+                boxShadow: 'var(--shadow-card)',
                 position: 'sticky',
                 top: 100,
               }}
+              styles={{ body: { padding: 24 } }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Phương thức:</span>
-                  <Tag color={isCash ? 'green' : order.paymentMethod === 'MOMO' ? 'magenta' : 'blue'}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Phương thức:</span>
+                  <Tag style={{ borderRadius: 'var(--radius-full)', background: 'var(--surface-container)', color: 'var(--primary)', border: '1px solid var(--border-default)' }}>
                     {order.paymentMethod || 'MOMO'}
                   </Tag>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Trạng thái thanh toán:</span>
-                  <Tag color={isPaid ? 'green' : 'gold'}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Trạng thái thanh toán:</span>
+                  <Tag
+                    style={{
+                      borderRadius: 'var(--radius-full)',
+                      background: isPaid ? 'var(--mint-bg)' : 'var(--peach-bg)',
+                      color: isPaid ? 'var(--mint-text)' : 'var(--peach-text)',
+                      border: 'none',
+                    }}
+                  >
                     {order.paymentStatus === 'PAID' ? 'Đã thanh toán' : order.paymentStatus === 'PENDING' ? 'Chờ thanh toán' : order.paymentStatus || 'Chờ thanh toán'}
                   </Tag>
                 </div>
 
-                <Divider style={{ borderColor: 'rgba(255, 255, 255, 0.08)', margin: '4px 0' }} />
+                <Divider style={{ borderColor: 'var(--border-default)', margin: '4px 0' }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Tạm tính:</span>
-                  <span style={{ color: '#f8fafc', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Tạm tính:</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
                     {formatCurrency(order.subtotal ?? totalAmount, order.currency || 'VND')}
                   </span>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Phí vận chuyển:</span>
-                  <span style={{ color: '#10b981', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Phí vận chuyển:</span>
+                  <span style={{ color: 'var(--tertiary)', fontWeight: 600 }}>
                     {order.shippingFee ? formatCurrency(order.shippingFee, order.currency || 'VND') : 'Miễn phí'}
                   </span>
                 </div>
 
-                <Divider style={{ borderColor: 'rgba(255, 255, 255, 0.08)', margin: '4px 0' }} />
+                <Divider style={{ borderColor: 'var(--border-default)', margin: '4px 0' }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1rem' }}>Tổng thanh toán:</span>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#38bdf8' }}>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1rem' }}>Tổng thanh toán:</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>
                     {formatCurrency(totalAmount, order.currency || 'VND')}
                   </span>
                 </div>
@@ -614,11 +629,12 @@ export const CustomerOrderDetailPage: React.FC = () => {
                     icon={<CreditCardOutlined />}
                     onClick={() => setPaymentModalOpen(true)}
                     style={{
-                      background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                      borderColor: 'transparent',
+                      background: 'var(--primary)',
+                      borderColor: 'var(--primary)',
                       fontWeight: 700,
                       marginTop: 12,
-                      borderRadius: 8,
+                      borderRadius: 'var(--radius-full)',
+                      boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
                     }}
                   >
                     Thanh toán lại

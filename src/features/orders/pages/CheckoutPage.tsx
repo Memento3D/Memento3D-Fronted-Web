@@ -84,27 +84,27 @@ export const CheckoutPage: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050811', color: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
       <Navbar />
 
-      <main style={{ maxWidth: 1160, margin: '0 auto', padding: '100px 24px 60px' }}>
+      <main style={{ maxWidth: 1160, margin: '0 auto', padding: '120px 24px 60px' }}>
         {/* Breadcrumb Back */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate('/cart')}
-            style={{ color: '#94a3b8', paddingLeft: 0 }}
+            style={{ color: 'var(--text-secondary)', paddingLeft: 0, borderRadius: 'var(--radius-full)' }}
           >
             Quay lại Giỏ hàng
           </Button>
         </div>
 
         <div style={{ marginBottom: 32 }}>
-          <Title level={2} style={{ color: '#ffffff', margin: 0, fontWeight: 800 }}>
+          <Title level={2} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 800 }}>
             Thanh toán & Xác nhận Đơn hàng
           </Title>
-          <Text style={{ color: '#94a3b8', fontSize: '0.95rem' }}>
+          <Text style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
             Vui lòng điền thông tin người nhận và lựa chọn phương thức thanh toán an toàn.
           </Text>
         </div>
@@ -116,23 +116,25 @@ export const CheckoutPage: React.FC = () => {
         ) : isCartEmpty ? (
           <Card
             style={{
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: 16,
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 'var(--radius-card)',
+              boxShadow: 'var(--shadow-card)',
               textAlign: 'center',
               padding: '60px 20px',
             }}
           >
             <Empty
-              description={<span style={{ color: '#94a3b8' }}>Giỏ hàng của bạn đang trống.</span>}
+              description={<span style={{ color: 'var(--text-secondary)' }}>Giỏ hàng của bạn đang trống.</span>}
             >
               <Button
                 type="primary"
                 onClick={() => navigate('/products')}
                 style={{
-                  background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                  borderColor: 'transparent',
-                  borderRadius: 8,
+                  background: 'var(--primary)',
+                  borderColor: 'var(--primary)',
+                  borderRadius: 'var(--radius-full)',
+                  boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
                 }}
               >
                 Khám phá sản phẩm
@@ -157,33 +159,32 @@ export const CheckoutPage: React.FC = () => {
                 {/* 1. Customer & Shipping Info */}
                 <Card
                   title={
-                    <span style={{ color: '#fff', fontWeight: 700 }}>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
                       1. Thông tin người nhận & Địa chỉ giao hàng
                     </span>
                   }
                   style={{
-                    background: 'rgba(15, 23, 42, 0.65)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 16,
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-default)',
+                    borderRadius: 'var(--radius-card)',
+                    boxShadow: 'var(--shadow-card)',
                     marginBottom: 24,
                   }}
-                  bodyStyle={{ padding: 24 }}
+                  styles={{ body: { padding: 24 } }}
                 >
                   <Row gutter={16}>
                     <Col xs={24} sm={12}>
                       <Form.Item
                         name="recipientName"
-                        label={<span style={{ color: '#e2e8f0' }}>Họ và tên người nhận</span>}
+                        label={<span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Họ và tên người nhận</span>}
                         rules={[{ required: true, message: 'Vui lòng nhập tên người nhận' }]}
                       >
                         <Input
                           placeholder="Ví dụ: Nguyễn Văn A"
                           size="large"
                           style={{
-                            background: 'rgba(255, 255, 255, 0.04)',
-                            borderColor: 'rgba(255, 255, 255, 0.1)',
-                            color: '#fff',
-                            borderRadius: 8,
+                            borderRadius: 'var(--radius-default)',
+                            borderColor: 'var(--border-default)',
                           }}
                         />
                       </Form.Item>
@@ -191,7 +192,7 @@ export const CheckoutPage: React.FC = () => {
                     <Col xs={24} sm={12}>
                       <Form.Item
                         name="phone"
-                        label={<span style={{ color: '#e2e8f0' }}>Số điện thoại liên hệ</span>}
+                        label={<span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Số điện thoại liên hệ</span>}
                         rules={[
                           { required: true, message: 'Vui lòng nhập số điện thoại' },
                           {
@@ -204,10 +205,8 @@ export const CheckoutPage: React.FC = () => {
                           placeholder="0912 345 678"
                           size="large"
                           style={{
-                            background: 'rgba(255, 255, 255, 0.04)',
-                            borderColor: 'rgba(255, 255, 255, 0.1)',
-                            color: '#fff',
-                            borderRadius: 8,
+                            borderRadius: 'var(--radius-default)',
+                            borderColor: 'var(--border-default)',
                           }}
                         />
                       </Form.Item>
@@ -216,33 +215,29 @@ export const CheckoutPage: React.FC = () => {
 
                   <Form.Item
                     name="shippingAddress"
-                    label={<span style={{ color: '#e2e8f0' }}>Địa chỉ giao hàng chi tiết</span>}
+                    label={<span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Địa chỉ giao hàng chi tiết</span>}
                     rules={[{ required: true, message: 'Vui lòng nhập địa chỉ nhận hàng' }]}
                   >
                     <TextArea
                       rows={3}
                       placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố..."
                       style={{
-                        background: 'rgba(255, 255, 255, 0.04)',
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        color: '#fff',
-                        borderRadius: 8,
+                        borderRadius: 'var(--radius-default)',
+                        borderColor: 'var(--border-default)',
                       }}
                     />
                   </Form.Item>
 
                   <Form.Item
                     name="note"
-                    label={<span style={{ color: '#e2e8f0' }}>Ghi chú đơn hàng (Tùy chọn)</span>}
+                    label={<span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Ghi chú đơn hàng (Tùy chọn)</span>}
                   >
                     <TextArea
                       rows={2}
                       placeholder="Ghi chú thêm về thời gian giao hoặc hướng dẫn bảo quản..."
                       style={{
-                        background: 'rgba(255, 255, 255, 0.04)',
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        color: '#fff',
-                        borderRadius: 8,
+                        borderRadius: 'var(--radius-default)',
+                        borderColor: 'var(--border-default)',
                       }}
                     />
                   </Form.Item>
@@ -251,16 +246,17 @@ export const CheckoutPage: React.FC = () => {
                 {/* 2. Payment Method */}
                 <Card
                   title={
-                    <span style={{ color: '#fff', fontWeight: 700 }}>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
                       2. Chọn phương thức thanh toán
                     </span>
                   }
                   style={{
-                    background: 'rgba(15, 23, 42, 0.65)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 16,
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-default)',
+                    borderRadius: 'var(--radius-card)',
+                    boxShadow: 'var(--shadow-card)',
                   }}
-                  bodyStyle={{ padding: 24 }}
+                  styles={{ body: { padding: 24 } }}
                 >
                   <Radio.Group
                     value={paymentMethod}
@@ -271,10 +267,10 @@ export const CheckoutPage: React.FC = () => {
                     <Radio
                       value="MOMO"
                       style={{
-                        background: paymentMethod === 'MOMO' ? 'rgba(216, 45, 139, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                        border: paymentMethod === 'MOMO' ? '1px solid #d82d8b' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: paymentMethod === 'MOMO' ? 'rgba(216, 45, 139, 0.08)' : 'var(--surface-container)',
+                        border: paymentMethod === 'MOMO' ? '1.5px solid #d82d8b' : '1px solid var(--border-default)',
                         padding: '16px',
-                        borderRadius: 12,
+                        borderRadius: 'var(--radius-default)',
                         width: '100%',
                         transition: 'all 0.2s',
                       }}
@@ -283,7 +279,7 @@ export const CheckoutPage: React.FC = () => {
                         <div style={{ fontWeight: 700, color: '#ec4899', fontSize: '1rem' }}>
                           Ví MoMo
                         </div>
-                        <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                           Thanh toán qua quét mã QR hoặc ứng dụng MoMo
                         </div>
                       </div>
@@ -293,19 +289,19 @@ export const CheckoutPage: React.FC = () => {
                     <Radio
                       value="ZALOPAY"
                       style={{
-                        background: paymentMethod === 'ZALOPAY' ? 'rgba(0, 104, 255, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                        border: paymentMethod === 'ZALOPAY' ? '1px solid #0068ff' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: paymentMethod === 'ZALOPAY' ? 'var(--surface-high)' : 'var(--surface-container)',
+                        border: paymentMethod === 'ZALOPAY' ? '1.5px solid var(--primary)' : '1px solid var(--border-default)',
                         padding: '16px',
-                        borderRadius: 12,
+                        borderRadius: 'var(--radius-default)',
                         width: '100%',
                         transition: 'all 0.2s',
                       }}
                     >
                       <div style={{ marginLeft: 8 }}>
-                        <div style={{ fontWeight: 700, color: '#38bdf8', fontSize: '1rem' }}>
+                        <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1rem' }}>
                           Ví ZaloPay
                         </div>
-                        <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                           Thanh toán qua cổng ZaloPay QR & Thẻ ATM/Visa
                         </div>
                       </div>
@@ -315,19 +311,19 @@ export const CheckoutPage: React.FC = () => {
                     <Radio
                       value="CASH"
                       style={{
-                        background: paymentMethod === 'CASH' ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                        border: paymentMethod === 'CASH' ? '1px solid #22c55e' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: paymentMethod === 'CASH' ? 'rgba(201, 232, 213, 0.3)' : 'var(--surface-container)',
+                        border: paymentMethod === 'CASH' ? '1.5px solid var(--tertiary)' : '1px solid var(--border-default)',
                         padding: '16px',
-                        borderRadius: 12,
+                        borderRadius: 'var(--radius-default)',
                         width: '100%',
                         transition: 'all 0.2s',
                       }}
                     >
                       <div style={{ marginLeft: 8 }}>
-                        <div style={{ fontWeight: 700, color: '#22c55e', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <DollarCircleOutlined /> Tiền mặt
+                        <div style={{ fontWeight: 700, color: 'var(--tertiary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <DollarCircleOutlined /> Tiền mặt (COD)
                         </div>
-                        <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                           Thanh toán tiền mặt khi nhận hàng / khi đơn hàng hoàn thành
                         </div>
                       </div>
@@ -341,17 +337,18 @@ export const CheckoutPage: React.FC = () => {
                 {/* Order Items in Cart */}
                 <Card
                   title={
-                    <span style={{ color: '#fff', fontWeight: 700 }}>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
                       Sản phẩm trong đơn ({cart?.totalItems || 0})
                     </span>
                   }
                   style={{
-                    background: 'rgba(15, 23, 42, 0.65)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 16,
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-default)',
+                    borderRadius: 'var(--radius-card)',
+                    boxShadow: 'var(--shadow-card)',
                     marginBottom: 24,
                   }}
-                  bodyStyle={{ padding: 20 }}
+                  styles={{ body: { padding: 20 } }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxHeight: 320, overflowY: 'auto' }}>
                     {cartItems.map((item) => (
@@ -362,16 +359,17 @@ export const CheckoutPage: React.FC = () => {
                           alignItems: 'center',
                           gap: 12,
                           paddingBottom: 12,
-                          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                          borderBottom: '1px solid var(--border-default)',
                         }}
                       >
                         <div
                           style={{
                             width: 50,
                             height: 50,
-                            borderRadius: 8,
+                            borderRadius: 'var(--radius-sm)',
                             overflow: 'hidden',
-                            background: '#090d16',
+                            background: 'var(--surface-container)',
+                            border: '1px solid var(--border-default)',
                             flexShrink: 0,
                           }}
                         >
@@ -391,7 +389,7 @@ export const CheckoutPage: React.FC = () => {
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div
                             style={{
-                              color: '#f8fafc',
+                              color: 'var(--text-primary)',
                               fontWeight: 600,
                               fontSize: '0.9rem',
                               whiteSpace: 'nowrap',
@@ -401,12 +399,12 @@ export const CheckoutPage: React.FC = () => {
                           >
                             {item.productName}
                           </div>
-                          <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                             SL: {item.quantity} × {formatCurrency(item.unitPrice, 'VND')}
                           </div>
                         </div>
 
-                        <div style={{ fontWeight: 700, color: '#38bdf8', fontSize: '0.95rem' }}>
+                        <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '0.95rem' }}>
                           {formatCurrency(item.subtotal, 'VND')}
                         </div>
                       </div>
@@ -416,43 +414,44 @@ export const CheckoutPage: React.FC = () => {
 
                 {/* Price Summary */}
                 <Card
-                  title={<span style={{ color: '#fff', fontWeight: 700 }}>Tổng kết thanh toán</span>}
+                  title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Tổng kết thanh toán</span>}
                   style={{
-                    background: 'rgba(15, 23, 42, 0.65)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 16,
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-default)',
+                    borderRadius: 'var(--radius-card)',
+                    boxShadow: 'var(--shadow-card)',
                   }}
-                  bodyStyle={{ padding: 24 }}
+                  styles={{ body: { padding: 24 } }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#94a3b8' }}>Tạm tính:</span>
-                      <span style={{ color: '#f8fafc', fontWeight: 600 }}>
+                      <span style={{ color: 'var(--text-secondary)' }}>Tạm tính:</span>
+                      <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
                         {formatCurrency(cart?.subtotal || 0, 'VND')}
                       </span>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#94a3b8' }}>Giảm giá:</span>
-                      <span style={{ color: '#22c55e', fontWeight: 600 }}>
+                      <span style={{ color: 'var(--text-secondary)' }}>Giảm giá:</span>
+                      <span style={{ color: 'var(--tertiary)', fontWeight: 600 }}>
                         - {formatCurrency(cart?.discount || 0, 'VND')}
                       </span>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#94a3b8' }}>Phí vận chuyển:</span>
-                      <span style={{ color: '#f8fafc', fontWeight: 600 }}>
+                      <span style={{ color: 'var(--text-secondary)' }}>Phí vận chuyển:</span>
+                      <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
                         {cart?.shippingFee ? formatCurrency(cart.shippingFee, 'VND') : 'Miễn phí'}
                       </span>
                     </div>
 
-                    <Divider style={{ borderColor: 'rgba(255, 255, 255, 0.08)', margin: '8px 0' }} />
+                    <Divider style={{ borderColor: 'var(--border-default)', margin: '8px 0' }} />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <span style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
+                      <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         Tổng thanh toán:
                       </span>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#38bdf8' }}>
+                      <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>
                         {formatCurrency(cart?.total || 0, 'VND')}
                       </span>
                     </div>
@@ -466,15 +465,13 @@ export const CheckoutPage: React.FC = () => {
                     loading={isSubmitting}
                     disabled={isSubmitting}
                     style={{
-                      background:
-                        paymentMethod === 'CASH'
-                          ? 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)'
-                          : 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                      borderColor: 'transparent',
-                      borderRadius: 10,
+                      background: 'var(--primary)',
+                      borderColor: 'var(--primary)',
+                      borderRadius: 'var(--radius-full)',
                       fontWeight: 700,
                       height: 50,
                       marginTop: 24,
+                      boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
                     }}
                   >
                     {paymentMethod === 'CASH' ? 'Xác nhận đặt hàng' : 'Tiến hành thanh toán'}
@@ -488,7 +485,7 @@ export const CheckoutPage: React.FC = () => {
                       justifyContent: 'center',
                       gap: 8,
                       fontSize: '0.8rem',
-                      color: '#94a3b8',
+                      color: 'var(--text-secondary)',
                     }}
                   >
                     <LockOutlined />

@@ -174,16 +174,16 @@ export const ManagerProductsPage: React.FC = () => {
 
   return (
     <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h2 style={{ color: '#fff', margin: 0, fontWeight: 800 }}>Quản lý Sản phẩm Kỷ vật 3D</h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <h2 style={{ color: 'var(--text-primary, #28243D)', margin: 0, fontWeight: 800, fontFamily: 'var(--font-family, "Plus Jakarta Sans")' }}>Quản lý Sản phẩm Kỷ vật 3D</h2>
+          <div style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.85rem' }}>
             Quản trị danh mục vật phẩm, đơn giá và cấu hình hiển thị cho khách hàng.
           </div>
         </div>
 
-        <Space>
-          <Button icon={<ReloadOutlined spin={isFetching} />} onClick={() => refetch()}>
+        <Space wrap>
+          <Button icon={<ReloadOutlined spin={isFetching} />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} onClick={() => refetch()}>
             Làm mới
           </Button>
           <Button
@@ -191,9 +191,11 @@ export const ManagerProductsPage: React.FC = () => {
             icon={<PlusOutlined />}
             onClick={handleOpenCreate}
             style={{
-              background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-              borderColor: 'transparent',
-              fontWeight: 700,
+              background: 'var(--primary, #7C5CFC)',
+              borderRadius: 'var(--radius-pill, 9999px)',
+              fontWeight: 600,
+              boxShadow: 'var(--shadow-primary-sm)',
+              border: 'none',
             }}
           >
             Thêm sản phẩm mới
@@ -202,7 +204,7 @@ export const ManagerProductsPage: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <Card style={{ background: 'var(--card-bg, #0f172a)', borderColor: 'var(--border-color)', marginBottom: 20 }}>
+      <Card style={{ background: '#fff', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)', marginBottom: 20 }}>
         <Row gutter={[16, 16]}>
           <Col xs={24} md={10}>
             <Input
@@ -212,6 +214,7 @@ export const ManagerProductsPage: React.FC = () => {
               onChange={(e) => setKeyword(e.target.value)}
               onPressEnter={() => setPage(1)}
               allowClear
+              style={{ borderRadius: 'var(--radius-input, 20px)' }}
             />
           </Col>
           <Col xs={24} md={8}>
@@ -223,7 +226,7 @@ export const ManagerProductsPage: React.FC = () => {
                 setPage(1);
               }}
               allowClear
-              style={{ width: '100%' }}
+              style={{ width: '100%', borderRadius: 'var(--radius-input, 20px)' }}
               options={[
                 { label: 'Tất cả danh mục', value: '' },
                 ...categories.map((c) => ({ label: c.name, value: c.slug })),
@@ -234,7 +237,7 @@ export const ManagerProductsPage: React.FC = () => {
       </Card>
 
       {/* Table */}
-      <Card style={{ background: 'var(--card-bg, #0f172a)', borderColor: 'var(--border-color)' }} bodyStyle={{ padding: 0 }}>
+      <Card style={{ background: '#fff', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <Table
           dataSource={productsData?.content || []}
           rowKey="id"
@@ -255,16 +258,16 @@ export const ManagerProductsPage: React.FC = () => {
                     <img
                       src={p.thumbnailUrl}
                       alt=""
-                      style={{ width: 44, height: 44, borderRadius: 6, objectFit: 'cover' }}
+                      style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', objectFit: 'cover' }}
                     />
                   ) : (
-                    <div style={{ width: 44, height: 44, borderRadius: 6, background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', background: 'var(--surface-container, #F1EBFF)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       📦
                     </div>
                   )}
                   <div>
-                    <div style={{ fontWeight: 700, color: '#f8fafc' }}>{p.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>/{p.slug}</div>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary, #28243D)' }}>{p.name}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #6A6282)' }}>/{p.slug}</div>
                   </div>
                 </div>
               ),
@@ -273,7 +276,9 @@ export const ManagerProductsPage: React.FC = () => {
               title: 'Danh mục',
               key: 'category',
               render: (_, p: Product) => (
-                <Tag color="cyan">{p.category?.name || 'Chưa phân loại'}</Tag>
+                <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary-system, #5F3ADD)', border: 'none', fontWeight: 600 }}>
+                  {p.category?.name || 'Chưa phân loại'}
+                </Tag>
               ),
             },
             {
@@ -282,7 +287,7 @@ export const ManagerProductsPage: React.FC = () => {
               key: 'price',
               align: 'right',
               render: (price) => (
-                <span style={{ fontWeight: 700, color: '#38bdf8' }}>
+                <span style={{ fontWeight: 700, color: 'var(--primary, #7C5CFC)' }}>
                   {formatCurrency(price, 'VND')}
                 </span>
               ),
@@ -293,8 +298,18 @@ export const ManagerProductsPage: React.FC = () => {
               key: 'availability',
               render: (av) => {
                 const label = av === 'AVAILABLE' ? 'Sẵn sàng' : av === 'OUT_OF_STOCK' ? 'Hết hàng' : av === 'DISCONTINUED' ? 'Ngừng kinh doanh' : av;
+                const isAvail = av === 'AVAILABLE';
+                const isOutOfStock = av === 'OUT_OF_STOCK';
                 return (
-                  <Tag color={av === 'AVAILABLE' ? 'green' : av === 'OUT_OF_STOCK' ? 'orange' : 'default'}>
+                  <Tag
+                    style={{
+                      borderRadius: 'var(--radius-pill, 9999px)',
+                      background: isAvail ? 'var(--tertiary-mint, #C9E8D5)' : isOutOfStock ? 'var(--secondary-peach, #FFBFAE)' : 'var(--surface-container, #F1EBFF)',
+                      color: isAvail ? 'var(--tertiary, #466253)' : isOutOfStock ? '#7C3F2E' : 'var(--text-secondary, #6A6282)',
+                      border: 'none',
+                      fontWeight: 600,
+                    }}
+                  >
                     {label}
                   </Tag>
                 );
@@ -304,7 +319,15 @@ export const ManagerProductsPage: React.FC = () => {
               title: 'Nổi bật',
               dataIndex: 'featured',
               key: 'featured',
-              render: (f) => (f ? <Tag color="gold"><FireOutlined /> Nổi bật</Tag> : <Text type="secondary">-</Text>),
+              render: (f) => (
+                f ? (
+                  <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--secondary-peach, #FFBFAE)', color: '#7C3F2E', border: 'none', fontWeight: 600 }}>
+                    <FireOutlined /> Nổi bật
+                  </Tag>
+                ) : (
+                  <Text type="secondary">-</Text>
+                )
+              ),
             },
             {
               title: 'Trạng thái',
@@ -324,7 +347,7 @@ export const ManagerProductsPage: React.FC = () => {
               align: 'right',
               render: (_, p: Product) => (
                 <Space>
-                  <Button size="small" icon={<EditOutlined />} onClick={() => handleOpenEdit(p)}>
+                  <Button size="small" icon={<EditOutlined />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} onClick={() => handleOpenEdit(p)}>
                     Sửa
                   </Button>
                   <Popconfirm
@@ -334,7 +357,7 @@ export const ManagerProductsPage: React.FC = () => {
                     okText="Xóa"
                     cancelText="Hủy"
                   >
-                    <Button size="small" danger icon={<DeleteOutlined />} />
+                    <Button size="small" danger icon={<DeleteOutlined />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} />
                   </Popconfirm>
                 </Space>
               ),
@@ -356,12 +379,12 @@ export const ManagerProductsPage: React.FC = () => {
           <Row gutter={16}>
             <Col xs={24} sm={16}>
               <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm' }]}>
-                <Input placeholder="Tượng chân dung Desk Sculpture..." />
+                <Input placeholder="Tượng chân dung Desk Sculpture..." style={{ borderRadius: 'var(--radius-input, 20px)' }} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={8}>
               <Form.Item name="slug" label="Slug URL (tùy chọn)">
-                <Input placeholder="tuong-chan-dung..." />
+                <Input placeholder="tuong-chan-dung..." style={{ borderRadius: 'var(--radius-input, 20px)' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -377,21 +400,21 @@ export const ManagerProductsPage: React.FC = () => {
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item name="price" label="Giá bán (VND)" rules={[{ required: true, message: 'Vui lòng nhập giá bán' }]}>
-                <InputNumber min={0} step={10000} style={{ width: '100%' }} />
+                <InputNumber min={0} step={10000} style={{ width: '100%', borderRadius: 'var(--radius-input, 20px)' }} />
               </Form.Item>
             </Col>
           </Row>
 
           <Form.Item name="thumbnailUrl" label="URL ảnh đại diện">
-            <Input placeholder="https://..." />
+            <Input placeholder="https://..." style={{ borderRadius: 'var(--radius-input, 20px)' }} />
           </Form.Item>
 
           <Form.Item name="shortDescription" label="Mô tả ngắn">
-            <Input placeholder="Tóm tắt đặc điểm nổi bật..." />
+            <Input placeholder="Tóm tắt đặc điểm nổi bật..." style={{ borderRadius: 'var(--radius-input, 20px)' }} />
           </Form.Item>
 
           <Form.Item name="description" label="Mô tả chi tiết">
-            <TextArea rows={3} placeholder="Thông số kích thước, chất liệu, độ phân giải..." />
+            <TextArea rows={3} placeholder="Thông số kích thước, chất liệu, độ phân giải..." style={{ borderRadius: 'var(--radius-default, 16px)' }} />
           </Form.Item>
 
           <Row gutter={16}>

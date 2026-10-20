@@ -14,8 +14,6 @@ import { useAuth } from '../../auth/hooks/useAuth';
 import { useOrders } from '../../orders/hooks/useOrders';
 import { useQuery } from '@tanstack/react-query';
 import { categoryApi } from '../../products/api/categoryApi';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 import { QuoteCard } from '../../../components/home/QuoteCard';
 import { getGreeting } from '../../../utils/getGreeting';
 import { getStatusLabel } from '../../../locales/i18n';
@@ -45,11 +43,7 @@ export const CustomerHomePage: React.FC = () => {
   const categoriesList = realCategories && realCategories.length > 0 ? realCategories : [];
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-app)' }}>
-      {/* Top Storefront Navbar */}
-      <Navbar />
-
-      <main style={{ flex: 1, padding: '32px 24px', maxWidth: 1300, margin: '0 auto', width: '100%' }}>
+    <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', paddingBottom: 40 }}>
         {/* 1. Customer Hero Banner */}
         <div
           style={{
@@ -297,10 +291,6 @@ export const CustomerHomePage: React.FC = () => {
             </div>
           )}
         </div>
-      </main>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };

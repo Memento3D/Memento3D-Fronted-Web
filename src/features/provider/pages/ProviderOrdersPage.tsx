@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { Tag, Badge, Button, Table, Space, message } from 'antd';
 import { 
-  Building2, 
   Layers, 
   CheckCircle2, 
   Clock, 
   Truck, 
   FileCheck, 
-  LogOut, 
   Flame
 } from 'lucide-react';
 import { useAuth } from '../../auth/context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { PageHeader } from '../../../components/ui/PageHeader';
 
 interface ProviderOrder {
   id: string;
@@ -83,14 +81,8 @@ const MOCK_PROVIDER_ORDERS: ProviderOrder[] = [
 ];
 
 export const ProviderOrdersPage: React.FC = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [orders, setOrders] = useState<ProviderOrder[]>(MOCK_PROVIDER_ORDERS);
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
 
   const handleUpdateStatus = (id: string, nextStatus: ProviderOrder['status']) => {
     setOrders((prev) =>
@@ -213,126 +205,91 @@ export const ProviderOrdersPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#090d16', color: '#f8fafc', padding: '24px 32px' }}>
-      {/* Top Header */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)', 
-        paddingBottom: 20, 
-        marginBottom: 28 
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ 
-            width: 44, 
-            height: 44, 
-            borderRadius: 10, 
-            background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            boxShadow: '0 0 20px rgba(37, 99, 235, 0.4)'
-          }}>
-            <Building2 size={24} color="#fff" />
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <h1 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700, color: '#fff' }}>
-                Cổng Đối tác Sản xuất & Gia công
-              </h1>
-              <Tag color="geekblue" style={{ borderRadius: 6, fontWeight: 600 }}>
-                ROLE_PROVIDER (Đối tác sản xuất)
-              </Tag>
-            </div>
-            <p style={{ margin: '2px 0 0', color: '#94a3b8', fontSize: '0.8rem' }}>
-              Đang kết nối: <strong style={{ color: '#e2e8f0' }}>{user?.fullName || 'Đối tác gia công'}</strong> ({user?.email})
-            </p>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Button
-            danger
-            icon={<LogOut size={16} />}
-            onClick={handleLogout}
-            style={{ borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6 }}
-          >
-            Đăng xuất
-          </Button>
-        </div>
-      </div>
+    <div style={{ padding: '0 0 32px 0' }}>
+      <PageHeader
+        title="Cổng Đối tác Sản xuất & Gia công"
+        description={`Đang kết nối: ${user?.fullName || 'Đối tác gia công'} (${user?.email})`}
+        tags={
+          <Tag style={{ borderRadius: '9999px', background: 'var(--surface-container)', color: 'var(--primary)', border: '1px solid var(--color-border)', fontWeight: 600 }}>
+            ROLE_PROVIDER
+          </Tag>
+        }
+      />
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.65)', 
-          border: '1px solid rgba(255, 255, 255, 0.06)', 
-          borderRadius: 12, 
-          padding: 20 
+          background: 'var(--surface-card, #FFFFFF)', 
+          border: '1px solid var(--border-default, #E2D9F7)', 
+          borderRadius: 'var(--radius-card-standard, 24px)', 
+          padding: 20,
+          boxShadow: 'var(--shadow-card)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary, #6A6282)', fontSize: '0.8rem' }}>
             <span>Đơn hàng gia công hiện tại</span>
-            <Layers size={18} color="#38bdf8" />
+            <Layers size={18} color="var(--primary, #7C5CFC)" />
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary, #28243D)', marginTop: 8 }}>
             {orders.length} Đơn hàng
           </div>
-          <div style={{ color: '#38bdf8', fontSize: '0.75rem', marginTop: 4 }}>
+          <div style={{ color: 'var(--primary, #7C5CFC)', fontSize: '0.75rem', marginTop: 4, fontWeight: 600 }}>
             1 đơn chờ đối tác tiếp nhận
           </div>
         </div>
 
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.65)', 
-          border: '1px solid rgba(255, 255, 255, 0.06)', 
-          borderRadius: 12, 
-          padding: 20 
+          background: 'var(--surface-card, #FFFFFF)', 
+          border: '1px solid var(--border-default, #E2D9F7)', 
+          borderRadius: 'var(--radius-card-standard, 24px)', 
+          padding: 20,
+          boxShadow: 'var(--shadow-card)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary, #6A6282)', fontSize: '0.8rem' }}>
             <span>Đang trong buồng in 3D</span>
-            <Clock size={18} color="#f59e0b" />
+            <Clock size={18} color="var(--peach-accent, #FFBFAE)" />
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary, #28243D)', marginTop: 8 }}>
             {orders.filter((o) => o.status === 'IN_PRODUCTION').length}
           </div>
-          <div style={{ color: '#f59e0b', fontSize: '0.75rem', marginTop: 4 }}>
+          <div style={{ color: 'var(--peach-accent, #FFBFAE)', fontSize: '0.75rem', marginTop: 4, fontWeight: 600 }}>
             Đang sấy UV & xử lý hậu kỳ
           </div>
         </div>
 
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.65)', 
-          border: '1px solid rgba(255, 255, 255, 0.06)', 
-          borderRadius: 12, 
-          padding: 20 
+          background: 'var(--surface-card, #FFFFFF)', 
+          border: '1px solid var(--border-default, #E2D9F7)', 
+          borderRadius: 'var(--radius-card-standard, 24px)', 
+          padding: 20,
+          boxShadow: 'var(--shadow-card)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary, #6A6282)', fontSize: '0.8rem' }}>
             <span>Đã qua kiểm định QC</span>
-            <CheckCircle2 size={18} color="#10b981" />
+            <CheckCircle2 size={18} color="var(--tertiary, #466253)" />
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary, #28243D)', marginTop: 8 }}>
             {orders.filter((o) => o.status === 'QC_PASSED' || o.status === 'READY_FOR_PICKUP').length}
           </div>
-          <div style={{ color: '#10b981', fontSize: '0.75rem', marginTop: 4 }}>
+          <div style={{ color: 'var(--tertiary, #466253)', fontSize: '0.75rem', marginTop: 4, fontWeight: 600 }}>
             Sẵn sàng bàn giao tài xế
           </div>
         </div>
 
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.65)', 
-          border: '1px solid rgba(255, 255, 255, 0.06)', 
-          borderRadius: 12, 
-          padding: 20 
+          background: 'var(--surface-card, #FFFFFF)', 
+          border: '1px solid var(--border-default, #E2D9F7)', 
+          borderRadius: 'var(--radius-card-standard, 24px)', 
+          padding: 20,
+          boxShadow: 'var(--shadow-card)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary, #6A6282)', fontSize: '0.8rem' }}>
             <span>Đúng tiến độ cam kết (SLA)</span>
-            <FileCheck size={18} color="#a855f7" />
+            <FileCheck size={18} color="var(--primary, #7C5CFC)" />
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary, #28243D)', marginTop: 8 }}>
             99.4%
           </div>
-          <div style={{ color: '#a855f7', fontSize: '0.75rem', marginTop: 4 }}>
+          <div style={{ color: 'var(--primary, #7C5CFC)', fontSize: '0.75rem', marginTop: 4, fontWeight: 600 }}>
             Đối tác độ tin cậy cấp cao
           </div>
         </div>
@@ -340,17 +297,18 @@ export const ProviderOrdersPage: React.FC = () => {
 
       {/* Main Order Batch Table */}
       <div style={{ 
-        background: 'rgba(15, 23, 42, 0.65)', 
-        border: '1px solid rgba(255, 255, 255, 0.06)', 
-        borderRadius: 12, 
-        padding: 24 
+        background: 'var(--surface-card, #FFFFFF)', 
+        border: '1px solid var(--border-default, #E2D9F7)', 
+        borderRadius: 'var(--radius-card-standard, 24px)', 
+        padding: 24,
+        boxShadow: 'var(--shadow-card)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#f8fafc' }}>
+            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary, #28243D)' }}>
               Danh sách lệnh in gia công nhận thầu
             </h3>
-            <p style={{ margin: '2px 0 0', color: '#94a3b8', fontSize: '0.8rem' }}>
+            <p style={{ margin: '2px 0 0', color: 'var(--text-secondary, #6A6282)', fontSize: '0.85rem' }}>
               Quản lý lệnh in phân bổ cho đối tác ngoài, tiêu hao vật liệu và bàn giao vận chuyển.
             </p>
           </div>

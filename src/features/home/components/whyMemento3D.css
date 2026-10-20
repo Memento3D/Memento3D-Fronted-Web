@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Why Memento3D CSS
+   Why Memento3D CSS (Atelier Forge)
    ========================================================================== */
 
 .why-section {
@@ -13,46 +13,49 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card, 24px);
   padding: 32px 24px;
   display: flex;
   flex-direction: column;
   height: 100%;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-card);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .why-card:hover {
   transform: translateY(-5px);
-  border-color: var(--border-color-hover);
-  box-shadow: var(--shadow-lg);
+  border-color: rgba(124, 92, 252, 0.35);
+  box-shadow: var(--shadow-floating);
 }
 
 .why-icon-box {
   width: 52px;
   height: 52px;
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
+  border-radius: var(--radius-default);
+  background: var(--surface-container);
+  border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
   margin-bottom: 20px;
   transition: transform 0.3s ease;
+  color: var(--primary);
 }
 
 .why-card:hover .why-icon-box {
   transform: scale(1.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .why-badge-pill {
   align-self: flex-start;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
-  background: rgba(14, 165, 233, 0.08);
+  background: var(--surface-container);
   border: 1px solid var(--border-color);
-  color: var(--text-muted);
-  font-size: 0.68rem;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;

@@ -11,10 +11,10 @@ export const WarehouseSelector: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Tag style={{ padding: '4px 8px', borderRadius: '6px' }}>
-        <Space size={4}>
-          <HomeOutlined spin />
-          <span>Đang tải cơ sở kho...</span>
+      <Tag style={{ padding: '6px 14px', borderRadius: '9999px', background: 'var(--surface-container)', border: '1px solid var(--border-color)' }}>
+        <Space size={6}>
+          <HomeOutlined spin style={{ color: 'var(--primary)' }} />
+          <span style={{ color: 'var(--text-secondary)' }}>Đang tải cơ sở kho...</span>
         </Space>
       </Tag>
     );
@@ -22,14 +22,22 @@ export const WarehouseSelector: React.FC = () => {
 
   if (myWarehouses.length === 0) {
     return (
-      <Tag color="blue" style={{ padding: '4px 10px', borderRadius: '6px', background: 'rgba(14, 165, 233, 0.1)', borderColor: 'rgba(14, 165, 233, 0.3)' }}>
-        <Space size={6}>
-          <HomeOutlined style={{ color: '#38bdf8' }} />
-          <Text strong style={{ color: '#38bdf8', fontSize: '0.785rem' }}>
-            Kho: Trung tâm Memento3D
-          </Text>
-        </Space>
-      </Tag>
+      <div
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '6px 14px',
+          borderRadius: '9999px',
+          background: 'var(--surface-container, #F1EBFF)',
+          border: '1px solid var(--border-color, #E2D9F7)',
+        }}
+      >
+        <HomeOutlined style={{ color: 'var(--primary)' }} />
+        <Text strong style={{ color: 'var(--primary)', fontSize: '0.8rem' }}>
+          Kho: Trung tâm Memento3D
+        </Text>
+      </div>
     );
   }
 
@@ -42,20 +50,20 @@ export const WarehouseSelector: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            background: 'rgba(14, 165, 233, 0.12)',
-            border: '1px solid rgba(14, 165, 233, 0.3)',
-            padding: '4px 10px',
-            borderRadius: '6px',
+            background: 'var(--surface-container, #F1EBFF)',
+            border: '1px solid var(--border-color, #E2D9F7)',
+            padding: '6px 14px',
+            borderRadius: '9999px',
           }}
         >
-          <HomeOutlined style={{ color: '#38bdf8' }} />
-          <Text strong style={{ color: '#e0f2fe', fontSize: '0.825rem' }}>
+          <HomeOutlined style={{ color: 'var(--primary)' }} />
+          <Text strong style={{ color: 'var(--text-primary)', fontSize: '0.825rem' }}>
             {single.code}
           </Text>
-          <Text type="secondary" style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+          <Text type="secondary" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
             ({single.name})
           </Text>
-          <CheckCircleOutlined style={{ color: '#22c55e', fontSize: '12px' }} />
+          <CheckCircleOutlined style={{ color: 'var(--tertiary, #466253)', fontSize: '13px' }} />
         </div>
       </Tooltip>
     );
@@ -75,10 +83,10 @@ export const WarehouseSelector: React.FC = () => {
             value: w.id,
             label: (
               <Space>
-                <Tag color="cyan" style={{ marginRight: 0, fontWeight: 700 }}>
+                <Tag color="purple" style={{ marginRight: 0, fontWeight: 700, borderRadius: 9999 }}>
                   {w.code}
                 </Tag>
-                <span style={{ fontSize: '0.85rem' }}>{w.name}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>{w.name}</span>
               </Space>
             ),
           }))}

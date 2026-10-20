@@ -1,0 +1,276 @@
+/* ==========================================================================
+   ATELIER FORGE DESIGN SYSTEM — GLOBAL TOKENS
+   Memento3D Physical Keepsake & Spatial Platform
+   ========================================================================== */
+
+:root {
+  /* Font Families */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Surfaces & Canvas (Atelier Light Mode) */
+  --surface: #FDF8FF;
+  --surface-dim: #DDD6F7;
+  --surface-bright: #FDF8FF;
+  --surface-lowest: #FFFFFF;
+  --surface-low: #F7F1FF;
+  --surface-container: #F1EBFF;
+  --surface-high: #EBE4FF;
+  --surface-highest: #E6DEFF;
+
+  --bg-app: #F8F5FF;
+  --bg-surface: #FFFFFF;
+  --bg-surface-secondary: #F3EEFF;
+  --bg-surface-tertiary: #ECE3FF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FDF8FF;
+  --bg-sidebar: rgba(255, 255, 255, 0.85);
+  --bg-sidebar-solid: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --bg-input-focus: #FFFFFF;
+  --bg-viewport-3d: #F3EEFF;
+
+  /* Primary Brand Violet */
+  --primary: #7C5CFC;
+  --primary-system: #5F3ADD;
+  --primary-container: #7857F8;
+  --primary-hover: #6945ED;
+  --primary-active: #532BC7;
+  --primary-glow: rgba(124, 92, 252, 0.22);
+  --primary-subtle: rgba(124, 92, 252, 0.08);
+  --text-on-primary: #FFFFFF;
+
+  /* Secondary Accent (Peach Emotion / Keepsake / Stickers) */
+  --secondary: #FFBFAE;
+  --secondary-hover: #FFA994;
+  --secondary-active: #F28C74;
+  --secondary-container: #FFE5DF;
+  --secondary-subtle: rgba(255, 191, 174, 0.22);
+  --text-on-secondary: #28243D;
+
+  /* Tertiary / Success (Mint Completed / Available / Ready) */
+  --tertiary: #466253;
+  --tertiary-container: #5F7B6B;
+  --mint: #C9E8D5;
+  --mint-subtle: rgba(201, 232, 213, 0.35);
+  --success: #466253;
+  --success-bg: #C9E8D5;
+  --success-border: #A5D7B7;
+  --text-on-success: #1E3B2C;
+
+  /* Text Hierarchy */
+  --text-primary: #28243D;
+  --text-system: #1C1831;
+  --text-secondary: #6A6282;
+  --text-muted: #8E86A8;
+  --text-subtle: #AFA8C5;
+  --text-inverse: #FFFFFF;
+
+  /* Borders & Dividers */
+  --border-color: #E2D9F7;
+  --border-subtle: #F1EBFF;
+  --border-secondary: #C9C4D8;
+  --border-hover: #7C5CFC;
+  --border-active: #7C5CFC;
+
+  /* Error / Danger */
+  --error: #BA1A1A;
+  --error-container: #FFDAD6;
+  --on-error-container: #93000A;
+  --danger: #BA1A1A;
+  --danger-bg: #FFDAD6;
+  --danger-border: #FFB4AB;
+  --text-on-danger: #93000A;
+
+  /* Warning / Pending / Notice */
+  --warning: #B35C00;
+  --warning-bg: #FFE5D0;
+  --warning-border: #FFBFAE;
+  --warning-text: #6B3400;
+
+  /* Info / Processing (Lavender) */
+  --info: #5F3ADD;
+  --info-bg: #ECE3FF;
+  --info-border: #DDD6F7;
+  --info-text: #5F3ADD;
+
+  /* Neutral Lavender Chip / Archived */
+  --neutral-chip-bg: #F1EBFF;
+  --neutral-chip-text: #6A6282;
+  --neutral-chip-border: #E2D9F7;
+
+  /* Spacing Scale */
+  --space-xs: 6px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-default: 16px;
+  --radius-input: 20px;
+  --radius-md: 24px;
+  --radius-card: 24px;
+  --radius-feature: 28px;
+  --radius-modal: 28px;
+  --radius-lg: 32px;
+  --radius-xl: 48px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px -2px rgba(124, 92, 252, 0.06), 0 1px 3px 0 rgba(40, 36, 61, 0.03);
+  --shadow-card: 0 8px 24px -4px rgba(124, 92, 252, 0.08), 0 2px 6px -1px rgba(40, 36, 61, 0.04);
+  --shadow-floating: 0 20px 40px -8px rgba(124, 92, 252, 0.16), 0 4px 12px -2px rgba(40, 36, 61, 0.06);
+  --shadow-glow: 0 0 24px rgba(124, 92, 252, 0.28);
+  --shadow-peach: 0 8px 24px -4px rgba(255, 191, 174, 0.35);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.78);
+  --glass-blur: blur(16px);
+  --glass-border: 1px solid #E2D9F7;
+
+  /* Standard Design Tokens (Unified Aliases) */
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-bg: var(--bg-app);
+  --color-surface: var(--bg-surface);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border-color);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--error);
+  --color-info: var(--info);
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  --shadow-md: var(--shadow-card);
+  --shadow-lg: var(--shadow-floating);
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   ATELIER FORGE — DARK MODE TOKENS
+   ========================================================================== */
+[data-theme='dark'],
+body.dark-theme {
+  --surface: #1D192B;
+  --surface-dim: #151221;
+  --surface-bright: #252036;
+  --surface-lowest: #100D1A;
+  --surface-low: #181424;
+  --surface-container: #252036;
+  --surface-high: #302A44;
+  --surface-highest: #3C3554;
+
+  --bg-app: #151221;
+  --bg-surface: #1D192B;
+  --bg-surface-secondary: #252036;
+  --bg-surface-tertiary: #302A44;
+  --bg-card: #1D192B;
+  --bg-card-hover: #252036;
+  --bg-sidebar: rgba(29, 25, 43, 0.88);
+  --bg-sidebar-solid: #1D192B;
+  --bg-input: #252036;
+  --bg-input-focus: #302A44;
+  --bg-viewport-3d: #252036;
+
+  /* Violet Brand (Softened for Dark Contrast) */
+  --primary: #B6A3FF;
+  --primary-system: #9B82FF;
+  --primary-container: #4F38AA;
+  --primary-hover: #C7B7FF;
+  --primary-active: #9B82FF;
+  --primary-glow: rgba(182, 163, 255, 0.25);
+  --primary-subtle: rgba(182, 163, 255, 0.12);
+  --text-on-primary: #151221;
+
+  /* Peach Accent (Softened for Dark) */
+  --secondary: #E5A898;
+  --secondary-hover: #F2BAAB;
+  --secondary-active: #CCA093;
+  --secondary-container: #55342D;
+  --secondary-subtle: rgba(229, 168, 152, 0.16);
+  --text-on-secondary: #FFFFFF;
+
+  /* Mint Tertiary (Softened for Dark) */
+  --tertiary: #8EC3A3;
+  --tertiary-container: #2E4B3A;
+  --mint: #8EC3A3;
+  --mint-subtle: rgba(142, 195, 163, 0.16);
+  --success: #8EC3A3;
+  --success-bg: rgba(142, 195, 163, 0.18);
+  --success-border: rgba(142, 195, 163, 0.35);
+  --text-on-success: #D4F2E1;
+
+  /* Dark Text */
+  --text-primary: #F8F4FF;
+  --text-system: #FFFFFF;
+  --text-secondary: #C9C0DD;
+  --text-muted: #8E86A8;
+  --text-subtle: #6D6683;
+  --text-inverse: #151221;
+
+  /* Dark Borders */
+  --border-color: #45405A;
+  --border-subtle: #302A44;
+  --border-secondary: #565070;
+  --border-hover: #B6A3FF;
+  --border-active: #B6A3FF;
+
+  /* Dark Error */
+  --error: #FFB4AB;
+  --error-container: #93000A;
+  --on-error-container: #FFDAD6;
+  --danger: #FFB4AB;
+  --danger-bg: rgba(255, 180, 171, 0.16);
+  --danger-border: rgba(255, 180, 171, 0.35);
+  --text-on-danger: #FFDAD6;
+
+  /* Dark Warning & Info */
+  --warning: #FFBA7A;
+  --warning-bg: rgba(255, 186, 122, 0.15);
+  --warning-border: rgba(255, 186, 122, 0.3);
+  --warning-text: #FFDCC0;
+
+  --info: #C7B7FF;
+  --info-bg: rgba(199, 183, 255, 0.15);
+  --info-border: rgba(199, 183, 255, 0.3);
+  --info-text: #E6DEFF;
+
+  --neutral-chip-bg: #252036;
+  --neutral-chip-text: #C9C0DD;
+  --neutral-chip-border: #45405A;
+
+  /* Dark Shadows */
+  --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 8px 24px -4px rgba(0, 0, 0, 0.55), 0 2px 6px -1px rgba(0, 0, 0, 0.35);
+  --shadow-floating: 0 20px 40px -8px rgba(0, 0, 0, 0.75), 0 0 24px rgba(182, 163, 255, 0.15);
+  --glass-bg: rgba(29, 25, 43, 0.82);
+  --glass-border: 1px solid #45405A;
+
+  /* Standard Design Tokens (Dark Unified Aliases) */
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-bg: var(--bg-app);
+  --color-surface: var(--bg-surface);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border-color);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--error);
+  --color-info: var(--info);
+}

@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { Tag, Badge, Button, Table, Space, message } from 'antd';
 import { 
-  Truck, 
   MapPin, 
   CheckCircle2, 
   Clock, 
   PackageCheck, 
   PhoneCall, 
   Navigation, 
-  LogOut 
 } from 'lucide-react';
 import { useAuth } from '../../auth/context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { PageHeader } from '../../../components/ui/PageHeader';
 
 interface DeliveryRun {
   id: string;
@@ -85,14 +83,8 @@ const MOCK_DELIVERIES: DeliveryRun[] = [
 ];
 
 export const DriverDeliveriesPage: React.FC = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [deliveries, setDeliveries] = useState<DeliveryRun[]>(MOCK_DELIVERIES);
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
 
   const handleUpdateStatus = (id: string, nextStatus: DeliveryRun['status']) => {
     setDeliveries((prev) =>
@@ -223,55 +215,12 @@ export const DriverDeliveriesPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#090d16', color: '#f8fafc', padding: '24px 32px' }}>
-      {/* Top Header */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)', 
-        paddingBottom: 20, 
-        marginBottom: 28 
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ 
-            width: 44, 
-            height: 44, 
-            borderRadius: 10, 
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)'
-          }}>
-            <Truck size={24} color="#fff" />
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <h1 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700, color: '#fff' }}>
-                Cổng Giao vận & Điều phối Tài xế
-              </h1>
-              <Tag color="green" style={{ borderRadius: 6, fontWeight: 600 }}>
-                ROLE_DRIVER (Tài xế giao vận)
-              </Tag>
-            </div>
-            <p style={{ margin: '2px 0 0', color: '#94a3b8', fontSize: '0.8rem' }}>
-              Tài xế đang đăng nhập: <strong style={{ color: '#e2e8f0' }}>{user?.fullName || 'Đội xe vận chuyển'}</strong> ({user?.email})
-            </p>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Button
-            danger
-            icon={<LogOut size={16} />}
-            onClick={handleLogout}
-            style={{ borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6 }}
-          >
-            Đăng xuất
-          </Button>
-        </div>
-      </div>
+    <div style={{ padding: '0 0 32px 0' }}>
+      <PageHeader
+        title="Cổng Giao vận & Điều phối Tài xế"
+        description={`Tài xế đang đăng nhập: ${user?.fullName || 'Đội xe vận chuyển'} (${user?.email})`}
+        tags={<Tag color="green">ROLE_DRIVER</Tag>}
+      />
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>

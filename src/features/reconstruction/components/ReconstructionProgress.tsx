@@ -88,24 +88,33 @@ export const ReconstructionProgress: React.FC<ReconstructionProgressProps> = ({
   return (
     <Card
       style={{
-        background: 'rgba(15, 23, 42, 0.8)',
-        borderColor: 'rgba(255, 255, 255, 0.08)',
-        borderRadius: 16,
-        backdropFilter: 'blur(16px)',
+        background: 'var(--surface-card, #FFFFFF)',
+        borderColor: 'var(--border-default, #E2D9F7)',
+        borderRadius: 'var(--radius-card-standard, 24px)',
+        boxShadow: 'var(--shadow-card)',
         padding: 12,
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <Title level={4} style={{ color: '#fff', margin: 0 }}>
+          <Title level={4} style={{ color: 'var(--text-primary, #28243D)', margin: 0 }}>
             Tiến trình Tái tạo AI 3D Thời gian thực
           </Title>
-          <Text style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <Text style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.85rem' }}>
             Mã tác vụ GPU: #{jobId.slice(0, 8).toUpperCase()}
           </Text>
         </div>
 
-        <Tag color={status === 'COMPLETED' ? 'success' : status === 'FAILED' ? 'error' : 'processing'}>
+        <Tag
+          style={{
+            borderRadius: 'var(--radius-full, 9999px)',
+            fontWeight: 700,
+            padding: '4px 12px',
+            background: status === 'COMPLETED' ? 'var(--mint-accent, #C9E8D5)' : status === 'FAILED' ? 'var(--error-container, #FFDAD6)' : 'var(--surface-container, #F1EBFF)',
+            color: status === 'COMPLETED' ? 'var(--tertiary, #466253)' : status === 'FAILED' ? 'var(--on-error-container, #93000A)' : 'var(--primary, #7C5CFC)',
+            border: 'none',
+          }}
+        >
           {status === 'COMPLETED' ? 'HOÀN TẤT' : status === 'FAILED' ? 'THẤT BẠI' : 'ĐANG XỬ LÝ GPU'}
         </Tag>
       </div>
@@ -115,12 +124,12 @@ export const ReconstructionProgress: React.FC<ReconstructionProgressProps> = ({
           percent={progress}
           status={status === 'FAILED' ? 'exception' : status === 'COMPLETED' ? 'success' : 'active'}
           strokeColor={{
-            '0%': '#0ea5e9',
-            '100%': '#22c55e',
+            '0%': '#7C5CFC',
+            '100%': '#FFBFAE',
           }}
           strokeWidth={10}
         />
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, color: '#94a3b8', fontSize: '0.8rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, color: 'var(--text-secondary, #6A6282)', fontSize: '0.8rem' }}>
           <span>Công đoạn: {STAGES[currentStep]?.title || stage}</span>
           <span>{progress}% hoàn thành</span>
         </div>
@@ -130,7 +139,7 @@ export const ReconstructionProgress: React.FC<ReconstructionProgressProps> = ({
         current={currentStep}
         size="small"
         items={STAGES.map((s, idx) => ({
-          title: <span style={{ color: idx <= currentStep ? '#f8fafc' : '#64748b', fontSize: '0.8rem' }}>{s.title}</span>,
+          title: <span style={{ color: idx <= currentStep ? 'var(--text-primary, #28243D)' : 'var(--text-secondary, #6A6282)', fontSize: '0.8rem', fontWeight: idx <= currentStep ? 600 : 400 }}>{s.title}</span>,
           status: status === 'FAILED' && idx === currentStep ? 'error' : undefined,
         }))}
         style={{ marginBottom: 20 }}
@@ -144,12 +153,12 @@ export const ReconstructionProgress: React.FC<ReconstructionProgressProps> = ({
           showIcon
           action={
             onRetry && (
-              <Button size="small" danger icon={<ReloadOutlined />} onClick={onRetry}>
+              <Button size="small" danger icon={<ReloadOutlined />} onClick={onRetry} style={{ borderRadius: 'var(--radius-full, 9999px)' }}>
                 Thử lại
               </Button>
             )
           }
-          style={{ marginTop: 16 }}
+          style={{ marginTop: 16, borderRadius: 'var(--radius-default, 16px)' }}
         />
       )}
 
@@ -160,7 +169,7 @@ export const ReconstructionProgress: React.FC<ReconstructionProgressProps> = ({
             description="Bạn có thể xoay, phóng to thu nhỏ và kiểm tra bản xem trước 3D có watermark ngay bên dưới."
             type="success"
             showIcon
-            style={{ marginBottom: 16 }}
+            style={{ marginBottom: 16, borderRadius: 'var(--radius-default, 16px)', background: 'var(--mint-accent, #C9E8D5)', borderColor: '#A2D4B3', color: 'var(--tertiary, #466253)' }}
           />
         </div>
       )}

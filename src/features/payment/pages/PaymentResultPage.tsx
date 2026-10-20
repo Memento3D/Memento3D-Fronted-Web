@@ -127,39 +127,39 @@ export const PaymentResultPage: React.FC = () => {
   }, [paymentStatus, checkStatusWithBackend]);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050811', color: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
       <Navbar />
 
-      <main style={{ maxWidth: 800, margin: '0 auto', padding: '120px 24px 60px' }}>
+      <main style={{ maxWidth: 800, margin: '0 auto', padding: '140px 24px 60px' }}>
         <Card
           style={{
-            background: 'rgba(15, 23, 42, 0.75)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: 20,
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 'var(--radius-card-feature)',
             overflow: 'hidden',
-            backdropFilter: 'blur(16px)',
+            boxShadow: 'var(--shadow-floating)',
           }}
-          bodyStyle={{ padding: '40px 24px' }}
+          styles={{ body: { padding: '48px 32px' } }}
         >
           {paymentStatus === 'PENDING' && (
             <div style={{ textAlign: 'center', padding: '40px 0' }}>
               <Spin
-                indicator={<LoadingOutlined style={{ fontSize: 54, color: '#38bdf8' }} spin />}
+                indicator={<LoadingOutlined style={{ fontSize: 54, color: 'var(--primary)' }} spin />}
               />
-              <h2 style={{ color: '#fff', marginTop: 24, fontWeight: 700 }}>
+              <h2 style={{ color: 'var(--text-primary)', marginTop: 24, fontWeight: 700 }}>
                 Đang xác thực giao dịch thời gian thực...
               </h2>
-              <p style={{ color: '#94a3b8', fontSize: '1rem', maxWidth: 460, margin: '0 auto 24px' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: 460, margin: '0 auto 24px' }}>
                 Hệ thống đang đồng bộ kết quả từ cổng thanh toán qua luồng sự kiện Kafka. Vui lòng chờ trong giây lát.
               </p>
               <Button
                 icon={<ReloadOutlined spin={isPolling} />}
                 onClick={() => checkStatusWithBackend()}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(255, 255, 255, 0.15)',
-                  color: '#fff',
-                  borderRadius: 8,
+                  background: 'var(--surface-container)',
+                  borderColor: 'var(--border-default)',
+                  color: 'var(--text-primary)',
+                  borderRadius: 'var(--radius-full)',
                 }}
               >
                 Kiểm tra lại trạng thái
@@ -169,14 +169,14 @@ export const PaymentResultPage: React.FC = () => {
 
           {paymentStatus === 'SUCCESS' && (
             <Result
-              icon={<CheckCircleFilled style={{ color: '#22c55e', fontSize: 64 }} />}
+              icon={<CheckCircleFilled style={{ color: 'var(--tertiary)', fontSize: 64 }} />}
               title={
-                <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.6rem' }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.6rem' }}>
                   Thanh toán đơn hàng thành công!
                 </span>
               }
               subTitle={
-                <span style={{ color: '#94a3b8', fontSize: '1rem' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
                   Giao dịch của bạn đã được xác nhận thành công qua Kafka event stream. Xưởng in Memento3D đang chuẩn bị lệnh in.
                 </span>
               }
@@ -189,10 +189,11 @@ export const PaymentResultPage: React.FC = () => {
                     icon={<FileTextOutlined />}
                     onClick={() => navigate(`/orders/${orderId}`)}
                     style={{
-                      background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                      borderColor: 'transparent',
-                      borderRadius: 8,
+                      background: 'var(--primary)',
+                      borderColor: 'var(--primary)',
+                      borderRadius: 'var(--radius-full)',
                       fontWeight: 700,
+                      boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
                     }}
                   >
                     Xem chi tiết đơn hàng
@@ -204,10 +205,10 @@ export const PaymentResultPage: React.FC = () => {
                   icon={<ShoppingOutlined />}
                   onClick={() => navigate('/products')}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    borderColor: 'rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
-                    borderRadius: 8,
+                    background: 'var(--surface-container)',
+                    borderColor: 'var(--border-default)',
+                    color: 'var(--text-primary)',
+                    borderRadius: 'var(--radius-full)',
                   }}
                 >
                   Tiếp tục mua sắm
@@ -218,14 +219,14 @@ export const PaymentResultPage: React.FC = () => {
 
           {paymentStatus === 'FAILED' && (
             <Result
-              icon={<CloseCircleFilled style={{ color: '#ef4444', fontSize: 64 }} />}
+              icon={<CloseCircleFilled style={{ color: 'var(--error)', fontSize: 64 }} />}
               title={
-                <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.6rem' }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.6rem' }}>
                   Thanh toán không thành công
                 </span>
               }
               subTitle={
-                <span style={{ color: '#94a3b8', fontSize: '1rem' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
                   {statusMessage || 'Giao dịch đã bị từ chối hoặc người dùng đã hủy thanh toán trên cổng.'}
                 </span>
               }
@@ -238,7 +239,7 @@ export const PaymentResultPage: React.FC = () => {
                     danger
                     onClick={() => navigate(`/checkout?orderId=${orderId}`)}
                     style={{
-                      borderRadius: 8,
+                      borderRadius: 'var(--radius-full)',
                       fontWeight: 700,
                     }}
                   >
@@ -251,10 +252,10 @@ export const PaymentResultPage: React.FC = () => {
                     size="large"
                     onClick={() => navigate(`/orders/${orderId}`)}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      borderColor: 'rgba(255, 255, 255, 0.15)',
-                      color: '#fff',
-                      borderRadius: 8,
+                      background: 'var(--surface-container)',
+                      borderColor: 'var(--border-default)',
+                      color: 'var(--text-primary)',
+                      borderRadius: 'var(--radius-full)',
                     }}
                   >
                     Xem đơn hàng
@@ -268,12 +269,12 @@ export const PaymentResultPage: React.FC = () => {
             <Result
               status="warning"
               title={
-                <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.6rem' }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.6rem' }}>
                   Đang chờ cổng thanh toán xác nhận
                 </span>
               }
               subTitle={
-                <span style={{ color: '#94a3b8', fontSize: '1rem' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
                   Giao dịch chưa nhận được phản hồi tức thì từ nhà cung cấp thanh toán. Bạn có thể kiểm tra lại trong chi tiết đơn hàng sau ít phút.
                 </span>
               }
@@ -285,9 +286,10 @@ export const PaymentResultPage: React.FC = () => {
                     size="large"
                     onClick={() => navigate(`/orders/${orderId}`)}
                     style={{
-                      background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                      borderColor: 'transparent',
-                      borderRadius: 8,
+                      background: 'var(--primary)',
+                      borderColor: 'var(--primary)',
+                      borderRadius: 'var(--radius-full)',
+                      boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
                     }}
                   >
                     Kiểm tra đơn hàng
@@ -303,10 +305,10 @@ export const PaymentResultPage: React.FC = () => {
                     checkStatusWithBackend();
                   }}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    borderColor: 'rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
-                    borderRadius: 8,
+                    background: 'var(--surface-container)',
+                    borderColor: 'var(--border-default)',
+                    color: 'var(--text-primary)',
+                    borderRadius: 'var(--radius-full)',
                   }}
                 >
                   Thử lại
@@ -318,9 +320,9 @@ export const PaymentResultPage: React.FC = () => {
           {(orderId || transId || verifiedAmount) && (
             <div
               style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                borderRadius: 12,
+                background: 'var(--surface-container)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-default)',
                 padding: 20,
                 marginTop: 24,
                 textAlign: 'left',
@@ -329,39 +331,48 @@ export const PaymentResultPage: React.FC = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: '0.9rem' }}>
                 {orderId && (
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#94a3b8' }}>Mã đơn hàng:</span>
-                    <span style={{ color: '#f8fafc', fontWeight: 600 }}>#{orderId.slice(0, 8).toUpperCase()}</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Mã đơn hàng:</span>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>#{orderId.slice(0, 8).toUpperCase()}</span>
                   </div>
                 )}
 
                 {transId && (
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#94a3b8' }}>Mã giao dịch cổng:</span>
-                    <span style={{ color: '#38bdf8', fontWeight: 600 }}>{transId}</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Mã giao dịch cổng:</span>
+                    <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{transId}</span>
                   </div>
                 )}
 
                 {verifiedAmount && (
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#94a3b8' }}>Số tiền:</span>
-                    <span style={{ color: '#22c55e', fontWeight: 700 }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Số tiền:</span>
+                    <span style={{ color: 'var(--tertiary)', fontWeight: 700 }}>
                       {Number(verifiedAmount).toLocaleString('vi-VN')} VND
                     </span>
                   </div>
                 )}
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: '#94a3b8' }}>Trạng thái:</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>Trạng thái:</span>
                   <Tag
-                    color={
-                      paymentStatus === 'SUCCESS'
-                        ? 'success'
-                        : paymentStatus === 'FAILED'
-                        ? 'error'
-                        : paymentStatus === 'TIMEOUT'
-                        ? 'warning'
-                        : 'processing'
-                    }
+                    style={{
+                      borderRadius: 'var(--radius-full)',
+                      padding: '2px 12px',
+                      fontWeight: 600,
+                      border: 'none',
+                      background:
+                        paymentStatus === 'SUCCESS'
+                          ? 'var(--mint-bg)'
+                          : paymentStatus === 'FAILED'
+                          ? 'var(--error-bg)'
+                          : 'var(--lavender-bg)',
+                      color:
+                        paymentStatus === 'SUCCESS'
+                          ? 'var(--mint-text)'
+                          : paymentStatus === 'FAILED'
+                          ? 'var(--error-text)'
+                          : 'var(--primary)',
+                    }}
                   >
                     {paymentStatus === 'SUCCESS'
                       ? 'ĐÃ THANH TOÁN (PAID)'

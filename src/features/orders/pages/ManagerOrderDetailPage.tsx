@@ -199,11 +199,13 @@ export const ManagerOrderDetailPage: React.FC = () => {
                   style={
                     !isCancel
                       ? {
-                          background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                          borderColor: 'transparent',
+                          background: 'var(--primary)',
+                          borderColor: 'var(--primary)',
                           fontWeight: 600,
+                          borderRadius: 'var(--radius-full)',
+                          boxShadow: '0 4px 12px rgba(124, 92, 252, 0.25)',
                         }
-                      : {}
+                      : { borderRadius: 'var(--radius-full)' }
                   }
                 >
                   {buttonText}
@@ -216,10 +218,11 @@ export const ManagerOrderDetailPage: React.FC = () => {
             icon={<PrinterOutlined />}
             onClick={() => setPrintJobModalOpen(true)}
             style={{
-              background: 'rgba(139, 92, 246, 0.15)',
-              borderColor: 'rgba(139, 92, 246, 0.3)',
-              color: '#c084fc',
+              background: 'var(--surface-container)',
+              borderColor: 'var(--border-default)',
+              color: 'var(--primary)',
               fontWeight: 600,
+              borderRadius: 'var(--radius-full)',
             }}
           >
             Lập lệnh in 3D
@@ -230,10 +233,10 @@ export const ManagerOrderDetailPage: React.FC = () => {
       {/* Header Info */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <div>
-          <h2 style={{ color: '#fff', margin: 0, fontWeight: 800 }}>
+          <h2 style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 800 }}>
             Quản lý Đơn hàng #{orderCode}
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: 4 }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: 4 }}>
             ID hệ thống: {order.id} | Ngày tạo: {formatOrderDate(order.createdAt)}
           </div>
         </div>
@@ -248,14 +251,15 @@ export const ManagerOrderDetailPage: React.FC = () => {
         <Col xs={24} lg={15}>
           {/* Order Items Snapshot Table */}
           <Card
-            title={<span style={{ color: '#fff', fontWeight: 700 }}>Danh sách sản phẩm trong đơn</span>}
+            title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Danh sách sản phẩm trong đơn</span>}
             style={{
-              background: 'var(--card-bg, #0f172a)',
-              borderColor: 'var(--border-color)',
-              borderRadius: 14,
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 'var(--radius-card)',
+              boxShadow: 'var(--shadow-card)',
               marginBottom: 24,
             }}
-            bodyStyle={{ padding: 0 }}
+            styles={{ body: { padding: 0 } }}
           >
             {order.items && order.items.length > 0 ? (
               <Table
@@ -272,19 +276,19 @@ export const ManagerOrderDetailPage: React.FC = () => {
                           <img
                             src={item.thumbnailSnapshot}
                             alt=""
-                            style={{ width: 44, height: 44, borderRadius: 6, objectFit: 'cover' }}
+                            style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', objectFit: 'cover' }}
                           />
                         ) : (
-                          <div style={{ width: 44, height: 44, borderRadius: 6, background: '#090d16', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', background: 'var(--surface-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             📦
                           </div>
                         )}
                         <div>
-                          <div style={{ fontWeight: 600, color: '#f8fafc' }}>
+                          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                             {item.productNameSnapshot}
                           </div>
                           {item.customizationSnapshot && Object.keys(item.customizationSnapshot).length > 0 && (
-                            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                               {Object.entries(item.customizationSnapshot).map(([k, v]) => `${k}: ${v}`).join(' | ')}
                             </div>
                           )}
@@ -311,7 +315,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
                     key: 'subtotal',
                     align: 'right',
                     render: (sub) => (
-                      <span style={{ fontWeight: 700, color: '#38bdf8' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--primary)' }}>
                         {formatCurrency(sub, order.currency || 'VND')}
                       </span>
                     ),
@@ -319,7 +323,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
                 ]}
               />
             ) : (
-              <div style={{ padding: 20, color: '#94a3b8', textAlign: 'center' }}>
+              <div style={{ padding: 20, color: 'var(--text-secondary)', textAlign: 'center' }}>
                 Đơn hàng chế tác Memento3D (Quản lý)
               </div>
             )}
@@ -329,7 +333,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
           <Card
             title={
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#fff', fontWeight: 700 }}>Thông tin khách hàng & Giao hàng</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Thông tin khách hàng & Giao hàng</span>
                 <Button
                   size="small"
                   icon={<EditOutlined />}
@@ -341,37 +345,42 @@ export const ManagerOrderDetailPage: React.FC = () => {
                     });
                     setEditAddressOpen(true);
                   }}
+                  style={{
+                    borderRadius: 'var(--radius-full)',
+                  }}
                 >
                   Sửa thông tin
                 </Button>
               </div>
             }
             style={{
-              background: 'var(--card-bg, #0f172a)',
-              borderColor: 'var(--border-color)',
-              borderRadius: 14,
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 'var(--radius-card)',
+              boxShadow: 'var(--shadow-card)',
               marginBottom: 24,
             }}
+            styles={{ body: { padding: 24 } }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8' }}>Khách hàng / Người nhận:</span>
-                <span style={{ color: '#f8fafc', fontWeight: 600 }}>{order.recipientName}</span>
+                <span style={{ color: 'var(--text-secondary)' }}>Khách hàng / Người nhận:</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{order.recipientName}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8' }}>Số điện thoại:</span>
-                <span style={{ color: '#f8fafc', fontWeight: 600 }}>{order.phone}</span>
+                <span style={{ color: 'var(--text-secondary)' }}>Số điện thoại:</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{order.phone}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8' }}>Địa chỉ nhận hàng:</span>
-                <span style={{ color: '#cbd5e1', textAlign: 'right', maxWidth: 350 }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Địa chỉ nhận hàng:</span>
+                <span style={{ color: 'var(--text-primary)', textAlign: 'right', maxWidth: 350 }}>
                   {order.shippingAddress}
                 </span>
               </div>
               {order.note && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>Ghi chú đơn:</span>
-                  <span style={{ color: '#cbd5e1', fontStyle: 'italic' }}>{order.note}</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>Ghi chú đơn:</span>
+                  <span style={{ color: 'var(--text-primary)', fontStyle: 'italic' }}>{order.note}</span>
                 </div>
               )}
             </div>
@@ -381,35 +390,44 @@ export const ManagerOrderDetailPage: React.FC = () => {
         {/* Right Column: Pricing & Cash Confirmation */}
         <Col xs={24} lg={9}>
           <Card
-            title={<span style={{ color: '#fff', fontWeight: 700 }}>Thông tin thanh toán</span>}
+            title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Thông tin thanh toán</span>}
             style={{
-              background: 'var(--card-bg, #0f172a)',
-              borderColor: 'var(--border-color)',
-              borderRadius: 14,
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 'var(--radius-card)',
+              boxShadow: 'var(--shadow-card)',
               position: 'sticky',
               top: 100,
             }}
+            styles={{ body: { padding: 24 } }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8' }}>Phương thức:</span>
-                <Tag color={isCash ? 'green' : order.paymentMethod === 'MOMO' ? 'magenta' : 'blue'}>
+                <span style={{ color: 'var(--text-secondary)' }}>Phương thức:</span>
+                <Tag style={{ borderRadius: 'var(--radius-full)', background: 'var(--surface-container)', color: 'var(--primary)', border: '1px solid var(--border-default)' }}>
                   {order.paymentMethod || 'MOMO'}
                 </Tag>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8' }}>Trạng thái thanh toán:</span>
-                <Tag color={isPaid ? 'green' : 'gold'}>
+                <span style={{ color: 'var(--text-secondary)' }}>Trạng thái thanh toán:</span>
+                <Tag
+                  style={{
+                    borderRadius: 'var(--radius-full)',
+                    background: isPaid ? 'var(--mint-bg)' : 'var(--peach-bg)',
+                    color: isPaid ? 'var(--mint-text)' : 'var(--peach-text)',
+                    border: 'none',
+                  }}
+                >
                   {order.paymentStatus === 'PAID' ? 'Đã thanh toán' : order.paymentStatus === 'PENDING' ? 'Chờ thanh toán' : order.paymentStatus || 'Chờ thanh toán'}
                 </Tag>
               </div>
 
-              <Divider style={{ borderColor: 'var(--border-color)', margin: '4px 0' }} />
+              <Divider style={{ borderColor: 'var(--border-default)', margin: '4px 0' }} />
 
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8' }}>Tổng giá trị đơn:</span>
-                <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#38bdf8' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Tổng giá trị đơn:</span>
+                <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)' }}>
                   {formatCurrency(totalAmount, order.currency || 'VND')}
                 </span>
               </div>
@@ -418,14 +436,14 @@ export const ManagerOrderDetailPage: React.FC = () => {
               {isCash && !isPaid && (
                 <div
                   style={{
-                    background: 'rgba(34, 197, 94, 0.08)',
-                    border: '1px solid rgba(34, 197, 94, 0.25)',
-                    borderRadius: 12,
+                    background: 'var(--mint-bg)',
+                    border: '1px solid var(--mint-border)',
+                    borderRadius: 'var(--radius-default)',
                     padding: 16,
                     marginTop: 8,
                   }}
                 >
-                  <div style={{ fontSize: '0.85rem', color: '#86efac', marginBottom: 12 }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--mint-text)', marginBottom: 12 }}>
                     Đơn hàng thanh toán Tiền mặt (CASH). Khi đã nhận đủ tiền từ khách hàng hoặc đơn vị vận chuyển, xác nhận tại đây:
                   </div>
 
@@ -443,10 +461,11 @@ export const ManagerOrderDetailPage: React.FC = () => {
                       icon={<SafetyCertificateOutlined />}
                       loading={confirmCashMutation.isPending}
                       style={{
-                        background: 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)',
-                        borderColor: 'transparent',
+                        background: 'var(--primary)',
+                        borderColor: 'var(--primary)',
                         fontWeight: 700,
-                        borderRadius: 8,
+                        borderRadius: 'var(--radius-full)',
+                        boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
                       }}
                     >
                       Xác nhận đã nhận tiền

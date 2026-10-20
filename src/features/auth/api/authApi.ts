@@ -78,13 +78,22 @@ export const authApi = {
   },
 
   getGoogleLoginUrl: async (): Promise<string> => {
+    const redirectUri = `${window.location.origin}/oauth2/redirect`;
     try {
-      const res = await apiClient.get<{ url: string }>('/auth/oauth2/google/url');
-      if (res.data?.url) return res.data.url;
+      const res = await apiClient.get<{ url: string }>(`/auth/oauth2/google/url?redirect_uri=${encodeURIComponent(redirectUri)}`);
+      if (res.data?.url) {
+        try {
+          const urlObj = new URL(res.data.url, window.location.origin);
+          urlObj.searchParams.set('redirect_uri', redirectUri);
+          return urlObj.toString();
+        } catch {
+          return `${res.data.url}${res.data.url.includes('?') ? '&' : '?'}redirect_uri=${encodeURIComponent(redirectUri)}`;
+        }
+      }
     } catch {
       // Fallback to standard spring security oauth2 endpoint
     }
     const baseUrl = BASE_URL.replace(/\/api\/v1\/?$/, '').replace(/\/api\/?$/, '');
-    return `${baseUrl}/oauth2/authorization/google`;
+    return `${baseUrl}/oauth2/authorization/google?redirect_uri=${encodeURIComponent(redirectUri)}`;
   },
 };

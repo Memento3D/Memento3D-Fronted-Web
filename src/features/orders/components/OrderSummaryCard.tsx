@@ -37,33 +37,33 @@ export const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
   return (
     <Card
       style={{
-        background: 'linear-gradient(160deg, rgba(18, 25, 41, 0.7) 0%, rgba(11, 16, 28, 0.85) 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        borderRadius: 14,
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 'var(--radius-card)',
         marginBottom: 16,
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+        boxShadow: 'var(--shadow-card)',
       }}
-      bodyStyle={{ padding: 20 }}
+      styles={{ body: { padding: 20 } }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-            <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.01em' }}>
+            <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
               #{order.id.slice(0, 8).toUpperCase()}
             </span>
             <OrderStatusBadge status={order.status} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#94a3b8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
             <CalendarOutlined />
             <span>Ngày tạo: {formatOrderDate(order.createdAt)}</span>
           </div>
         </div>
 
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>
             Tổng thanh toán
           </div>
-          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#38bdf8' }}>
+          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--primary)' }}>
             {formatCurrency(order.totalPrice, order.currency)}
           </div>
         </div>
@@ -73,30 +73,30 @@ export const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
         style={{
           margin: '16px 0',
           padding: '12px 14px',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          borderRadius: 10,
+          background: 'var(--surface-container)',
+          border: '1px solid var(--border-default)',
+          borderRadius: 'var(--radius-default)',
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: 12,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.825rem' }}>
-          <UserOutlined style={{ color: '#06b6d4' }} />
-          <span style={{ color: '#94a3b8' }}>Người nhận:</span>
-          <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{order.recipientName || 'Chưa cung cấp'}</span>
+          <UserOutlined style={{ color: 'var(--primary)' }} />
+          <span style={{ color: 'var(--text-secondary)' }}>Người nhận:</span>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{order.recipientName || 'Chưa cung cấp'}</span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.825rem' }}>
-          <PhoneOutlined style={{ color: '#10b981' }} />
-          <span style={{ color: '#94a3b8' }}>Điện thoại:</span>
-          <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{order.phone || 'Chưa cung cấp'}</span>
+          <PhoneOutlined style={{ color: 'var(--tertiary)' }} />
+          <span style={{ color: 'var(--text-secondary)' }}>Điện thoại:</span>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{order.phone || 'Chưa cung cấp'}</span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.825rem', gridColumn: '1 / -1' }}>
-          <EnvironmentOutlined style={{ color: '#f59e0b' }} />
-          <span style={{ color: '#94a3b8' }}>Địa chỉ:</span>
-          <span style={{ color: '#cbd5e1' }}>{order.shippingAddress || 'Chưa cung cấp'}</span>
+          <EnvironmentOutlined style={{ color: 'var(--primary-system)' }} />
+          <span style={{ color: 'var(--text-secondary)' }}>Địa chỉ:</span>
+          <span style={{ color: 'var(--text-primary)' }}>{order.shippingAddress || 'Chưa cung cấp'}</span>
         </div>
       </div>
 
@@ -107,10 +107,11 @@ export const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
             icon={<CreditCardOutlined />}
             onClick={() => onPay(order)}
             style={{
-              background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-              borderColor: 'transparent',
+              background: 'var(--primary)',
+              borderColor: 'var(--primary)',
               fontWeight: 600,
-              borderRadius: 8,
+              borderRadius: 'var(--radius-full)',
+              boxShadow: '0 4px 12px rgba(124, 92, 252, 0.25)',
             }}
           >
             Thanh toán ngay
@@ -123,9 +124,7 @@ export const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
             icon={<StopOutlined />}
             onClick={() => onCancel(order)}
             style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              borderColor: 'rgba(239, 68, 68, 0.3)',
-              borderRadius: 8,
+              borderRadius: 'var(--radius-full)',
             }}
           >
             Hủy đơn
@@ -136,10 +135,10 @@ export const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
           icon={<EyeOutlined />}
           onClick={() => navigate(detailUrl)}
           style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderColor: 'rgba(255, 255, 255, 0.15)',
-            color: '#f8fafc',
-            borderRadius: 8,
+            background: 'var(--surface-container)',
+            borderColor: 'var(--border-default)',
+            color: 'var(--text-primary)',
+            borderRadius: 'var(--radius-full)',
           }}
         >
           Chi tiết đơn hàng

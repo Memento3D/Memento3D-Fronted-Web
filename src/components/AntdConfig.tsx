@@ -21,80 +21,109 @@ export const AntdConfig: React.FC<AntdConfigProps> = ({ children }) => {
         algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: isDark
           ? {
-              colorPrimary: '#0ea5e9', // Cyber Forge Sky
-              colorInfo: '#0ea5e9',
-              colorSuccess: '#10b981',
-              colorWarning: '#f59e0b',
-              colorError: '#ef4444',
-              borderRadius: 10,
-              colorBgBase: '#080c14',
-              colorBgContainer: '#111827',
-              colorBgElevated: '#1e293b',
-              colorBorder: 'rgba(255, 255, 255, 0.1)',
-              colorBorderSecondary: 'rgba(255, 255, 255, 0.06)',
-              colorText: '#f8fafc',
-              colorTextSecondary: '#94a3b8',
+              colorPrimary: '#B6A3FF', // Atelier Forge Dark Violet
+              colorPrimaryHover: '#C7B7FF',
+              colorInfo: '#B6A3FF',
+              colorSuccess: '#8EC3A3',
+              colorWarning: '#FFBA7A',
+              colorError: '#FFB4AB',
+              borderRadius: 16,
+              colorBgBase: '#151221',
+              colorBgContainer: '#1D192B',
+              colorBgElevated: '#252036',
+              colorBgLayout: '#151221',
+              colorBorder: '#45405A',
+              colorBorderSecondary: '#302A44',
+              colorText: '#F8F4FF',
+              colorTextSecondary: '#C9C0DD',
               fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
             }
           : {
-              colorPrimary: '#0284c7', // Crisp Royal Sky for Light Mode
-              colorInfo: '#0284c7',
-              colorSuccess: '#059669',
-              colorWarning: '#d97706',
-              colorError: '#dc2626',
-              borderRadius: 10,
-              colorBgBase: '#f8fafc',
-              colorBgContainer: '#ffffff',
-              colorBgElevated: '#ffffff',
-              colorBorder: 'rgba(15, 23, 42, 0.12)',
-              colorBorderSecondary: 'rgba(15, 23, 42, 0.06)',
-              colorText: '#0f172a',
-              colorTextSecondary: '#475569',
+              colorPrimary: '#7C5CFC', // Atelier Forge Brand Violet
+              colorPrimaryHover: '#6945ED',
+              colorInfo: '#7C5CFC',
+              colorSuccess: '#466253',
+              colorWarning: '#B35C00',
+              colorError: '#BA1A1A',
+              borderRadius: 16,
+              colorBgBase: '#F8F5FF',
+              colorBgContainer: '#FFFFFF',
+              colorBgElevated: '#FFFFFF',
+              colorBgLayout: '#F8F5FF',
+              colorBorder: '#E2D9F7',
+              colorBorderSecondary: '#F1EBFF',
+              colorText: '#28243D',
+              colorTextSecondary: '#6A6282',
               fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
             },
         components: {
           Table: isDark
             ? {
-                headerBg: '#1e293b',
-                headerColor: '#94a3b8',
-                rowHoverBg: 'rgba(14, 165, 233, 0.08)',
-                borderColor: 'rgba(255, 255, 255, 0.08)',
+                headerBg: '#252036',
+                headerColor: '#C9C0DD',
+                rowHoverBg: 'rgba(182, 163, 255, 0.08)',
+                borderColor: '#45405A',
+                borderRadius: 24,
               }
             : {
-                headerBg: '#f1f5f9',
-                headerColor: '#475569',
-                rowHoverBg: 'rgba(2, 132, 199, 0.05)',
-                borderColor: '#e2e8f0',
+                headerBg: '#F7F1FF',
+                headerColor: '#6A6282',
+                rowHoverBg: '#F8F5FF',
+                borderColor: '#E2D9F7',
+                borderRadius: 24,
               },
           Card: isDark
             ? {
-                colorBgContainer: 'rgba(17, 24, 39, 0.85)',
-                colorBorderSecondary: 'rgba(255, 255, 255, 0.08)',
+                colorBgContainer: '#1D192B',
+                colorBorderSecondary: '#45405A',
+                borderRadiusLG: 24,
               }
             : {
-                colorBgContainer: '#ffffff',
-                colorBorderSecondary: '#e2e8f0',
+                colorBgContainer: '#FFFFFF',
+                colorBorderSecondary: '#E2D9F7',
+                borderRadiusLG: 24,
               },
           Modal: isDark
             ? {
-                contentBg: '#111827',
-                headerBg: '#111827',
+                contentBg: '#1D192B',
+                headerBg: '#1D192B',
+                borderRadiusLG: 28,
               }
             : {
-                contentBg: '#ffffff',
-                headerBg: '#ffffff',
+                contentBg: '#FFFFFF',
+                headerBg: '#FFFFFF',
+                borderRadiusLG: 28,
               },
           Drawer: isDark
             ? {
-                colorBgElevated: '#111827',
+                colorBgElevated: '#1D192B',
               }
             : {
-                colorBgElevated: '#ffffff',
+                colorBgElevated: '#FFFFFF',
               },
           Button: {
+            borderRadius: 9999,
             primaryShadow: isDark
-              ? '0 0 14px rgba(14, 165, 233, 0.35)'
-              : '0 4px 14px rgba(2, 132, 199, 0.25)',
+              ? '0 0 16px rgba(182, 163, 255, 0.28)'
+              : '0 4px 14px rgba(124, 92, 252, 0.22)',
+          },
+          Input: {
+            borderRadius: 20,
+          },
+          Select: {
+            borderRadius: 20,
+          },
+          Tag: {
+            borderRadiusSM: 9999,
+          },
+          Pagination: {
+            itemActiveBg: isDark ? '#B6A3FF' : '#7C5CFC',
+          },
+          Tabs: {
+            inkBarColor: isDark ? '#B6A3FF' : '#7C5CFC',
+            itemActiveColor: isDark ? '#B6A3FF' : '#7C5CFC',
+            itemHoverColor: isDark ? '#C7B7FF' : '#6945ED',
+            itemSelectedColor: isDark ? '#B6A3FF' : '#7C5CFC',
           },
         },
       }}

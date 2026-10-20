@@ -22,8 +22,9 @@ export const ProductErrorState: React.FC<ProductErrorStateProps> = ({
         padding: '56px 24px',
         background: 'var(--bg-card)',
         border: '1px solid var(--border-color)',
-        borderRadius: 'var(--radius-lg)',
+        borderRadius: 'var(--radius-card, 24px)',
         margin: '20px 0',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       <div
@@ -32,11 +33,12 @@ export const ProductErrorState: React.FC<ProductErrorStateProps> = ({
           height: 64,
           margin: '0 auto 16px',
           borderRadius: '50%',
-          background: 'rgba(239, 68, 68, 0.12)',
+          background: 'var(--danger-bg, #FFDAD6)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'var(--danger)',
+          color: 'var(--error, #BA1A1A)',
+          boxShadow: '0 4px 14px rgba(186, 26, 26, 0.15)',
         }}
       >
         <svg
@@ -84,10 +86,12 @@ export const ProductErrorState: React.FC<ProductErrorStateProps> = ({
           icon={<ReloadOutlined />}
           onClick={onRetry}
           style={{
-            borderRadius: 'var(--radius-md)',
+            borderRadius: 'var(--radius-full, 9999px)',
             fontWeight: 600,
-            padding: '0 20px',
-            height: 38,
+            padding: '0 24px',
+            height: 40,
+            background: 'var(--primary)',
+            borderColor: 'var(--primary)',
           }}
         >
           {retryText}

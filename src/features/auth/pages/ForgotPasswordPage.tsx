@@ -60,7 +60,7 @@ export const ForgotPasswordPage: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'radial-gradient(ellipse at 50% 20%, #0f172a 0%, #020617 100%)',
+        background: 'radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 191, 174, 0.12) 0%, transparent 40%), var(--bg-app, #F8F5FF)',
         padding: '24px 16px',
         position: 'relative',
         overflow: 'hidden',
@@ -69,11 +69,10 @@ export const ForgotPasswordPage: React.FC = () => {
       <div style={{ width: '100%', maxWidth: '480px', zIndex: 1 }}>
         <Card
           style={{
-            background: 'rgba(15, 23, 42, 0.85)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '16px',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            background: 'var(--surface-card, #FFFFFF)',
+            border: '1px solid var(--border-default, #E2D9F7)',
+            borderRadius: 'var(--radius-card-feature, 28px)',
+            boxShadow: 'var(--shadow-floating)',
           }}
           styles={{ body: { padding: '40px 32px' } }}
         >
@@ -87,9 +86,8 @@ export const ForgotPasswordPage: React.FC = () => {
                   width: '72px',
                   height: '72px',
                   borderRadius: '50%',
-                  background: 'rgba(16, 185, 129, 0.15)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  color: '#10b981',
+                  background: 'var(--mint-accent, #C9E8D5)',
+                  color: 'var(--tertiary, #466253)',
                   fontSize: '32px',
                   marginBottom: '20px',
                 }}
@@ -97,26 +95,27 @@ export const ForgotPasswordPage: React.FC = () => {
                 <CheckCircleOutlined />
               </div>
 
-              <Title level={3} style={{ color: '#fff', marginBottom: '8px', fontWeight: 700 }}>
+              <Title level={3} style={{ color: 'var(--text-primary, #28243D)', marginBottom: '8px', fontWeight: 700 }}>
                 Kiểm tra hòm thư của bạn
               </Title>
 
-              <Paragraph style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
-                Nếu email <strong style={{ color: '#38bdf8' }}>{submittedEmail}</strong> tồn tại trong hệ thống Memento3D, 
+              <Paragraph style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
+                Nếu email <strong style={{ color: 'var(--primary, #7C5CFC)' }}>{submittedEmail}</strong> tồn tại trong hệ thống Memento3D, 
                 chúng tôi đã gửi một liên kết an toàn có thời hạn <strong>15 phút</strong> để thiết lập lại mật khẩu mới.
               </Paragraph>
 
               <Alert
                 type="info"
                 showIcon
-                icon={<SafetyCertificateOutlined style={{ color: '#38bdf8' }} />}
+                icon={<SafetyCertificateOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
                 message="Lưu ý an toàn"
                 description="Liên kết đặt lại mật khẩu chỉ dùng được một lần duy nhất. Nếu không nhận được email, hãy kiểm tra mục Thư rác (Spam) hoặc bấm nút gửi lại bên dưới."
                 style={{
                   marginBottom: 24,
                   textAlign: 'left',
-                  background: 'rgba(14, 165, 233, 0.08)',
-                  borderColor: 'rgba(14, 165, 233, 0.25)',
+                  background: 'var(--surface-container, #F1EBFF)',
+                  borderColor: 'var(--border-default, #E2D9F7)',
+                  borderRadius: 'var(--radius-default, 16px)',
                 }}
               />
 
@@ -127,16 +126,17 @@ export const ForgotPasswordPage: React.FC = () => {
                 loading={loading}
                 onClick={handleResend}
                 style={{
-                  height: '42px',
-                  borderRadius: '8px',
+                  height: '46px',
+                  borderRadius: 'var(--radius-full, 9999px)',
                   fontWeight: 600,
                   marginBottom: '16px',
+                  borderColor: 'var(--border-default, #E2D9F7)',
                 }}
               >
                 {cooldown > 0 ? `Gửi lại sau (${cooldown}s)` : 'Gửi lại email'}
               </Button>
 
-              <Link to="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#94a3b8' }}>
+              <Link to="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary, #6A6282)', fontWeight: 600 }}>
                 <ArrowLeftOutlined /> Quay lại Đăng nhập
               </Link>
             </div>
@@ -151,26 +151,26 @@ export const ForgotPasswordPage: React.FC = () => {
                     width: '64px',
                     height: '64px',
                     borderRadius: '50%',
-                    background: 'rgba(14, 165, 233, 0.15)',
-                    border: '1px solid rgba(14, 165, 233, 0.3)',
-                    color: '#38bdf8',
+                    background: 'var(--surface-container, #F1EBFF)',
+                    border: '1px solid var(--border-default, #E2D9F7)',
+                    color: 'var(--primary, #7C5CFC)',
                     fontSize: '28px',
                     marginBottom: '16px',
                   }}
                 >
                   <MailOutlined />
                 </div>
-                <Title level={3} style={{ color: '#fff', marginBottom: '6px', fontWeight: 700 }}>
+                <Title level={3} style={{ color: 'var(--text-primary, #28243D)', marginBottom: '6px', fontWeight: 700 }}>
                   Quên mật khẩu?
                 </Title>
-                <Text style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+                <Text style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.9rem' }}>
                   Nhập địa chỉ email đăng ký tài khoản Memento3D để nhận liên kết khôi phục mật khẩu bảo mật.
                 </Text>
               </div>
 
               <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={false}>
                 <Form.Item
-                  label={<span style={{ color: '#cbd5e1', fontWeight: 600 }}>Địa chỉ Email</span>}
+                  label={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 600 }}>Địa chỉ Email</span>}
                   name="email"
                   rules={[
                     { required: true, message: 'Vui lòng nhập địa chỉ email của bạn' },
@@ -178,11 +178,11 @@ export const ForgotPasswordPage: React.FC = () => {
                   ]}
                 >
                   <Input
-                    prefix={<MailOutlined style={{ color: '#64748b' }} />}
+                    prefix={<MailOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
                     placeholder="email@example.com"
                     size="large"
                     autoComplete="email"
-                    style={{ borderRadius: '8px' }}
+                    style={{ borderRadius: 'var(--radius-input, 20px)' }}
                   />
                 </Form.Item>
 
@@ -195,12 +195,12 @@ export const ForgotPasswordPage: React.FC = () => {
                     loading={loading}
                     icon={<SendOutlined />}
                     style={{
-                      height: '44px',
-                      borderRadius: '8px',
+                      height: '46px',
+                      borderRadius: 'var(--radius-full, 9999px)',
                       fontWeight: 700,
-                      background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+                      background: 'var(--primary, #7C5CFC)',
                       border: 'none',
-                      boxShadow: '0 4px 14px rgba(14, 165, 233, 0.4)',
+                      boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.3)',
                     }}
                   >
                     Gửi liên kết khôi phục
@@ -214,8 +214,9 @@ export const ForgotPasswordPage: React.FC = () => {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px',
-                      color: '#94a3b8',
+                      color: 'var(--text-secondary, #6A6282)',
                       fontSize: '0.875rem',
+                      fontWeight: 600,
                       textDecoration: 'none',
                     }}
                   >

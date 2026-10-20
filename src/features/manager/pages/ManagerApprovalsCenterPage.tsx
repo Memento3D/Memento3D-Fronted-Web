@@ -150,7 +150,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   };
 
   const receiptColumns = [
-    { title: 'Mã phiếu', dataIndex: 'receiptCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#38bdf8' }}>{val}</Text> },
+    { title: 'Mã phiếu', dataIndex: 'receiptCode', key: 'code', render: (val: string) => <Text strong style={{ color: 'var(--primary, #7C5CFC)' }}>{val}</Text> },
     { title: 'Kho hàng', dataIndex: 'warehouseName', key: 'warehouse' },
     { title: 'Nhà cung cấp', dataIndex: 'supplierName', key: 'supplier', render: (val: string) => val || '—' },
     { title: 'Mặt hàng', dataIndex: 'items', key: 'items', render: (items: any[]) => `${items?.length || 0} mặt hàng` },
@@ -164,7 +164,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
           <Button 
             size="small" 
             type="primary" 
-            style={{ background: '#10b981', borderColor: '#10b981' }} 
+            style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--tertiary-mint, #C9E8D5)', color: 'var(--tertiary, #466253)', border: 'none', fontWeight: 600 }} 
             icon={<Check size={13} />} 
             onClick={() => approveReceiptMutation.mutate(r.id)}
           >
@@ -176,7 +176,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
             cancelText="Hủy"
             onConfirm={() => cancelReceiptMutation.mutate(r.id)}
           >
-            <Button size="small" danger icon={<X size={13} />}>Từ chối</Button>
+            <Button size="small" danger style={{ borderRadius: 'var(--radius-pill, 9999px)' }} icon={<X size={13} />}>Từ chối</Button>
           </Popconfirm>
         </Space>
       ),
@@ -184,9 +184,9 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   ];
 
   const issueColumns = [
-    { title: 'Mã phiếu', dataIndex: 'issueCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#f43f5e' }}>{val}</Text> },
+    { title: 'Mã phiếu', dataIndex: 'issueCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#E07A5F' }}>{val}</Text> },
     { title: 'Kho hàng', dataIndex: 'warehouseName', key: 'warehouse' },
-    { title: 'Phân loại / Mục đích', dataIndex: 'referenceType', key: 'type', render: (val: string) => <Tag color="cyan">{val || 'PRINT_JOB'}</Tag> },
+    { title: 'Phân loại / Mục đích', dataIndex: 'referenceType', key: 'type', render: (val: string) => <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary-system, #5F3ADD)', border: 'none', fontWeight: 600 }}>{val || 'PRINT_JOB'}</Tag> },
     { title: 'Lý do', dataIndex: 'reason', key: 'reason' },
     { title: 'Mặt hàng', dataIndex: 'items', key: 'items', render: (items: any[]) => `${items?.length || 0} mặt hàng` },
     { title: 'Ngày gửi', dataIndex: 'createdAt', key: 'date', render: (val: string) => new Date(val).toLocaleDateString() },
@@ -198,7 +198,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
           <Button 
             size="small" 
             type="primary" 
-            style={{ background: '#10b981', borderColor: '#10b981' }} 
+            style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--tertiary-mint, #C9E8D5)', color: 'var(--tertiary, #466253)', border: 'none', fontWeight: 600 }} 
             icon={<Check size={13} />} 
             onClick={() => approveIssueMutation.mutate(r.id)}
           >
@@ -210,7 +210,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
             cancelText="Hủy"
             onConfirm={() => cancelIssueMutation.mutate(r.id)}
           >
-            <Button size="small" danger icon={<X size={13} />}>Từ chối</Button>
+            <Button size="small" danger style={{ borderRadius: 'var(--radius-pill, 9999px)' }} icon={<X size={13} />}>Từ chối</Button>
           </Popconfirm>
         </Space>
       ),
@@ -218,7 +218,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   ];
 
   const adjustmentColumns = [
-    { title: 'Mã điều chỉnh', dataIndex: 'adjustmentCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#fbbf24' }}>{val}</Text> },
+    { title: 'Mã điều chỉnh', dataIndex: 'adjustmentCode', key: 'code', render: (val: string) => <Text strong style={{ color: 'var(--primary, #7C5CFC)' }}>{val}</Text> },
     { title: 'Kho hàng', dataIndex: 'warehouseName', key: 'warehouse' },
     { title: 'Vật liệu', key: 'mat', render: (_: any, r: any) => `[${r.materialSku}] ${r.materialName}` },
     { title: 'Hệ thống → Thực tế', key: 'change', render: (_: any, r: any) => `${r.currentQuantity} → ${r.actualQuantity}` },
@@ -226,7 +226,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
       title: 'Chênh lệch', 
       dataIndex: 'difference', 
       key: 'diff', 
-      render: (d: number) => <Text strong style={{ color: d > 0 ? '#10b981' : '#f43f5e' }}>{d > 0 ? `+${d}` : d}</Text> 
+      render: (d: number) => <Text strong style={{ color: d > 0 ? 'var(--tertiary, #466253)' : 'var(--error, #BA1A1A)' }}>{d > 0 ? `+${d}` : d}</Text> 
     },
     { title: 'Lý do', dataIndex: 'reason', key: 'reason' },
     {
@@ -237,7 +237,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
           <Button 
             size="small" 
             type="primary" 
-            style={{ background: '#10b981', borderColor: '#10b981' }} 
+            style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--tertiary-mint, #C9E8D5)', color: 'var(--tertiary, #466253)', border: 'none', fontWeight: 600 }} 
             icon={<Check size={13} />} 
             onClick={() => approveAdjustmentMutation.mutate(r.id)}
           >
@@ -249,7 +249,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
             cancelText="Hủy"
             onConfirm={() => rejectAdjustmentMutation.mutate(r.id)}
           >
-            <Button size="small" danger icon={<X size={13} />}>Từ chối</Button>
+            <Button size="small" danger style={{ borderRadius: 'var(--radius-pill, 9999px)' }} icon={<X size={13} />}>Từ chối</Button>
           </Popconfirm>
         </Space>
       ),
@@ -257,7 +257,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   ];
 
   const transferColumns = [
-    { title: 'Mã chuyển kho', dataIndex: 'transferCode', key: 'code', render: (val: string) => <Text strong style={{ color: '#a855f7' }}>{val}</Text> },
+    { title: 'Mã chuyển kho', dataIndex: 'transferCode', key: 'code', render: (val: string) => <Text strong style={{ color: 'var(--primary-system, #5F3ADD)' }}>{val}</Text> },
     { title: 'Kho nguồn', dataIndex: 'sourceWarehouseName', key: 'source' },
     { title: 'Kho đích', dataIndex: 'destinationWarehouseName', key: 'dest' },
     { title: 'Mặt hàng', dataIndex: 'items', key: 'items', render: (items: any[]) => `${items?.length || 0} mặt hàng` },
@@ -270,7 +270,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
           <Button 
             size="small" 
             type="primary" 
-            style={{ background: '#10b981', borderColor: '#10b981' }} 
+            style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--tertiary-mint, #C9E8D5)', color: 'var(--tertiary, #466253)', border: 'none', fontWeight: 600 }} 
             icon={<Check size={13} />} 
             onClick={() => approveTransferMutation.mutate(r.id)}
           >
@@ -282,7 +282,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
             cancelText="Hủy"
             onConfirm={() => cancelTransferMutation.mutate(r.id)}
           >
-            <Button size="small" danger icon={<X size={13} />}>Từ chối</Button>
+            <Button size="small" danger style={{ borderRadius: 'var(--radius-pill, 9999px)' }} icon={<X size={13} />}>Từ chối</Button>
           </Popconfirm>
         </Space>
       ),
@@ -296,21 +296,21 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
 
   return (
     <div style={{ padding: 24, maxWidth: 1600, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary, #28243D)', fontWeight: 800, fontFamily: 'var(--font-family, "Plus Jakarta Sans")' }}>
             Trung tâm phê duyệt hợp nhất Quản lý
           </Title>
-          <Text style={{ color: '#94a3b8' }}>
+          <Text style={{ color: 'var(--text-secondary, #6A6282)' }}>
             Hàng đợi vận hành tập trung để xem xét và phê duyệt các hoạt động kho bãi
           </Text>
         </div>
-        <Button icon={<RefreshCw size={14} />} onClick={refreshAll}>
+        <Button icon={<RefreshCw size={14} />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} onClick={refreshAll}>
           Làm mới hàng đợi
         </Button>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card style={{ background: '#fff', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}

@@ -73,15 +73,15 @@ export const NotificationCenter: React.FC = () => {
   const getNotificationIcon = (type?: string) => {
     switch (type) {
       case 'ORDER':
-        return <ShoppingOutlined style={{ color: '#38bdf8' }} />;
+        return <ShoppingOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />;
       case 'PAYMENT':
-        return <CreditCardOutlined style={{ color: '#22c55e' }} />;
+        return <CreditCardOutlined style={{ color: 'var(--tertiary, #466253)' }} />;
       case 'MODEL_REVIEW':
-        return <CheckCircleOutlined style={{ color: '#f59e0b' }} />;
+        return <CheckCircleOutlined style={{ color: 'var(--secondary, #FFBFAE)' }} />;
       case 'PRINT_JOB':
-        return <PrinterOutlined style={{ color: '#a855f7' }} />;
+        return <PrinterOutlined style={{ color: 'var(--primary-system, #5F3ADD)' }} />;
       default:
-        return <InfoCircleOutlined style={{ color: '#0ea5e9' }} />;
+        return <InfoCircleOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />;
     }
   };
 
@@ -101,14 +101,14 @@ export const NotificationCenter: React.FC = () => {
   const getStatusColor = () => {
     switch (connectionStatus) {
       case 'CONNECTED':
-        return '#22c55e';
+        return 'var(--tertiary, #466253)';
       case 'CONNECTING':
       case 'RECONNECTING':
-        return '#f59e0b';
+        return 'var(--secondary, #FFBFAE)';
       case 'ERROR':
-        return '#ef4444';
+        return 'var(--error, #BA1A1A)';
       default:
-        return '#94a3b8';
+        return 'var(--text-muted, #8E86A8)';
     }
   };
 
@@ -120,12 +120,12 @@ export const NotificationCenter: React.FC = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingBottom: 12,
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          borderBottom: '1px solid var(--border-color)',
           marginBottom: 8,
         }}
       >
         <Space>
-          <span style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.95rem' }}>
+          <span style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.975rem' }}>
             Thông báo
           </span>
           <Tooltip title={`SSE Real-time: ${connectionStatus}`}>
@@ -136,7 +136,7 @@ export const NotificationCenter: React.FC = () => {
                 height: 8,
                 borderRadius: '50%',
                 backgroundColor: getStatusColor(),
-                boxShadow: connectionStatus === 'CONNECTED' ? '0 0 8px #22c55e' : undefined,
+                boxShadow: connectionStatus === 'CONNECTED' ? '0 0 8px var(--mint, #C9E8D5)' : undefined,
               }}
             />
           </Tooltip>
@@ -149,7 +149,7 @@ export const NotificationCenter: React.FC = () => {
             icon={<CheckOutlined />}
             onClick={() => markAllAsReadMutation.mutate()}
             loading={markAllAsReadMutation.isPending}
-            style={{ padding: 0, fontSize: '0.8rem', color: '#38bdf8' }}
+            style={{ padding: 0, fontSize: '0.8rem', color: 'var(--primary, #7C5CFC)', fontWeight: 600 }}
           >
             Đánh dấu đã đọc
           </Button>
@@ -161,7 +161,7 @@ export const NotificationCenter: React.FC = () => {
         dataSource={notifications}
         locale={{
           emptyText: (
-            <div style={{ padding: '24px 0', color: '#94a3b8', textAlign: 'center' }}>
+            <div style={{ padding: '24px 0', color: 'var(--text-secondary)', textAlign: 'center' }}>
               Không có thông báo mới
             </div>
           ),
@@ -172,27 +172,28 @@ export const NotificationCenter: React.FC = () => {
             key={item.id}
             onClick={() => handleNotificationClick(item)}
             style={{
-              padding: '10px 8px',
-              borderRadius: 8,
+              padding: '10px 12px',
+              borderRadius: 'var(--radius-default, 16px)',
               cursor: 'pointer',
-              background: item.isRead ? 'transparent' : 'rgba(56, 189, 248, 0.06)',
+              background: item.isRead ? 'transparent' : 'var(--surface-container, #F1EBFF)',
               marginBottom: 4,
-              borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+              borderBottom: '1px solid var(--border-subtle)',
               transition: 'background 0.2s',
             }}
           >
             <div style={{ display: 'flex', gap: 12, width: '100%', alignItems: 'flex-start' }}>
               <div
                 style={{
-                  width: 32,
-                  height: 32,
+                  width: 34,
+                  height: 34,
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.05)',
+                  background: 'var(--surface-container)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
                   marginTop: 2,
+                  border: '1px solid var(--border-color)',
                 }}
               >
                 {getNotificationIcon(item.type)}
@@ -202,7 +203,7 @@ export const NotificationCenter: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <Text
                     style={{
-                      color: item.isRead ? '#cbd5e1' : '#fff',
+                      color: item.isRead ? 'var(--text-secondary)' : 'var(--text-primary)',
                       fontWeight: item.isRead ? 500 : 700,
                       fontSize: '0.85rem',
                     }}
@@ -213,12 +214,13 @@ export const NotificationCenter: React.FC = () => {
                   {!item.isRead && (
                     <span
                       style={{
-                        width: 6,
-                        height: 6,
+                        width: 7,
+                        height: 7,
                         borderRadius: '50%',
-                        backgroundColor: '#38bdf8',
+                        backgroundColor: 'var(--primary)',
                         flexShrink: 0,
                         marginLeft: 6,
+                        boxShadow: '0 0 6px var(--primary-glow)',
                       }}
                     />
                   )}
@@ -226,7 +228,7 @@ export const NotificationCenter: React.FC = () => {
 
                 <div
                   style={{
-                    color: '#94a3b8',
+                    color: 'var(--text-secondary)',
                     fontSize: '0.775rem',
                     lineHeight: 1.4,
                     marginTop: 2,
@@ -237,7 +239,7 @@ export const NotificationCenter: React.FC = () => {
 
                 <div
                   style={{
-                    color: '#64748b',
+                    color: 'var(--text-muted)',
                     fontSize: '0.7rem',
                     marginTop: 4,
                   }}
@@ -260,26 +262,27 @@ export const NotificationCenter: React.FC = () => {
       onOpenChange={setOpen}
       placement="bottomRight"
       overlayInnerStyle={{
-        background: '#0b1120',
-        border: '1px solid rgba(255, 255, 255, 0.12)',
-        borderRadius: 14,
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
-        padding: '14px 16px',
+        background: 'var(--bg-card, #FFFFFF)',
+        border: '1px solid var(--border-color, #E2D9F7)',
+        borderRadius: 'var(--radius-card, 24px)',
+        boxShadow: 'var(--shadow-floating)',
+        padding: '16px 18px',
       }}
     >
       <Badge count={unreadCount} size="small" offset={[-2, 4]} overflowCount={99}>
         <Button
           type="text"
           shape="circle"
-          icon={<BellOutlined style={{ fontSize: 18, color: '#f8fafc' }} />}
+          icon={<BellOutlined style={{ fontSize: 18, color: 'var(--text-primary)' }} />}
           style={{
-            background: open ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: open ? 'var(--surface-high, #EBE4FF)' : 'var(--surface-container, #F1EBFF)',
+            border: '1px solid var(--border-color, #E2D9F7)',
             width: 38,
             height: 38,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            borderRadius: 'var(--radius-full)',
           }}
         />
       </Badge>

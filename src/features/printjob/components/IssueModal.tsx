@@ -48,8 +48,8 @@ export const IssueModal: React.FC<IssueModalProps> = ({
     <Modal
       title={
         <Space>
-          <ExportOutlined style={{ color: '#0ea5e9' }} />
-          <span>Xuất kho & Cấp vật liệu lên máy in (F07)</span>
+          <ExportOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
+          <span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700 }}>Xuất kho & Cấp vật liệu lên máy in (F07)</span>
         </Space>
       }
       open={open}
@@ -66,18 +66,18 @@ export const IssueModal: React.FC<IssueModalProps> = ({
         description="Ghi nhận thao tác thực tế bàn giao cuộn nhựa/vật liệu từ kệ kho đến máy in 3D tương ứng."
         type="info"
         showIcon
-        style={{ marginBottom: 16 }}
+        style={{ marginBottom: 16, borderRadius: 'var(--radius-default, 16px)', background: 'var(--surface-container, #F1EBFF)', borderColor: 'var(--border-default, #E2D9F7)' }}
       />
 
-      <Descriptions bordered column={1} size="small" style={{ marginBottom: 16 }}>
+      <Descriptions bordered column={1} size="small" style={{ marginBottom: 16, borderRadius: 'var(--radius-default, 16px)', overflow: 'hidden' }}>
         <Descriptions.Item label="Lệnh in mục tiêu">
-          <Text strong>{job?.jobNumber}</Text>
+          <Text strong style={{ color: 'var(--primary, #7C5CFC)' }}>{job?.jobNumber}</Text>
         </Descriptions.Item>
         <Descriptions.Item label="Máy in chỉ định">
-          <Tag color="purple">{job?.printerName || 'Máy in xưởng'}</Tag>
+          <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--surface-high, #EBE4FF)', color: 'var(--primary, #7C5CFC)', border: 'none', fontWeight: 600 }}>{job?.printerName || 'Máy in xưởng'}</Tag>
         </Descriptions.Item>
         <Descriptions.Item label="Vật liệu yêu cầu">
-          <Tag color="cyan">{job?.materialSku}</Tag> {job?.materialName}
+          <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary, #7C5CFC)', border: '1px solid var(--border-default, #E2D9F7)' }}>{job?.materialSku}</Tag> {job?.materialName}
         </Descriptions.Item>
       </Descriptions>
 

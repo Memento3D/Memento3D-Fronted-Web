@@ -66,17 +66,17 @@ export const OAuthCallbackPage: React.FC = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          background: '#090d16',
+          background: 'var(--bg-app, #F8F5FF)',
           padding: 24,
         }}
       >
         <Result
           status="error"
-          title={<span style={{ color: '#ffffff' }}>Xác thực Google không thành công</span>}
-          subTitle={<span style={{ color: '#f87171' }}>{errorMessage}</span>}
+          title={<span style={{ color: 'var(--text-primary)' }}>Xác thực Google không thành công</span>}
+          subTitle={<span style={{ color: 'var(--error, #BA1A1A)' }}>{errorMessage}</span>}
           extra={[
             <Link to="/login" key="retry">
-              <Button type="primary" size="large">
+              <Button type="primary" size="large" style={{ borderRadius: '10px' }}>
                 Quay lại trang Đăng nhập
               </Button>
             </Link>,
@@ -94,13 +94,13 @@ export const OAuthCallbackPage: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: '#090d16',
+        background: 'var(--bg-app, #F8F5FF)',
         gap: 16,
       }}
     >
       <Spin size="large" />
-      <span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
-        Verifying Google security credentials & establishing session...
+      <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 500 }}>
+        Đang xác thực thông tin bảo mật Google & khởi tạo phiên làm việc...
       </span>
     </div>
   );

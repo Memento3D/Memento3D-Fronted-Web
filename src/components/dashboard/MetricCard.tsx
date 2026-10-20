@@ -9,7 +9,7 @@ export interface MetricCardProps {
   deltaLabel?: string;
   icon: React.ReactNode;
   sparkline?: number[];
-  colorTheme?: 'cyan' | 'purple' | 'emerald' | 'amber' | 'rose' | 'indigo';
+  colorTheme?: 'cyan' | 'purple' | 'emerald' | 'amber' | 'rose' | 'indigo' | 'peach' | 'mint';
   tooltipText?: string;
   isRealTimeUpdated?: boolean;
 }
@@ -21,7 +21,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   deltaLabel = 'so với kỳ trước',
   icon,
   sparkline = [10, 15, 12, 18, 24, 20, 28],
-  colorTheme = 'cyan',
+  colorTheme = 'purple',
   tooltipText,
   isRealTimeUpdated = false,
 }) => {
@@ -36,54 +36,49 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
   const colors = useMemo(() => {
     switch (colorTheme) {
-      case 'purple':
+      case 'amber':
+      case 'peach':
         return {
-          glow: 'rgba(139, 92, 246, 0.35)',
-          borderHover: 'rgba(139, 92, 246, 0.45)',
-          iconBg: 'rgba(139, 92, 246, 0.12)',
-          iconColor: '#a855f7',
-          sparkColor: '#8b5cf6',
+          glow: 'rgba(255, 191, 174, 0.35)',
+          borderHover: '#FFBFAE',
+          iconBg: 'var(--secondary-container, #FFE5DF)',
+          iconColor: '#7A3E2D',
+          sparkColor: '#E2765A',
         };
       case 'emerald':
+      case 'mint':
         return {
-          glow: 'rgba(16, 185, 129, 0.35)',
-          borderHover: 'rgba(16, 185, 129, 0.45)',
-          iconBg: 'rgba(16, 185, 129, 0.12)',
-          iconColor: '#10b981',
-          sparkColor: '#10b981',
-        };
-      case 'amber':
-        return {
-          glow: 'rgba(245, 158, 11, 0.35)',
-          borderHover: 'rgba(245, 158, 11, 0.45)',
-          iconBg: 'rgba(245, 158, 11, 0.12)',
-          iconColor: '#fbbf24',
-          sparkColor: '#f59e0b',
+          glow: 'rgba(201, 232, 213, 0.4)',
+          borderHover: '#A5D7B7',
+          iconBg: 'var(--success-bg, #C9E8D5)',
+          iconColor: '#466253',
+          sparkColor: '#466253',
         };
       case 'rose':
         return {
-          glow: 'rgba(239, 68, 68, 0.35)',
-          borderHover: 'rgba(239, 68, 68, 0.45)',
-          iconBg: 'rgba(239, 68, 68, 0.12)',
-          iconColor: '#f43f5e',
-          sparkColor: '#f43f5e',
-        };
-      case 'indigo':
-        return {
-          glow: 'rgba(99, 102, 241, 0.35)',
-          borderHover: 'rgba(99, 102, 241, 0.45)',
-          iconBg: 'rgba(99, 102, 241, 0.12)',
-          iconColor: '#6366f1',
-          sparkColor: '#6366f1',
+          glow: 'rgba(186, 26, 26, 0.25)',
+          borderHover: '#FFB4AB',
+          iconBg: 'var(--danger-bg, #FFDAD6)',
+          iconColor: '#BA1A1A',
+          sparkColor: '#BA1A1A',
         };
       case 'cyan':
+      case 'indigo':
+        return {
+          glow: 'rgba(95, 58, 221, 0.25)',
+          borderHover: '#DDD6F7',
+          iconBg: 'var(--info-bg, #ECE3FF)',
+          iconColor: '#5F3ADD',
+          sparkColor: '#5F3ADD',
+        };
+      case 'purple':
       default:
         return {
-          glow: 'rgba(14, 165, 233, 0.35)',
-          borderHover: 'rgba(56, 189, 248, 0.45)',
-          iconBg: 'rgba(14, 165, 233, 0.12)',
-          iconColor: '#38bdf8',
-          sparkColor: '#0ea5e9',
+          glow: 'var(--primary-glow)',
+          borderHover: 'rgba(124, 92, 252, 0.45)',
+          iconBg: 'var(--surface-container, #F1EBFF)',
+          iconColor: 'var(--primary, #7C5CFC)',
+          sparkColor: 'var(--primary, #7C5CFC)',
         };
     }
   }, [colorTheme]);
@@ -98,9 +93,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     const px = (x / rect.width) * 100;
     const py = (y / rect.height) * 100;
 
-    // Maximum 3.2 degrees rotation
-    const rx = ((y - rect.height / 2) / (rect.height / 2)) * -3.2;
-    const ry = ((x - rect.width / 2) / (rect.width / 2)) * 3.2;
+    // Maximum 3 degrees rotation
+    const rx = ((y - rect.height / 2) / (rect.height / 2)) * -3;
+    const ry = ((x - rect.width / 2) / (rect.width / 2)) * 3;
 
     setTilt({ rx, ry, px, py });
   };
@@ -147,20 +142,20 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     >
       <div
         style={{
-          background: 'linear-gradient(145deg, rgba(18, 25, 41, 0.95) 0%, rgba(13, 18, 31, 0.98) 100%)',
+          background: 'var(--bg-card, #FFFFFF)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          borderRadius: 14,
-          border: `1px solid ${isHovered ? colors.borderHover : 'rgba(255, 255, 255, 0.08)'}`,
+          borderRadius: 'var(--radius-card, 24px)',
+          border: `1px solid ${isHovered ? colors.borderHover : 'var(--border-color, #E2D9F7)'}`,
           boxShadow: isHovered
-            ? `0 14px 32px rgba(0, 0, 0, 0.6), 0 0 20px ${colors.glow}`
-            : '0 4px 16px rgba(0, 0, 0, 0.35)',
-          padding: '20px 22px',
+            ? `var(--shadow-floating), 0 0 20px ${colors.glow}`
+            : 'var(--shadow-card)',
+          padding: '22px 24px',
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) translateZ(${isHovered ? '8px' : '0px'})`,
+          transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) translateZ(${isHovered ? '6px' : '0px'})`,
           transition: isHovered ? 'transform 0.08s ease-out, box-shadow 0.2s ease' : 'transform 0.35s ease, box-shadow 0.35s ease',
           position: 'relative',
           overflow: 'hidden',
@@ -174,8 +169,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
               position: 'absolute',
               inset: 0,
               pointerEvents: 'none',
-              background: `radial-gradient(circle 180px at ${tilt.px}% ${tilt.py}%, rgba(255, 255, 255, 0.08), transparent 80%)`,
-              borderRadius: 14,
+              background: `radial-gradient(circle 200px at ${tilt.px}% ${tilt.py}%, rgba(124, 92, 252, 0.06), transparent 80%)`,
+              borderRadius: 'var(--radius-card, 24px)',
             }}
           />
         )}
@@ -186,11 +181,11 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             {isRealTimeUpdated && (
               <span
                 style={{
-                  width: 6,
-                  height: 6,
+                  width: 7,
+                  height: 7,
                   borderRadius: '50%',
-                  background: '#10b981',
-                  boxShadow: '0 0 8px #10b981',
+                  background: 'var(--tertiary, #466253)',
+                  boxShadow: '0 0 8px var(--mint, #C9E8D5)',
                   display: 'inline-block',
                 }}
                 title="Cập nhật trực tiếp thời gian thực"
@@ -199,11 +194,11 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             <Tooltip title={tooltipText}>
               <span
                 style={{
-                  color: '#94a3b8',
-                  fontSize: '0.78rem',
+                  color: 'var(--text-secondary, #6A6282)',
+                  fontSize: '0.8rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: '0.05em',
                 }}
               >
                 {title}
@@ -215,12 +210,12 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             style={{
               background: colors.iconBg,
               color: colors.iconColor,
-              padding: '8px',
-              borderRadius: '10px',
+              padding: '10px',
+              borderRadius: 'var(--radius-default, 16px)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: `0 0 12px ${colors.glow}`,
+              boxShadow: 'var(--shadow-sm)',
             }}
           >
             {icon}
@@ -228,14 +223,14 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         </div>
 
         {/* Card Main Value & Sparkline */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '8px 0 12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '8px 0 14px' }}>
           <div
             style={{
-              fontSize: '2rem',
+              fontSize: '2.1rem',
               fontWeight: 800,
               fontVariantNumeric: 'tabular-nums',
               letterSpacing: '-0.03em',
-              color: '#f8fafc',
+              color: 'var(--text-primary, #28243D)',
               lineHeight: 1.1,
             }}
           >
@@ -244,12 +239,12 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
           {/* Mini Sparkline Chart */}
           {sparklineSvgPath && (
-            <svg width="80" height="28" style={{ overflow: 'visible', opacity: 0.85 }}>
+            <svg width="80" height="28" style={{ overflow: 'visible', opacity: 0.9 }}>
               <path
                 d={sparklineSvgPath}
                 fill="none"
                 stroke={colors.sparkColor}
-                strokeWidth="2.2"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -259,21 +254,30 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
         {/* Card Footer (Delta Comparison) */}
         {hasDelta && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.775rem' }}>
             <span
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 2,
+                gap: 3,
                 fontWeight: 700,
-                color: isNeutralDelta ? '#94a3b8' : isPositiveDelta ? '#10b981' : '#f43f5e',
-                background: isNeutralDelta
-                  ? 'rgba(148, 163, 184, 0.1)'
+                color: isNeutralDelta
+                  ? 'var(--text-secondary)'
                   : isPositiveDelta
-                  ? 'rgba(16, 185, 129, 0.12)'
-                  : 'rgba(239, 68, 68, 0.12)',
-                padding: '2px 6px',
-                borderRadius: 6,
+                  ? 'var(--text-on-success, #1E3B2C)'
+                  : 'var(--text-on-danger, #93000A)',
+                background: isNeutralDelta
+                  ? 'var(--surface-container)'
+                  : isPositiveDelta
+                  ? 'var(--success-bg, #C9E8D5)'
+                  : 'var(--danger-bg, #FFDAD6)',
+                padding: '3px 8px',
+                borderRadius: 'var(--radius-full, 9999px)',
+                border: isNeutralDelta
+                  ? '1px solid var(--border-color)'
+                  : isPositiveDelta
+                  ? '1px solid var(--success-border)'
+                  : '1px solid var(--danger-border)',
               }}
             >
               {isNeutralDelta ? (
@@ -286,7 +290,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
               {isPositiveDelta ? '+' : ''}
               {deltaPct}%
             </span>
-            <span style={{ color: '#64748b', fontSize: '0.725rem' }}>{deltaLabel}</span>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>{deltaLabel}</span>
           </div>
         )}
       </div>

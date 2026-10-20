@@ -47,14 +47,15 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          background: 'rgba(15, 23, 42, 0.8)',
+          background: 'var(--surface-container, #F1EBFF)',
           padding: '4px',
-          borderRadius: 12,
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: 'var(--radius-full, 9999px)',
+          border: '1px solid var(--border-color, #E2D9F7)',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px', color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>
-          <Calendar size={14} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600 }}>
+          <Calendar size={14} color="var(--primary)" />
           <span>Thời gian:</span>
         </div>
 
@@ -65,15 +66,16 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
               key={opt.key}
               onClick={() => onTimeRangeChange(opt.key)}
               style={{
-                background: isActive ? '#0ea5e9' : 'transparent',
-                color: isActive ? '#fff' : '#94a3b8',
+                background: isActive ? 'var(--primary, #7C5CFC)' : 'transparent',
+                color: isActive ? '#FFFFFF' : 'var(--text-secondary)',
                 border: 'none',
-                borderRadius: 8,
-                padding: '6px 12px',
+                borderRadius: 'var(--radius-full, 9999px)',
+                padding: '6px 14px',
                 fontSize: '0.8rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
+                boxShadow: isActive ? '0 2px 8px var(--primary-glow)' : 'none',
               }}
             >
               {opt.label}
@@ -85,8 +87,8 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
       {/* Right Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         {lastUpdated && (
-          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-            Đồng bộ lúc: <span style={{ color: '#94a3b8', fontWeight: 600 }}>{lastUpdated}</span>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            Đồng bộ lúc: <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{lastUpdated}</span>
           </div>
         )}
 
@@ -97,16 +99,16 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 6,
-                background: 'rgba(16, 185, 129, 0.1)',
-                border: '1px solid rgba(16, 185, 129, 0.25)',
-                padding: '5px 10px',
-                borderRadius: 8,
-                color: '#10b981',
+                background: 'var(--success-bg, #C9E8D5)',
+                border: '1px solid var(--success-border, #A5D7B7)',
+                padding: '6px 12px',
+                borderRadius: 'var(--radius-full, 9999px)',
+                color: 'var(--text-on-success, #1E3B2C)',
                 fontSize: '0.75rem',
-                fontWeight: 600,
+                fontWeight: 700,
               }}
             >
-              <Radio size={13} className="animate-pulse" />
+              <Radio size={13} className="animate-pulse" color="var(--tertiary, #466253)" />
               <span>SSE Đồng bộ</span>
             </div>
           </Tooltip>
@@ -117,11 +119,13 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
           onClick={onRefresh}
           disabled={isRefreshing}
           style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderColor: 'rgba(255, 255, 255, 0.1)',
-            color: '#f8fafc',
-            borderRadius: 8,
+            background: 'var(--surface-container, #F1EBFF)',
+            borderColor: 'var(--border-color, #E2D9F7)',
+            color: 'var(--text-primary)',
+            borderRadius: 'var(--radius-full, 9999px)',
             fontWeight: 600,
+            padding: '0 18px',
+            height: 38,
           }}
         >
           {isRefreshing ? 'Đang tải...' : 'Làm mới'}
@@ -133,10 +137,12 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
             icon={<Box size={14} />}
             onClick={onOpen3DViewer}
             style={{
-              background: '#0ea5e9',
-              borderColor: '#0ea5e9',
-              borderRadius: 8,
+              background: 'var(--primary, #7C5CFC)',
+              borderColor: 'var(--primary, #7C5CFC)',
+              borderRadius: 'var(--radius-full, 9999px)',
               fontWeight: 600,
+              padding: '0 20px',
+              height: 38,
             }}
           >
             Trình xem 3D

@@ -144,8 +144,8 @@ export const WarehouseHomePage: React.FC = () => {
           value={totalMaterials}
           subtext="Danh mục cuộn nhựa & vật tư"
           icon={<Box size={18} />}
-          iconBg="rgba(6, 182, 212, 0.15)"
-          iconColor="#06b6d4"
+          iconBg="var(--surface-container, #F1EBFF)"
+          iconColor="var(--primary, #7C5CFC)"
           loading={isMatLoading}
           onClick={() => navigate('/manager/materials')}
         />
@@ -154,8 +154,8 @@ export const WarehouseHomePage: React.FC = () => {
           value={lowStockBalances.length}
           subtext="Chạm ngưỡng an toàn"
           icon={<AlertTriangle size={18} />}
-          iconBg="rgba(239, 68, 68, 0.15)"
-          iconColor="#ef4444"
+          iconBg="var(--peach-accent, #FFBFAE)"
+          iconColor="var(--text-primary, #28243D)"
           loading={isLowStockLoading}
           onClick={() => navigate('/manager/inventory')}
         />
@@ -164,8 +164,8 @@ export const WarehouseHomePage: React.FC = () => {
           value={receiptsList.length}
           subtext={`${pendingReceipts} phiếu chờ xử lý`}
           icon={<ArrowDownLeft size={18} />}
-          iconBg="rgba(16, 185, 129, 0.15)"
-          iconColor="#10b981"
+          iconBg="var(--mint-accent, #C9E8D5)"
+          iconColor="var(--tertiary, #466253)"
           loading={isReceiptsLoading}
           onClick={() => navigate('/manager/receipts')}
         />
@@ -174,8 +174,8 @@ export const WarehouseHomePage: React.FC = () => {
           value={issuesList.length}
           subtext={`${pendingIssues} phiếu chờ xuất`}
           icon={<ArrowUpRight size={18} />}
-          iconBg="rgba(14, 165, 233, 0.15)"
-          iconColor="#0ea5e9"
+          iconBg="var(--surface-high, #EBE4FF)"
+          iconColor="var(--primary, #7C5CFC)"
           loading={isIssuesLoading}
           onClick={() => navigate('/manager/issues')}
         />
@@ -191,8 +191,8 @@ export const WarehouseHomePage: React.FC = () => {
             title="Tạo phiếu nhập kho"
             description="Tiếp nhận cuộn nhựa từ nhà cung cấp"
             icon={<ArrowDownLeft size={20} />}
-            iconBg="rgba(16, 185, 129, 0.15)"
-            iconColor="#10b981"
+            iconBg="var(--mint-accent, #C9E8D5)"
+            iconColor="var(--tertiary, #466253)"
             badge="Nhập mới"
             onClick={() => navigate('/manager/inventory/receipts/new')}
           />
@@ -200,8 +200,8 @@ export const WarehouseHomePage: React.FC = () => {
             title="Tạo phiếu xuất kho"
             description="Xuất cấp cuộn nhựa cho xưởng in"
             icon={<ArrowUpRight size={20} />}
-            iconBg="rgba(14, 165, 233, 0.15)"
-            iconColor="#0ea5e9"
+            iconBg="var(--surface-container, #F1EBFF)"
+            iconColor="var(--primary, #7C5CFC)"
             badge="Xuất mới"
             onClick={() => navigate('/manager/inventory/issues/new')}
           />
@@ -209,32 +209,32 @@ export const WarehouseHomePage: React.FC = () => {
             title="Tồn kho thực tế"
             description="Xem số dư khả dụng và vị trí bin"
             icon={<Layers size={20} />}
-            iconBg="rgba(6, 182, 212, 0.15)"
-            iconColor="#06b6d4"
+            iconBg="var(--surface-high, #EBE4FF)"
+            iconColor="var(--primary, #7C5CFC)"
             onClick={() => navigate('/manager/inventory')}
           />
           <QuickActionCard
             title="Điều chuyển kho"
             description="Chuyển vật tư giữa các cơ sở"
             icon={<ArrowLeftRight size={20} />}
-            iconBg="rgba(245, 158, 11, 0.15)"
-            iconColor="#f59e0b"
+            iconBg="var(--peach-accent, #FFBFAE)"
+            iconColor="var(--text-primary, #28243D)"
             onClick={() => navigate('/manager/transfers')}
           />
           <QuickActionCard
             title="Kiểm kê kho"
             description="Đối chiếu sổ sách và thực tế"
             icon={<ClipboardCheck size={20} />}
-            iconBg="rgba(139, 92, 246, 0.15)"
-            iconColor="#8b5cf6"
+            iconBg="var(--surface-container, #F1EBFF)"
+            iconColor="var(--primary, #7C5CFC)"
             onClick={() => navigate('/manager/stock-counts')}
           />
           <QuickActionCard
             title="Sổ cái biến động kho"
             description="Lịch sử giao dịch từng cuộn nhựa"
             icon={<History size={20} />}
-            iconBg="rgba(100, 116, 139, 0.15)"
-            iconColor="#94a3b8"
+            iconBg="var(--surface-high, #EBE4FF)"
+            iconColor="var(--primary, #7C5CFC)"
             onClick={() => navigate('/manager/inventory/transactions')}
           />
         </div>

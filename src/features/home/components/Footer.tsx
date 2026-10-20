@@ -118,10 +118,14 @@ export const Footer: React.FC = () => {
                 <span>Chính sách đổi trả & Bảo hành in</span>
               </li>
               <li>
-                <span>Bảo mật dữ liệu hình ảnh 100%</span>
+                <span onClick={() => navigate('/privacy')}>
+                  Chính sách bảo mật & quyền riêng tư
+                </span>
               </li>
               <li>
-                <span>Điều khoản dịch vụ khách hàng</span>
+                <span onClick={() => navigate('/terms')}>
+                  Điều khoản dịch vụ khách hàng
+                </span>
               </li>
             </ul>
           </Col>

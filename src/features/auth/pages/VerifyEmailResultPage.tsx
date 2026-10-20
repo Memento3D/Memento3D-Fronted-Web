@@ -57,36 +57,35 @@ export const VerifyEmailResultPage: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'radial-gradient(ellipse at 50% 20%, #0f172a 0%, #020617 100%)',
+        background: 'radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 191, 174, 0.12) 0%, transparent 40%), var(--bg-app, #F8F5FF)',
         padding: '24px 16px',
       }}
     >
       <div style={{ width: '100%', maxWidth: '480px', zIndex: 1 }}>
         <Card
           style={{
-            background: 'rgba(15, 23, 42, 0.85)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '16px',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            background: 'var(--surface-card, #FFFFFF)',
+            border: '1px solid var(--border-default, #E2D9F7)',
+            borderRadius: 'var(--radius-card-feature, 28px)',
+            boxShadow: 'var(--shadow-floating)',
             textAlign: 'center',
           }}
-          bodyStyle={{ padding: '40px 32px' }}
+          styles={{ body: { padding: '40px 32px' } }}
         >
           {loading ? (
             <div style={{ padding: '24px 0' }}>
               <Spin size="large" />
-              <Paragraph style={{ color: '#94a3b8', marginTop: 20 }}>
+              <Paragraph style={{ color: 'var(--text-secondary, #6A6282)', marginTop: 20 }}>
                 Đang tiến hành xác minh liên kết bảo mật của bạn...
               </Paragraph>
             </div>
           ) : success ? (
             <Result
-              icon={<CheckCircleOutlined style={{ color: '#10b981', fontSize: '64px' }} />}
-              title={<span style={{ color: '#ffffff', fontWeight: 700 }}>Xác minh thành công!</span>}
+              icon={<CheckCircleOutlined style={{ color: 'var(--tertiary, #466253)', fontSize: '64px' }} />}
+              title={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700 }}>Xác minh thành công!</span>}
               subTitle={
-                <span style={{ color: '#94a3b8' }}>
-                  Email {verifiedEmail && <strong>{verifiedEmail}</strong>} đã được kích hoạt an toàn.
+                <span style={{ color: 'var(--text-secondary, #6A6282)' }}>
+                  Email {verifiedEmail && <strong style={{ color: 'var(--primary, #7C5CFC)' }}>{verifiedEmail}</strong>} đã được kích hoạt an toàn.
                   Bạn hiện có thể đăng nhập để sử dụng đầy đủ dịch vụ Memento3D.
                 </span>
               }
@@ -99,11 +98,12 @@ export const VerifyEmailResultPage: React.FC = () => {
                   onClick={() => navigate('/login')}
                   style={{
                     height: '46px',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-full, 9999px)',
                     fontWeight: 700,
-                    background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                    background: 'var(--primary, #7C5CFC)',
                     border: 'none',
                     padding: '0 28px',
+                    boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.3)',
                   }}
                 >
                   Đăng nhập ngay
@@ -112,22 +112,22 @@ export const VerifyEmailResultPage: React.FC = () => {
             />
           ) : (
             <Result
-              icon={<CloseCircleOutlined style={{ color: '#ef4444', fontSize: '64px' }} />}
-              title={<span style={{ color: '#ffffff', fontWeight: 700 }}>Xác minh không thành công</span>}
+              icon={<CloseCircleOutlined style={{ color: 'var(--error, #BA1A1A)', fontSize: '64px' }} />}
+              title={<span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700 }}>Xác minh không thành công</span>}
               subTitle={
-                <span style={{ color: '#f87171' }}>
+                <span style={{ color: 'var(--error, #BA1A1A)' }}>
                   {errorMessage || 'Liên kết xác minh không hợp lệ hoặc đã hết hạn.'}
                 </span>
               }
               extra={[
                 <Space direction="vertical" size={12} style={{ width: '100%' }} key="actions">
                   <Link to="/verify-email" style={{ width: '100%' }}>
-                    <Button block size="large" type="primary">
+                    <Button block size="large" type="primary" style={{ height: '46px', borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}>
                       Yêu cầu gửi lại email xác minh
                     </Button>
                   </Link>
                   <Link to="/login" style={{ width: '100%' }}>
-                    <Button block size="large" type="text" style={{ color: '#94a3b8' }}>
+                    <Button block size="large" type="text" style={{ color: 'var(--text-secondary, #6A6282)', fontWeight: 600 }}>
                       Quay lại trang Đăng nhập
                     </Button>
                   </Link>

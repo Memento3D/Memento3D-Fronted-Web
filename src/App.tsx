@@ -5,6 +5,7 @@ import { AntdConfig } from './components/AntdConfig';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { AppLayout } from './components/layout/AppLayout';
+import { DashboardLayout } from './components/layout/DashboardLayout';
 import { AuthProvider } from './features/auth/context/AuthContext';
 import { useAuth } from './features/auth/hooks/useAuth';
 import { getRoleHomeRoute } from './utils/roleHomeRoutes';
@@ -360,35 +361,36 @@ export const App: React.FC = () => {
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/payment/result" element={<PaymentResultPage />} />
 
-                  {/* Dedicated Customer Home & Portal */}
+                  {/* Dedicated Customer Portal */}
                   <Route
-                    path="/customer/home"
+                    path="/customer"
                     element={
                       <ProtectedRoute>
                         <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_ADMIN', 'ROLE_MANAGER']}>
-                          <CustomerHomePage />
+                          <DashboardLayout forceRole="ROLE_USER" />
                         </RoleGuard>
                       </ProtectedRoute>
                     }
-                  />
+                  >
+                    <Route index element={<Navigate to="/customer/home" replace />} />
+                    <Route path="home" element={<CustomerHomePage />} />
+                    <Route path="orders" element={<CustomerOrdersPage />} />
+                    <Route path="orders/:id" element={<CustomerOrderDetailPage />} />
+                  </Route>
+
+                  {/* Customer Orders Shortcut */}
                   <Route
                     path="/orders"
                     element={
                       <ProtectedRoute>
-                        <CustomerOrdersPage />
+                        <DashboardLayout forceRole="ROLE_USER" />
                       </ProtectedRoute>
                     }
-                  />
-                  <Route
-                    path="/orders/:id"
-                    element={
-                      <ProtectedRoute>
-                        <CustomerOrderDetailPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="/customer/orders" element={<Navigate to="/orders" replace />} />
-                  <Route path="/customer/orders/:id" element={<Navigate to="/orders/:id" replace />} />
+                  >
+                    <Route index element={<CustomerOrdersPage />} />
+                    <Route path=":id" element={<CustomerOrderDetailPage />} />
+                  </Route>
+
                   <Route path="/dashboard" element={<Navigate to="/manager/dashboard" replace />} />
                   <Route
                     path="/checkout"
@@ -442,47 +444,35 @@ export const App: React.FC = () => {
 
                   {/* Manufacturing Partner Portal */}
                   <Route
-                    path="/provider/home"
+                    path="/provider"
                     element={
                       <ProtectedRoute>
                         <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_PROVIDER']}>
-                          <ProviderHomePage />
+                          <DashboardLayout forceRole="ROLE_PROVIDER" />
                         </RoleGuard>
                       </ProtectedRoute>
                     }
-                  />
-                  <Route
-                    path="/provider/orders"
-                    element={
-                      <ProtectedRoute>
-                        <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_PROVIDER']}>
-                          <ProviderOrdersPage />
-                        </RoleGuard>
-                      </ProtectedRoute>
-                    }
-                  />
+                  >
+                    <Route index element={<Navigate to="/provider/home" replace />} />
+                    <Route path="home" element={<ProviderHomePage />} />
+                    <Route path="orders" element={<ProviderOrdersPage />} />
+                  </Route>
 
                   {/* Logistics & Delivery Driver Portal */}
                   <Route
-                    path="/driver/home"
+                    path="/driver"
                     element={
                       <ProtectedRoute>
                         <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_DRIVER']}>
-                          <DriverHomePage />
+                          <DashboardLayout forceRole="ROLE_DRIVER" />
                         </RoleGuard>
                       </ProtectedRoute>
                     }
-                  />
-                  <Route
-                    path="/driver/deliveries"
-                    element={
-                      <ProtectedRoute>
-                        <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_DRIVER']}>
-                          <DriverDeliveriesPage />
-                        </RoleGuard>
-                      </ProtectedRoute>
-                    }
-                  />
+                  >
+                    <Route index element={<Navigate to="/driver/home" replace />} />
+                    <Route path="home" element={<DriverHomePage />} />
+                    <Route path="deliveries" element={<DriverDeliveriesPage />} />
+                  </Route>
 
                   {/* Admin Portal */}
                   <Route

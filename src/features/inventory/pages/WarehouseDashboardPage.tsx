@@ -168,10 +168,10 @@ export const WarehouseDashboardPage: React.FC = () => {
         const isLow = val < 1500;
         return (
           <Space>
-            <Text strong style={{ color: isLow ? '#ef4444' : '#34d399', fontSize: 14 }}>
+            <Text strong style={{ color: isLow ? 'var(--error, #BA1A1A)' : 'var(--tertiary, #466253)', fontSize: 14 }}>
               {(val / 1000).toFixed(2)} kg
             </Text>
-            {isLow && <Tag color="error">Sắp hết</Tag>}
+            {isLow && <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--error-container, #FFDAD6)', color: 'var(--on-error-container, #93000A)', border: 'none' }}>Sắp hết</Tag>}
           </Space>
         );
       },
@@ -187,6 +187,7 @@ export const WarehouseDashboardPage: React.FC = () => {
               type="primary"
               size="small"
               icon={<PlusOutlined />}
+              style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--primary, #7C5CFC)' }}
               onClick={() => handleOpenReceipt(record.materialId, record.warehouseId)}
             >
               Nhập kho
@@ -197,6 +198,7 @@ export const WarehouseDashboardPage: React.FC = () => {
               size="small"
               danger
               icon={<ExportOutlined />}
+              style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
               onClick={() => handleOpenIssue(record.materialId, record.warehouseId)}
             >
               Xuất kho
@@ -212,16 +214,17 @@ export const WarehouseDashboardPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc' }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary, #28243D)', fontFamily: 'var(--font-family, "Plus Jakarta Sans")' }}>
             Tổng quan Tồn kho & Quản lý Kho
           </Title>
-          <Text type="secondary">
+          <Text style={{ color: 'var(--text-secondary, #6A6282)' }}>
             Giám sát tồn kho đa cơ sở. Quy tắc ACID: Khả dụng = Tồn thực tế - Đã giữ trước.
           </Text>
         </div>
         <Space wrap>
           <Button
             icon={<ReloadOutlined spin={isFetching} />}
+            style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
             onClick={() => refetch()}
           >
             Làm mới
@@ -230,6 +233,7 @@ export const WarehouseDashboardPage: React.FC = () => {
             type="primary"
             icon={<PlusOutlined />}
             size="large"
+            style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--primary, #7C5CFC)', boxShadow: 'var(--shadow-primary-sm)' }}
             onClick={() => handleOpenReceipt()}
           >
             Nhập kho
@@ -238,6 +242,7 @@ export const WarehouseDashboardPage: React.FC = () => {
             danger
             icon={<ExportOutlined />}
             size="large"
+            style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
             onClick={() => handleOpenIssue()}
           >
             Xuất kho thủ công
@@ -248,11 +253,11 @@ export const WarehouseDashboardPage: React.FC = () => {
       {/* KPI Cards */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
               title="Tổng tồn kho thực tế"
               value={(totalOnHand / 1000).toFixed(2)}
-              prefix={<DatabaseOutlined style={{ color: '#0ea5e9' }} />}
+              prefix={<DatabaseOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
               suffix={<Text type="secondary" style={{ fontSize: 14 }}>kg</Text>}
             />
             <Text type="secondary" style={{ fontSize: 12 }}>
@@ -261,12 +266,12 @@ export const WarehouseDashboardPage: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
               title="Đã giữ trước cho sản xuất"
               value={(totalReserved / 1000).toFixed(2)}
-              valueStyle={{ color: '#fbbf24' }}
-              prefix={<ClockCircleOutlined />}
+              valueStyle={{ color: '#E07A5F' }}
+              prefix={<ClockCircleOutlined style={{ color: '#E07A5F' }} />}
               suffix={<Text type="secondary" style={{ fontSize: 14 }}>kg</Text>}
             />
             <Text type="secondary" style={{ fontSize: 12 }}>
@@ -275,12 +280,12 @@ export const WarehouseDashboardPage: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
               title="Tổng tồn kho khả dụng"
               value={(totalAvailable / 1000).toFixed(2)}
-              valueStyle={{ color: '#10b981' }}
-              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: 'var(--tertiary, #466253)' }}
+              prefix={<CheckCircleOutlined style={{ color: 'var(--tertiary, #466253)' }} />}
               suffix={<Text type="secondary" style={{ fontSize: 14 }}>kg</Text>}
             />
             <Text type="secondary" style={{ fontSize: 12 }}>
@@ -304,10 +309,10 @@ export const WarehouseDashboardPage: React.FC = () => {
       </Row>
 
       {/* Main Stock Table */}
-      <Card>
+      <Card style={{ borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <Space wrap>
-            <FilterOutlined style={{ color: '#0ea5e9' }} />
+            <FilterOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
             <Text strong>Lọc theo cơ sở kho:</Text>
             <Select
               placeholder="Tất cả cơ sở kho"

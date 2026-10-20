@@ -33,13 +33,13 @@ export const TermsAgreement: React.FC<TermsAgreementProps> = ({
           style={{ marginTop: 2 }}
         />
         <div style={{ flex: 1 }}>
-          <Text style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.4' }}>
+          <Text style={{ fontSize: '0.875rem', color: 'var(--text-secondary, #6A6282)', lineHeight: '1.5' }}>
             Tôi đã đọc và đồng ý với{' '}
             <Link
               to="/terms"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#38bdf8', textDecoration: 'underline', fontWeight: 600 }}
+              style={{ color: 'var(--primary, #7C5CFC)', textDecoration: 'underline', fontWeight: 600 }}
             >
               Điều khoản sử dụng
             </Link>{' '}
@@ -48,19 +48,19 @@ export const TermsAgreement: React.FC<TermsAgreementProps> = ({
               to="/privacy"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#38bdf8', textDecoration: 'underline', fontWeight: 600 }}
+              style={{ color: 'var(--primary, #7C5CFC)', textDecoration: 'underline', fontWeight: 600 }}
             >
               Chính sách quyền riêng tư
             </Link>{' '}
             của Memento3D.{' '}
-            <span style={{ color: '#f87171' }}>*</span>
+            <span style={{ color: 'var(--error, #BA1A1A)' }}>*</span>
           </Text>
         </div>
       </div>
 
       {termsError && (
         <div style={{ marginBottom: 10, paddingLeft: 24 }}>
-          <Text type="danger" style={{ fontSize: '0.75rem', color: '#f87171' }}>
+          <Text type="danger" style={{ fontSize: '0.8rem', color: 'var(--error, #BA1A1A)', fontWeight: 500 }}>
             {termsError}
           </Text>
         </div>
@@ -77,7 +77,7 @@ export const TermsAgreement: React.FC<TermsAgreementProps> = ({
             style={{ marginTop: 2 }}
           />
           <div style={{ flex: 1 }}>
-            <Text style={{ fontSize: '0.8125rem', color: '#94a3b8', lineHeight: '1.4' }}>
+            <Text style={{ fontSize: '0.825rem', color: 'var(--text-tertiary, #8E86A8)', lineHeight: '1.4' }}>
               Tôi đồng ý nhận email giới thiệu sản phẩm và ưu đãi từ Memento3D. Tôi có thể rút lại đồng ý bất kỳ lúc nào. (Tùy chọn)
             </Text>
           </div>

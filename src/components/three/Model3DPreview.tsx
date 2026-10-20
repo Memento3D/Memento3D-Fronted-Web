@@ -46,7 +46,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
 
     // 1. Scene & Camera
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0f1d);
+    scene.background = new THREE.Color(0xF3EEFF);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     camera.position.set(0, 1.5, 4.5);
@@ -74,7 +74,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
     controlsRef.current = controls;
 
     // 4. Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
 
     const mainLight = new THREE.DirectionalLight(0xffffff, 2.2);
@@ -82,16 +82,16 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
     mainLight.castShadow = true;
     scene.add(mainLight);
 
-    const rimLight = new THREE.DirectionalLight(0x0ea5e9, 2.0); // Cyan rim
+    const rimLight = new THREE.DirectionalLight(0xFFBFAE, 2.0); // Peach rim
     rimLight.position.set(-5, 3, -5);
     scene.add(rimLight);
 
-    const accentLight = new THREE.DirectionalLight(0x8b5cf6, 1.5); // Purple fill
+    const accentLight = new THREE.DirectionalLight(0x7C5CFC, 1.8); // Violet fill
     accentLight.position.set(3, -4, 2);
     scene.add(accentLight);
 
     // 5. Floor Grid
-    const grid = new THREE.GridHelper(8, 20, 0x0ea5e9, 0x1e293b);
+    const grid = new THREE.GridHelper(8, 20, 0x7C5CFC, 0xE2D9F7);
     grid.position.y = -1.0;
     scene.add(grid);
 
@@ -110,15 +110,15 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
     const getMaterial = () => {
       if (materialTheme === 'gold') {
         return new THREE.MeshStandardMaterial({
-          color: 0xf59e0b,
+          color: 0xFFBFAE,
           roughness: 0.2,
-          metalness: 0.9,
+          metalness: 0.8,
           wireframe,
         });
       }
       if (materialTheme === 'pla') {
         return new THREE.MeshStandardMaterial({
-          color: 0x10b981,
+          color: 0xC9E8D5,
           roughness: 0.45,
           metalness: 0.1,
           wireframe,
@@ -126,7 +126,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
       }
       if (materialTheme === 'cyber') {
         return new THREE.MeshPhysicalMaterial({
-          color: 0x8b5cf6,
+          color: 0x7C5CFC,
           emissive: 0x2e1065,
           roughness: 0.1,
           metalness: 0.8,
@@ -135,7 +135,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
       }
       // Resin default
       return new THREE.MeshPhysicalMaterial({
-        color: 0x38bdf8,
+        color: 0x7C5CFC,
         roughness: 0.15,
         metalness: 0.1,
         clearcoat: 1.0,
@@ -207,22 +207,23 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
       style={isFullscreen ? { top: 20 } : {}}
       styles={{
         body: {
-          background: '#0d1322',
+          background: '#F3EEFF',
           padding: 0,
           overflow: 'hidden',
+          borderRadius: 'var(--radius-card-feature, 28px)',
         },
       }}
       title={
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border-default, #E2D9F7)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Box size={20} color="#0ea5e9" />
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: '1.05rem' }}>{title}</span>
-            <Tag color="cyan">Web-GL 4K Engine</Tag>
+            <Box size={20} color="var(--primary, #7C5CFC)" />
+            <span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700, fontSize: '1.05rem', fontFamily: 'var(--font-family, "Plus Jakarta Sans")' }}>{title}</span>
+            <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary-system, #5F3ADD)', border: 'none', fontWeight: 600 }}>Web-GL 4K Engine</Tag>
           </div>
         </div>
       }
     >
-      <div style={{ position: 'relative', width: '100%', height: isFullscreen ? '78vh' : '520px', background: '#080c14' }}>
+      <div style={{ position: 'relative', width: '100%', height: isFullscreen ? '78vh' : '520px', background: 'var(--surface-container, #F3EEFF)' }}>
         {/* Three.js Canvas Container */}
         <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
 
@@ -234,11 +235,12 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
             left: 16,
             display: 'flex',
             gap: 8,
-            background: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(10px)',
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(16px)',
             padding: '6px 10px',
-            borderRadius: 10,
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: 'var(--radius-pill, 9999px)',
+            border: '1px solid var(--border-default, #E2D9F7)',
+            boxShadow: 'var(--shadow-card)',
           }}
         >
           <Tooltip title={autoRotate ? 'Dừng xoay tự động' : 'Tự động xoay'}>
@@ -246,6 +248,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
               size="small"
               type={autoRotate ? 'primary' : 'default'}
               icon={autoRotate ? <Pause size={14} /> : <Play size={14} />}
+              style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
               onClick={() => setAutoRotate(!autoRotate)}
             />
           </Tooltip>
@@ -254,6 +257,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
               size="small"
               type={wireframe ? 'primary' : 'default'}
               icon={<Eye size={14} />}
+              style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
               onClick={() => setWireframe(!wireframe)}
             />
           </Tooltip>
@@ -261,6 +265,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
             <Button
               size="small"
               icon={<RotateCcw size={14} />}
+              style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
               onClick={handleResetCamera}
             />
           </Tooltip>
@@ -268,6 +273,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
             <Button
               size="small"
               icon={isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+              style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
               onClick={toggleFullscreen}
             />
           </Tooltip>
@@ -285,21 +291,22 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: 10,
-            background: 'rgba(15, 23, 42, 0.85)',
-            backdropFilter: 'blur(12px)',
-            padding: '10px 16px',
-            borderRadius: 12,
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(16px)',
+            padding: '10px 18px',
+            borderRadius: 'var(--radius-default, 16px)',
+            border: '1px solid var(--border-default, #E2D9F7)',
+            boxShadow: 'var(--shadow-card)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>Mô hình demo:</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6A6282)', fontWeight: 600 }}>Mô hình demo:</span>
             <Space size={4}>
               <Button
                 size="small"
                 type={activeModelType === 'bust' ? 'primary' : 'text'}
                 onClick={() => setActiveModelType('bust')}
-                style={{ color: activeModelType === 'bust' ? '#fff' : '#94a3b8' }}
+                style={{ borderRadius: 'var(--radius-pill, 9999px)', fontWeight: 600 }}
               >
                 Kỷ vật Đa diện
               </Button>
@@ -307,7 +314,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                 size="small"
                 type={activeModelType === 'gear' ? 'primary' : 'text'}
                 onClick={() => setActiveModelType('gear')}
-                style={{ color: activeModelType === 'gear' ? '#fff' : '#94a3b8' }}
+                style={{ borderRadius: 'var(--radius-pill, 9999px)', fontWeight: 600 }}
               >
                 Vòng Ring
               </Button>
@@ -315,7 +322,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                 size="small"
                 type={activeModelType === 'torus' ? 'primary' : 'text'}
                 onClick={() => setActiveModelType('torus')}
-                style={{ color: activeModelType === 'torus' ? '#fff' : '#94a3b8' }}
+                style={{ borderRadius: 'var(--radius-pill, 9999px)', fontWeight: 600 }}
               >
                 Khớp Nối Torus
               </Button>
@@ -323,19 +330,20 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>Vật liệu giả lập:</span>
-            <Space size={6}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6A6282)', fontWeight: 600 }}>Vật liệu giả lập:</span>
+            <Space size={8}>
               <button
                 onClick={() => setMaterialTheme('resin')}
                 style={{
                   width: 22,
                   height: 22,
                   borderRadius: '50%',
-                  background: '#38bdf8',
-                  border: materialTheme === 'resin' ? '2px solid #fff' : '2px solid transparent',
+                  background: '#7C5CFC',
+                  border: materialTheme === 'resin' ? '2.5px solid #28243D' : '2px solid transparent',
                   cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(124, 92, 252, 0.3)',
                 }}
-                title="Resin Quang Hóa 8K"
+                title="Atelier Violet 8K"
               />
               <button
                 onClick={() => setMaterialTheme('pla')}
@@ -343,11 +351,12 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                   width: 22,
                   height: 22,
                   borderRadius: '50%',
-                  background: '#10b981',
-                  border: materialTheme === 'pla' ? '2px solid #fff' : '2px solid transparent',
+                  background: '#C9E8D5',
+                  border: materialTheme === 'pla' ? '2.5px solid #28243D' : '2px solid transparent',
                   cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(70, 98, 83, 0.2)',
                 }}
-                title="PLA+ Sinh Học Xanh"
+                title="Mint Fresh"
               />
               <button
                 onClick={() => setMaterialTheme('gold')}
@@ -355,11 +364,12 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                   width: 22,
                   height: 22,
                   borderRadius: '50%',
-                  background: '#f59e0b',
-                  border: materialTheme === 'gold' ? '2px solid #fff' : '2px solid transparent',
+                  background: '#FFBFAE',
+                  border: materialTheme === 'gold' ? '2.5px solid #28243D' : '2px solid transparent',
                   cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(255, 191, 174, 0.3)',
                 }}
-                title="In Kim Loại / Gold Silk"
+                title="Peach Velvet"
               />
               <button
                 onClick={() => setMaterialTheme('cyber')}
@@ -367,11 +377,12 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                   width: 22,
                   height: 22,
                   borderRadius: '50%',
-                  background: '#8b5cf6',
-                  border: materialTheme === 'cyber' ? '2px solid #fff' : '2px solid transparent',
+                  background: '#5F3ADD',
+                  border: materialTheme === 'cyber' ? '2.5px solid #28243D' : '2px solid transparent',
                   cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(95, 58, 221, 0.3)',
                 }}
-                title="Cyber Purple Glow"
+                title="Deep Royal Violet"
               />
             </Space>
           </div>
