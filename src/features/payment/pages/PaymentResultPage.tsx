@@ -142,15 +142,15 @@ export const PaymentResultPage: React.FC = () => {
           styles={{ body: { padding: '48px 32px' } }}
         >
           {paymentStatus === 'PENDING' && (
-            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <div style={{ textAlign: 'center', padding: '36px 0' }}>
               <Spin
-                indicator={<LoadingOutlined style={{ fontSize: 54, color: 'var(--primary)' }} spin />}
+                indicator={<LoadingOutlined style={{ fontSize: 44, color: 'var(--primary)' }} spin />}
               />
-              <h2 style={{ color: 'var(--text-primary)', marginTop: 24, fontWeight: 700 }}>
-                Đang xác thực giao dịch thời gian thực...
+              <h2 style={{ color: 'var(--text-primary)', marginTop: 20, fontWeight: 700, fontSize: '1.4rem' }}>
+                Đang kiểm tra kết quả giao dịch...
               </h2>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: 460, margin: '0 auto 24px' }}>
-                Hệ thống đang đồng bộ kết quả từ cổng thanh toán qua luồng sự kiện Kafka. Vui lòng chờ trong giây lát.
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: 440, margin: '0 auto 20px' }}>
+                Hệ thống đang đồng bộ trạng thái thanh toán từ nhà cung cấp. Vui lòng chờ trong giây lát.
               </p>
               <Button
                 icon={<ReloadOutlined spin={isPolling} />}
@@ -159,7 +159,8 @@ export const PaymentResultPage: React.FC = () => {
                   background: 'var(--surface-container)',
                   borderColor: 'var(--border-default)',
                   color: 'var(--text-primary)',
-                  borderRadius: 'var(--radius-full)',
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  height: 40,
                 }}
               >
                 Kiểm tra lại trạng thái
@@ -169,15 +170,15 @@ export const PaymentResultPage: React.FC = () => {
 
           {paymentStatus === 'SUCCESS' && (
             <Result
-              icon={<CheckCircleFilled style={{ color: 'var(--tertiary)', fontSize: 64 }} />}
+              icon={<CheckCircleFilled style={{ color: 'var(--tertiary)', fontSize: 56 }} />}
               title={
-                <span style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.6rem' }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1.4rem' }}>
                   Thanh toán đơn hàng thành công!
                 </span>
               }
               subTitle={
-                <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
-                  Giao dịch của bạn đã được xác nhận thành công qua Kafka event stream. Xưởng in Memento3D đang chuẩn bị lệnh in.
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+                  Giao dịch của bạn đã được xác nhận thành công. Memento3D đang chuẩn bị đơn hàng của bạn.
                 </span>
               }
               extra={[
@@ -191,9 +192,10 @@ export const PaymentResultPage: React.FC = () => {
                     style={{
                       background: 'var(--primary)',
                       borderColor: 'var(--primary)',
-                      borderRadius: 'var(--radius-full)',
-                      fontWeight: 700,
-                      boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
+                      borderRadius: 'var(--radius-sm, 6px)',
+                      fontWeight: 600,
+                      height: 40,
+                      boxShadow: 'none',
                     }}
                   >
                     Xem chi tiết đơn hàng
@@ -208,7 +210,8 @@ export const PaymentResultPage: React.FC = () => {
                     background: 'var(--surface-container)',
                     borderColor: 'var(--border-default)',
                     color: 'var(--text-primary)',
-                    borderRadius: 'var(--radius-full)',
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    height: 40,
                   }}
                 >
                   Tiếp tục mua sắm
@@ -219,14 +222,14 @@ export const PaymentResultPage: React.FC = () => {
 
           {paymentStatus === 'FAILED' && (
             <Result
-              icon={<CloseCircleFilled style={{ color: 'var(--error)', fontSize: 64 }} />}
+              icon={<CloseCircleFilled style={{ color: 'var(--error)', fontSize: 56 }} />}
               title={
-                <span style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.6rem' }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1.4rem' }}>
                   Thanh toán không thành công
                 </span>
               }
               subTitle={
-                <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
                   {statusMessage || 'Giao dịch đã bị từ chối hoặc người dùng đã hủy thanh toán trên cổng.'}
                 </span>
               }
@@ -239,8 +242,9 @@ export const PaymentResultPage: React.FC = () => {
                     danger
                     onClick={() => navigate(`/checkout?orderId=${orderId}`)}
                     style={{
-                      borderRadius: 'var(--radius-full)',
-                      fontWeight: 700,
+                      borderRadius: 'var(--radius-sm, 6px)',
+                      fontWeight: 600,
+                      height: 40,
                     }}
                   >
                     Thử thanh toán lại
@@ -255,7 +259,8 @@ export const PaymentResultPage: React.FC = () => {
                       background: 'var(--surface-container)',
                       borderColor: 'var(--border-default)',
                       color: 'var(--text-primary)',
-                      borderRadius: 'var(--radius-full)',
+                      borderRadius: 'var(--radius-sm, 6px)',
+                      height: 40,
                     }}
                   >
                     Xem đơn hàng
@@ -269,12 +274,12 @@ export const PaymentResultPage: React.FC = () => {
             <Result
               status="warning"
               title={
-                <span style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.6rem' }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1.4rem' }}>
                   Đang chờ cổng thanh toán xác nhận
                 </span>
               }
               subTitle={
-                <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
                   Giao dịch chưa nhận được phản hồi tức thì từ nhà cung cấp thanh toán. Bạn có thể kiểm tra lại trong chi tiết đơn hàng sau ít phút.
                 </span>
               }
@@ -288,8 +293,9 @@ export const PaymentResultPage: React.FC = () => {
                     style={{
                       background: 'var(--primary)',
                       borderColor: 'var(--primary)',
-                      borderRadius: 'var(--radius-full)',
-                      boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
+                      borderRadius: 'var(--radius-sm, 6px)',
+                      height: 40,
+                      boxShadow: 'none',
                     }}
                   >
                     Kiểm tra đơn hàng
@@ -308,7 +314,8 @@ export const PaymentResultPage: React.FC = () => {
                     background: 'var(--surface-container)',
                     borderColor: 'var(--border-default)',
                     color: 'var(--text-primary)',
-                    borderRadius: 'var(--radius-full)',
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    height: 40,
                   }}
                 >
                   Thử lại
@@ -322,13 +329,13 @@ export const PaymentResultPage: React.FC = () => {
               style={{
                 background: 'var(--surface-container)',
                 border: '1px solid var(--border-default)',
-                borderRadius: 'var(--radius-default)',
-                padding: 20,
-                marginTop: 24,
+                borderRadius: 'var(--radius-md, 8px)',
+                padding: 16,
+                marginTop: 20,
                 textAlign: 'left',
               }}
             >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: '0.9rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '0.875rem' }}>
                 {orderId && (
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--text-secondary)' }}>Mã đơn hàng:</span>
@@ -356,8 +363,8 @@ export const PaymentResultPage: React.FC = () => {
                   <span style={{ color: 'var(--text-secondary)' }}>Trạng thái:</span>
                   <Tag
                     style={{
-                      borderRadius: 'var(--radius-full)',
-                      padding: '2px 12px',
+                      borderRadius: 'var(--radius-sm, 4px)',
+                      padding: '2px 8px',
                       fontWeight: 600,
                       border: 'none',
                       background:
@@ -375,12 +382,12 @@ export const PaymentResultPage: React.FC = () => {
                     }}
                   >
                     {paymentStatus === 'SUCCESS'
-                      ? 'ĐÃ THANH TOÁN (PAID)'
+                      ? 'Đã thanh toán'
                       : paymentStatus === 'FAILED'
-                      ? 'CHƯA HOÀN TẤT (FAILED)'
+                      ? 'Chưa hoàn tất'
                       : paymentStatus === 'TIMEOUT'
-                      ? 'CHỜ XÁC NHẬN (PENDING)'
-                      : 'ĐANG XỬ LÝ (PROCESSING)'}
+                      ? 'Chờ xác nhận'
+                      : 'Đang xử lý'}
                   </Tag>
                 </div>
               </div>

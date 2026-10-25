@@ -23,41 +23,17 @@ export const DashboardHero: React.FC<DashboardHeroProps> = ({
       style={{
         background: 'var(--bg-card, #FFFFFF)',
         border: '1px solid var(--border-color, #E2D9F7)',
-        borderRadius: 'var(--radius-feature, 28px)',
+        borderRadius: 'var(--radius-feature, 12px)',
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: 'var(--shadow-floating)',
-        marginBottom: 24,
+        boxShadow: 'var(--shadow-sm)',
+        marginBottom: 20,
       }}
     >
-      {/* Decorative ambient background glows */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '-20%',
-          left: '10%',
-          width: '350px',
-          height: '250px',
-          background: 'radial-gradient(circle, var(--primary-glow) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '-20%',
-          right: '25%',
-          width: '300px',
-          height: '200px',
-          background: 'radial-gradient(circle, rgba(255, 191, 174, 0.2) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }}
-      />
-
-      <Row gutter={[24, 24]} align="middle" style={{ padding: '32px 36px', position: 'relative', zIndex: 1 }}>
+      <Row gutter={[20, 20]} align="middle" style={{ padding: '24px 28px', position: 'relative', zIndex: 1 }}>
         {/* Left: Titles & Operational Highlights */}
         <Col xs={24} lg={14}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
             <span
               style={{
                 display: 'inline-flex',
@@ -65,17 +41,17 @@ export const DashboardHero: React.FC<DashboardHeroProps> = ({
                 gap: 6,
                 background: 'var(--surface-container, #F1EBFF)',
                 border: '1px solid var(--border-color, #E2D9F7)',
-                padding: '5px 14px',
-                borderRadius: 'var(--radius-full, 9999px)',
+                padding: '3px 10px',
+                borderRadius: 'var(--radius-sm, 4px)',
                 color: 'var(--primary, #7C5CFC)',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                letterSpacing: '0.05em',
+                fontSize: '0.725rem',
+                fontWeight: 600,
+                letterSpacing: '0.03em',
                 textTransform: 'uppercase',
               }}
             >
               <Cpu size={14} />
-              MEMENTO3D PRODUCTION OVERVIEW
+              Giám sát Sản xuất
             </span>
 
             {isRealTimeConnected && (
@@ -86,64 +62,63 @@ export const DashboardHero: React.FC<DashboardHeroProps> = ({
                   gap: 6,
                   background: 'var(--success-bg, #C9E8D5)',
                   border: '1px solid var(--success-border, #A5D7B7)',
-                  padding: '5px 12px',
-                  borderRadius: 'var(--radius-full, 9999px)',
+                  padding: '3px 10px',
+                  borderRadius: 'var(--radius-sm, 4px)',
                   color: 'var(--text-on-success, #1E3B2C)',
-                  fontSize: '0.72rem',
-                  fontWeight: 700,
+                  fontSize: '0.725rem',
+                  fontWeight: 600,
                 }}
               >
-                <Radio size={12} className="animate-pulse" color="var(--tertiary, #466253)" />
-                TELEMETRY LIVE
+                <Radio size={12} color="var(--tertiary, #466253)" />
+                Trực tuyến
               </span>
             )}
           </div>
 
           <h1
             style={{
-              fontSize: '2.2rem',
-              fontWeight: 800,
+              fontSize: '1.5rem',
+              fontWeight: 700,
               color: 'var(--text-primary)',
-              letterSpacing: '-0.03em',
-              margin: '0 0 10px',
-              lineHeight: 1.2,
+              letterSpacing: '-0.02em',
+              margin: '0 0 8px',
+              lineHeight: 1.25,
             }}
           >
-            Digital Manufacturing Control Center
+            Trung tâm Điều hành Sản xuất 3D
           </h1>
           <p
             style={{
               color: 'var(--text-secondary)',
-              fontSize: '0.925rem',
-              maxWidth: 620,
-              margin: '0 0 24px',
+              fontSize: '0.875rem',
+              maxWidth: 600,
+              margin: '0 0 20px',
               lineHeight: 1.5,
             }}
           >
-            Hệ thống giám sát đa tầng tích hợp dây chuyền máy in 3D công nghiệp, cụm xử lý GPU
-            tái tạo ảnh chụp Gaussian Splatting và quản trị lưu chuyển tồn kho thời gian thực.
+            Giám sát trạng thái máy in 3D, tiến độ tác vụ tái tạo và quản lý vận hành xưởng in theo thời gian thực.
           </p>
 
           {/* Quick Telemetry Chips */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
             <div
               style={{
                 background: 'var(--surface-container, #F1EBFF)',
                 border: '1px solid var(--border-color, #E2D9F7)',
-                padding: '10px 18px',
-                borderRadius: 'var(--radius-default, 16px)',
+                padding: '8px 14px',
+                borderRadius: 'var(--radius-md, 8px)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 12,
+                gap: 10,
               }}
             >
-              <Activity size={20} color="var(--primary)" />
+              <Activity size={18} color="var(--primary)" />
               <div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 700 }}>
+                <div style={{ fontSize: '0.675rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>
                   Tác vụ đang chạy
                 </div>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-                  {activeJobsCount} Active Jobs
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                  {activeJobsCount} Tác vụ
                 </div>
               </div>
             </div>
@@ -152,20 +127,20 @@ export const DashboardHero: React.FC<DashboardHeroProps> = ({
               style={{
                 background: 'var(--surface-container, #F1EBFF)',
                 border: '1px solid var(--border-color, #E2D9F7)',
-                padding: '10px 18px',
-                borderRadius: 'var(--radius-default, 16px)',
+                padding: '8px 14px',
+                borderRadius: 'var(--radius-md, 8px)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 12,
+                gap: 10,
               }}
             >
-              <Printer size={20} color="var(--primary-system)" />
+              <Printer size={18} color="var(--primary-system)" />
               <div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 700 }}>
+                <div style={{ fontSize: '0.675rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>
                   Máy in trực tuyến
                 </div>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-                  {onlinePrintersCount} Printers Online
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                  {onlinePrintersCount} Máy in
                 </div>
               </div>
             </div>
@@ -174,20 +149,20 @@ export const DashboardHero: React.FC<DashboardHeroProps> = ({
               style={{
                 background: 'var(--surface-container, #F1EBFF)',
                 border: '1px solid var(--border-color, #E2D9F7)',
-                padding: '10px 18px',
-                borderRadius: 'var(--radius-default, 16px)',
+                padding: '8px 14px',
+                borderRadius: 'var(--radius-md, 8px)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 12,
+                gap: 10,
               }}
             >
-              <CheckCircle2 size={20} color="var(--tertiary)" />
+              <CheckCircle2 size={18} color="var(--tertiary)" />
               <div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 700 }}>
-                  Tỷ lệ in thành công
+                <div style={{ fontSize: '0.675rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>
+                  Tỷ lệ thành công
                 </div>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--tertiary)', fontFamily: 'var(--font-mono)' }}>
-                  {successRate}% Success Rate
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--tertiary)', fontFamily: 'var(--font-mono)' }}>
+                  {successRate}% Tỷ lệ
                 </div>
               </div>
             </div>
@@ -200,14 +175,14 @@ export const DashboardHero: React.FC<DashboardHeroProps> = ({
                 style={{
                   background: 'var(--primary)',
                   borderColor: 'var(--primary)',
-                  height: 48,
-                  borderRadius: 'var(--radius-full)',
-                  fontWeight: 700,
-                  padding: '0 24px',
-                  boxShadow: '0 4px 14px var(--primary-glow)',
+                  height: 40,
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  fontWeight: 600,
+                  padding: '0 18px',
+                  boxShadow: 'none',
                 }}
               >
-                Mở 3D Studio Preview
+                Xem mô hình 3D
               </Button>
             )}
           </div>
@@ -218,13 +193,13 @@ export const DashboardHero: React.FC<DashboardHeroProps> = ({
           <div
             style={{
               width: '100%',
-              maxWidth: 400,
-              height: 290,
+              maxWidth: 380,
+              height: 260,
               background: 'var(--bg-viewport-3d, #F3EEFF)',
               border: '1px solid var(--border-color, #E2D9F7)',
-              borderRadius: 'var(--radius-card, 24px)',
+              borderRadius: 'var(--radius-card, 10px)',
               overflow: 'hidden',
-              boxShadow: 'var(--shadow-card)',
+              boxShadow: 'var(--shadow-sm)',
               position: 'relative',
             }}
           >
@@ -232,20 +207,20 @@ export const DashboardHero: React.FC<DashboardHeroProps> = ({
             <div
               style={{
                 position: 'absolute',
-                bottom: 12,
-                right: 14,
-                fontSize: '0.7rem',
-                fontWeight: 700,
+                bottom: 10,
+                right: 12,
+                fontSize: '0.675rem',
+                fontWeight: 600,
                 color: 'var(--text-secondary)',
-                letterSpacing: '0.06em',
+                letterSpacing: '0.04em',
                 pointerEvents: 'none',
                 background: 'var(--surface-lowest, #FFFFFF)',
                 padding: '2px 8px',
-                borderRadius: '9999px',
+                borderRadius: 'var(--radius-sm, 4px)',
                 border: '1px solid var(--border-color)',
               }}
             >
-              3D DIGITAL TWIN • THREE.JS
+              Mô phỏng 3D
             </div>
           </div>
         </Col>

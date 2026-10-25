@@ -83,14 +83,14 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
         placeholder={placeholder}
         style={{
           width: '100%',
-          height: '38px',
+          height: '40px',
           paddingLeft: '36px',
           paddingRight: internalValue ? '32px' : '14px',
-          borderRadius: 'var(--radius-full)',
+          borderRadius: 'var(--radius-input, 8px)',
           background: 'var(--bg-input, var(--color-surface))',
           color: 'var(--color-text-primary)',
           border: '1px solid var(--color-border)',
-          fontSize: '0.85rem',
+          fontSize: '0.875rem',
           outline: 'none',
           transition: 'all var(--transition-fast)',
         }}

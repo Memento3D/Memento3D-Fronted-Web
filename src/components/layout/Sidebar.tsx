@@ -76,16 +76,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 12,
-                    padding: collapsed && !isMobile ? '10px 0' : '10px 20px',
+                    gap: 10,
+                    padding: collapsed && !isMobile ? '8px 0' : '8px 14px',
                     justifyContent: collapsed && !isMobile ? 'center' : 'flex-start',
                     color: isItemActive ? 'var(--primary)' : 'var(--color-text-secondary)',
                     background: isItemActive ? 'var(--primary-subtle)' : 'transparent',
-                    borderLeft: isItemActive && (!collapsed || isMobile) ? '3px solid var(--primary)' : '3px solid transparent',
-                    fontWeight: isItemActive ? 700 : 500,
+                    fontWeight: isItemActive ? 600 : 500,
                     fontSize: '0.875rem',
-                    borderRadius: collapsed && !isMobile ? '12px' : '0 12px 12px 0',
-                    margin: collapsed && !isMobile ? '0 10px' : '0 10px 0 0',
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    margin: collapsed && !isMobile ? '0 8px' : '0 8px',
                     transition: 'all var(--transition-fast)',
                     textDecoration: 'none',
                   }}
@@ -101,9 +100,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       style={{
                         marginLeft: 'auto',
                         fontSize: '0.7rem',
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: '9999px',
+                        fontWeight: 600,
+                        padding: '1px 6px',
+                        borderRadius: 'var(--radius-xs, 4px)',
                         background: 'var(--primary-subtle)',
                         color: 'var(--primary)',
                       }}
@@ -133,8 +132,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const brandHeader = (isMobile = false) => (
     <div
       style={{
-        height: 68,
-        padding: '0 20px',
+        height: 64,
+        padding: '0 16px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: collapsed && !isMobile ? 'center' : 'space-between',
@@ -144,29 +143,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
     >
       <div
         onClick={() => navigate('/')}
-        style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', overflow: 'hidden' }}
+        style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', overflow: 'hidden' }}
       >
         <div
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 'var(--radius-default, 16px)',
-            background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-system) 100%)',
+            width: 34,
+            height: 34,
+            borderRadius: 'var(--radius-sm, 6px)',
+            background: 'var(--primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 14px var(--primary-glow)',
             flexShrink: 0,
           }}
         >
-          <Cpu size={22} color="#FFFFFF" />
+          <Cpu size={18} color="#FFFFFF" />
         </div>
         {(!collapsed || isMobile) && (
           <div style={{ whiteSpace: 'nowrap' }}>
-            <div style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
+            <div style={{ fontWeight: 700, fontSize: '1rem', letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
               Memento<span style={{ color: 'var(--primary)' }}>3D</span>
             </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
+            <div style={{ fontSize: '0.675rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
               {getRoleLabel(activeRole)}
             </div>
           </div>
@@ -181,7 +179,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           style={{
             width: 28,
             height: 28,
-            borderRadius: '8px',
+            borderRadius: 'var(--radius-xs, 4px)',
             background: 'var(--color-surface)',
             border: '1px solid var(--color-border)',
             color: 'var(--color-text-secondary)',
@@ -191,7 +189,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             justifyContent: 'center',
           }}
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={15} />
         </button>
       )}
     </div>
@@ -271,8 +269,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               border: '1px solid var(--danger-border)',
               color: 'var(--color-danger)',
               cursor: 'pointer',
-              padding: 8,
-              borderRadius: '9999px',
+              padding: 6,
+              borderRadius: 'var(--radius-sm, 6px)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -293,8 +291,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         id="desktop-sidebar-root"
         className={`atelier-sidebar ${collapsed ? 'collapsed' : ''}`}
         style={{
-          width: collapsed ? 72 : 260,
-          minWidth: collapsed ? 72 : 260,
+          width: collapsed ? 68 : 236,
+          minWidth: collapsed ? 68 : 236,
           height: '100vh',
           position: 'sticky',
           top: 0,
@@ -303,9 +301,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           flexDirection: 'column',
           background: 'var(--bg-sidebar)',
           borderRight: '1px solid var(--color-border)',
-          backdropFilter: 'var(--glass-blur)',
-          WebkitBackdropFilter: 'var(--glass-blur)',
-          transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'width 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           zIndex: 90,
         }}
       >
@@ -319,7 +315,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         open={mobileOpen}
         onClose={onMobileClose}
         placement="left"
-        width={280}
+        width={260}
         closable={false}
         styles={{
           body: {

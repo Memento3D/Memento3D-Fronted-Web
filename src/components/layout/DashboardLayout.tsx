@@ -46,49 +46,49 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const getPageTitle = (): string => {
     if (defaultTitle) return defaultTitle;
     const path = location.pathname;
-    if (path.includes('/admin/home')) return 'Bảng tin Điều hành Quản trị viên';
-    if (path.includes('/admin/dashboard')) return 'Tổng quan Chỉ số KPI Hệ thống';
-    if (path.includes('/admin/users')) return 'Quản lý Tài khoản & Phân quyền RBAC';
-    if (path.includes('/admin/orders')) return 'Đơn hàng Toàn sàn';
-    if (path.includes('/admin/products')) return 'Quản lý Sản phẩm Toàn sàn';
-    if (path.includes('/admin/payments')) return 'Sổ cái Giao dịch Thanh toán';
-    if (path.includes('/admin/reconstruction')) return 'Giám sát Pipeline Tái tạo 3D AI';
-    if (path.includes('/admin/print-jobs')) return 'Lệnh in Sản xuất Xưởng';
-    if (path.includes('/admin/printers')) return 'Đội máy in & Telemetry';
-    if (path.includes('/admin/audit-logs')) return 'Nhật ký Kiểm toán Hệ thống';
-    if (path.includes('/admin/system')) return 'Tình trạng Hạ tầng & Dịch vụ';
+    if (path.includes('/admin/home')) return 'Tổng quan Quản trị';
+    if (path.includes('/admin/dashboard')) return 'Chỉ số Hệ thống';
+    if (path.includes('/admin/users')) return 'Quản lý Tài khoản';
+    if (path.includes('/admin/orders')) return 'Quản lý Đơn hàng';
+    if (path.includes('/admin/products')) return 'Quản lý Sản phẩm';
+    if (path.includes('/admin/payments')) return 'Lịch sử Thanh toán';
+    if (path.includes('/admin/reconstruction')) return 'Giám sát Tái tạo 3D';
+    if (path.includes('/admin/print-jobs')) return 'Lệnh in Sản xuất';
+    if (path.includes('/admin/printers')) return 'Quản lý Máy in';
+    if (path.includes('/admin/audit-logs')) return 'Nhật ký Kiểm toán';
+    if (path.includes('/admin/system')) return 'Tình trạng Hệ thống';
 
-    if (path.includes('/manager/home')) return 'Trung tâm Điều hành Quản lý';
-    if (path.includes('/manager/dashboard')) return 'Tổng quan Quản lý WMS & Sản xuất';
-    if (path.includes('/manager/approvals')) return 'Trung tâm Phê duyệt';
-    if (path.includes('/manager/materials')) return 'Danh mục Vật liệu In 3D';
-    if (path.includes('/manager/warehouses')) return 'Quản lý Mạng lưới Kho WMS';
+    if (path.includes('/manager/home')) return 'Tổng quan Quản lý';
+    if (path.includes('/manager/dashboard')) return 'Quản lý WMS & Sản xuất';
+    if (path.includes('/manager/approvals')) return 'Phê duyệt Yêu cầu';
+    if (path.includes('/manager/materials')) return 'Vật liệu In 3D';
+    if (path.includes('/manager/warehouses')) return 'Quản lý Kho hàng';
     if (path.includes('/manager/products')) return 'Quản lý Sản phẩm';
     if (path.includes('/manager/categories')) return 'Danh mục Sản phẩm';
-    if (path.includes('/manager/inventory/transactions')) return 'Sổ cái Biến động Tồn kho';
-    if (path.includes('/manager/inventory')) return 'Bảng cân đối Tồn kho Thực tế';
-    if (path.includes('/manager/receipts')) return 'Quản lý Nhập kho WMS';
-    if (path.includes('/manager/issues')) return 'Quản lý Xuất kho WMS';
-    if (path.includes('/manager/transfers')) return 'Điều chuyển Kho Nội bộ';
-    if (path.includes('/manager/adjustments')) return 'Điều chỉnh Số dư Kho';
-    if (path.includes('/manager/stock-counts')) return 'Phiếu Kiểm kê Kho';
-    if (path.includes('/manager/orders')) return 'Xử lý Đơn hàng Sản xuất';
-    if (path.includes('/manager/print-jobs')) return 'Lệnh in & Giữ vật tư';
+    if (path.includes('/manager/inventory/transactions')) return 'Biến động Kho';
+    if (path.includes('/manager/inventory')) return 'Tồn kho Thực tế';
+    if (path.includes('/manager/receipts')) return 'Nhập kho';
+    if (path.includes('/manager/issues')) return 'Xuất kho';
+    if (path.includes('/manager/transfers')) return 'Điều chuyển Kho';
+    if (path.includes('/manager/adjustments')) return 'Điều chỉnh Kho';
+    if (path.includes('/manager/stock-counts')) return 'Kiểm kê Kho';
+    if (path.includes('/manager/orders')) return 'Đơn hàng Sản xuất';
+    if (path.includes('/manager/print-jobs')) return 'Lệnh in & Vật tư';
 
-    if (path.includes('/operator/home')) return 'Trạm Vận hành Xưởng in 3D';
-    if (path.includes('/operator/jobs')) return 'Danh sách Lệnh in Cần xử lý';
+    if (path.includes('/operator/home')) return 'Vận hành Xưởng in';
+    if (path.includes('/operator/jobs')) return 'Danh sách Lệnh in';
 
-    if (path.includes('/warehouse/home')) return 'Trang chủ Không gian Kho WMS';
+    if (path.includes('/warehouse/home')) return 'Tổng quan Kho hàng';
 
-    if (path.includes('/provider/home')) return 'Trang chủ Đối tác Gia công B2B';
-    if (path.includes('/provider/orders')) return 'Đơn hàng Gia công Chế tác';
+    if (path.includes('/provider/home')) return 'Tổng quan Đối tác';
+    if (path.includes('/provider/orders')) return 'Đơn hàng Gia công';
 
-    if (path.includes('/driver/home')) return 'Trang chủ Đội ngũ Giao vận';
-    if (path.includes('/driver/deliveries')) return 'Lịch trình Chuyến giao Hàng';
+    if (path.includes('/driver/home')) return 'Tổng quan Giao vận';
+    if (path.includes('/driver/deliveries')) return 'Lịch trình Giao hàng';
 
-    if (path.includes('/customer/home')) return 'Không gian Sáng tạo Khách hàng';
-    if (path.includes('/orders')) return 'Quản lý Đơn hàng Khách hàng';
-    if (path.includes('/profile')) return 'Hồ sơ & Bảo mật Tài khoản';
+    if (path.includes('/customer/home')) return 'Trang chủ Khách hàng';
+    if (path.includes('/orders')) return 'Đơn hàng của tôi';
+    if (path.includes('/profile')) return 'Thông tin Tài khoản';
 
     return getRoleLabel(forceRole || user?.role);
   };
@@ -135,9 +135,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           className="dashboard-main-content"
           style={{
             flex: 1,
-            padding: '24px',
+            padding: 'clamp(16px, 2vw, 24px)',
             width: '100%',
-            maxWidth: 1680,
+            maxWidth: 'var(--content-max-width, 1440px)',
             margin: '0 auto',
           }}
         >

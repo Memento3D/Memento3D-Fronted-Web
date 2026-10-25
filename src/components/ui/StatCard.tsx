@@ -39,10 +39,10 @@ export const StatCard: React.FC<StatCardProps> = ({
         style={{
           background: 'var(--color-surface)',
           border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-card, 24px)',
-          padding: '24px',
+          borderRadius: 'var(--radius-card, 10px)',
+          padding: '18px 20px',
           boxShadow: 'var(--shadow-card)',
-          minHeight: 140,
+          minHeight: 110,
           ...style,
         }}
       >
@@ -57,36 +57,36 @@ export const StatCard: React.FC<StatCardProps> = ({
       style={{
         background: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius-card, 24px)',
-        padding: '24px',
+        borderRadius: 'var(--radius-card, 10px)',
+        padding: '18px 20px',
         boxShadow: 'var(--shadow-card)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         cursor: onClick ? 'pointer' : 'default',
-        transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
+        transition: 'border-color var(--transition-fast), box-shadow var(--transition-fast)',
         ...style,
       }}
       className={onClick ? 'hoverable-card' : ''}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
         <div>
-          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
+          <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '6px' }}>
             {title}
           </div>
-          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-            {prefix && <span style={{ fontSize: '1.2rem', color: 'var(--color-text-secondary)' }}>{prefix}</span>}
+          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+            {prefix && <span style={{ fontSize: '1rem', color: 'var(--color-text-secondary)' }}>{prefix}</span>}
             <span className="tabular-nums">{value}</span>
-            {suffix && <span style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>{suffix}</span>}
+            {suffix && <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>{suffix}</span>}
           </div>
         </div>
 
         {icon && (
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: 'var(--radius-default, 16px)',
+              width: '36px',
+              height: '36px',
+              borderRadius: 'var(--radius-sm, 6px)',
               background: iconBg,
               color: iconColor,
               display: 'flex',
@@ -101,17 +101,17 @@ export const StatCard: React.FC<StatCardProps> = ({
       </div>
 
       {change !== undefined && (
-        <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem' }}>
+        <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.775rem' }}>
           <span
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '2px',
-              fontWeight: 700,
+              fontWeight: 600,
               color: isPositive ? 'var(--color-success)' : 'var(--color-danger)',
               background: isPositive ? 'var(--success-bg)' : 'var(--danger-bg)',
-              padding: '2px 8px',
-              borderRadius: '9999px',
+              padding: '2px 6px',
+              borderRadius: 'var(--radius-xs, 4px)',
             }}
           >
             {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}

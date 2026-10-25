@@ -25,9 +25,9 @@ export const Button: React.FC<ButtonProps> = ({
   ...rest
 }) => {
   const sizeStyles: Record<'sm' | 'md' | 'lg', React.CSSProperties> = {
-    sm: { padding: '6px 14px', fontSize: '0.8rem', height: 32, gap: 6 },
-    md: { padding: '9px 20px', fontSize: '0.875rem', height: 40, gap: 8 },
-    lg: { padding: '12px 28px', fontSize: '1rem', height: 48, gap: 10 },
+    sm: { padding: '0 12px', fontSize: '0.8rem', height: 32, gap: 6, borderRadius: 'var(--radius-sm, 6px)' },
+    md: { padding: '0 16px', fontSize: '0.875rem', height: 40, gap: 8, borderRadius: 'var(--radius-sm, 6px)' },
+    lg: { padding: '0 24px', fontSize: '0.95rem', height: 46, gap: 8, borderRadius: 'var(--radius-md, 8px)' },
   };
 
   const variantClassMap: Record<string, string> = {

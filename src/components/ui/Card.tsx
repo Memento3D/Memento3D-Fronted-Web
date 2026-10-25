@@ -25,9 +25,9 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const paddingMap = {
     none: 0,
-    sm: '16px',
-    md: '24px',
-    lg: '32px',
+    sm: '14px 16px',
+    md: '18px 20px',
+    lg: '24px',
   };
 
   return (
@@ -38,10 +38,10 @@ export const Card: React.FC<CardProps> = ({
         backdropFilter: glass ? 'var(--glass-blur)' : undefined,
         WebkitBackdropFilter: glass ? 'var(--glass-blur)' : undefined,
         border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius-card, 24px)',
+        borderRadius: 'var(--radius-card, 10px)',
         boxShadow: 'var(--shadow-card)',
         padding: paddingMap[padding],
-        transition: 'transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal)',
+        transition: 'box-shadow var(--transition-fast), border-color var(--transition-fast)',
         display: 'flex',
         flexDirection: 'column',
         ...style,

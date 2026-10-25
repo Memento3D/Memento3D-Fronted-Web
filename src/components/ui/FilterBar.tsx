@@ -28,12 +28,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '12px',
-        padding: '16px',
+        padding: '12px 16px',
         background: 'var(--color-surface)',
-        borderRadius: 'var(--radius-card, 24px)',
+        borderRadius: 'var(--radius-card, 10px)',
         border: '1px solid var(--color-border)',
         boxShadow: 'var(--shadow-sm)',
-        marginBottom: '20px',
+        marginBottom: '16px',
         ...style,
       }}
     >

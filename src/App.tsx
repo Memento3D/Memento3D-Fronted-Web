@@ -181,7 +181,8 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
-      staleTime: 5000,
+      staleTime: 60 * 1000, // 1 minute default stale time to eliminate redundant refetches
+      gcTime: 5 * 60 * 1000, // Keep cached data in memory for 5 minutes
     },
   },
 });
