@@ -62,12 +62,12 @@ body.light-theme {
   --success-border: #A5D7B7;
   --text-on-success: #1E3B2C;
 
-  /* Text Hierarchy */
-  --text-primary: #28243D;
+  /* Text Hierarchy (High Contrast WCAG AA compliant) */
+  --text-primary: #1C1831;
   --text-system: #1C1831;
-  --text-secondary: #6A6282;
-  --text-muted: #8E86A8;
-  --text-subtle: #AFA8C5;
+  --text-secondary: #524B6B;
+  --text-muted: #7A7294;
+  --text-subtle: #9E96BA;
   --text-inverse: #FFFFFF;
 
   /* Borders & Dividers */
@@ -98,9 +98,11 @@ body.light-theme {
   --info-border: #DDD6F7;
   --info-text: #5F3ADD;
 
-  /* Neutral Lavender Chip / Archived */
-  --neutral-chip-bg: #F1EBFF;
-  --neutral-chip-text: #6A6282;
+  /* Neutral Segmented Chip (Light Mode) */
+  --neutral-chip-bg: #FFFFFF;
+  --neutral-chip-bg-hover: #F1EBFF;
+  --neutral-chip-text: #524B6B;
+  --neutral-chip-text-hover: #1C1831;
   --neutral-chip-border: #E2D9F7;
 
   /* Spacing Scale (Standardized) */
@@ -291,7 +293,9 @@ body.dark-theme {
   --info-text: #E6DEFF;
 
   --neutral-chip-bg: #252036;
+  --neutral-chip-bg-hover: #302A44;
   --neutral-chip-text: #C9C0DD;
+  --neutral-chip-text-hover: #F8F4FF;
   --neutral-chip-border: #45405A;
 
   /* Dark Shadows (Clean & Subtle) */

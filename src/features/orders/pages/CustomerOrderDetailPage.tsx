@@ -24,12 +24,17 @@ import {
   PhoneOutlined,
   EnvironmentOutlined,
   UserOutlined,
-  DollarCircleOutlined,
-  CheckCircleOutlined,
-  EyeOutlined,
   InboxOutlined,
   PrinterOutlined,
   CarOutlined,
+  ExperimentOutlined,
+  ToolOutlined,
+  BgColorsOutlined,
+  GoldOutlined,
+  SkinOutlined,
+  GiftOutlined,
+  FormOutlined,
+  CopyOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useOrderDetail } from '../hooks/useOrderDetail';
@@ -85,13 +90,6 @@ export const CustomerOrderDetailPage: React.FC = () => {
     }
   });
 
-  useEventSubscription('MODEL_APPROVAL_REQUIRED', (event) => {
-    if (event.data?.orderId === id || event.resourceId === id) {
-      message.info('Mô hình 3D cho đơn hàng đã sẵn sàng để bạn duyệt!');
-      refetch();
-    }
-  });
-
   useEventSubscription('PRINT_JOB_UPDATED', (event) => {
     if (event.data?.orderId === id) {
       refetch();
@@ -100,9 +98,9 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--color-bg)', padding: '100px 24px' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <Skeleton active paragraph={{ rows: 8 }} />
+      <div style={{ minHeight: '100vh', background: 'var(--bg-app)', padding: '120px 24px 60px' }}>
+        <div style={{ maxWidth: 1140, margin: '0 auto' }}>
+          <Skeleton active paragraph={{ rows: 10 }} />
         </div>
       </div>
     );
@@ -110,13 +108,13 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
   if (isError || !order) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--color-bg)', padding: '100px 24px', textAlign: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--bg-app)', padding: '120px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: 600, margin: '60px auto', color: 'var(--text-primary)' }}>
           <h2 style={{ color: '#ef4444' }}>Không tìm thấy đơn hàng</h2>
           <p style={{ color: 'var(--text-secondary)' }}>
             {error?.message || 'Đơn hàng không tồn tại hoặc bạn không có quyền truy cập.'}
           </p>
-          <Button type="primary" onClick={() => navigate('/customer/orders')}>
+          <Button type="primary" onClick={() => navigate('/customer/orders')} style={{ borderRadius: 8 }}>
             Quay lại danh sách
           </Button>
         </div>
@@ -126,11 +124,18 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
   const orderPayments = specificPayments.length > 0 ? specificPayments : payments.filter((p) => p.orderId === order.id);
   const orderCode = order.orderCode || order.id.slice(0, 8).toUpperCase();
-  const isPaid = order.paymentStatus === 'PAID';
+  const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === 'SUCCESS';
   const isCash = order.paymentMethod === 'CASH';
   const isEligibleToPay = !isPaid && order.status !== 'CANCELLED' && order.status !== 'COMPLETED';
   const isEligibleToCancel = canCustomerCancel(order.status);
   const totalAmount = order.totalAmount ?? order.totalPrice;
+  const paidAmount = order.paidAmount ?? (isPaid ? totalAmount : 0);
+  const remainingAmount = order.remainingAmount ?? Math.max(0, totalAmount - paidAmount);
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(orderCode);
+    message.success('Đã sao chép mã đơn hàng');
+  };
 
   const handleUpdateShipping = async (values: any) => {
     try {
@@ -189,23 +194,25 @@ export const CustomerOrderDetailPage: React.FC = () => {
     }
   };
 
+  const items = order.items && order.items.length > 0 ? order.items : [];
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
       <Navbar />
 
-      <main style={{ maxWidth: 1140, margin: '0 auto', padding: '120px 24px 60px' }}>
-        {/* Top Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '110px 20px 60px' }}>
+        {/* Navigation Breadcrumb & Actions Bar */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate('/customer/orders')}
-            style={{ color: 'var(--text-secondary)', paddingLeft: 0, borderRadius: 'var(--radius-full)' }}
+            style={{ color: 'var(--text-secondary)', paddingLeft: 0, borderRadius: 8, fontSize: '0.875rem' }}
           >
-            Danh sách đơn hàng
+            Quay lại danh sách đơn hàng
           </Button>
 
-          <Space>
+          <Space wrap>
             <Button
               icon={<ReloadOutlined spin={isFetching} />}
               onClick={() => refetch()}
@@ -213,10 +220,10 @@ export const CustomerOrderDetailPage: React.FC = () => {
                 background: 'var(--surface-container)',
                 borderColor: 'var(--border-default)',
                 color: 'var(--text-primary)',
-                borderRadius: 'var(--radius-full)',
+                borderRadius: 8,
               }}
             >
-              Cập nhật
+              Làm mới
             </Button>
 
             {isEligibleToPay && (
@@ -227,9 +234,9 @@ export const CustomerOrderDetailPage: React.FC = () => {
                 style={{
                   background: 'var(--primary)',
                   borderColor: 'var(--primary)',
-                  fontWeight: 700,
-                  borderRadius: 'var(--radius-full)',
-                  boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
+                  fontWeight: 600,
+                  borderRadius: 8,
+                  boxShadow: '0 2px 8px rgba(124, 92, 252, 0.25)',
                 }}
               >
                 Thanh toán lại
@@ -241,9 +248,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                 danger
                 icon={<StopOutlined />}
                 onClick={() => setCancelModalOpen(true)}
-                style={{
-                  borderRadius: 'var(--radius-full)',
-                }}
+                style={{ borderRadius: 8 }}
               >
                 Hủy đơn
               </Button>
@@ -251,201 +256,293 @@ export const CustomerOrderDetailPage: React.FC = () => {
           </Space>
         </div>
 
-        {/* Order Title & Status */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div>
-            <h1 style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 800, fontSize: '1.75rem' }}>
-              Đơn hàng #{orderCode}
-            </h1>
-            <div style={{ color: 'var(--text-secondary)', marginTop: 4, fontSize: '0.85rem' }}>
-              Ngày tạo: {formatOrderDate(order.createdAt)}
+        {/* 3.1 GENERAL INFO HEADER */}
+        <Card
+          style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 12,
+            boxShadow: 'var(--shadow-card)',
+            marginBottom: 24,
+          }}
+          styles={{ body: { padding: '20px 24px' } }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <h1 style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 800, fontSize: '1.5rem', fontFamily: 'var(--font-mono, monospace)' }}>
+                  #{orderCode}
+                </h1>
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<CopyOutlined style={{ color: 'var(--text-muted)' }} />}
+                  onClick={handleCopyCode}
+                  title="Sao chép mã đơn"
+                />
+                <OrderStatusBadge status={order.status} />
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 6, fontSize: '0.825rem', color: 'var(--text-secondary)', flexWrap: 'wrap' }}>
+                <span>Ngày đặt: <strong style={{ color: 'var(--text-primary)' }}>{formatOrderDate(order.createdAt)}</strong></span>
+                <span>•</span>
+                <span>Khách hàng: <strong style={{ color: 'var(--text-primary)' }}>{order.recipientName || 'Khách hàng Memento3D'}</strong></span>
+                <span>•</span>
+                <span>Cập nhật gần nhất: <strong style={{ color: 'var(--text-primary)' }}>{formatOrderDate(order.updatedAt)}</strong></span>
+              </div>
+            </div>
+
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.04em' }}>
+                Tổng giá trị đơn hàng
+              </div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--primary)' }}>
+                {formatCurrency(totalAmount, order.currency || 'VND')}
+              </div>
             </div>
           </div>
-          <OrderStatusBadge status={order.status} />
-        </div>
+        </Card>
 
-        {/* Timeline Steps */}
+        {/* 3.6 ORDER TIMELINE */}
         <OrderTimeline status={order.status} createdAt={order.createdAt} updatedAt={order.updatedAt} />
 
-        {/* Model Approval Pending Alert Banner */}
-        {(order.status === 'MODEL_APPROVAL_PENDING' || (order as any).requiresModelApproval) && (
-          <Alert
-            message="Mô hình 3D đã sẵn sàng duyệt"
-            description={
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginTop: 8 }}>
-                <span>Đội ngũ kỹ thuật Memento3D đã hoàn tất tái tạo mô hình 3D. Vui lòng kiểm tra và phê duyệt trước khi chuyển sang công đoạn in ấn vật lý.</span>
-                <Button
-                  type="primary"
-                  icon={<EyeOutlined />}
-                  onClick={() => setModelReviewModalOpen(true)}
-                  style={{
-                    background: 'var(--primary)',
-                    borderColor: 'var(--primary)',
-                    fontWeight: 700,
-                    borderRadius: 'var(--radius-full)',
-                    boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
-                  }}
-                >
-                  Xem & Duyệt mô hình 3D
-                </Button>
-              </div>
-            }
-            type="warning"
-            showIcon
-            icon={<InboxOutlined style={{ fontSize: 24, color: '#f59e0b' }} />}
-            style={{
-              background: 'rgba(245, 158, 11, 0.08)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              borderRadius: 12,
-              marginBottom: 24,
-            }}
-          />
-        )}
-
-        {/* Real-Time Printing Banner */}
+        {/* Alerts for active phases */}
         {order.status === 'PRINTING' && (
           <Alert
             message={
               <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
-                <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 10px #22c55e' }} />
-                Đang in 3D thời gian thực tại xưởng Memento3D
+                <span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }} />
+                Đang chế tác in 3D thực tế tại xưởng Memento3D
               </span>
             }
-            description="Lệnh in của bạn đang được thực thi trên máy in 3D công nghiệp. Hệ thống sẽ tự động cập nhật khi quá trình hoàn tất và chuyển sang kiểm định chất lượng (QC)."
+            description="Lệnh in của bạn đang được tiến hành trên thiết bị in 3D công nghiệp. Sau khi hoàn tất sẽ được chuyển sang khâu xử lý thủ công và kiểm định chất lượng (QC)."
             type="info"
             showIcon
             icon={<PrinterOutlined style={{ fontSize: 20, color: '#38bdf8' }} />}
             style={{
               background: 'rgba(14, 165, 233, 0.08)',
-              border: '1px solid rgba(14, 165, 233, 0.3)',
-              borderRadius: 12,
+              border: '1px solid rgba(14, 165, 233, 0.25)',
+              borderRadius: 10,
               marginBottom: 24,
             }}
           />
         )}
 
-        {/* Shipping Banner */}
         {order.status === 'SHIPPED' && (
           <Alert
-            message="Đơn hàng đang được giao tới bạn"
-            description="Kiện hàng đã xuất kho và đang trên đường vận chuyển tới địa chỉ nhận hàng của bạn."
+            message="Đơn hàng đang trên đường vận chuyển tới bạn"
+            description={`Kiện hàng đã xuất kho và được bàn giao cho đối tác ${order.shippingCarrier || 'vận chuyển'}. Mã vận đơn: ${order.trackingCode || 'Đang cập nhật'}.`}
             type="success"
             showIcon
             icon={<CarOutlined style={{ fontSize: 20, color: 'var(--tertiary)' }} />}
             style={{
-              background: 'var(--mint-bg)',
-              border: '1px solid var(--mint-border)',
-              borderRadius: 'var(--radius-default)',
+              background: 'rgba(70, 98, 83, 0.1)',
+              border: '1px solid rgba(70, 98, 83, 0.3)',
+              borderRadius: 10,
               marginBottom: 24,
             }}
           />
         )}
 
-        {/* Cash Notice if applicable */}
-        {isCash && !isPaid && (
-          <Alert
-            message="Phương thức: Tiền mặt khi nhận hàng (CASH)"
-            description="Đơn hàng của bạn sẽ được xưởng in chế tác và giao tới địa chỉ. Bạn sẽ thanh toán tiền mặt trực tiếp cho nhân viên giao hàng hoặc khi nhận sản phẩm."
-            type="info"
-            showIcon
-            icon={<DollarCircleOutlined style={{ fontSize: 20, color: 'var(--tertiary)' }} />}
-            style={{
-              background: 'var(--surface-container)',
-              border: '1px solid var(--border-default)',
-              borderRadius: 'var(--radius-default)',
-              marginBottom: 24,
-            }}
-          />
-        )}
-
+        {/* Main 2-Column Layout */}
         <Row gutter={[24, 24]}>
-          {/* Left Column: Items & Delivery Information */}
+          {/* Left Column: Products & Materials & Shipping & Payments */}
           <Col xs={24} lg={15}>
-            {/* Order Items Table */}
-            <Card
-              title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Danh sách sản phẩm</span>}
-              style={{
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border-default)',
-                borderRadius: 'var(--radius-card)',
-                boxShadow: 'var(--shadow-card)',
-                marginBottom: 24,
-              }}
-              styles={{ body: { padding: 0 } }}
-            >
-              {order.items && order.items.length > 0 ? (
-                <Table
-                  dataSource={order.items}
-                  rowKey="id"
-                  pagination={false}
-                  columns={[
-                    {
-                      title: 'Sản phẩm',
-                      key: 'product',
-                      render: (_, item) => (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          {item.thumbnailSnapshot ? (
-                            <img
-                              src={item.thumbnailSnapshot}
-                              alt=""
-                              style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', objectFit: 'cover' }}
-                            />
+            {/* 3.2 & 3.3 PRODUCTS & MATERIAL SPECIFICATIONS */}
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  Sản phẩm & Thông số nguyên liệu chế tác
+                </h3>
+                <Tag style={{ borderRadius: 6, background: 'var(--surface-container)', color: 'var(--text-secondary)', border: '1px solid var(--border-default)' }}>
+                  {items.length} mục sản phẩm
+                </Tag>
+              </div>
+
+              {items.length > 0 ? (
+                items.map((item, index) => {
+                  const thumb = item.thumbnailUrl || item.thumbnailSnapshot;
+                  const productName = item.productName || item.productNameSnapshot || 'Kỷ vật 3D';
+                  const material = item.material || 'Chưa xác định';
+                  const tech = item.technology || 'Chưa xác định';
+                  const dimensions = item.dimensions || 'Chưa xác định';
+                  const finish = item.finish || 'Chưa xác định';
+                  const base = item.base || 'Chưa xác định';
+                  const color = item.color || 'Tự nhiên';
+                  const personalization = item.personalization;
+
+                  return (
+                    <Card
+                      key={item.id || index}
+                      style={{
+                        background: 'var(--bg-card)',
+                        border: '1px solid var(--border-default)',
+                        borderRadius: 12,
+                        boxShadow: 'var(--shadow-card)',
+                        marginBottom: 16,
+                      }}
+                      styles={{ body: { padding: 20 } }}
+                    >
+                      {/* Product Header Row */}
+                      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                        <div
+                          style={{
+                            width: 80,
+                            height: 80,
+                            borderRadius: 10,
+                            overflow: 'hidden',
+                            background: 'var(--surface-container)',
+                            border: '1px solid var(--border-default)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {thumb ? (
+                            <img src={thumb} alt={productName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
-                            <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', background: 'var(--surface-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              📦
-                            </div>
+                            <InboxOutlined style={{ fontSize: 32, color: 'var(--primary)' }} />
                           )}
-                          <div>
-                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                              {item.productNameSnapshot}
-                            </div>
-                            {item.customizationSnapshot && Object.keys(item.customizationSnapshot).length > 0 && (
-                              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                {Object.entries(item.customizationSnapshot).map(([k, v]) => `${k}: ${v}`).join(' | ')}
-                              </div>
+                        </div>
+
+                        <div style={{ flex: 1, minWidth: 220 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                            <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                              {productName}
+                            </h4>
+                            {item.categoryName && (
+                              <Tag color="purple" style={{ borderRadius: 6, margin: 0 }}>
+                                {item.categoryName}
+                              </Tag>
+                            )}
+                            {item.sku && (
+                              <Tag style={{ borderRadius: 6, margin: 0, background: 'var(--surface-container)', color: 'var(--text-muted)' }}>
+                                {item.sku}
+                              </Tag>
                             )}
                           </div>
-                        </div>
-                      ),
-                    },
-                    {
-                      title: 'Đơn giá',
-                      dataIndex: 'unitPrice',
-                      key: 'unitPrice',
-                      align: 'right',
-                      render: (price) => formatCurrency(price, order.currency || 'VND'),
-                    },
-                    {
-                      title: 'SL',
-                      dataIndex: 'quantity',
-                      key: 'quantity',
-                      align: 'center',
-                    },
-                    {
-                      title: 'Thành tiền',
-                      dataIndex: 'subtotal',
-                      key: 'subtotal',
-                      align: 'right',
-                      render: (sub) => (
-                        <span style={{ fontWeight: 700, color: 'var(--primary)' }}>
-                          {formatCurrency(sub, order.currency || 'VND')}
-                        </span>
-                      ),
-                    },
-                  ]}
-                />
-              ) : (
-                <div style={{ padding: 20, color: 'var(--text-secondary)', textAlign: 'center' }}>
-                  Kỷ vật 3D cá nhân hóa Memento3D
-                </div>
-              )}
-            </Card>
 
-            {/* Delivery Info */}
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginTop: 6 }}>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                              Đơn giá: <strong style={{ color: 'var(--text-primary)' }}>{formatCurrency(item.unitPrice, order.currency || 'VND')}</strong>
+                            </span>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                              Số lượng: <strong style={{ color: 'var(--text-primary)' }}>x{item.quantity}</strong>
+                            </span>
+                            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--primary)', marginLeft: 'auto' }}>
+                              {formatCurrency(item.subtotal, order.currency || 'VND')}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Divider style={{ borderColor: 'var(--border-subtle)', margin: '16px 0 14px' }} />
+
+                      {/* 3.3 MATERIAL & SPECIFICATION GRID */}
+                      <div style={{ marginBottom: 6 }}>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+                          Thông số nguyên liệu & Kỹ thuật chế tác
+                        </div>
+
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                            gap: 10,
+                          }}
+                        >
+                          <div style={{ padding: '8px 12px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)', fontSize: '0.825rem' }}>
+                            <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                              <ExperimentOutlined style={{ color: 'var(--primary)' }} /> Vật liệu sản xuất:
+                            </span>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>
+                              {material}
+                            </div>
+                          </div>
+
+                          <div style={{ padding: '8px 12px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)', fontSize: '0.825rem' }}>
+                            <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                              <ToolOutlined style={{ color: '#38bdf8' }} /> Công nghệ in:
+                            </span>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>
+                              {tech}
+                            </div>
+                          </div>
+
+                          <div style={{ padding: '8px 12px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)', fontSize: '0.825rem' }}>
+                            <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                              <GoldOutlined style={{ color: '#fbbf24' }} /> Kích thước mô hình:
+                            </span>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>
+                              {dimensions}
+                            </div>
+                          </div>
+
+                          <div style={{ padding: '8px 12px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)', fontSize: '0.825rem' }}>
+                            <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                              <BgColorsOutlined style={{ color: '#ec4899' }} /> Màu sắc:
+                            </span>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>
+                              {color}
+                            </div>
+                          </div>
+
+                          <div style={{ padding: '8px 12px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)', fontSize: '0.825rem' }}>
+                            <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                              <SkinOutlined style={{ color: '#a855f7' }} /> Kiểu hoàn thiện:
+                            </span>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>
+                              {finish}
+                            </div>
+                          </div>
+
+                          <div style={{ padding: '8px 12px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)', fontSize: '0.825rem' }}>
+                            <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                              <GiftOutlined style={{ color: '#22c55e' }} /> Đế trưng bày:
+                            </span>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>
+                              {base}
+                            </div>
+                          </div>
+                        </div>
+
+                        {personalization && (
+                          <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(124, 92, 252, 0.06)', borderRadius: 8, border: '1px solid rgba(124, 92, 252, 0.2)', fontSize: '0.825rem' }}>
+                            <span style={{ color: 'var(--primary)', display: 'inline-flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+                              <FormOutlined /> Cá nhân hóa / Khắc tên:
+                            </span>
+                            <div style={{ color: 'var(--text-primary)', marginTop: 2, fontStyle: 'italic' }}>
+                              "{personalization}"
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })
+              ) : (
+                <Card
+                  style={{
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-default)',
+                    borderRadius: 12,
+                    textAlign: 'center',
+                    padding: 24,
+                  }}
+                >
+                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+                    Kỷ vật 3D cá nhân hóa Memento3D (Dữ liệu đơn hàng bespoke)
+                  </p>
+                </Card>
+              )}
+            </div>
+
+            {/* 3.5 SHIPPING & LOGISTICS CARD */}
             <Card
               title={
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-primary)' }}>
-                  <span>Địa chỉ & Thông tin nhận hàng</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Thông tin vận chuyển & Nhận hàng</span>
                   {isEligibleToPay && (
                     <Button
                       size="small"
@@ -458,14 +555,9 @@ export const CustomerOrderDetailPage: React.FC = () => {
                         });
                         setEditAddressOpen(true);
                       }}
-                      style={{
-                        background: 'var(--surface-container)',
-                        borderColor: 'var(--border-default)',
-                        color: 'var(--text-primary)',
-                        borderRadius: 'var(--radius-full)',
-                      }}
+                      style={{ borderRadius: 8 }}
                     >
-                      Sửa
+                      Sửa địa chỉ
                     </Button>
                   )}
                 </div>
@@ -473,51 +565,79 @@ export const CustomerOrderDetailPage: React.FC = () => {
               style={{
                 background: 'var(--bg-card)',
                 border: '1px solid var(--border-default)',
-                borderRadius: 'var(--radius-card)',
+                borderRadius: 12,
                 boxShadow: 'var(--shadow-card)',
                 marginBottom: 24,
               }}
-              styles={{ body: { padding: 24 } }}
+              styles={{ body: { padding: 20 } }}
             >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <UserOutlined style={{ color: 'var(--primary)' }} />
-                  <span style={{ color: 'var(--text-secondary)', minWidth: 100 }}>Người nhận:</span>
-                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{order.recipientName}</span>
+                  <UserOutlined style={{ color: 'var(--primary)', fontSize: 16 }} />
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Người nhận</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{order.recipientName || 'Chưa cung cấp'}</div>
+                  </div>
                 </div>
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <PhoneOutlined style={{ color: 'var(--tertiary)' }} />
-                  <span style={{ color: 'var(--text-secondary)', minWidth: 100 }}>Số điện thoại:</span>
-                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{order.phone}</span>
+                  <PhoneOutlined style={{ color: '#38bdf8', fontSize: 16 }} />
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Số điện thoại</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{order.phone || 'Chưa cung cấp'}</div>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <EnvironmentOutlined style={{ color: 'var(--primary-system)', marginTop: 4 }} />
-                  <span style={{ color: 'var(--text-secondary)', minWidth: 100 }}>Địa chỉ giao:</span>
-                  <span style={{ color: 'var(--text-primary)' }}>{order.shippingAddress}</span>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <CarOutlined style={{ color: 'var(--tertiary)', fontSize: 16 }} />
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Đơn vị vận chuyển</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{order.shippingCarrier || 'Giao Hàng Nhanh (GHN)'}</div>
+                  </div>
                 </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Tag style={{ borderRadius: 6, margin: 0, fontWeight: 700, fontFamily: 'monospace' }}>
+                    {order.trackingCode || 'GHN-PREVIEW'}
+                  </Tag>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Mã vận đơn</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{order.shippingStatus || 'Đang đóng gói'}</div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, gridColumn: '1 / -1' }}>
+                  <EnvironmentOutlined style={{ color: '#ec4899', fontSize: 16, marginTop: 2 }} />
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Địa chỉ giao hàng</div>
+                    <div style={{ color: 'var(--text-primary)' }}>{order.shippingAddress || 'Chưa cung cấp'}</div>
+                  </div>
+                </div>
+
                 {order.note && (
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                    <span style={{ color: 'var(--text-secondary)', minWidth: 100 }}>Ghi chú:</span>
+                  <div style={{ gridColumn: '1 / -1', padding: '10px 14px', background: 'var(--surface-container)', borderRadius: 8, fontSize: '0.825rem' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Ghi chú từ khách hàng: </span>
                     <span style={{ color: 'var(--text-primary)', fontStyle: 'italic' }}>{order.note}</span>
                   </div>
                 )}
               </div>
             </Card>
 
-            {/* Payment Transactions History */}
+            {/* PAYMENT TRANSACTIONS HISTORY */}
             {orderPayments.length > 0 && (
               <Card
                 title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Lịch sử giao dịch thanh toán</span>}
                 style={{
                   background: 'var(--bg-card)',
                   border: '1px solid var(--border-default)',
-                  borderRadius: 'var(--radius-card)',
+                  borderRadius: 12,
                   boxShadow: 'var(--shadow-card)',
                 }}
+                styles={{ body: { padding: 0 } }}
               >
                 <Table
                   dataSource={orderPayments}
-                  rowKey={(r: any) => r.paymentId || r.id || r.transactionReference}
+                  rowKey={(r: any) => r.paymentId || r.id || r.merchantTransactionId || Math.random()}
                   pagination={false}
                   columns={[
                     {
@@ -525,8 +645,8 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       dataIndex: 'paymentMethod',
                       key: 'paymentMethod',
                       render: (m) => (
-                        <Tag color={m === 'VNPAY' ? '#005cb9' : m === 'MOMO' ? 'magenta' : m === 'ZALOPAY' ? 'blue' : 'green'}>
-                          {m}
+                        <Tag color={m === 'VNPAY' ? '#005cb9' : m === 'CASH' ? '#466253' : 'purple'}>
+                          {m === 'VNPAY' ? 'CỔNG VNPAY' : m === 'CASH' ? 'TIỀN MẶT (COD)' : m}
                         </Tag>
                       ),
                     },
@@ -535,8 +655,8 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       dataIndex: 'merchantTransactionId',
                       key: 'merchantTransactionId',
                       render: (ref, r: any) => (
-                        <span style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
-                          {ref || r.transactionReference || '-'}
+                        <span style={{ fontFamily: 'monospace', fontSize: '0.825rem' }}>
+                          {ref || r.transactionRef || '-'}
                         </span>
                       ),
                     },
@@ -544,6 +664,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       title: 'Số tiền',
                       dataIndex: 'amount',
                       key: 'amount',
+                      align: 'right',
                       render: (amt, r) => formatCurrency(amt, r.currency || 'VND'),
                     },
                     {
@@ -554,10 +675,9 @@ export const CustomerOrderDetailPage: React.FC = () => {
                         const isSuccess = st === 'PAID' || st === 'SUCCESS';
                         const isPending = st === 'PENDING' || st === 'PROCESSING';
                         const isCancelled = st === 'CANCELLED';
-                        const isExpired = st === 'EXPIRED';
 
-                        const color = isSuccess ? 'green' : isPending ? 'gold' : isCancelled ? 'orange' : isExpired ? 'default' : 'red';
-                        const label = isSuccess ? 'Thành công' : isPending ? 'Chờ xử lý' : isCancelled ? 'Đã hủy' : isExpired ? 'Hết hạn' : 'Thất bại';
+                        const color = isSuccess ? 'green' : isPending ? 'gold' : isCancelled ? 'orange' : 'red';
+                        const label = isSuccess ? 'Thành công' : isPending ? 'Chờ xử lý' : isCancelled ? 'Đã hủy' : 'Thất bại';
                         return <Tag color={color}>{label}</Tag>;
                       },
                     },
@@ -565,7 +685,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       title: 'Thời gian',
                       dataIndex: 'createdAt',
                       key: 'createdAt',
-                      render: (t, r: any) => formatOrderDate(r.paymentDate || t),
+                      render: (t, r: any) => formatOrderDate(r.paymentDate || r.paidAt || t),
                     },
                   ]}
                 />
@@ -573,64 +693,106 @@ export const CustomerOrderDetailPage: React.FC = () => {
             )}
           </Col>
 
-          {/* Right Column: Order Summary & Payment Info */}
+          {/* Right Column: 3.4 Payment Breakdown Summary */}
           <Col xs={24} lg={9}>
             <Card
-              title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Thông tin thanh toán</span>}
+              title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Chi tiết thanh toán</span>}
               style={{
                 background: 'var(--bg-card)',
                 border: '1px solid var(--border-default)',
-                borderRadius: 'var(--radius-card)',
+                borderRadius: 12,
                 boxShadow: 'var(--shadow-card)',
                 position: 'sticky',
-                top: 100,
+                top: 90,
               }}
-              styles={{ body: { padding: 24 } }}
+              styles={{ body: { padding: 22 } }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Phương thức:</span>
-                  <Tag style={{ borderRadius: 'var(--radius-full)', background: 'var(--surface-container)', color: 'var(--primary)', border: '1px solid var(--border-default)' }}>
-                    {order.paymentMethod || 'MOMO'}
+                  <Tag style={{ borderRadius: 6, background: 'var(--surface-container)', color: 'var(--primary)', border: '1px solid var(--border-default)', fontWeight: 600 }}>
+                    {order.paymentMethod || 'VNPAY'}
                   </Tag>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Trạng thái thanh toán:</span>
                   <Tag
                     style={{
-                      borderRadius: 'var(--radius-full)',
-                      background: isPaid ? 'var(--mint-bg)' : 'var(--peach-bg)',
-                      color: isPaid ? 'var(--mint-text)' : 'var(--peach-text)',
+                      borderRadius: 6,
+                      background: isPaid ? 'rgba(70, 98, 83, 0.15)' : 'rgba(217, 119, 6, 0.15)',
+                      color: isPaid ? '#4ade80' : '#fbbf24',
                       border: 'none',
+                      fontWeight: 600,
                     }}
                   >
-                    {order.paymentStatus === 'PAID' ? 'Đã thanh toán' : order.paymentStatus === 'PENDING' ? 'Chờ thanh toán' : order.paymentStatus || 'Chờ thanh toán'}
+                    {isPaid ? 'Đã thanh toán' : isCash ? 'Thanh toán khi nhận hàng' : 'Chờ thanh toán'}
                   </Tag>
                 </div>
 
-                <Divider style={{ borderColor: 'var(--border-default)', margin: '4px 0' }} />
+                <Divider style={{ borderColor: 'var(--border-subtle)', margin: '4px 0' }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Tạm tính:</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>Tạm tính sản phẩm:</span>
                   <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
                     {formatCurrency(order.subtotal ?? totalAmount, order.currency || 'VND')}
                   </span>
                 </div>
 
+                {order.customizationFee && order.customizationFee > 0 ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Phí tùy biến & khắc tên:</span>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                      {formatCurrency(order.customizationFee, order.currency || 'VND')}
+                    </span>
+                  </div>
+                ) : null}
+
+                {order.productionSurcharge && order.productionSurcharge > 0 ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Phụ phí sản xuất hỏa tốc:</span>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                      {formatCurrency(order.productionSurcharge, order.currency || 'VND')}
+                    </span>
+                  </div>
+                ) : null}
+
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Phí vận chuyển:</span>
                   <span style={{ color: 'var(--tertiary)', fontWeight: 600 }}>
-                    {order.shippingFee ? formatCurrency(order.shippingFee, order.currency || 'VND') : 'Miễn phí'}
+                    {order.shippingFee && order.shippingFee > 0 ? formatCurrency(order.shippingFee, order.currency || 'VND') : 'Miễn phí'}
                   </span>
                 </div>
 
-                <Divider style={{ borderColor: 'var(--border-default)', margin: '4px 0' }} />
+                {order.discountAmount && order.discountAmount > 0 ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Giảm giá:</span>
+                    <span style={{ color: '#ef4444', fontWeight: 600 }}>
+                      -{formatCurrency(order.discountAmount, order.currency || 'VND')}
+                    </span>
+                  </div>
+                ) : null}
+
+                <Divider style={{ borderColor: 'var(--border-subtle)', margin: '4px 0' }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1rem' }}>Tổng thanh toán:</span>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.95rem' }}>Tổng tiền đơn hàng:</span>
+                  <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--primary)' }}>
                     {formatCurrency(totalAmount, order.currency || 'VND')}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Số tiền đã thanh toán:</span>
+                  <span style={{ color: '#22c55e', fontWeight: 600 }}>
+                    {formatCurrency(paidAmount, order.currency || 'VND')}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Số tiền còn phải trả:</span>
+                  <span style={{ color: remainingAmount > 0 ? '#fbbf24' : 'var(--text-primary)', fontWeight: 600 }}>
+                    {formatCurrency(remainingAmount, order.currency || 'VND')}
                   </span>
                 </div>
 
@@ -646,13 +808,17 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       borderColor: 'var(--primary)',
                       fontWeight: 700,
                       marginTop: 12,
-                      borderRadius: 'var(--radius-full)',
-                      boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
+                      borderRadius: 8,
+                      boxShadow: '0 2px 10px rgba(124, 92, 252, 0.3)',
                     }}
                   >
-                    Thanh toán lại
+                    Thanh toán ngay
                   </Button>
                 )}
+
+                <div style={{ marginTop: 14, padding: '12px', background: 'var(--surface-container)', borderRadius: 8, fontSize: '0.775rem', color: 'var(--text-secondary)' }}>
+                  🔒 Giao dịch được bảo mật bởi chuẩn mã hóa VNPAY & Ngân hàng Nhà nước. Hỗ trợ khách hàng 24/7 qua hotline 1900-3D-MEMO.
+                </div>
               </div>
             </Card>
           </Col>
@@ -699,6 +865,9 @@ export const CustomerOrderDetailPage: React.FC = () => {
         cancelText="Đóng"
       >
         <p>Bạn có chắc chắn muốn hủy đơn hàng này không?</p>
+        <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          Đơn hàng sẽ chuyển sang trạng thái Đã hủy và không tiếp tục sản xuất.
+        </p>
       </Modal>
 
       {/* 3D Model Review Modal */}
@@ -722,80 +891,35 @@ export const CustomerOrderDetailPage: React.FC = () => {
           <Button
             key="approve"
             type="primary"
-            icon={<CheckCircleOutlined />}
-            onClick={() => handleApproveModel()}
+            onClick={handleApproveModel}
             loading={reviewLoading}
-            style={{
-              background: 'linear-gradient(135deg, #10b981 0%, #22c55e 100%)',
-              borderColor: 'transparent',
-              fontWeight: 700,
-            }}
+            style={{ background: '#22c55e', borderColor: '#22c55e' }}
           >
-            Duyệt & Cho phép in
+            Đồng ý & Xác nhận in 3D
           </Button>,
         ]}
       >
-        <div style={{ textAlign: 'center', padding: '20px 0' }}>
-          <div
-            style={{
-              height: 280,
-              background: 'radial-gradient(circle at center, #1e293b 0%, #0f172a 100%)',
-              borderRadius: 12,
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 20,
-              position: 'relative',
-              overflow: 'hidden',
-            }}
-          >
-            <div style={{ fontSize: '3.5rem', marginBottom: 12 }}>🗿</div>
-            <div style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '1.1rem' }}>
-              Bản dựng 3D chi tiết (Đã qua xử lý Watermark)
-            </div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: 4 }}>
-              Độ phân giải cao | Sẵn sàng cho máy in 3D công nghiệp
-            </div>
-            {(order as any).previewUrl && (
-              <a
-                href={(order as any).previewUrl}
-                target="_blank"
-                rel="noreferrer"
-                style={{ marginTop: 12, color: '#38bdf8', textDecoration: 'underline' }}
-              >
-                Tải bản xem trước GLB
-              </a>
-            )}
-          </div>
-
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textAlign: 'left', lineHeight: 1.6 }}>
-            Bằng việc bấm <strong>"Duyệt & Cho phép in"</strong>, bạn xác nhận đồng ý với hình dáng, tỷ lệ và chất lượng bản dựng 3D này. Xưởng in Memento3D sẽ tự động cấp phát vật liệu và xếp lịch in máy.
+        <div style={{ textAlign: 'center', padding: '24px 0' }}>
+          <p style={{ color: 'var(--text-secondary)' }}>
+            Vui lòng kiểm tra tỉ lệ khuôn mặt, tư thế và chi tiết của mô hình 3D trước khi xưởng Memento3D tiến hành in vật lý.
           </p>
         </div>
       </Modal>
 
-      {/* Revision Request Modal */}
+      {/* Request Revision Modal */}
       <Modal
         open={revisionModalOpen}
         onCancel={() => setRevisionModalOpen(false)}
         title="Yêu cầu chỉnh sửa mô hình 3D"
         onOk={() => revisionForm.submit()}
         confirmLoading={reviewLoading}
-        okText="Gửi yêu cầu"
-        cancelText="Hủy"
       >
         <Form form={revisionForm} layout="vertical" onFinish={handleRequestRevision}>
-          <Form.Item
-            name="reason"
-            label="Lý do cần chỉnh sửa"
-            rules={[{ required: true, message: 'Vui lòng chọn hoặc nhập lý do' }]}
-          >
-            <Input placeholder="Ví dụ: Cần làm mịn bề mặt khuôn mặt, chi tiết tay áo chưa khớp..." />
+          <Form.Item name="reason" label="Lý do chỉnh sửa" rules={[{ required: true, message: 'Vui lòng chọn lý do' }]}>
+            <Input placeholder="Ví dụ: Cần chỉnh nét mặt, mắt, cằm..." />
           </Form.Item>
-          <Form.Item name="notes" label="Ghi chú chi tiết cho Kỹ sư AI / 3D">
-            <Input.TextArea rows={4} placeholder="Mô tả cụ thể những điểm cần điều chỉnh..." />
+          <Form.Item name="notes" label="Chi tiết yêu cầu kỹ thuật">
+            <Input.TextArea rows={4} placeholder="Mô tả cụ thể góc nhìn hoặc đặc điểm bạn muốn chuyên gia 3D hoàn thiện lại..." />
           </Form.Item>
         </Form>
       </Modal>

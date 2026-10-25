@@ -3,19 +3,18 @@ import {
   Table,
   Button,
   Space,
-  Input,
-  Radio,
   Typography,
 } from 'antd';
 import {
-  SearchOutlined,
   ReloadOutlined,
   EyeOutlined,
   PrinterOutlined,
+  InboxOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useOrders } from '../hooks/useOrders';
+import { useOrders, useManagerOrderStatusCounts } from '../hooks/useOrders';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
+import { OrderFilterBar } from '../components/OrderFilterBar';
 import { OrderPrintJobLinkModal } from '../components/OrderPrintJobLinkModal';
 import { formatCurrency, formatOrderDate } from '../utils/orderFormatters';
 import type { OrderResponse, OrderStatus } from '../types/order.types';
@@ -32,30 +31,34 @@ export const ManagerOrdersPage: React.FC = () => {
 
   const [printJobOrder, setPrintJobOrder] = useState<OrderResponse | null>(null);
 
+  const handleStatusChange = (status: OrderStatus | 'ALL') => {
+    setStatusFilter(status);
+    setPage(1);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setPage(1);
+  };
+
   const { data, isLoading, refetch, isFetching } = useOrders({
     page,
     limit: pageSize,
+    status: statusFilter,
+    search: searchQuery,
   });
+
+  const { data: statusCounts } = useManagerOrderStatusCounts();
 
   // Real-time automatic updates on order/payment changes
   useEventSubscription('ORDER_STATUS_CHANGED', () => refetch());
   useEventSubscription('PAYMENT_STATUS_CHANGED', () => refetch());
 
-  const rawOrders = data?.orders || [];
-  const filteredOrders = rawOrders.filter((order) => {
-    const matchesStatus = statusFilter === 'ALL' || order.status === statusFilter;
-    const matchesSearch =
-      searchQuery.trim() === '' ||
-      order.id.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-      order.recipientName?.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-      order.phone?.includes(searchQuery.trim());
-    return matchesStatus && matchesSearch;
-  });
-
-  const totalCount = data?.total || filteredOrders.length;
+  const orders = data?.orders || [];
+  const totalCount = data?.total || 0;
 
   return (
-    <div style={{ padding: '4px 0' }}>
+    <div style={{ padding: '8px 0' }}>
       {/* Header bar */}
       <div
         style={{
@@ -68,10 +71,10 @@ export const ManagerOrdersPage: React.FC = () => {
         }}
       >
         <div>
-          <Title level={3} style={{ color: '#fff', margin: 0, fontWeight: 800 }}>
+          <Title level={3} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 800 }}>
             Quản lý Đơn hàng in 3D (Order Fulfillment)
           </Title>
-          <Text style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+          <Text style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
             Điều phối quy trình từ duyệt đơn, xác nhận thanh toán, xếp lịch in 3D và bàn giao giao nhận.
           </Text>
         </div>
@@ -80,52 +83,31 @@ export const ManagerOrdersPage: React.FC = () => {
           <Button
             icon={<ReloadOutlined spin={isFetching} />}
             onClick={() => refetch()}
-            className="btn btn-secondary"
+            style={{
+              borderRadius: 8,
+              height: 38,
+              background: 'var(--surface-container)',
+              borderColor: 'var(--border-default)',
+              color: 'var(--text-primary)',
+            }}
           >
             Làm mới dữ liệu
           </Button>
         </Space>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 20,
-          flexWrap: 'wrap',
-          gap: 16,
-        }}
-      >
-        <Radio.Group
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          buttonStyle="solid"
-          size="middle"
-        >
-          <Radio.Button value="ALL">Tất cả</Radio.Button>
-          <Radio.Button value="PENDING_PAYMENT">Chờ thanh toán</Radio.Button>
-          <Radio.Button value="CONFIRMED">Đã xác nhận</Radio.Button>
-          <Radio.Button value="PRINTING">Đang in</Radio.Button>
-          <Radio.Button value="SHIPPED">Đang giao</Radio.Button>
-          <Radio.Button value="DELIVERED">Đã giao</Radio.Button>
-          <Radio.Button value="CANCELLED">Đã hủy</Radio.Button>
-        </Radio.Group>
-
-        <Input
-          placeholder="Tìm mã đơn, tên người nhận, SĐT..."
-          prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          allowClear
-          style={{ maxWidth: 320 }}
-        />
-      </div>
+      {/* Modern Filter Chips & Debounced Search */}
+      <OrderFilterBar
+        statusFilter={statusFilter}
+        onStatusChange={handleStatusChange}
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        statusCounts={statusCounts}
+      />
 
       {/* Table */}
       <Table
-        dataSource={filteredOrders}
+        dataSource={orders}
         rowKey="id"
         loading={isLoading}
         pagination={{
@@ -134,41 +116,79 @@ export const ManagerOrdersPage: React.FC = () => {
           total: totalCount,
           onChange: (p) => setPage(p),
           showTotal: (total) => `Tổng số ${total} đơn hàng`,
+          showSizeChanger: false,
         }}
         columns={[
           {
             title: 'Mã đơn',
-            dataIndex: 'id',
-            key: 'id',
-            render: (id: string) => (
-              <span style={{ fontWeight: 700, color: '#38bdf8' }}>
-                #{id.slice(0, 8).toUpperCase()}
+            dataIndex: 'orderCode',
+            key: 'orderCode',
+            render: (code: string, r: OrderResponse) => (
+              <span style={{ fontWeight: 800, color: '#38bdf8', fontFamily: 'monospace' }}>
+                #{code || r.id.slice(0, 8).toUpperCase()}
               </span>
             ),
+          },
+          {
+            title: 'Sản phẩm',
+            key: 'product',
+            render: (_, r: OrderResponse) => {
+              const firstItem = r.items && r.items.length > 0 ? r.items[0] : null;
+              const title = r.representativeProductName || firstItem?.productName || 'Kỷ vật 3D';
+              const thumb = r.representativeThumbnailUrl || firstItem?.thumbnailUrl;
+              const count = r.itemCount || (r.items ? r.items.length : 1);
+
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 6,
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {thumb ? (
+                      <img src={thumb} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <InboxOutlined style={{ color: '#7c5cfc' }} />
+                    )}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary, #ffffff)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 180 }}>
+                      {title}
+                    </div>
+                    {count > 1 && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>
+                        Tổng {count} sản phẩm
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            },
           },
           {
             title: 'Người nhận / SĐT',
             key: 'recipient',
             render: (_, r: OrderResponse) => (
               <div>
-                <div style={{ fontWeight: 600, color: '#f8fafc' }}>{r.recipientName || '—'}</div>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{r.phone || '—'}</div>
+                <div style={{ fontWeight: 600, color: 'var(--text-primary, #ffffff)' }}>{r.recipientName || '—'}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #94a3b8)' }}>{r.phone || '—'}</div>
               </div>
             ),
-          },
-          {
-            title: 'Địa chỉ giao hàng',
-            dataIndex: 'shippingAddress',
-            key: 'shippingAddress',
-            ellipsis: true,
-            render: (addr: string) => <span style={{ color: '#cbd5e1' }}>{addr || '—'}</span>,
           },
           {
             title: 'Tổng tiền',
             dataIndex: 'totalPrice',
             key: 'totalPrice',
             render: (amt: number, r: OrderResponse) => (
-              <span style={{ fontWeight: 700, color: '#f8fafc' }}>
+              <span style={{ fontWeight: 800, color: 'var(--primary, #7c5cfc)' }}>
                 {formatCurrency(amt, r.currency)}
               </span>
             ),
@@ -183,7 +203,7 @@ export const ManagerOrdersPage: React.FC = () => {
             title: 'Ngày đặt',
             dataIndex: 'createdAt',
             key: 'createdAt',
-            render: (d: string) => <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{formatOrderDate(d)}</span>,
+            render: (d: string) => <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{formatOrderDate(d)}</span>,
           },
           {
             title: 'Hành động',
@@ -198,9 +218,9 @@ export const ManagerOrdersPage: React.FC = () => {
                       icon={<PrinterOutlined />}
                       onClick={() => setPrintJobOrder(r)}
                       style={{
-                        background: 'rgba(139, 92, 246, 0.15)',
-                        borderColor: 'rgba(139, 92, 246, 0.3)',
-                        color: '#c084fc',
+                        background: 'var(--primary-subtle)',
+                        borderColor: 'var(--primary-glow)',
+                        color: 'var(--primary)',
                         borderRadius: 6,
                       }}
                       title="Lập lệnh in 3D"
@@ -214,13 +234,13 @@ export const ManagerOrdersPage: React.FC = () => {
                     icon={<EyeOutlined />}
                     onClick={() => navigate(`/manager/orders/${r.id}`)}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      borderColor: 'rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
+                      background: 'var(--surface-container)',
+                      borderColor: 'var(--border-default)',
+                      color: 'var(--text-primary)',
                       borderRadius: 6,
                     }}
                   >
-                    Xem chi tiết
+                    Xem
                   </Button>
                 </Space>
               );
@@ -229,13 +249,18 @@ export const ManagerOrdersPage: React.FC = () => {
         ]}
       />
 
-      {/* Print Job Link Modal */}
-      <OrderPrintJobLinkModal
-        open={Boolean(printJobOrder)}
-        order={printJobOrder}
-        onClose={() => setPrintJobOrder(null)}
-        onSuccess={() => refetch()}
-      />
+      {/* Link Print Job Modal */}
+      {printJobOrder && (
+        <OrderPrintJobLinkModal
+          open={Boolean(printJobOrder)}
+          order={printJobOrder}
+          onClose={() => setPrintJobOrder(null)}
+          onSuccess={() => {
+            setPrintJobOrder(null);
+            refetch();
+          }}
+        />
+      )}
     </div>
   );
 };

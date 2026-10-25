@@ -77,9 +77,10 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({ status }) => {
     <div
       style={{
         padding: '24px 20px',
-        background: 'rgba(255, 255, 255, 0.02)',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
         borderRadius: 12,
+        boxShadow: 'var(--shadow-card)',
         margin: '16px 0',
       }}
     >
@@ -88,9 +89,6 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({ status }) => {
         items={items}
         responsive
         size="small"
-        style={{
-          color: '#f8fafc',
-        }}
       />
     </div>
   );

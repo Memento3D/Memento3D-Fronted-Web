@@ -497,7 +497,7 @@ export const CheckoutPage: React.FC = () => {
           </Form>
         )}
 
-        {/* Payment Modal if MoMo / ZaloPay chosen */}
+        {/* Payment Modal if gateway/cash confirmation needed */}
         {createdOrder && (
           <OrderPaymentModal
             order={createdOrder}

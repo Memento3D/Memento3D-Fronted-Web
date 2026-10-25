@@ -59,8 +59,8 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
       open={open}
       onCancel={onClose}
       title={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#f8fafc' }}>
-          <PrinterOutlined style={{ color: '#8b5cf6' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
+          <PrinterOutlined style={{ color: 'var(--primary)' }} />
           <span>Lập lệnh in (Print Job) cho đơn #{order.id.slice(0, 8).toUpperCase()}</span>
         </div>
       }
@@ -86,7 +86,7 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
       >
         <Form.Item
           name="materialId"
-          label={<span style={{ color: '#e2e8f0' }}>Vật liệu in</span>}
+          label={<span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Vật liệu in</span>}
           rules={[{ required: true, message: 'Vui lòng chọn vật liệu in' }]}
         >
           <Select
@@ -101,7 +101,7 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
 
         <Form.Item
           name="estimatedGram"
-          label={<span style={{ color: '#e2e8f0' }}>Khối lượng vật liệu dự kiến (Grams)</span>}
+          label={<span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Khối lượng vật liệu dự kiến (Grams)</span>}
           rules={[{ required: true, message: 'Vui lòng nhập khối lượng dự kiến' }]}
         >
           <InputNumber
@@ -115,7 +115,7 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
 
         <Form.Item
           name="estimatedDurationSeconds"
-          label={<span style={{ color: '#e2e8f0' }}>Thời gian in ước tính (Giây)</span>}
+          label={<span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Thời gian in ước tính (Giây)</span>}
         >
           <InputNumber
             min={60}

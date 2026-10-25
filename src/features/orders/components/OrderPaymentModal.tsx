@@ -168,7 +168,7 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               <Radio
                 value="CASH"
                 style={{
-                  background: method === 'CASH' ? 'rgba(201, 232, 213, 0.3)' : 'var(--surface-container)',
+                  background: method === 'CASH' ? 'var(--mint-subtle)' : 'var(--surface-container)',
                   border: method === 'CASH' ? '1.5px solid var(--tertiary)' : '1px solid var(--border-default)',
                   padding: '12px 16px',
                   borderRadius: 'var(--radius-default)',
@@ -178,50 +178,10 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               >
                 <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
                   <span style={{ fontWeight: 700, color: 'var(--tertiary)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <DollarCircleOutlined /> Tiền mặt (COD)
+                    <DollarCircleOutlined /> Tiền mặt khi nhận hàng (COD)
                   </span>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    Thanh toán tiền mặt khi nhận hàng / khi đơn hàng hoàn thành
-                  </span>
-                </div>
-              </Radio>
-
-              {/* 3. Ví MoMo */}
-              <Radio
-                value="MOMO"
-                style={{
-                  background: method === 'MOMO' ? 'rgba(216, 45, 139, 0.08)' : 'var(--surface-container)',
-                  border: method === 'MOMO' ? '1.5px solid #d82d8b' : '1px solid var(--border-default)',
-                  padding: '12px 16px',
-                  borderRadius: 'var(--radius-default)',
-                  width: '100%',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
-                  <span style={{ fontWeight: 700, color: '#ec4899' }}>Ví MoMo</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    Thanh toán qua quét mã QR hoặc ứng dụng MoMo
-                  </span>
-                </div>
-              </Radio>
-
-              {/* 4. Ví ZaloPay */}
-              <Radio
-                value="ZALOPAY"
-                style={{
-                  background: method === 'ZALOPAY' ? 'var(--surface-high)' : 'var(--surface-container)',
-                  border: method === 'ZALOPAY' ? '1.5px solid var(--primary)' : '1px solid var(--border-default)',
-                  padding: '12px 16px',
-                  borderRadius: 'var(--radius-default)',
-                  width: '100%',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
-                  <span style={{ fontWeight: 700, color: 'var(--primary)' }}>Ví ZaloPay</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    Thanh toán qua cổng ZaloPay QR & Thẻ ATM/Visa
+                    Thanh toán tiền mặt cho nhân viên giao hàng khi nhận kỷ vật tận tay
                   </span>
                 </div>
               </Radio>
