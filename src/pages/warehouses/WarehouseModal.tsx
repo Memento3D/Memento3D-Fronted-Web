@@ -68,7 +68,7 @@ export const WarehouseModal: React.FC<Props> = ({
     <div className="modal-overlay" id="warehouse-modal-overlay">
       <div className="modal-content" id="warehouse-modal-card">
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             {warehouse ? 'Edit Warehouse Facility' : 'Register New Warehouse (F02)'}
           </h2>
           <button 

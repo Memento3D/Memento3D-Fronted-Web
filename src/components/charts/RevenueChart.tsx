@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import { useAmChart } from '../../hooks/useAmChart';
+import { getChartThemeTokens } from '../../utils/chartTheme';
 import type { RevenueChartDataPoint } from '../../types/dashboard';
 import { Card, Spin, Alert, Empty } from 'antd';
 import { TrendingUp } from 'lucide-react';
@@ -29,8 +30,9 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
   };
 
   const { containerRef } = useAmChart(
-    (root) => {
+    (root, isDark) => {
       if (!data || data.length === 0) return;
+      const tokens = getChartThemeTokens(isDark);
 
       // 1. Create XY Chart
       const chart = root.container.children.push(
@@ -62,13 +64,13 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       );
 
       xAxis.get('renderer').labels.template.setAll({
-        fill: am5.color(0x94a3b8),
+        fill: tokens.textSecondary,
         fontSize: 11,
       });
 
       xAxis.get('renderer').grid.template.setAll({
-        stroke: am5.color(0xffffff),
-        strokeOpacity: 0.05,
+        stroke: tokens.gridColor,
+        strokeOpacity: tokens.gridOpacity,
       });
 
       // 4. Y Axis 1 (Left): Revenue
@@ -79,13 +81,13 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       );
 
       yAxisRevenue.get('renderer').labels.template.setAll({
-        fill: am5.color(0x94a3b8),
+        fill: tokens.textSecondary,
         fontSize: 11,
       });
 
       yAxisRevenue.get('renderer').grid.template.setAll({
-        stroke: am5.color(0xffffff),
-        strokeOpacity: 0.05,
+        stroke: tokens.gridColor,
+        strokeOpacity: tokens.gridOpacity,
       });
 
       // 5. Y Axis 2 (Right): Order Count
@@ -110,8 +112,8 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
           yAxis: yAxisRevenue,
           valueYField: 'revenue',
           valueXField: 'date',
-          stroke: am5.color(0x0ea5e9),
-          fill: am5.color(0x0ea5e9),
+          stroke: am5.color(0x7C5CFC),
+          fill: am5.color(0x7C5CFC),
           tooltip: am5.Tooltip.new(root, {
             labelText: '[bold]Doanh thu:[/] {valueY.formatNumber("#,###")} ₫',
           }),
@@ -135,7 +137,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
           yAxis: yAxisOrders,
           valueYField: 'orders',
           valueXField: 'date',
-          stroke: am5.color(0x8b5cf6),
+          stroke: am5.color(0xFFBFAE),
           tooltip: am5.Tooltip.new(root, {
             labelText: '[bold]Đơn hàng:[/] {valueY} đơn\n[bold]AOV:[/] {aov.formatNumber("#,###")} ₫',
           }),
@@ -152,8 +154,8 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         return am5.Bullet.new(root, {
           sprite: am5.Circle.new(root, {
             radius: 3.5,
-            fill: am5.color(0x8b5cf6),
-            stroke: am5.color(0x0f172a),
+            fill: am5.color(0xFFBFAE),
+            stroke: tokens.surfaceBg,
             strokeWidth: 1.5,
           }),
         });
@@ -168,7 +170,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         })
       );
       legend.labels.template.setAll({
-        fill: am5.color(0x94a3b8),
+        fill: tokens.textSecondary,
         fontSize: 12,
       });
       legend.data.setAll(chart.series.values);
@@ -188,10 +190,10 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
     <Card
       bordered={false}
       style={{
-        background: '#0d1322',
-        borderRadius: 16,
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+        background: 'var(--bg-card)',
+        borderRadius: 'var(--radius-card, 24px)',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--shadow-card)',
         height: '100%',
       }}
       styles={{
@@ -202,12 +204,12 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <TrendingUp size={18} color="#0ea5e9" />
-            <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.1rem' }}>
+            <TrendingUp size={18} color="var(--primary)" />
+            <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1.1rem' }}>
               Phân tích Doanh thu & Đơn hàng
             </span>
           </div>
-          <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: 2 }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: 2 }}>
             Theo dõi dòng tiền, quy mô đơn và giá trị trung bình (AOV)
           </div>
         </div>
@@ -216,10 +218,10 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         <div
           style={{
             display: 'flex',
-            background: 'rgba(255, 255, 255, 0.04)',
+            background: 'var(--surface-container)',
             padding: '3px',
             borderRadius: 8,
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid var(--border-color)',
           }}
         >
           {(['7d', '30d', '3m', '6m', '1y'] as const).map((filter) => {
@@ -236,8 +238,8 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                 key={filter}
                 onClick={() => handleFilterClick(filter)}
                 style={{
-                  background: isActive ? '#0ea5e9' : 'transparent',
-                  color: isActive ? '#fff' : '#94a3b8',
+                  background: isActive ? 'var(--primary)' : 'transparent',
+                  color: isActive ? '#fff' : 'var(--text-secondary)',
                   border: 'none',
                   borderRadius: 6,
                   padding: '4px 10px',
@@ -257,7 +259,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       {/* Chart Body */}
       <div style={{ flex: 1, minHeight: 320, position: 'relative' }}>
         {isLoading && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(13, 19, 34, 0.7)', zIndex: 10 }}>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--glass-bg)', backdropFilter: 'blur(4px)', zIndex: 10 }}>
             <Spin tip="Đang tải dữ liệu biểu đồ..." />
           </div>
         )}

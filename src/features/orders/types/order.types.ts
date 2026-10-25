@@ -12,9 +12,34 @@ export type OrderStatus =
   | 'CANCELLED'
   | 'REFUNDED';
 
-export type PaymentMethod = 'MOMO' | 'ZALOPAY' | 'CASH';
+export type PaymentMethod = 'MOMO' | 'ZALOPAY' | 'CASH' | 'VNPAY';
 
-export type PaymentStatus = 'PENDING' | 'PAID' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REFUNDED';
+export type PaymentStatus = 'PENDING' | 'PAID' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REFUNDED' | 'EXPIRED' | 'PROCESSING';
+
+export interface VnpayPaymentResponse {
+  paymentId: string;
+  orderId: string;
+  paymentMethod: PaymentMethod;
+  status: PaymentStatus;
+  amount: number;
+  currency: string;
+  transactionRef: string;
+  paymentUrl: string;
+  expiresAt: string;
+  createdAt: string;
+}
+
+export interface VnpayReturnResponse {
+  orderId: string;
+  transactionRef: string;
+  status: PaymentStatus;
+  message: string;
+  amount: number;
+  bankCode?: string;
+  gatewayTransactionNo?: string;
+  responseCode?: string;
+  paymentDate?: string;
+}
 
 export interface OrderItemResponse {
   id: string;

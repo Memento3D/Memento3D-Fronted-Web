@@ -2,6 +2,7 @@ import React from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5percent from '@amcharts/amcharts5/percent';
 import { useAmChart } from '../../hooks/useAmChart';
+import { getChartThemeTokens } from '../../utils/chartTheme';
 import type { OrderStatusDataPoint } from '../../types/dashboard';
 import { Card, Spin, Alert, Empty } from 'antd';
 import { PieChart as PieIcon } from 'lucide-react';
@@ -20,8 +21,9 @@ export const OrderStatusChart: React.FC<OrderStatusChartProps> = ({
   error,
 }) => {
   const { containerRef } = useAmChart(
-    (root) => {
+    (root, isDark) => {
       if (!data || data.length === 0) return;
+      const tokens = getChartThemeTokens(isDark);
 
       // 1. Create Pie Chart
       const chart = root.container.children.push(
@@ -46,7 +48,7 @@ export const OrderStatusChart: React.FC<OrderStatusChartProps> = ({
       // Custom slice colors & hover effects
       series.slices.template.setAll({
         templateField: 'sliceSettings',
-        stroke: am5.color(0x0d1322),
+        stroke: tokens.sliceStroke,
         strokeWidth: 2,
         cornerRadius: 4,
         tooltipText: '[bold]{category}:[/] {value} đơn ({valuePercentTotal.formatNumber("0.0")}%)',
@@ -62,7 +64,7 @@ export const OrderStatusChart: React.FC<OrderStatusChartProps> = ({
           textAlign: 'center',
           centerY: am5.p50,
           centerX: am5.p50,
-          text: `[fontSize: 28px; fontWeight: 800; fill: #f8fafc]${totalOrders}[/]\n[fontSize: 11px; fill: #94a3b8; letterSpacing: 0.05em; textTransform: uppercase]Tổng đơn hàng[/]`,
+          text: `[fontSize: 28px; fontWeight: 800; fill: ${tokens.textHex}]${totalOrders}[/]\n[fontSize: 11px; fill: ${tokens.textSecondaryHex}; letterSpacing: 0.05em; textTransform: uppercase]Tổng đơn hàng[/]`,
         })
       );
 
@@ -76,12 +78,12 @@ export const OrderStatusChart: React.FC<OrderStatusChartProps> = ({
       );
 
       legend.labels.template.setAll({
-        fill: am5.color(0x94a3b8),
+        fill: tokens.textSecondary,
         fontSize: 11,
       });
 
       legend.valueLabels.template.setAll({
-        fill: am5.color(0xf8fafc),
+        fill: tokens.textColor,
         fontSize: 11,
         fontWeight: 'bold',
       });
@@ -107,10 +109,10 @@ export const OrderStatusChart: React.FC<OrderStatusChartProps> = ({
     <Card
       bordered={false}
       style={{
-        background: '#0d1322',
-        borderRadius: 16,
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+        background: 'var(--bg-card)',
+        borderRadius: 'var(--radius-card, 24px)',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--shadow-card)',
         height: '100%',
       }}
       styles={{
@@ -119,19 +121,19 @@ export const OrderStatusChart: React.FC<OrderStatusChartProps> = ({
     >
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <PieIcon size={18} color="#38bdf8" />
-          <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.1rem' }}>
+          <PieIcon size={18} color="var(--primary)" />
+          <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1.1rem' }}>
             Phân bổ Trạng thái Đơn hàng
           </span>
         </div>
-        <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: 2 }}>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: 2 }}>
           Tiến độ quy trình từ xác nhận, in 3D đến giao nhận thành công
         </div>
       </div>
 
       <div style={{ flex: 1, minHeight: 320, position: 'relative' }}>
         {isLoading && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(13, 19, 34, 0.7)', zIndex: 10 }}>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--glass-bg)', backdropFilter: 'blur(4px)', zIndex: 10 }}>
             <Spin tip="Đang tính toán phân bổ trạng thái..." />
           </div>
         )}

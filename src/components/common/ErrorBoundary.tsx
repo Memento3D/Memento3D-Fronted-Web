@@ -64,8 +64,8 @@ export class ErrorBoundary extends Component<Props, State> {
             alignItems: 'center',
             justifyContent: 'center',
             padding: '40px 24px',
-            background: '#050811',
-            color: '#f8fafc',
+            background: 'var(--color-bg)',
+            color: 'var(--text-primary)',
             fontFamily: 'system-ui, -apple-system, sans-serif',
           }}
         >
@@ -73,12 +73,12 @@ export class ErrorBoundary extends Component<Props, State> {
             style={{
               maxWidth: 640,
               width: '100%',
-              background: 'rgba(15, 23, 42, 0.85)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-color)',
               borderRadius: 20,
               padding: '40px 32px',
               textAlign: 'center',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(239, 68, 68, 0.1)',
+              boxShadow: 'var(--shadow-lg)',
             }}
           >
             <div
@@ -98,11 +98,11 @@ export class ErrorBoundary extends Component<Props, State> {
               <BugOutlined />
             </div>
 
-            <Title level={3} style={{ color: '#fff', margin: '0 0 12px', fontWeight: 800 }}>
+            <Title level={3} style={{ color: 'var(--text-primary)', margin: '0 0 12px', fontWeight: 800 }}>
               {this.props.fallbackTitle || 'Đã xảy ra sự cố hiển thị giao diện'}
             </Title>
 
-            <Paragraph style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: 28 }}>
+            <Paragraph style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: 28 }}>
               Ứng dụng gặp lỗi không mong muốn khi tải dữ liệu hoặc hiển thị thành phần này.
               Dữ liệu của bạn được lưu an toàn trên hệ thống.
             </Paragraph>
@@ -127,9 +127,9 @@ export class ErrorBoundary extends Component<Props, State> {
               <Button
                 onClick={this.handleReload}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(255, 255, 255, 0.15)',
-                  color: '#e2e8f0',
+                  background: 'var(--bg-elevated)',
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-primary)',
                   height: 40,
                   padding: '0 20px',
                   borderRadius: 10,
@@ -143,8 +143,8 @@ export class ErrorBoundary extends Component<Props, State> {
                 onClick={this.handleGoHome}
                 style={{
                   background: 'transparent',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  color: '#94a3b8',
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-secondary)',
                   height: 40,
                   padding: '0 16px',
                   borderRadius: 10,
@@ -163,7 +163,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#64748b',
+                    color: 'var(--text-muted)',
                     fontSize: '0.8rem',
                     cursor: 'pointer',
                     padding: 0,
@@ -178,8 +178,8 @@ export class ErrorBoundary extends Component<Props, State> {
                     style={{
                       marginTop: 12,
                       padding: 16,
-                      background: '#090d16',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      background: 'var(--bg-elevated)',
+                      border: '1px solid var(--border-color)',
                       borderRadius: 10,
                       color: '#f87171',
                       fontSize: '0.75rem',

@@ -139,6 +139,11 @@ export const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color
     color: '#466253',
     badgeStatus: 'success',
   },
+  PROCESSING: {
+    label: 'Đang xử lý',
+    color: '#E5A000',
+    badgeStatus: 'processing',
+  },
   FAILED: {
     label: 'Thất bại',
     color: '#BA1A1A',
@@ -147,6 +152,11 @@ export const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color
   CANCELLED: {
     label: 'Đã hủy',
     color: '#6A6282',
+    badgeStatus: 'default',
+  },
+  EXPIRED: {
+    label: 'Hết hạn',
+    color: '#8E9192',
     badgeStatus: 'default',
   },
   REFUNDED: {

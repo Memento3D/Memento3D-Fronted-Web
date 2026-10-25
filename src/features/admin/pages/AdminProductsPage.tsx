@@ -127,8 +127,8 @@ export const AdminProductsPage: React.FC = () => {
       key: 'name',
       render: (_: any, r: AdminProduct) => (
         <div>
-          <span style={{ fontWeight: 700, color: '#f8fafc' }}>{r.name}</span>
-          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{r.description || 'Chưa có mô tả'}</div>
+          <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{r.name}</span>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{r.description || 'Chưa có mô tả'}</div>
         </div>
       ),
     },
@@ -196,7 +196,7 @@ export const AdminProductsPage: React.FC = () => {
       title: 'Tên danh mục',
       dataIndex: 'name',
       key: 'name',
-      render: (val: string) => <span style={{ fontWeight: 700, color: '#f8fafc' }}>{val}</span>,
+      render: (val: string) => <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{val}</span>,
     },
     {
       title: 'Đường dẫn (Slug)',
@@ -208,7 +208,7 @@ export const AdminProductsPage: React.FC = () => {
       title: 'Mô tả',
       dataIndex: 'description',
       key: 'description',
-      render: (val: string) => <span style={{ color: '#94a3b8' }}>{val || '—'}</span>,
+      render: (val: string) => <span style={{ color: 'var(--text-secondary)' }}>{val || '—'}</span>,
     },
     {
       title: 'Thao tác',
@@ -247,10 +247,10 @@ export const AdminProductsPage: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-products-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
             Quản trị Sản phẩm & Danh mục Hệ thống
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
             Thiết lập bảng giá, phân loại danh mục sản phẩm và trạng thái niêm yết
           </div>
         </div>
@@ -295,7 +295,7 @@ export const AdminProductsPage: React.FC = () => {
         </div>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Tabs
           activeKey={activeTab}
           onChange={(k) => setActiveTab(k as any)}
@@ -313,7 +313,7 @@ export const AdminProductsPage: React.FC = () => {
                   <div style={{ marginBottom: 16 }}>
                     <Input
                       placeholder="Tìm kiếm sản phẩm theo tên..."
-                      prefix={<Search size={14} color="#94a3b8" />}
+                      prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
                       value={productSearch}
                       onChange={(e) => {
                         setProductSearch(e.target.value);

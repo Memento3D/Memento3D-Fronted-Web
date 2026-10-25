@@ -17,7 +17,7 @@ export const ScanReconstructionPage: React.FC = () => {
   const [modelPreviewUrl, setModelPreviewUrl] = useState<string | undefined>(undefined);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050811', color: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)', color: 'var(--text-primary)' }}>
       <Navbar />
 
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: '110px 24px 60px' }}>
@@ -26,7 +26,7 @@ export const ScanReconstructionPage: React.FC = () => {
             type="text"
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate('/products')}
-            style={{ color: '#94a3b8', paddingLeft: 0 }}
+            style={{ color: 'var(--text-secondary)', paddingLeft: 0 }}
           >
             Quay lại
           </Button>
@@ -35,9 +35,9 @@ export const ScanReconstructionPage: React.FC = () => {
             icon={<HistoryOutlined />}
             onClick={() => navigate('/customer/orders')}
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
-              color: '#cbd5e1',
+              background: 'var(--bg-elevated)',
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-primary)',
               borderRadius: 8,
             }}
           >
@@ -46,10 +46,10 @@ export const ScanReconstructionPage: React.FC = () => {
         </div>
 
         <div style={{ marginBottom: 28 }}>
-          <Title level={2} style={{ color: '#fff', margin: 0, fontWeight: 800 }}>
+          <Title level={2} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 800 }}>
             Tái tạo Kỷ vật 3D từ Ảnh chụp
           </Title>
-          <Text style={{ color: '#94a3b8' }}>
+          <Text style={{ color: 'var(--text-secondary)' }}>
             Hệ thống đang chạy mô hình thị giác máy tính NeRF và Gaussian Splatting trên cụm GPU đám mây.
           </Text>
         </div>

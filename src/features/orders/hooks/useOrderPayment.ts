@@ -55,3 +55,15 @@ export const usePaymentsList = () => {
     queryFn: () => paymentApi.list(),
   });
 };
+
+export const useOrderPayments = (orderId?: string) => {
+  return useQuery<PaymentResponse[], Error>({
+    queryKey: ['order-payments', orderId],
+    queryFn: () => {
+      if (!orderId) throw new Error('Order ID is required');
+      return paymentApi.getOrderPayments(orderId);
+    },
+    enabled: Boolean(orderId),
+  });
+};
+

@@ -4,6 +4,8 @@ import type {
   PaymentMethod,
   PaymentResponse,
   PaymentStatusResponse,
+  VnpayPaymentResponse,
+  VnpayReturnResponse,
 } from '../types/order.types';
 
 export const paymentApi = {
@@ -46,6 +48,34 @@ export const paymentApi = {
    */
   list: async (): Promise<PaymentStatusResponse[]> => {
     const res = await apiClient.get<PaymentStatusResponse[]>('/payments');
+    return res.data;
+  },
+
+  /**
+   * Initiates a VNPAY payment session for an order, returning signed VNPAY Sandbox checkout URL.
+   */
+  createVnpayPayment: async (orderId: string, returnUrl?: string): Promise<VnpayPaymentResponse> => {
+    const res = await apiClient.post<VnpayPaymentResponse>('/payments/vnpay/create', {
+      orderId,
+      returnUrl,
+    });
+    return res.data;
+  },
+
+  /**
+   * Verifies the customer redirect callback from VNPAY.
+   */
+  verifyVnpayReturn: async (params: Record<string, string>): Promise<VnpayReturnResponse> => {
+    const queryString = new URLSearchParams(params).toString();
+    const res = await apiClient.get<VnpayReturnResponse>(`/payments/vnpay/return?${queryString}`);
+    return res.data;
+  },
+
+  /**
+   * Retrieves all payment attempts for a specific order.
+   */
+  getOrderPayments: async (orderId: string): Promise<PaymentStatusResponse[]> => {
+    const res = await apiClient.get<PaymentStatusResponse[]>(`/orders/${orderId}/payments`);
     return res.data;
   },
 

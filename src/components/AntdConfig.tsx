@@ -64,6 +64,7 @@ export const AntdConfig: React.FC<AntdConfigProps> = ({ children }) => {
                 rowHoverBg: 'rgba(182, 163, 255, 0.08)',
                 borderColor: '#45405A',
                 borderRadius: 24,
+                colorBgContainer: '#1D192B',
               }
             : {
                 headerBg: '#F7F1FF',
@@ -71,6 +72,7 @@ export const AntdConfig: React.FC<AntdConfigProps> = ({ children }) => {
                 rowHoverBg: '#F8F5FF',
                 borderColor: '#E2D9F7',
                 borderRadius: 24,
+                colorBgContainer: '#FFFFFF',
               },
           Card: isDark
             ? {
@@ -101,17 +103,44 @@ export const AntdConfig: React.FC<AntdConfigProps> = ({ children }) => {
             : {
                 colorBgElevated: '#FFFFFF',
               },
+          Dropdown: isDark
+            ? {
+                colorBgElevated: '#1D192B',
+                colorText: '#F8F4FF',
+              }
+            : {
+                colorBgElevated: '#FFFFFF',
+                colorText: '#28243D',
+              },
+          Select: isDark
+            ? {
+                borderRadius: 20,
+                colorBgContainer: '#252036',
+                colorBgElevated: '#1D192B',
+                colorText: '#F8F4FF',
+              }
+            : {
+                borderRadius: 20,
+                colorBgContainer: '#FFFFFF',
+                colorBgElevated: '#FFFFFF',
+                colorText: '#28243D',
+              },
+          Input: isDark
+            ? {
+                borderRadius: 20,
+                colorBgContainer: '#252036',
+                colorText: '#F8F4FF',
+              }
+            : {
+                borderRadius: 20,
+                colorBgContainer: '#FFFFFF',
+                colorText: '#28243D',
+              },
           Button: {
             borderRadius: 9999,
             primaryShadow: isDark
               ? '0 0 16px rgba(182, 163, 255, 0.28)'
               : '0 4px 14px rgba(124, 92, 252, 0.22)',
-          },
-          Input: {
-            borderRadius: 20,
-          },
-          Select: {
-            borderRadius: 20,
           },
           Tag: {
             borderRadiusSM: 9999,

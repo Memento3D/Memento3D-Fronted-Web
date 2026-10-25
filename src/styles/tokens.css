@@ -3,7 +3,11 @@
    Memento3D Physical Keepsake & Spatial Platform
    ========================================================================== */
 
-:root {
+:root,
+[data-theme='light'],
+body.light-theme {
+  color-scheme: light;
+
   /* Font Families */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -132,7 +136,19 @@
   --glass-border: 1px solid #E2D9F7;
 
   /* Standard Design Tokens (Unified Aliases) */
+  --bg-primary: var(--bg-app);
+  --bg-secondary: var(--surface-low);
+  --bg-elevated: var(--surface-container);
+  --border-primary: var(--border-color);
+  --border-default: var(--border-color);
+  --table-header: var(--surface-low);
+  --table-row: #FFFFFF;
+  --table-row-hover: var(--surface-lowest);
+  --table-border: var(--border-color);
+  --foreground: var(--text-primary);
+
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-bg: var(--bg-app);
   --color-surface: var(--bg-surface);
@@ -166,6 +182,7 @@
    ========================================================================== */
 [data-theme='dark'],
 body.dark-theme {
+  color-scheme: dark;
   --surface: #1D192B;
   --surface-dim: #151221;
   --surface-bright: #252036;
@@ -262,7 +279,19 @@ body.dark-theme {
   --glass-border: 1px solid #45405A;
 
   /* Standard Design Tokens (Dark Unified Aliases) */
+  --bg-primary: var(--bg-app);
+  --bg-secondary: var(--surface-low);
+  --bg-elevated: var(--surface-container);
+  --border-primary: var(--border-color);
+  --border-default: var(--border-color);
+  --table-header: #252036;
+  --table-row: #1D192B;
+  --table-row-hover: rgba(182, 163, 255, 0.08);
+  --table-border: var(--border-color);
+  --foreground: var(--text-primary);
+
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-bg: var(--bg-app);
   --color-surface: var(--bg-surface);

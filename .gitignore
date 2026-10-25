@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 seed_*.cjs
 scripts/
+.env
+.env.*
+!.env.example
+

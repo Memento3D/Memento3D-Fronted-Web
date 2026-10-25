@@ -2,6 +2,7 @@ import React from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5percent from '@amcharts/amcharts5/percent';
 import { useAmChart } from '../../hooks/useAmChart';
+import { getChartThemeTokens } from '../../utils/chartTheme';
 import type { MaterialUsageDataPoint } from '../../types/dashboard';
 import { formatVndCurrency, formatGrams } from '../../utils/chartFormatter';
 import { Card, Spin, Alert, Empty } from 'antd';
@@ -19,8 +20,9 @@ export const MaterialUsageChart: React.FC<MaterialUsageChartProps> = ({
   error,
 }) => {
   const { containerRef } = useAmChart(
-    (root) => {
+    (root, isDark) => {
       if (!data || data.length === 0) return;
+      const tokens = getChartThemeTokens(isDark);
 
       // 1. Create Pie Chart
       const chart = root.container.children.push(
@@ -44,7 +46,7 @@ export const MaterialUsageChart: React.FC<MaterialUsageChartProps> = ({
 
       series.slices.template.setAll({
         templateField: 'sliceSettings',
-        stroke: am5.color(0x0d1322),
+        stroke: tokens.sliceStroke,
         strokeWidth: 2,
         cornerRadius: 6,
         tooltipText:
@@ -65,12 +67,12 @@ export const MaterialUsageChart: React.FC<MaterialUsageChartProps> = ({
       );
 
       legend.labels.template.setAll({
-        fill: am5.color(0x94a3b8),
+        fill: tokens.textSecondary,
         fontSize: 11,
       });
 
       legend.valueLabels.template.setAll({
-        fill: am5.color(0xf8fafc),
+        fill: tokens.textColor,
         fontSize: 11,
         fontWeight: 'bold',
       });
@@ -99,10 +101,10 @@ export const MaterialUsageChart: React.FC<MaterialUsageChartProps> = ({
     <Card
       bordered={false}
       style={{
-        background: '#0d1322',
-        borderRadius: 16,
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+        background: 'var(--bg-card)',
+        borderRadius: 'var(--radius-card, 24px)',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--shadow-card)',
         height: '100%',
       }}
       styles={{
@@ -112,18 +114,18 @@ export const MaterialUsageChart: React.FC<MaterialUsageChartProps> = ({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Box size={18} color="#10b981" />
-            <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.1rem' }}>
+            <Box size={18} color="var(--tertiary)" />
+            <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1.1rem' }}>
               Tiêu thụ Vật liệu In 3D
             </span>
           </div>
-          <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: 2 }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: 2 }}>
             Sản lượng nhựa đùn (FDM) và mực quang hóa (SLA/DLP)
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Tổng tiêu thụ</div>
-          <div style={{ color: '#10b981', fontWeight: 800, fontSize: '1.1rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>Tổng tiêu thụ</div>
+          <div style={{ color: 'var(--tertiary)', fontWeight: 800, fontSize: '1.1rem' }}>
             {formatGrams(totalGrams)}
           </div>
         </div>
@@ -131,7 +133,7 @@ export const MaterialUsageChart: React.FC<MaterialUsageChartProps> = ({
 
       <div style={{ flex: 1, minHeight: 300, position: 'relative' }}>
         {isLoading && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(13, 19, 34, 0.7)', zIndex: 10 }}>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--glass-bg)', backdropFilter: 'blur(4px)', zIndex: 10 }}>
             <Spin tip="Đang tải dữ liệu vật liệu..." />
           </div>
         )}

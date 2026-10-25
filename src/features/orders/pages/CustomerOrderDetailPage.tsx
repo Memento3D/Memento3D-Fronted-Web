@@ -35,7 +35,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useOrderDetail } from '../hooks/useOrderDetail';
 import { useUpdateOrder } from '../hooks/useUpdateOrder';
 import { useCancelOrder } from '../hooks/useCancelOrder';
-import { usePaymentsList } from '../hooks/useOrderPayment';
+import { usePaymentsList, useOrderPayments } from '../hooks/useOrderPayment';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import { OrderTimeline } from '../components/OrderTimeline';
 import { OrderPaymentModal } from '../components/OrderPaymentModal';
@@ -53,6 +53,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
   const { data: order, isLoading, isError, error, refetch, isFetching } = useOrderDetail(id);
   const { data: payments = [] } = usePaymentsList();
+  const { data: specificPayments = [] } = useOrderPayments(id);
 
   const updateOrderMutation = useUpdateOrder(id || '');
   const cancelOrderMutation = useCancelOrder();
@@ -99,7 +100,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#050811', padding: '100px 24px' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--color-bg)', padding: '100px 24px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <Skeleton active paragraph={{ rows: 8 }} />
         </div>
@@ -109,10 +110,10 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
   if (isError || !order) {
     return (
-      <div style={{ minHeight: '100vh', background: '#050811', padding: '100px 24px', textAlign: 'center' }}>
-        <div style={{ maxWidth: 600, margin: '60px auto', color: '#f8fafc' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--color-bg)', padding: '100px 24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: 600, margin: '60px auto', color: 'var(--text-primary)' }}>
           <h2 style={{ color: '#ef4444' }}>Không tìm thấy đơn hàng</h2>
-          <p style={{ color: '#94a3b8' }}>
+          <p style={{ color: 'var(--text-secondary)' }}>
             {error?.message || 'Đơn hàng không tồn tại hoặc bạn không có quyền truy cập.'}
           </p>
           <Button type="primary" onClick={() => navigate('/customer/orders')}>
@@ -123,11 +124,11 @@ export const CustomerOrderDetailPage: React.FC = () => {
     );
   }
 
-  const orderPayments = payments.filter((p) => p.orderId === order.id);
+  const orderPayments = specificPayments.length > 0 ? specificPayments : payments.filter((p) => p.orderId === order.id);
   const orderCode = order.orderCode || order.id.slice(0, 8).toUpperCase();
   const isPaid = order.paymentStatus === 'PAID';
   const isCash = order.paymentMethod === 'CASH';
-  const isEligibleToPay = !isPaid && !isCash && (order.status === 'PENDING' || order.status === 'PENDING_PAYMENT');
+  const isEligibleToPay = !isPaid && order.status !== 'CANCELLED' && order.status !== 'COMPLETED';
   const isEligibleToCancel = canCustomerCancel(order.status);
   const totalAmount = order.totalAmount ?? order.totalPrice;
 
@@ -516,7 +517,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
               >
                 <Table
                   dataSource={orderPayments}
-                  rowKey="paymentId"
+                  rowKey={(r: any) => r.paymentId || r.id || r.transactionReference}
                   pagination={false}
                   columns={[
                     {
@@ -524,9 +525,19 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       dataIndex: 'paymentMethod',
                       key: 'paymentMethod',
                       render: (m) => (
-                        <Tag color={m === 'MOMO' ? 'magenta' : m === 'ZALOPAY' ? 'blue' : 'green'}>
+                        <Tag color={m === 'VNPAY' ? '#005cb9' : m === 'MOMO' ? 'magenta' : m === 'ZALOPAY' ? 'blue' : 'green'}>
                           {m}
                         </Tag>
+                      ),
+                    },
+                    {
+                      title: 'Mã tham chiếu',
+                      dataIndex: 'merchantTransactionId',
+                      key: 'merchantTransactionId',
+                      render: (ref, r: any) => (
+                        <span style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                          {ref || r.transactionReference || '-'}
+                        </span>
                       ),
                     },
                     {
@@ -540,19 +551,21 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       dataIndex: 'status',
                       key: 'status',
                       render: (st) => {
-                        const label = st === 'PAID' || st === 'SUCCESS' ? 'Thành công' : st === 'PENDING' ? 'Chờ xử lý' : st === 'FAILED' ? 'Thất bại' : st;
-                        return (
-                          <Tag color={st === 'PAID' || st === 'SUCCESS' ? 'green' : st === 'PENDING' ? 'gold' : 'red'}>
-                            {label}
-                          </Tag>
-                        );
+                        const isSuccess = st === 'PAID' || st === 'SUCCESS';
+                        const isPending = st === 'PENDING' || st === 'PROCESSING';
+                        const isCancelled = st === 'CANCELLED';
+                        const isExpired = st === 'EXPIRED';
+
+                        const color = isSuccess ? 'green' : isPending ? 'gold' : isCancelled ? 'orange' : isExpired ? 'default' : 'red';
+                        const label = isSuccess ? 'Thành công' : isPending ? 'Chờ xử lý' : isCancelled ? 'Đã hủy' : isExpired ? 'Hết hạn' : 'Thất bại';
+                        return <Tag color={color}>{label}</Tag>;
                       },
                     },
                     {
                       title: 'Thời gian',
                       dataIndex: 'createdAt',
                       key: 'createdAt',
-                      render: (t) => formatOrderDate(t),
+                      render: (t, r: any) => formatOrderDate(r.paymentDate || t),
                     },
                   ]}
                 />
@@ -739,10 +752,10 @@ export const CustomerOrderDetailPage: React.FC = () => {
             }}
           >
             <div style={{ fontSize: '3.5rem', marginBottom: 12 }}>🗿</div>
-            <div style={{ color: '#f8fafc', fontWeight: 600, fontSize: '1.1rem' }}>
+            <div style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '1.1rem' }}>
               Bản dựng 3D chi tiết (Đã qua xử lý Watermark)
             </div>
-            <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: 4 }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: 4 }}>
               Độ phân giải cao | Sẵn sàng cho máy in 3D công nghiệp
             </div>
             {(order as any).previewUrl && (
@@ -757,7 +770,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
             )}
           </div>
 
-          <p style={{ color: '#94a3b8', fontSize: '0.9rem', textAlign: 'left', lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textAlign: 'left', lineHeight: 1.6 }}>
             Bằng việc bấm <strong>"Duyệt & Cho phép in"</strong>, bạn xác nhận đồng ý với hình dáng, tỷ lệ và chất lượng bản dựng 3D này. Xưởng in Memento3D sẽ tự động cấp phát vật liệu và xếp lịch in máy.
           </p>
         </div>

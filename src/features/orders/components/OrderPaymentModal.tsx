@@ -26,7 +26,7 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
   onPaymentSuccess,
 }) => {
   const navigate = useNavigate();
-  const [method, setMethod] = useState<PaymentMethod>('MOMO');
+  const [method, setMethod] = useState<PaymentMethod>('VNPAY');
   const [activePayment, setActivePayment] = useState<PaymentResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -62,6 +62,15 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
         onClose();
         navigate(`/orders/${order.id}`);
         return;
+      }
+
+      if (method === 'VNPAY') {
+        message.loading({ content: 'Đang khởi tạo giao dịch VNPAY...', key: 'vnpay-modal-loading', duration: 3 });
+        const vnpayRes = await paymentApi.createVnpayPayment(order.id);
+        if (vnpayRes.paymentUrl) {
+          window.location.assign(vnpayRes.paymentUrl);
+          return;
+        }
       }
 
       // MOMO or ZALOPAY
@@ -132,12 +141,12 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
               onChange={(e) => setMethod(e.target.value)}
               style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}
             >
-              {/* 1. Ví MoMo */}
+              {/* 1. VNPAY */}
               <Radio
-                value="MOMO"
+                value="VNPAY"
                 style={{
-                  background: method === 'MOMO' ? 'rgba(216, 45, 139, 0.08)' : 'var(--surface-container)',
-                  border: method === 'MOMO' ? '1.5px solid #d82d8b' : '1px solid var(--border-default)',
+                  background: method === 'VNPAY' ? 'rgba(0, 92, 185, 0.08)' : 'var(--surface-container)',
+                  border: method === 'VNPAY' ? '1.5px solid #005cb9' : '1px solid var(--border-default)',
                   padding: '12px 16px',
                   borderRadius: 'var(--radius-default)',
                   width: '100%',
@@ -145,34 +154,17 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
                 }}
               >
                 <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
-                  <span style={{ fontWeight: 700, color: '#ec4899' }}>Ví MoMo</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontWeight: 700, color: '#005cb9' }}>Cổng VNPAY (QR / ATM / Visa)</span>
+                    <span style={{ fontSize: '0.7rem', background: '#005cb9', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>Khuyên dùng</span>
+                  </div>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    Thanh toán qua quét mã QR hoặc ứng dụng MoMo
+                    Thanh toán an toàn qua cổng VNPAY (VNPAY-QR, Thẻ ATM/Internet Banking, Thẻ quốc tế)
                   </span>
                 </div>
               </Radio>
 
-              {/* 2. Ví ZaloPay */}
-              <Radio
-                value="ZALOPAY"
-                style={{
-                  background: method === 'ZALOPAY' ? 'var(--surface-high)' : 'var(--surface-container)',
-                  border: method === 'ZALOPAY' ? '1.5px solid var(--primary)' : '1px solid var(--border-default)',
-                  padding: '12px 16px',
-                  borderRadius: 'var(--radius-default)',
-                  width: '100%',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
-                  <span style={{ fontWeight: 700, color: 'var(--primary)' }}>Ví ZaloPay</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    Thanh toán qua cổng ZaloPay QR & Thẻ ATM/Visa
-                  </span>
-                </div>
-              </Radio>
-
-              {/* 3. Tiền mặt */}
+              {/* 2. Tiền mặt / COD */}
               <Radio
                 value="CASH"
                 style={{
@@ -193,6 +185,46 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
                   </span>
                 </div>
               </Radio>
+
+              {/* 3. Ví MoMo */}
+              <Radio
+                value="MOMO"
+                style={{
+                  background: method === 'MOMO' ? 'rgba(216, 45, 139, 0.08)' : 'var(--surface-container)',
+                  border: method === 'MOMO' ? '1.5px solid #d82d8b' : '1px solid var(--border-default)',
+                  padding: '12px 16px',
+                  borderRadius: 'var(--radius-default)',
+                  width: '100%',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
+                  <span style={{ fontWeight: 700, color: '#ec4899' }}>Ví MoMo</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    Thanh toán qua quét mã QR hoặc ứng dụng MoMo
+                  </span>
+                </div>
+              </Radio>
+
+              {/* 4. Ví ZaloPay */}
+              <Radio
+                value="ZALOPAY"
+                style={{
+                  background: method === 'ZALOPAY' ? 'var(--surface-high)' : 'var(--surface-container)',
+                  border: method === 'ZALOPAY' ? '1.5px solid var(--primary)' : '1px solid var(--border-default)',
+                  padding: '12px 16px',
+                  borderRadius: 'var(--radius-default)',
+                  width: '100%',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 2, marginLeft: 8 }}>
+                  <span style={{ fontWeight: 700, color: 'var(--primary)' }}>Ví ZaloPay</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    Thanh toán qua cổng ZaloPay QR & Thẻ ATM/Visa
+                  </span>
+                </div>
+              </Radio>
             </Radio.Group>
 
             <Button
@@ -210,7 +242,11 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
                 boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
               }}
             >
-              {method === 'CASH' ? 'Xác nhận đặt hàng' : 'Tiến hành thanh toán'}
+              {method === 'CASH'
+                ? 'Xác nhận đặt hàng'
+                : method === 'VNPAY'
+                  ? 'Thanh toán với VNPAY'
+                  : 'Tiến hành thanh toán'}
             </Button>
           </div>
         ) : (

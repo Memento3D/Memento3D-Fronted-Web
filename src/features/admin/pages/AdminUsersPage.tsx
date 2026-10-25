@@ -162,7 +162,7 @@ export const AdminUsersPage: React.FC = () => {
             style={{ background: '#6366f1', flexShrink: 0 }}
           />
           <div>
-            <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.9rem' }}>
+            <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>
               {r.fullName || 'Người dùng'}
               {isSelf(r) && (
                 <Tag color="volcano" style={{ marginLeft: 6, fontSize: '0.65rem' }}>
@@ -170,7 +170,7 @@ export const AdminUsersPage: React.FC = () => {
                 </Tag>
               )}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{r.email}</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{r.email}</div>
           </div>
         </div>
       ),
@@ -179,7 +179,7 @@ export const AdminUsersPage: React.FC = () => {
       title: 'Số điện thoại',
       dataIndex: 'phone',
       key: 'phone',
-      render: (val: string) => val || <span style={{ color: '#64748b' }}>Chưa cập nhật</span>,
+      render: (val: string) => val || <span style={{ color: 'var(--text-muted)' }}>Chưa cập nhật</span>,
     },
     {
       title: 'Vai trò',
@@ -236,7 +236,7 @@ export const AdminUsersPage: React.FC = () => {
       key: 'createdAt',
       sorter: true,
       render: (d: string) => (
-        <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
           {d ? dayjs(d).format('DD/MM/YYYY HH:mm') : '—'}
         </span>
       ),
@@ -246,7 +246,7 @@ export const AdminUsersPage: React.FC = () => {
       dataIndex: 'lastLoginAt',
       key: 'lastLoginAt',
       render: (d: string) => (
-        <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
           {d ? dayjs(d).format('DD/MM/YYYY HH:mm') : 'Chưa đăng nhập'}
         </span>
       ),
@@ -361,10 +361,10 @@ export const AdminUsersPage: React.FC = () => {
       {/* Top Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
             Quản trị Tài khoản & Phân quyền RBAC
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
             Toàn quyền quản lý tài khoản khách hàng, nhân viên, gán vai trò và giám sát bảo mật
           </div>
         </div>
@@ -392,11 +392,11 @@ export const AdminUsersPage: React.FC = () => {
       </div>
 
       {/* Filter & Search Bar */}
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
           <Input
             placeholder="Tìm theo họ tên, email hoặc số điện thoại..."
-            prefix={<Search size={14} color="#94a3b8" />}
+            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -458,7 +458,7 @@ export const AdminUsersPage: React.FC = () => {
       </Card>
 
       {/* Users Data Table with Server Pagination */}
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Table
           columns={columns}
           dataSource={usersPage?.content || []}

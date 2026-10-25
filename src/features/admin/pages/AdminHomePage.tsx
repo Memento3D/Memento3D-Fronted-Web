@@ -67,10 +67,10 @@ export const AdminHomePage: React.FC = () => {
       {/* 1. Header Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
+          background: 'var(--bg-card)',
           borderRadius: 16,
           padding: '28px 32px',
-          border: '1px solid #334155',
+          border: '1px solid var(--border-color)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -82,14 +82,14 @@ export const AdminHomePage: React.FC = () => {
       >
         <div style={{ zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc' }}>
+            <span style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {getGreeting()}, {user?.fullName || 'Admin'}
             </span>
             <Tag color="volcano" style={{ fontWeight: 700, borderRadius: 6 }}>
               ROOT ADMIN
             </Tag>
           </div>
-          <div style={{ color: '#94a3b8', fontSize: '0.95rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
             {currentDateFormatted} — Hệ thống Memento3D đang vận hành ổn định trên hạ tầng phân tán.
           </div>
         </div>
@@ -165,19 +165,19 @@ export const AdminHomePage: React.FC = () => {
           <Card
             bordered={false}
             style={{
-              background: '#1e293b',
+              background: 'var(--bg-card)',
               borderRadius: 14,
-              border: '1px solid #334155',
+              border: '1px solid var(--border-color)',
               cursor: 'pointer',
             }}
             onClick={() => navigate('/admin/users')}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
                   Tổng người dùng
                 </div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
                   {loadingSummary ? <Spin size="small" /> : summary?.users?.total ?? 0}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#10b981', marginTop: 4 }}>
@@ -206,19 +206,19 @@ export const AdminHomePage: React.FC = () => {
           <Card
             bordered={false}
             style={{
-              background: '#1e293b',
+              background: 'var(--bg-card)',
               borderRadius: 14,
-              border: '1px solid #334155',
+              border: '1px solid var(--border-color)',
               cursor: 'pointer',
             }}
             onClick={() => navigate('/admin/orders')}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
                   Đơn hàng toàn sàn
                 </div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
                   {loadingSummary ? <Spin size="small" /> : summary?.orders?.total ?? 0}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#38bdf8', marginTop: 4 }}>
@@ -247,16 +247,16 @@ export const AdminHomePage: React.FC = () => {
           <Card
             bordered={false}
             style={{
-              background: '#1e293b',
+              background: 'var(--bg-card)',
               borderRadius: 14,
-              border: '1px solid #334155',
+              border: '1px solid var(--border-color)',
               cursor: 'pointer',
             }}
             onClick={() => navigate('/admin/dashboard')}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
                   Doanh thu nền tảng
                 </div>
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', marginTop: 4 }}>
@@ -266,7 +266,7 @@ export const AdminHomePage: React.FC = () => {
                     `${((summary?.revenue?.total || 0) / 1000000).toFixed(1)}M đ`
                   )}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: 4 }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 4 }}>
                   Tháng này: {((summary?.revenue?.thisMonth || 0) / 1000000).toFixed(1)}M đ
                 </div>
               </div>
@@ -292,19 +292,19 @@ export const AdminHomePage: React.FC = () => {
           <Card
             bordered={false}
             style={{
-              background: '#1e293b',
+              background: 'var(--bg-card)',
               borderRadius: 14,
-              border: '1px solid #334155',
+              border: '1px solid var(--border-color)',
               cursor: 'pointer',
             }}
             onClick={() => navigate('/admin/reconstruction')}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700 }}>
                   Tái tạo mô hình 3D AI
                 </div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
                   {loadingSummary ? <Spin size="small" /> : summary?.reconstruction?.total ?? 0}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#a855f7', marginTop: 4 }}>
@@ -333,12 +333,12 @@ export const AdminHomePage: React.FC = () => {
       {/* 4. Quick Actions */}
       <Card
         title={
-          <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
             Lối tắt quản trị nhanh (Quick Actions)
           </span>
         }
         bordered={false}
-        style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+        style={{ background: 'var(--bg-card)', borderRadius: 14, border: '1px solid var(--border-color)' }}
       >
         <Row gutter={[16, 16]}>
           {[
@@ -393,8 +393,8 @@ export const AdminHomePage: React.FC = () => {
                   style={{
                     padding: '18px 20px',
                     borderRadius: 12,
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid #334155',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-color)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -406,7 +406,7 @@ export const AdminHomePage: React.FC = () => {
                     e.currentTarget.style.transform = 'translateY(-2px)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#334155';
+                    e.currentTarget.style.borderColor = 'var(--border-color)';
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
@@ -427,15 +427,15 @@ export const AdminHomePage: React.FC = () => {
                       <Icon size={20} />
                     </div>
                     <div>
-                      <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.95rem' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
                         {act.title}
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: 2 }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 2 }}>
                         {act.desc}
                       </div>
                     </div>
                   </div>
-                  <ArrowRight size={16} color="#64748b" />
+                  <ArrowRight size={16} style={{ color: 'var(--text-muted)' }} />
                 </div>
               </Col>
             );
@@ -447,7 +447,7 @@ export const AdminHomePage: React.FC = () => {
       <Card
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+            <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
               Nhật ký hành động gần đây (Audit Stream)
             </span>
             <Button
@@ -460,14 +460,14 @@ export const AdminHomePage: React.FC = () => {
           </div>
         }
         bordered={false}
-        style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+        style={{ background: 'var(--bg-card)', borderRadius: 14, border: '1px solid var(--border-color)' }}
       >
         {loadingAudit ? (
           <div style={{ textAlign: 'center', padding: 24 }}>
             <Spin />
           </div>
         ) : !auditLogs?.content || auditLogs.content.length === 0 ? (
-          <div style={{ color: '#94a3b8', textAlign: 'center', padding: 24 }}>
+          <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: 24 }}>
             Chưa có hành động audit nào được ghi nhận.
           </div>
         ) : (
@@ -481,8 +481,8 @@ export const AdminHomePage: React.FC = () => {
                   justifyContent: 'space-between',
                   padding: '12px 16px',
                   borderRadius: 10,
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-color)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -490,15 +490,15 @@ export const AdminHomePage: React.FC = () => {
                     {log.action}
                   </Tag>
                   <div>
-                    <span style={{ fontWeight: 600, color: '#f8fafc' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                       {log.actorEmail || 'HỆ THỐNG'}
                     </span>
-                    <span style={{ color: '#94a3b8', fontSize: '0.85rem', marginLeft: 8 }}>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginLeft: 8 }}>
                       thực hiện trên {log.entityType || 'Resource'} ({log.entityId || 'ID'})
                     </span>
                   </div>
                 </div>
-                <div style={{ color: '#64748b', fontSize: '0.8rem' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                   {dayjs(log.createdAt).format('HH:mm:ss DD/MM/YYYY')}
                 </div>
               </div>

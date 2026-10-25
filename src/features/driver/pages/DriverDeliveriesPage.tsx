@@ -107,13 +107,13 @@ export const DriverDeliveriesPage: React.FC = () => {
       key: 'tracking',
       render: (_: unknown, record: DeliveryRun) => (
         <div>
-          <div style={{ fontWeight: 600, color: '#f8fafc', fontSize: '0.875rem' }}>
+          <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>
             {record.trackingCode}
           </div>
-          <div style={{ color: '#0ea5e9', fontSize: '0.775rem' }}>
+          <div style={{ color: 'var(--primary)', fontSize: '0.8rem', fontWeight: 600, marginTop: 2 }}>
             Mã đơn: {record.orderRef}
           </div>
-          <div style={{ color: '#64748b', fontSize: '0.725rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: 2 }}>
             {record.itemDescription} ({record.weightGrams}g)
           </div>
         </div>
@@ -124,14 +124,15 @@ export const DriverDeliveriesPage: React.FC = () => {
       key: 'destination',
       render: (_: unknown, record: DeliveryRun) => (
         <div>
-          <div style={{ color: '#e2e8f0', fontWeight: 500, fontSize: '0.85rem' }}>
+          <div style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.875rem' }}>
             {record.recipientName}
           </div>
-          <div style={{ color: '#10b981', fontSize: '0.775rem', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <PhoneCall size={12} /> {record.phone}
+          <div style={{ color: 'var(--tertiary)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
+            <PhoneCall size={13} /> {record.phone}
           </div>
-          <div style={{ color: '#94a3b8', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-            <MapPin size={12} color="#f59e0b" /> {record.shippingAddress}
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.775rem', display: 'flex', alignItems: 'center', gap: 5, marginTop: 3 }}>
+            <MapPin size={13} color="var(--warning)" style={{ flexShrink: 0 }} />
+            <span>{record.shippingAddress}</span>
           </div>
         </div>
       ),
@@ -142,13 +143,13 @@ export const DriverDeliveriesPage: React.FC = () => {
       render: (_: unknown, record: DeliveryRun) => (
         <div>
           {record.paymentType === 'PREPAID' ? (
-            <Tag color="green">ĐÃ THANH TOÁN ONLINE</Tag>
+            <Tag color="success">ĐÃ THANH TOÁN ONLINE</Tag>
           ) : (
-            <Tag color="gold">
+            <Tag color="warning">
               THU HỘ COD: {record.codAmount?.toLocaleString('vi-VN')} VND
             </Tag>
           )}
-          <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: 4 }}>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: 4 }}>
             Dự kiến: {record.eta}
           </div>
         </div>
@@ -161,13 +162,13 @@ export const DriverDeliveriesPage: React.FC = () => {
       render: (status: DeliveryRun['status']) => {
         switch (status) {
           case 'ASSIGNED':
-            return <Badge status="default" text={<span style={{ color: '#94a3b8' }}>Tại cửa xuất kho</span>} />;
+            return <Badge status="default" text={<span style={{ color: 'var(--text-secondary)' }}>Tại cửa xuất kho</span>} />;
           case 'PICKED_UP':
-            return <Badge status="warning" text={<span style={{ color: '#f59e0b' }}>Đã lấy từ trạm kho</span>} />;
+            return <Badge status="warning" text={<span style={{ color: 'var(--warning-text, var(--warning))' }}>Đã lấy từ trạm kho</span>} />;
           case 'IN_TRANSIT':
-            return <Badge status="processing" text={<span style={{ color: '#38bdf8' }}>Đang trên đường giao</span>} />;
+            return <Badge status="processing" text={<span style={{ color: 'var(--primary)' }}>Đang trên đường giao</span>} />;
           case 'DELIVERED':
-            return <Badge status="success" text={<span style={{ color: '#10b981' }}>Đã giao & Ký nhận</span>} />;
+            return <Badge status="success" text={<span style={{ color: 'var(--tertiary)' }}>Đã giao &amp; Ký nhận</span>} />;
         }
       },
     },
@@ -188,7 +189,7 @@ export const DriverDeliveriesPage: React.FC = () => {
           {record.status === 'PICKED_UP' && (
             <Button
               size="small"
-              style={{ borderColor: '#38bdf8', color: '#38bdf8' }}
+              style={{ borderColor: 'var(--primary)', color: 'var(--primary)' }}
               onClick={() => handleUpdateStatus(record.id, 'IN_TRANSIT')}
             >
               Bắt đầu giao
@@ -198,7 +199,7 @@ export const DriverDeliveriesPage: React.FC = () => {
             <Button
               size="small"
               type="primary"
-              style={{ background: '#10b981', borderColor: '#10b981' }}
+              style={{ background: 'var(--tertiary)', borderColor: 'var(--tertiary)', color: '#fff' }}
               onClick={() => handleUpdateStatus(record.id, 'DELIVERED')}
             >
               Xác nhận đã giao
@@ -215,7 +216,7 @@ export const DriverDeliveriesPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '0 0 32px 0' }}>
+    <div style={{ padding: '0 0 32px 0' }} id="driver-deliveries-page">
       <PageHeader
         title="Cổng Giao vận & Điều phối Tài xế"
         description={`Tài xế đang đăng nhập: ${user?.fullName || 'Đội xe vận chuyển'} (${user?.email})`}
@@ -223,75 +224,91 @@ export const DriverDeliveriesPage: React.FC = () => {
       />
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 28 }}>
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.65)', 
-          border: '1px solid rgba(255, 255, 255, 0.06)', 
-          borderRadius: 12, 
-          padding: 20 
+          background: 'var(--bg-card)', 
+          border: '1px solid var(--border-color)', 
+          borderRadius: 'var(--radius-card, 24px)', 
+          padding: 24,
+          boxShadow: 'var(--shadow-card)',
+          transition: 'all var(--transition-normal)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.825rem', fontWeight: 600 }}>
             <span>Tổng lộ trình hôm nay</span>
-            <Navigation size={18} color="#10b981" />
+            <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-default)', background: 'var(--mint-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Navigation size={18} color="var(--tertiary)" />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 8, fontVariantNumeric: 'tabular-nums' }}>
             {deliveries.length} Kiện hàng
           </div>
-          <div style={{ color: '#10b981', fontSize: '0.75rem', marginTop: 4 }}>
-            Khu vực: Quận 1, 3, 5, TP. Thủ Đức
+          <div style={{ color: 'var(--tertiary)', fontSize: '0.8rem', fontWeight: 600, marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span>Khu vực: Quận 1, 3, 5, TP. Thủ Đức</span>
           </div>
         </div>
 
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.65)', 
-          border: '1px solid rgba(255, 255, 255, 0.06)', 
-          borderRadius: 12, 
-          padding: 20 
+          background: 'var(--bg-card)', 
+          border: '1px solid var(--border-color)', 
+          borderRadius: 'var(--radius-card, 24px)', 
+          padding: 24,
+          boxShadow: 'var(--shadow-card)',
+          transition: 'all var(--transition-normal)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.825rem', fontWeight: 600 }}>
             <span>Chờ lấy hàng tại kho</span>
-            <PackageCheck size={18} color="#f59e0b" />
+            <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-default)', background: 'var(--secondary-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <PackageCheck size={18} color="var(--secondary-active)" />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 8, fontVariantNumeric: 'tabular-nums' }}>
             {deliveries.filter((d) => d.status === 'ASSIGNED').length}
           </div>
-          <div style={{ color: '#f59e0b', fontSize: '0.75rem', marginTop: 4 }}>
+          <div style={{ color: 'var(--secondary-active)', fontSize: '0.8rem', fontWeight: 600, marginTop: 6 }}>
             Kho WH-HCM-01 Cửa xuất 2
           </div>
         </div>
 
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.65)', 
-          border: '1px solid rgba(255, 255, 255, 0.06)', 
-          borderRadius: 12, 
-          padding: 20 
+          background: 'var(--bg-card)', 
+          border: '1px solid var(--border-color)', 
+          borderRadius: 'var(--radius-card, 24px)', 
+          padding: 24,
+          boxShadow: 'var(--shadow-card)',
+          transition: 'all var(--transition-normal)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.825rem', fontWeight: 600 }}>
             <span>Đang trên đường giao</span>
-            <Clock size={18} color="#38bdf8" />
+            <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-default)', background: 'var(--primary-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Clock size={18} color="var(--primary)" />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 8, fontVariantNumeric: 'tabular-nums' }}>
             {deliveries.filter((d) => d.status === 'IN_TRANSIT' || d.status === 'PICKED_UP').length}
           </div>
-          <div style={{ color: '#38bdf8', fontSize: '0.75rem', marginTop: 4 }}>
+          <div style={{ color: 'var(--primary)', fontSize: '0.8rem', fontWeight: 600, marginTop: 6 }}>
             Đã xếp lên xe vận chuyển
           </div>
         </div>
 
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.65)', 
-          border: '1px solid rgba(255, 255, 255, 0.06)', 
-          borderRadius: 12, 
-          padding: 20 
+          background: 'var(--bg-card)', 
+          border: '1px solid var(--border-color)', 
+          borderRadius: 'var(--radius-card, 24px)', 
+          padding: 24,
+          boxShadow: 'var(--shadow-card)',
+          transition: 'all var(--transition-normal)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.825rem', fontWeight: 600 }}>
             <span>Đã giao thành công</span>
-            <CheckCircle2 size={18} color="#a855f7" />
+            <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-default)', background: 'var(--info-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle2 size={18} color="var(--primary-system)" />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#f8fafc', marginTop: 8 }}>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 8, fontVariantNumeric: 'tabular-nums' }}>
             {deliveries.filter((d) => d.status === 'DELIVERED').length}
           </div>
-          <div style={{ color: '#a855f7', fontSize: '0.75rem', marginTop: 4 }}>
+          <div style={{ color: 'var(--primary-system)', fontSize: '0.8rem', fontWeight: 600, marginTop: 6 }}>
             Tỉ lệ hài lòng 100%
           </div>
         </div>
@@ -299,17 +316,18 @@ export const DriverDeliveriesPage: React.FC = () => {
 
       {/* Main Delivery Table */}
       <div style={{ 
-        background: 'rgba(15, 23, 42, 0.65)', 
-        border: '1px solid rgba(255, 255, 255, 0.06)', 
-        borderRadius: 12, 
-        padding: 24 
+        background: 'var(--bg-card)', 
+        border: '1px solid var(--border-color)', 
+        borderRadius: 'var(--radius-card, 24px)', 
+        padding: 24,
+        boxShadow: 'var(--shadow-card)' 
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#f8fafc' }}>
-              Danh sách chuyến giao & Điểm dừng chỉ định
+            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              Danh sách chuyến giao &amp; Điểm dừng chỉ định
             </h3>
-            <p style={{ margin: '2px 0 0', color: '#94a3b8', fontSize: '0.8rem' }}>
+            <p style={{ margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
               Lấy kỷ vật 3D từ trung tâm xử lý, đi theo lộ trình tối ưu và xác nhận biên bản giao hàng.
             </p>
           </div>

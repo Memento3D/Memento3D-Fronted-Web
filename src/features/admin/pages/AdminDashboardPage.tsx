@@ -64,7 +64,7 @@ export const AdminDashboardPage: React.FC = () => {
       title: 'Danh mục sản phẩm',
       dataIndex: 'categoryName',
       key: 'categoryName',
-      render: (val: string) => <span style={{ fontWeight: 600, color: '#f8fafc' }}>{val}</span>,
+      render: (val: string) => <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{val}</span>,
     },
     {
       title: 'Số đơn hàng',
@@ -79,7 +79,7 @@ export const AdminDashboardPage: React.FC = () => {
       key: 'revenue',
       sorter: (a: any, b: any) => a.revenue - b.revenue,
       render: (val: number) => (
-        <span style={{ fontWeight: 700, color: '#10b981' }}>
+        <span style={{ fontWeight: 700, color: 'var(--tertiary)' }}>
           {(val || 0).toLocaleString('vi-VN')} đ
         </span>
       ),
@@ -91,10 +91,10 @@ export const AdminDashboardPage: React.FC = () => {
       {/* Top Header Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
             Bảng điều khiển Giám sát Toàn diện
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Tổng hợp dữ liệu thời gian thực từ cơ sở dữ liệu PostgreSQL và hạ tầng sản xuất
           </div>
         </div>
@@ -111,20 +111,20 @@ export const AdminDashboardPage: React.FC = () => {
       <Row gutter={[16, 16]}>
         {/* Users KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Người dùng
               </span>
-              <Users size={16} color="#6366f1" />
+              <Users size={16} color="var(--primary)" />
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
               {loadingSummary ? <Spin size="small" /> : summary?.users?.total ?? 0}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#10b981', marginTop: 4 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--tertiary)', marginTop: 4 }}>
               {summary?.users?.active ?? 0} Hoạt động • {summary?.users?.locked ?? 0} Khóa
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 2 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
               +{summary?.users?.newThisMonth ?? 0} tháng này
             </div>
           </Card>
@@ -132,20 +132,20 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Orders KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Đơn hàng
               </span>
-              <ShoppingBag size={16} color="#38bdf8" />
+              <ShoppingBag size={16} color="var(--primary)" />
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
               {loadingSummary ? <Spin size="small" /> : summary?.orders?.total ?? 0}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#38bdf8', marginTop: 4 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--primary)', marginTop: 4 }}>
               +{summary?.orders?.ordersToday ?? 0} hôm nay
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 2 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
               {summary?.orders?.completed ?? 0} đã hoàn thành
             </div>
           </Card>
@@ -153,24 +153,24 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Revenue KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Doanh thu
               </span>
-              <TrendingUp size={16} color="#10b981" />
+              <TrendingUp size={16} color="var(--tertiary)" />
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#10b981', marginTop: 4 }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--tertiary)', marginTop: 4 }}>
               {loadingSummary ? (
                 <Spin size="small" />
               ) : (
                 `${((summary?.revenue?.total || 0) / 1000000).toFixed(1)}M đ`
               )}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#cbd5e1', marginTop: 4 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 4 }}>
               Hôm nay: {((summary?.revenue?.today || 0) / 1000).toLocaleString('vi-VN')}k đ
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 2 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
               AOV: {((summary?.revenue?.averageOrderValue || 0) / 1000).toLocaleString('vi-VN')}k đ
             </div>
           </Card>
@@ -178,20 +178,20 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Catalog KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Sản phẩm & Danh mục
               </span>
-              <Package size={16} color="#f59e0b" />
+              <Package size={16} color="var(--secondary-active)" />
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
               {loadingSummary ? <Spin size="small" /> : summary?.catalog?.totalProducts ?? 0}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#f59e0b', marginTop: 4 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--secondary-active)', marginTop: 4 }}>
               {summary?.catalog?.totalCategories ?? 0} Phân loại
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 2 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
               Danh mục hoạt động
             </div>
           </Card>
@@ -199,20 +199,20 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* 3D Reconstruction KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Tái tạo 3D AI
               </span>
-              <Box size={16} color="#a855f7" />
+              <Box size={16} color="var(--primary)" />
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
               {loadingSummary ? <Spin size="small" /> : summary?.reconstruction?.total ?? 0}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#a855f7', marginTop: 4 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--primary)', marginTop: 4 }}>
               {summary?.reconstruction?.completed ?? 0} Xong • {summary?.reconstruction?.failed ?? 0} Lỗi
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 2 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
               {summary?.reconstruction?.premiumJobs ?? 0} HQ • {summary?.reconstruction?.previewJobs ?? 0} Preview
             </div>
           </Card>
@@ -220,20 +220,20 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Printers Hardware KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Đội máy in
               </span>
-              <Printer size={16} color="#06b6d4" />
+              <Printer size={16} color="var(--tertiary)" />
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
               {loadingSummary ? <Spin size="small" /> : summary?.printers?.total ?? 0}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#10b981', marginTop: 4 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--tertiary)', marginTop: 4 }}>
               {summary?.printers?.printersOnline ?? 0} Online
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: 2 }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--error)', marginTop: 2 }}>
               {summary?.printers?.printersOffline ?? 0} Mất kết nối
             </div>
           </Card>
@@ -246,7 +246,7 @@ export const AdminDashboardPage: React.FC = () => {
           <Card
             title={
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-                <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
                   Biến động Doanh thu Nền tảng (amCharts 5)
                 </span>
                 <Radio.Group
@@ -265,7 +265,7 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             }
             bordered={false}
-            style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+            style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}
           >
             {loadingRevenue ? (
               <div style={{ height: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -283,12 +283,12 @@ export const AdminDashboardPage: React.FC = () => {
         <Col xs={24} lg={8}>
           <Card
             title={
-              <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
                 Phân bố Trạng thái Đơn hàng
               </span>
             }
             bordered={false}
-            style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+            style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}
           >
             <OrderStatusDonutChart stats={summary?.orders} />
           </Card>
@@ -301,7 +301,7 @@ export const AdminDashboardPage: React.FC = () => {
           <Card
             title={
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
                   Tăng trưởng Thành viên (Đăng ký mới & Tích lũy)
                 </span>
                 <Radio.Group
@@ -317,7 +317,7 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             }
             bordered={false}
-            style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+            style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}
           >
             {loadingGrowth ? (
               <div style={{ height: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -332,12 +332,12 @@ export const AdminDashboardPage: React.FC = () => {
         <Col xs={24} lg={10}>
           <Card
             title={
-              <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
                 Thống kê Tái tạo 3D AI
               </span>
             }
             bordered={false}
-            style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+            style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}
           >
             <ReconstructionStatsChart stats={summary?.reconstruction} />
           </Card>
@@ -347,12 +347,12 @@ export const AdminDashboardPage: React.FC = () => {
       {/* Row 4: Top Category Performance Table */}
       <Card
         title={
-          <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
             Hiệu suất Danh mục Sản phẩm (Doanh thu & Số lượng đơn)
           </span>
         }
         bordered={false}
-        style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+        style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}
       >
         <Table
           columns={categoryColumns}
