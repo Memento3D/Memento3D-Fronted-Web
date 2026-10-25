@@ -179,7 +179,7 @@ export const StockIssuesManagementPage: React.FC = () => {
       title: 'Kho xuất',
       dataIndex: 'warehouseName',
       key: 'warehouseName',
-      render: (name: string) => <Text strong style={{ color: '#e2e8f0' }}>{name || 'Kho hàng'}</Text>,
+      render: (name: string) => <Text strong style={{ color: 'var(--text-primary)' }}>{name || 'Kho hàng'}</Text>,
     },
     {
       title: 'Phân loại / Mục đích',
@@ -187,7 +187,7 @@ export const StockIssuesManagementPage: React.FC = () => {
       render: (_: any, r: StockIssue) => (
         <div>
           <Tag color="cyan">{getCategoryLabel(r.referenceType)}</Tag>
-          {r.reason && <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{r.reason}</div>}
+          {r.reason && <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{r.reason}</div>}
         </div>
       ),
     },
@@ -195,7 +195,7 @@ export const StockIssuesManagementPage: React.FC = () => {
       title: 'Mặt hàng',
       dataIndex: 'items',
       key: 'items',
-      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} mặt hàng</Text>,
+      render: (items: any[]) => <Text style={{ color: 'var(--text-secondary)' }}>{items?.length || 0} mặt hàng</Text>,
     },
     {
       title: 'Trạng thái',
@@ -207,7 +207,7 @@ export const StockIssuesManagementPage: React.FC = () => {
       title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (val: string) => <Text style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(val).toLocaleDateString()}</Text>,
+      render: (val: string) => <Text style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{new Date(val).toLocaleDateString()}</Text>,
     },
     {
       title: 'Thao tác',
@@ -273,10 +273,10 @@ export const StockIssuesManagementPage: React.FC = () => {
     <div style={{ padding: 24, maxWidth: 1600, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary)', fontWeight: 800 }}>
             Quản lý phiếu xuất kho
           </Title>
-          <Text style={{ color: '#94a3b8' }}>
+          <Text style={{ color: 'var(--text-secondary)' }}>
             Quy trình xuất kho: BẢN NHÁP → ĐÃ GỬI DUYỆT → ĐÃ PHÊ DUYỆT → HOÀN TẤT
           </Text>
         </div>
@@ -305,7 +305,7 @@ export const StockIssuesManagementPage: React.FC = () => {
         </Space>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Table 
           columns={columns} 
           dataSource={issuesData?.content || []} 
@@ -445,7 +445,7 @@ export const StockIssuesManagementPage: React.FC = () => {
               <Descriptions.Item label="Thời gian hoàn tất">{viewIssue.completedAt ? new Date(viewIssue.completedAt).toLocaleString() : '—'}</Descriptions.Item>
             </Descriptions>
 
-            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Danh sách mặt hàng xuất kho</Title>
+            <Title level={5} style={{ color: 'var(--text-primary)', marginTop: 16 }}>Danh sách mặt hàng xuất kho</Title>
             <Table
               dataSource={viewIssue.items || []}
               rowKey="id"

@@ -33,10 +33,11 @@ export const CustomerHomePage: React.FC = () => {
     limit: 4,
   });
 
-  // Fetch real categories from database
+  // Fetch real categories from database (shared cache with product catalog)
   const { data: realCategories, isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ['customer-home-categories'],
+    queryKey: ['categories-active'],
     queryFn: () => categoryApi.list(true),
+    staleTime: 10 * 60 * 1000,
   });
 
   const recentOrders = ordersData?.orders || [];
@@ -47,49 +48,49 @@ export const CustomerHomePage: React.FC = () => {
         {/* 1. Customer Hero Banner */}
         <div
           style={{
-            background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
-            border: '1px solid rgba(14, 165, 233, 0.25)',
-            borderRadius: 20,
-            padding: '36px 32px',
-            marginBottom: 28,
-            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.25)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-card, 10px)',
+            padding: '24px 28px',
+            marginBottom: 20,
+            boxShadow: 'var(--shadow-sm)',
             display: 'flex',
             flexDirection: 'column',
-            gap: 16,
+            gap: 14,
             position: 'relative',
             overflow: 'hidden',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Tag color="cyan" style={{ borderRadius: 6, fontWeight: 700, margin: 0, padding: '2px 10px' }}>
+            <Tag color="cyan" style={{ borderRadius: 4, fontWeight: 600, margin: 0, padding: '2px 8px' }}>
               Không gian Sáng tạo Khách hàng
             </Tag>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>• {user?.email}</span>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.825rem' }}>• {user?.email}</span>
           </div>
 
           <div>
-            <h1 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 8px', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
               {greeting}
             </h1>
-            <p style={{ fontSize: '1.15rem', color: 'var(--text-secondary)', margin: 0, maxWidth: 740, lineHeight: 1.5 }}>
+            <p style={{ fontSize: '0.925rem', color: 'var(--text-secondary)', margin: 0, maxWidth: 720, lineHeight: 1.5 }}>
               Biến những khoảnh khắc đáng giá của bạn thành kỷ vật 3D cầm nắm được. Hãy bắt đầu tải ảnh quét hoặc khám phá bộ sưu tập độc bản hôm nay.
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', marginTop: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginTop: 4 }}>
             <Button
               type="primary"
               size="large"
               icon={<ThunderboltOutlined />}
               onClick={() => navigate('/reconstruction/demo')}
               style={{
-                height: 46,
-                padding: '0 24px',
-                borderRadius: 10,
-                fontWeight: 700,
-                background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
-                borderColor: 'transparent',
-                boxShadow: '0 4px 14px rgba(14, 165, 233, 0.4)',
+                height: 40,
+                padding: '0 20px',
+                borderRadius: 'var(--radius-sm, 6px)',
+                fontWeight: 600,
+                background: 'var(--primary)',
+                borderColor: 'var(--primary)',
+                boxShadow: 'none',
               }}
             >
               Tạo mô hình 3D ngay
@@ -99,29 +100,23 @@ export const CustomerHomePage: React.FC = () => {
               icon={<AppstoreOutlined />}
               onClick={() => navigate('/products')}
               style={{
-                height: 46,
-                padding: '0 24px',
-                borderRadius: 10,
-                fontWeight: 600,
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'rgba(255, 255, 255, 0.15)',
-                color: 'var(--text-primary)',
+                height: 40,
+                padding: '0 20px',
+                borderRadius: 'var(--radius-sm, 6px)',
+                fontWeight: 500,
               }}
             >
               Khám phá sản phẩm
             </Button>
             <Button
               size="large"
-              icon={<ShoppingBag size={16} />}
+              icon={<ShoppingBag size={15} />}
               onClick={() => navigate('/orders')}
               style={{
-                height: 46,
-                padding: '0 24px',
-                borderRadius: 10,
-                fontWeight: 600,
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'rgba(255, 255, 255, 0.15)',
-                color: 'var(--text-primary)',
+                height: 40,
+                padding: '0 20px',
+                borderRadius: 'var(--radius-sm, 6px)',
+                fontWeight: 500,
               }}
             >
               Đơn hàng của tôi
@@ -168,7 +163,7 @@ export const CustomerHomePage: React.FC = () => {
               </Button>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
               {recentOrders.map((order: OrderResponse) => (
                 <div
                   key={order.id}
@@ -176,37 +171,39 @@ export const CustomerHomePage: React.FC = () => {
                   style={{
                     background: 'var(--bg-card)',
                     border: '1px solid var(--border-color)',
-                    borderRadius: 14,
-                    padding: 18,
+                    borderRadius: 'var(--radius-card, 10px)',
+                    padding: 16,
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease',
+                    transition: 'all 0.15s ease',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.borderColor = 'var(--primary)';
+                    e.currentTarget.style.borderColor = 'var(--border-hover)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
                     e.currentTarget.style.borderColor = 'var(--border-color)';
+                    e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <span style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)' }}>
                       #{order.id.substring(0, 8).toUpperCase()}
                     </span>
-                    <Tag color={order.status === 'COMPLETED' ? 'green' : order.status === 'PRINTING' ? 'blue' : 'gold'}>
+                    <Tag color={order.status === 'COMPLETED' ? 'green' : order.status === 'PRINTING' ? 'blue' : 'gold'} style={{ borderRadius: 4, margin: 0 }}>
                       {getStatusLabel(order.status)}
                     </Tag>
                   </div>
-                  <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: 8 }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
                     {order.items?.length ? `${order.items.length} kỷ vật` : 'Kỷ vật 3D'} &bull;{' '}
                     {new Date(order.createdAt).toLocaleDateString('vi-VN')}
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--primary)' }}>
+                    <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--primary)' }}>
                       {((order.totalPrice || order.totalAmount || 0)).toLocaleString('vi-VN')} đ
                     </span>
-                    <span style={{ fontSize: '0.775rem', color: 'var(--text-muted)' }}>Xem chi tiết &rarr;</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Xem chi tiết &rarr;</span>
                   </div>
                 </div>
               ))}
@@ -216,12 +213,12 @@ export const CustomerHomePage: React.FC = () => {
 
         {/* 4. Product Categories Spotlight */}
         <div>
-          <div style={{ marginBottom: 16 }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ marginBottom: 14 }}>
+            <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
               <AppstoreOutlined style={{ color: 'var(--primary)' }} />
               <span>Danh mục sản phẩm & Dịch vụ 3D</span>
             </h2>
-            <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+            <p style={{ margin: '3px 0 0', color: 'var(--text-secondary)', fontSize: '0.825rem' }}>
               Lựa chọn hình thức kỷ vật phù hợp nhất với câu chuyện của bạn
             </p>
           </div>
@@ -229,7 +226,7 @@ export const CustomerHomePage: React.FC = () => {
           {isCategoriesLoading ? (
             <Skeleton active paragraph={{ rows: 3 }} />
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
               {categoriesList.map((cat: ProductCategory) => (
                 <div
                   key={cat.id}
@@ -237,19 +234,19 @@ export const CustomerHomePage: React.FC = () => {
                   style={{
                     background: 'var(--bg-card)',
                     border: '1px solid var(--border-color)',
-                    borderRadius: 16,
-                    padding: 20,
+                    borderRadius: 'var(--radius-card, 10px)',
+                    padding: 16,
                     cursor: 'pointer',
-                    transition: 'all 0.25s ease',
+                    transition: 'all 0.15s ease',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    gap: 12,
+                    gap: 10,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                    e.currentTarget.style.borderColor = 'var(--primary)';
-                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.borderColor = 'var(--border-hover)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
@@ -258,33 +255,33 @@ export const CustomerHomePage: React.FC = () => {
                   }}
                 >
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                       {cat.imageUrl ? (
                         <img
                           src={cat.imageUrl}
                           alt={cat.name}
-                          style={{ width: 44, height: 44, borderRadius: 10, objectFit: 'cover' }}
+                          style={{ width: 40, height: 40, borderRadius: 'var(--radius-sm, 6px)', objectFit: 'cover' }}
                         />
                       ) : (
-                        <div style={{ width: 44, height: 44, borderRadius: 10, background: 'rgba(255, 255, 255, 0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Box size={22} color="var(--primary)" />
+                        <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-sm, 6px)', background: 'var(--surface-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Box size={20} color="var(--primary)" />
                         </div>
                       )}
-                      <Tag color="cyan" style={{ margin: 0, fontWeight: 700, fontSize: '0.7rem' }}>
+                      <Tag color="cyan" style={{ margin: 0, fontWeight: 600, fontSize: '0.7rem', borderRadius: 4 }}>
                         {(cat as any).productCount != null ? `${(cat as any).productCount} sản phẩm` : 'Bộ sưu tập'}
                       </Tag>
                     </div>
-                    <h3 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    <h3 style={{ margin: '0 0 4px', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                       {cat.name}
                     </h3>
-                    <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem', lineHeight: 1.4 }}>
+                    <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.775rem', lineHeight: 1.4 }}>
                       {cat.description || 'Khám phá các mẫu kỷ vật 3D tinh xảo thuộc danh mục này.'}
                     </p>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--primary)', fontWeight: 600, fontSize: '0.825rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--primary)', fontWeight: 600, fontSize: '0.8rem' }}>
                     <span>Khám phá ngay</span>
-                    <ArrowRight size={14} />
+                    <ArrowRight size={13} />
                   </div>
                 </div>
               ))}

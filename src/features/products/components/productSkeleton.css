@@ -26,7 +26,7 @@
 .product-card-skeleton {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-card, 24px);
+  border-radius: var(--radius-card, 10px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -49,18 +49,18 @@
 }
 
 .skeleton-body {
-  padding: 18px 20px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .category-card-skeleton {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-card, 24px);
-  padding: 26px 22px;
+  border-radius: var(--radius-card, 10px);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }

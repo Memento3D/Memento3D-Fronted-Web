@@ -26,12 +26,6 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   isRealTimeUpdated = false,
 }) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const [tilt, setTilt] = useState<{ rx: number; ry: number; px: number; py: number }>({
-    rx: 0,
-    ry: 0,
-    px: 50,
-    py: 50,
-  });
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const colors = useMemo(() => {
@@ -83,29 +77,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     }
   }, [colorTheme]);
 
-  // 3D Tilt calculation (strictly limited to 2.5 - 3.5 degrees)
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const px = (x / rect.width) * 100;
-    const py = (y / rect.height) * 100;
-
-    // Maximum 3 degrees rotation
-    const rx = ((y - rect.height / 2) / (rect.height / 2)) * -3;
-    const ry = ((x - rect.width / 2) / (rect.width / 2)) * 3;
-
-    setTilt({ rx, ry, px, py });
-  };
-
   const handleMouseEnter = () => setIsHovered(true);
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setTilt({ rx: 0, ry: 0, px: 50, py: 50 });
-  };
+  const handleMouseLeave = () => setIsHovered(false);
 
   // Generate lightweight SVG path for Sparkline
   const sparklineSvgPath = useMemo(() => {
@@ -132,60 +105,40 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   return (
     <div
       ref={cardRef}
-      onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
-        perspective: '1000px',
         height: '100%',
       }}
     >
       <div
         style={{
           background: 'var(--bg-card, #FFFFFF)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          borderRadius: 'var(--radius-card, 24px)',
+          borderRadius: 'var(--radius-card, 10px)',
           border: `1px solid ${isHovered ? colors.borderHover : 'var(--border-color, #E2D9F7)'}`,
-          boxShadow: isHovered
-            ? `var(--shadow-floating), 0 0 20px ${colors.glow}`
-            : 'var(--shadow-card)',
-          padding: '22px 24px',
+          boxShadow: isHovered ? 'var(--shadow-md)' : 'var(--shadow-sm)',
+          padding: '18px 20px',
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) translateZ(${isHovered ? '6px' : '0px'})`,
-          transition: isHovered ? 'transform 0.08s ease-out, box-shadow 0.2s ease' : 'transform 0.35s ease, box-shadow 0.35s ease',
+          transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
+          transition: 'transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease',
           position: 'relative',
           overflow: 'hidden',
           cursor: 'pointer',
         }}
       >
-        {/* Specular shine reflection gradient */}
-        {isHovered && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              pointerEvents: 'none',
-              background: `radial-gradient(circle 200px at ${tilt.px}% ${tilt.py}%, rgba(124, 92, 252, 0.06), transparent 80%)`,
-              borderRadius: 'var(--radius-card, 24px)',
-            }}
-          />
-        )}
-
         {/* Card Header (Title & Icon) */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {isRealTimeUpdated && (
               <span
                 style={{
-                  width: 7,
-                  height: 7,
+                  width: 6,
+                  height: 6,
                   borderRadius: '50%',
                   background: 'var(--tertiary, #466253)',
-                  boxShadow: '0 0 8px var(--mint, #C9E8D5)',
                   display: 'inline-block',
                 }}
                 title="Cập nhật trực tiếp thời gian thực"
@@ -195,10 +148,10 @@ export const MetricCard: React.FC<MetricCardProps> = ({
               <span
                 style={{
                   color: 'var(--text-secondary, #6A6282)',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  letterSpacing: '0.04em',
                 }}
               >
                 {title}
@@ -210,12 +163,11 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             style={{
               background: colors.iconBg,
               color: colors.iconColor,
-              padding: '10px',
-              borderRadius: 'var(--radius-default, 16px)',
+              padding: '8px',
+              borderRadius: 'var(--radius-sm, 6px)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: 'var(--shadow-sm)',
             }}
           >
             {icon}
@@ -223,15 +175,15 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         </div>
 
         {/* Card Main Value & Sparkline */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '8px 0 14px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '6px 0 10px' }}>
           <div
             style={{
-              fontSize: '2.1rem',
-              fontWeight: 800,
+              fontSize: '1.6rem',
+              fontWeight: 700,
               fontVariantNumeric: 'tabular-nums',
-              letterSpacing: '-0.03em',
+              letterSpacing: '-0.02em',
               color: 'var(--text-primary, #28243D)',
-              lineHeight: 1.1,
+              lineHeight: 1.15,
             }}
           >
             {value}
@@ -239,12 +191,12 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
           {/* Mini Sparkline Chart */}
           {sparklineSvgPath && (
-            <svg width="80" height="28" style={{ overflow: 'visible', opacity: 0.9 }}>
+            <svg width="76" height="24" style={{ overflow: 'visible', opacity: 0.9 }}>
               <path
                 d={sparklineSvgPath}
                 fill="none"
                 stroke={colors.sparkColor}
-                strokeWidth="2.5"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -254,13 +206,13 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
         {/* Card Footer (Delta Comparison) */}
         {hasDelta && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.775rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.75rem' }}>
             <span
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 3,
-                fontWeight: 700,
+                gap: 2,
+                fontWeight: 600,
                 color: isNeutralDelta
                   ? 'var(--text-secondary)'
                   : isPositiveDelta
@@ -271,26 +223,27 @@ export const MetricCard: React.FC<MetricCardProps> = ({
                   : isPositiveDelta
                   ? 'var(--success-bg, #C9E8D5)'
                   : 'var(--danger-bg, #FFDAD6)',
-                padding: '3px 8px',
-                borderRadius: 'var(--radius-full, 9999px)',
+                padding: '2px 6px',
+                borderRadius: 'var(--radius-sm, 4px)',
                 border: isNeutralDelta
                   ? '1px solid var(--border-color)'
                   : isPositiveDelta
                   ? '1px solid var(--success-border)'
                   : '1px solid var(--danger-border)',
+                fontSize: '0.7rem',
               }}
             >
               {isNeutralDelta ? (
-                <Minus size={12} />
+                <Minus size={11} />
               ) : isPositiveDelta ? (
-                <ArrowUpRight size={12} />
+                <ArrowUpRight size={11} />
               ) : (
-                <ArrowDownRight size={12} />
+                <ArrowDownRight size={11} />
               )}
               {isPositiveDelta ? '+' : ''}
               {deltaPct}%
             </span>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>{deltaLabel}</span>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.725rem' }}>{deltaLabel}</span>
           </div>
         )}
       </div>

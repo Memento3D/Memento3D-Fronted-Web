@@ -48,10 +48,10 @@ export const AdminPrintJobsPage: React.FC = () => {
       key: 'job',
       render: (_: any, r: AdminPrintJob) => (
         <div>
-          <span style={{ fontWeight: 700, color: '#f8fafc' }}>
+          <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
             {r.jobName || r.id.substring(0, 8)}
           </span>
-          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             {dayjs(r.createdAt).format('DD/MM/YYYY HH:mm')}
           </div>
         </div>
@@ -61,7 +61,7 @@ export const AdminPrintJobsPage: React.FC = () => {
       title: 'Đơn hàng',
       key: 'order',
       render: (_: any, r: AdminPrintJob) => (
-        <span style={{ color: '#cbd5e1' }}>{r.orderNumber || r.orderId || '—'}</span>
+        <span style={{ color: 'var(--text-primary)' }}>{r.orderNumber || r.orderId || '—'}</span>
       ),
     },
     {
@@ -75,7 +75,7 @@ export const AdminPrintJobsPage: React.FC = () => {
       title: 'Vật liệu in',
       key: 'material',
       render: (_: any, r: AdminPrintJob) => (
-        <span style={{ color: '#94a3b8' }}>{r.materialName || 'Tiêu chuẩn'}</span>
+        <span style={{ color: 'var(--text-secondary)' }}>{r.materialName || 'Tiêu chuẩn'}</span>
       ),
     },
     {
@@ -103,10 +103,10 @@ export const AdminPrintJobsPage: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-print-jobs-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
             Giám sát Lệnh in Sản xuất Xưởng (Print Jobs)
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
             Theo dõi phân công máy in, tiến độ đùn nhựa và tiêu hao vật tư
           </div>
         </div>
@@ -115,11 +115,11 @@ export const AdminPrintJobsPage: React.FC = () => {
         </Button>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <Input
             placeholder="Tìm theo mã lệnh in hoặc đơn hàng..."
-            prefix={<Search size={14} color="#94a3b8" />}
+            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -147,7 +147,7 @@ export const AdminPrintJobsPage: React.FC = () => {
         </div>
       </Card>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Table
           columns={columns}
           dataSource={jobsPage?.content || []}

@@ -3,7 +3,11 @@
    Memento3D Physical Keepsake & Spatial Platform
    ========================================================================== */
 
-:root {
+:root,
+[data-theme='light'],
+body.light-theme {
+  color-scheme: light;
+
   /* Font Families */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -58,12 +62,12 @@
   --success-border: #A5D7B7;
   --text-on-success: #1E3B2C;
 
-  /* Text Hierarchy */
-  --text-primary: #28243D;
+  /* Text Hierarchy (High Contrast WCAG AA compliant) */
+  --text-primary: #1C1831;
   --text-system: #1C1831;
-  --text-secondary: #6A6282;
-  --text-muted: #8E86A8;
-  --text-subtle: #AFA8C5;
+  --text-secondary: #524B6B;
+  --text-muted: #7A7294;
+  --text-subtle: #9E96BA;
   --text-inverse: #FFFFFF;
 
   /* Borders & Dividers */
@@ -94,45 +98,82 @@
   --info-border: #DDD6F7;
   --info-text: #5F3ADD;
 
-  /* Neutral Lavender Chip / Archived */
-  --neutral-chip-bg: #F1EBFF;
-  --neutral-chip-text: #6A6282;
+  /* Neutral Segmented Chip (Light Mode) */
+  --neutral-chip-bg: #FFFFFF;
+  --neutral-chip-bg-hover: #F1EBFF;
+  --neutral-chip-text: #524B6B;
+  --neutral-chip-text-hover: #1C1831;
   --neutral-chip-border: #E2D9F7;
 
-  /* Spacing Scale */
-  --space-xs: 6px;
-  --space-sm: 12px;
-  --space-md: 20px;
-  --space-lg: 32px;
-  --space-xl: 48px;
+  /* Spacing Scale (Standardized) */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
 
-  /* Border Radii */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Standard Component Sizing Scale */
+  --control-height-sm: 32px;
+  --control-height-md: 40px;
+  --control-height-lg: 48px;
+
+  --nav-height-desktop: 64px;
+  --nav-height-mobile: 56px;
+  --sidebar-width-expanded: 236px;
+  --sidebar-width-collapsed: 68px;
+  --table-row-height: 48px;
+  --modal-width-sm: 440px;
+  --modal-width-md: 600px;
+  --modal-width-lg: 800px;
+  --content-max-width: 1440px;
+
+  /* Border Radii (Clean, Standardized 6-12px) */
   --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-default: 16px;
-  --radius-input: 20px;
-  --radius-md: 24px;
-  --radius-card: 24px;
-  --radius-feature: 28px;
-  --radius-modal: 28px;
-  --radius-lg: 32px;
-  --radius-xl: 48px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-default: 8px;
+  --radius-input: 8px;
+  --radius-card: 10px;
+  --radius-feature: 12px;
+  --radius-modal: 12px;
+  --radius-xl: 16px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 2px 8px -2px rgba(124, 92, 252, 0.06), 0 1px 3px 0 rgba(40, 36, 61, 0.03);
-  --shadow-card: 0 8px 24px -4px rgba(124, 92, 252, 0.08), 0 2px 6px -1px rgba(40, 36, 61, 0.04);
-  --shadow-floating: 0 20px 40px -8px rgba(124, 92, 252, 0.16), 0 4px 12px -2px rgba(40, 36, 61, 0.06);
-  --shadow-glow: 0 0 24px rgba(124, 92, 252, 0.28);
-  --shadow-peach: 0 8px 24px -4px rgba(255, 191, 174, 0.35);
+  /* Shadows (Clean, Subtle & Enterprise-grade) */
+  --shadow-sm: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(16, 24, 40, 0.07), 0 1px 2px -1px rgba(16, 24, 40, 0.05);
+  --shadow-floating: 0 8px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.04);
+  --shadow-glow: 0 0 0 3px rgba(124, 92, 252, 0.16);
+  --shadow-peach: 0 1px 3px 0 rgba(226, 118, 90, 0.2);
 
-  /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.78);
-  --glass-blur: blur(16px);
-  --glass-border: 1px solid #E2D9F7;
+  /* Glassmorphism Subtle */
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --glass-blur: blur(8px);
+  --glass-border: 1px solid var(--border-color);
 
   /* Standard Design Tokens (Unified Aliases) */
+  --bg-primary: var(--bg-app);
+  --bg-secondary: var(--surface-low);
+  --bg-elevated: var(--surface-container);
+  --border-primary: var(--border-color);
+  --border-default: var(--border-color);
+  --table-header: var(--surface-low);
+  --table-row: #FFFFFF;
+  --table-row-hover: var(--surface-lowest);
+  --table-border: var(--border-color);
+  --foreground: var(--text-primary);
+
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-bg: var(--bg-app);
   --color-surface: var(--bg-surface);
@@ -144,11 +185,11 @@
   --color-danger: var(--error);
   --color-info: var(--info);
 
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
+  --spacing-xs: var(--spacing-1);
+  --spacing-sm: var(--spacing-2);
+  --spacing-md: var(--spacing-4);
+  --spacing-lg: var(--spacing-6);
+  --spacing-xl: var(--spacing-8);
   --spacing-2xl: 48px;
   --spacing-3xl: 64px;
 
@@ -157,8 +198,8 @@
 
   /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ==========================================================================
@@ -166,6 +207,7 @@
    ========================================================================== */
 [data-theme='dark'],
 body.dark-theme {
+  color-scheme: dark;
   --surface: #1D192B;
   --surface-dim: #151221;
   --surface-bright: #252036;
@@ -251,18 +293,35 @@ body.dark-theme {
   --info-text: #E6DEFF;
 
   --neutral-chip-bg: #252036;
+  --neutral-chip-bg-hover: #302A44;
   --neutral-chip-text: #C9C0DD;
+  --neutral-chip-text-hover: #F8F4FF;
   --neutral-chip-border: #45405A;
 
-  /* Dark Shadows */
-  --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
-  --shadow-card: 0 8px 24px -4px rgba(0, 0, 0, 0.55), 0 2px 6px -1px rgba(0, 0, 0, 0.35);
-  --shadow-floating: 0 20px 40px -8px rgba(0, 0, 0, 0.75), 0 0 24px rgba(182, 163, 255, 0.15);
-  --glass-bg: rgba(29, 25, 43, 0.82);
-  --glass-border: 1px solid #45405A;
+  /* Dark Shadows (Clean & Subtle) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --shadow-floating: 0 8px 16px -4px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 0 3px rgba(182, 163, 255, 0.2);
+  --shadow-peach: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --glass-bg: rgba(29, 25, 43, 0.92);
+  --glass-blur: blur(8px);
+  --glass-border: 1px solid var(--border-color);
 
   /* Standard Design Tokens (Dark Unified Aliases) */
+  --bg-primary: var(--bg-app);
+  --bg-secondary: var(--surface-low);
+  --bg-elevated: var(--surface-container);
+  --border-primary: var(--border-color);
+  --border-default: var(--border-color);
+  --table-header: #252036;
+  --table-row: #1D192B;
+  --table-row-hover: rgba(182, 163, 255, 0.08);
+  --table-border: var(--border-color);
+  --foreground: var(--text-primary);
+
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-bg: var(--bg-app);
   --color-surface: var(--bg-surface);

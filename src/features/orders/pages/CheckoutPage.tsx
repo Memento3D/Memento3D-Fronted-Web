@@ -17,6 +17,7 @@ import {
   ArrowLeftOutlined,
   DollarCircleOutlined,
   LockOutlined,
+  CodeSandboxOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -27,6 +28,7 @@ import { Navbar } from '../../home/components/Navbar';
 import { Footer } from '../../home/components/Footer';
 import type { OrderResponse, PaymentMethod } from '../types/order.types';
 import { apiClient } from '../../../services/apiClient';
+import { paymentApi } from '../api/paymentApi';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -37,7 +39,7 @@ export const CheckoutPage: React.FC = () => {
   const { cart, isLoading: isCartLoading, refreshCart } = useCart();
   const [form] = Form.useForm();
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('MOMO');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('VNPAY');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [createdOrder, setCreatedOrder] = useState<OrderResponse | null>(null);
   const [paymentModalOpen, setPaymentModalOpen] = useState<boolean>(false);
@@ -73,6 +75,22 @@ export const CheckoutPage: React.FC = () => {
         return;
       }
 
+      // If VNPAY: Call /payments/vnpay/create and redirect directly to VNPAY Sandbox
+      if (paymentMethod === 'VNPAY') {
+        message.loading({ content: 'Đang chuyển hướng đến cổng thanh toán VNPAY...', key: 'vnpay-loading', duration: 4 });
+        try {
+          const vnpayRes = await paymentApi.createVnpayPayment(order.id);
+          if (vnpayRes.paymentUrl) {
+            window.location.assign(vnpayRes.paymentUrl);
+            return;
+          }
+        } catch (vnpayErr: any) {
+          message.error({ content: vnpayErr.message || 'Không thể tạo phiên thanh toán VNPAY', key: 'vnpay-loading' });
+          navigate(`/orders/${order.id}`);
+          return;
+        }
+      }
+
       // If MOMO or ZALOPAY: Open payment modal or redirect
       message.success('Đơn hàng đã được tạo. Vui lòng hoàn tất thanh toán.');
       setPaymentModalOpen(true);
@@ -89,22 +107,22 @@ export const CheckoutPage: React.FC = () => {
 
       <main style={{ maxWidth: 1160, margin: '0 auto', padding: '120px 24px 60px' }}>
         {/* Breadcrumb Back */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate('/cart')}
-            style={{ color: 'var(--text-secondary)', paddingLeft: 0, borderRadius: 'var(--radius-full)' }}
+            style={{ color: 'var(--text-secondary)', paddingLeft: 0, borderRadius: 'var(--radius-sm, 6px)' }}
           >
             Quay lại Giỏ hàng
           </Button>
         </div>
 
-        <div style={{ marginBottom: 32 }}>
-          <Title level={2} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 800 }}>
+        <div style={{ marginBottom: 28 }}>
+          <Title level={2} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 700, fontSize: '1.6rem' }}>
             Thanh toán & Xác nhận Đơn hàng
           </Title>
-          <Text style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+          <Text style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Vui lòng điền thông tin người nhận và lựa chọn phương thức thanh toán an toàn.
           </Text>
         </div>
@@ -118,10 +136,10 @@ export const CheckoutPage: React.FC = () => {
             style={{
               background: 'var(--bg-card)',
               border: '1px solid var(--border-default)',
-              borderRadius: 'var(--radius-card)',
-              boxShadow: 'var(--shadow-card)',
+              borderRadius: 'var(--radius-card, 10px)',
+              boxShadow: 'var(--shadow-sm)',
               textAlign: 'center',
-              padding: '60px 20px',
+              padding: '48px 20px',
             }}
           >
             <Empty
@@ -133,8 +151,9 @@ export const CheckoutPage: React.FC = () => {
                 style={{
                   background: 'var(--primary)',
                   borderColor: 'var(--primary)',
-                  borderRadius: 'var(--radius-full)',
-                  boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  height: 40,
+                  boxShadow: 'none',
                 }}
               >
                 Khám phá sản phẩm
@@ -263,68 +282,47 @@ export const CheckoutPage: React.FC = () => {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}
                   >
-                    {/* MoMo */}
+                    {/* VNPAY */}
                     <Radio
-                      value="MOMO"
+                      value="VNPAY"
                       style={{
-                        background: paymentMethod === 'MOMO' ? 'rgba(216, 45, 139, 0.08)' : 'var(--surface-container)',
-                        border: paymentMethod === 'MOMO' ? '1.5px solid #d82d8b' : '1px solid var(--border-default)',
-                        padding: '16px',
-                        borderRadius: 'var(--radius-default)',
+                        background: paymentMethod === 'VNPAY' ? 'rgba(0, 92, 185, 0.08)' : 'var(--surface-container)',
+                        border: paymentMethod === 'VNPAY' ? '1.5px solid #005cb9' : '1px solid var(--border-default)',
+                        padding: '14px 16px',
+                        borderRadius: 'var(--radius-md, 8px)',
                         width: '100%',
                         transition: 'all 0.2s',
                       }}
                     >
                       <div style={{ marginLeft: 8 }}>
-                        <div style={{ fontWeight: 700, color: '#ec4899', fontSize: '1rem' }}>
-                          Ví MoMo
+                        <div style={{ fontWeight: 600, color: '#005cb9', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span>Cổng VNPAY (QR / ATM / Thẻ quốc tế)</span>
+                          <span style={{ fontSize: '0.725rem', background: '#005cb9', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>Khuyên dùng</span>
                         </div>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                          Thanh toán qua quét mã QR hoặc ứng dụng MoMo
-                        </div>
-                      </div>
-                    </Radio>
-
-                    {/* ZaloPay */}
-                    <Radio
-                      value="ZALOPAY"
-                      style={{
-                        background: paymentMethod === 'ZALOPAY' ? 'var(--surface-high)' : 'var(--surface-container)',
-                        border: paymentMethod === 'ZALOPAY' ? '1.5px solid var(--primary)' : '1px solid var(--border-default)',
-                        padding: '16px',
-                        borderRadius: 'var(--radius-default)',
-                        width: '100%',
-                        transition: 'all 0.2s',
-                      }}
-                    >
-                      <div style={{ marginLeft: 8 }}>
-                        <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1rem' }}>
-                          Ví ZaloPay
-                        </div>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                          Thanh toán qua cổng ZaloPay QR & Thẻ ATM/Visa
+                        <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                          Thanh toán an toàn qua cổng VNPAY (Quét mã VNPAY-QR, Thẻ ATM nội địa, Internet Banking, Visa/Mastercard)
                         </div>
                       </div>
                     </Radio>
 
-                    {/* Cash */}
+                    {/* Cash / COD */}
                     <Radio
                       value="CASH"
                       style={{
                         background: paymentMethod === 'CASH' ? 'rgba(201, 232, 213, 0.3)' : 'var(--surface-container)',
                         border: paymentMethod === 'CASH' ? '1.5px solid var(--tertiary)' : '1px solid var(--border-default)',
-                        padding: '16px',
-                        borderRadius: 'var(--radius-default)',
+                        padding: '14px 16px',
+                        borderRadius: 'var(--radius-md, 8px)',
                         width: '100%',
                         transition: 'all 0.2s',
                       }}
                     >
                       <div style={{ marginLeft: 8 }}>
-                        <div style={{ fontWeight: 700, color: 'var(--tertiary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <DollarCircleOutlined /> Tiền mặt (COD)
+                        <div style={{ fontWeight: 600, color: 'var(--tertiary)', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <DollarCircleOutlined /> Thanh toán khi nhận hàng (COD)
                         </div>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                          Thanh toán tiền mặt khi nhận hàng / khi đơn hàng hoàn thành
+                        <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                          Thanh toán tiền mặt cho nhân viên giao hàng khi nhận sản phẩm
                         </div>
                       </div>
                     </Radio>
@@ -381,7 +379,7 @@ export const CheckoutPage: React.FC = () => {
                             />
                           ) : (
                             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              📦
+                              <CodeSandboxOutlined style={{ fontSize: 20, color: 'var(--text-muted)' }} />
                             </div>
                           )}
                         </div>
@@ -418,12 +416,12 @@ export const CheckoutPage: React.FC = () => {
                   style={{
                     background: 'var(--bg-card)',
                     border: '1px solid var(--border-default)',
-                    borderRadius: 'var(--radius-card)',
-                    boxShadow: 'var(--shadow-card)',
+                    borderRadius: 'var(--radius-card, 10px)',
+                    boxShadow: 'var(--shadow-sm)',
                   }}
-                  styles={{ body: { padding: 24 } }}
+                  styles={{ body: { padding: 20 } }}
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--text-secondary)' }}>Tạm tính:</span>
                       <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
@@ -448,10 +446,10 @@ export const CheckoutPage: React.FC = () => {
                     <Divider style={{ borderColor: 'var(--border-default)', margin: '8px 0' }} />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                      <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         Tổng thanh toán:
                       </span>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>
+                      <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)' }}>
                         {formatCurrency(cart?.total || 0, 'VND')}
                       </span>
                     </div>
@@ -467,14 +465,16 @@ export const CheckoutPage: React.FC = () => {
                     style={{
                       background: 'var(--primary)',
                       borderColor: 'var(--primary)',
-                      borderRadius: 'var(--radius-full)',
-                      fontWeight: 700,
-                      height: 50,
-                      marginTop: 24,
-                      boxShadow: '0 4px 14px rgba(124, 92, 252, 0.3)',
+                      borderRadius: 'var(--radius-sm, 6px)',
+                      fontWeight: 600,
+                      height: 44,
+                      marginTop: 20,
+                      boxShadow: 'none',
                     }}
                   >
-                    {paymentMethod === 'CASH' ? 'Xác nhận đặt hàng' : 'Tiến hành thanh toán'}
+                    {paymentMethod === 'CASH'
+                      ? 'Xác nhận đặt hàng (COD)'
+                      : 'Thanh toán với VNPAY'}
                   </Button>
 
                   <div
@@ -497,7 +497,7 @@ export const CheckoutPage: React.FC = () => {
           </Form>
         )}
 
-        {/* Payment Modal if MoMo / ZaloPay chosen */}
+        {/* Payment Modal if gateway/cash confirmation needed */}
         {createdOrder && (
           <OrderPaymentModal
             order={createdOrder}

@@ -232,7 +232,7 @@ npm install
 # Khởi chạy máy chủ phát triển
 npm run dev
 ```
-Trang web mở tại: `http://localhost:5174/`
+Trang web mở tại: `http://localhost:5173/`
 
 ---
 *Tài liệu được biên soạn và bảo trì bởi Đội ngũ Kiến trúc Công nghệ **Memento3D**.*

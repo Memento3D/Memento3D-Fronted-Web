@@ -1,5 +1,6 @@
-import { Input, Radio } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Input } from 'antd';
+import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons';
 import type { OrderStatus } from '../types/order.types';
 import { ORDER_STATUS_CONFIG } from '../utils/orderFormatters';
 
@@ -8,6 +9,12 @@ interface OrderFilterBarProps {
   onStatusChange: (status: OrderStatus | 'ALL') => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  statusCounts?: Partial<Record<OrderStatus | 'ALL', number>>;
+}
+
+interface FilterOption {
+  label: string;
+  value: OrderStatus | 'ALL';
 }
 
 export const OrderFilterBar: React.FC<OrderFilterBarProps> = ({
@@ -15,8 +22,26 @@ export const OrderFilterBar: React.FC<OrderFilterBarProps> = ({
   onStatusChange,
   searchQuery,
   onSearchChange,
+  statusCounts,
 }) => {
-  const filterOptions: Array<{ label: string; value: OrderStatus | 'ALL' }> = [
+  // Local input state for zero-lag instant typing, debounced to parent
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+
+  useEffect(() => {
+    setLocalQuery(searchQuery);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localQuery !== searchQuery) {
+        onSearchChange(localQuery);
+      }
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [localQuery, searchQuery, onSearchChange]);
+
+  const filterOptions: FilterOption[] = [
     { label: 'Tất cả', value: 'ALL' },
     { label: ORDER_STATUS_CONFIG.PENDING_PAYMENT.label, value: 'PENDING_PAYMENT' },
     { label: ORDER_STATUS_CONFIG.CONFIRMED.label, value: 'CONFIRMED' },
@@ -26,44 +51,71 @@ export const OrderFilterBar: React.FC<OrderFilterBarProps> = ({
     { label: ORDER_STATUS_CONFIG.CANCELLED.label, value: 'CANCELLED' },
   ];
 
+  const handleClear = () => {
+    setLocalQuery('');
+    onSearchChange('');
+  };
+
   return (
     <div
       style={{
         display: 'flex',
         flexWrap: 'wrap',
-        gap: 16,
-        justifyContent: 'space-between',
         alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
         marginBottom: 24,
       }}
     >
-      <Radio.Group
-        value={statusFilter}
-        onChange={(e) => onStatusChange(e.target.value)}
-        buttonStyle="solid"
-        size="middle"
-      >
-        {filterOptions.map((opt) => (
-          <Radio.Button key={opt.value} value={opt.value}>
-            {opt.label}
-          </Radio.Button>
-        ))}
-      </Radio.Group>
+      {/* Segmented Filter Chips Container */}
+      <div className="order-filter-scroll-container">
+        {filterOptions.map((opt) => {
+          const isActive = statusFilter === opt.value;
+          const count = statusCounts ? statusCounts[opt.value] : undefined;
 
-      <Input
-        placeholder="Tìm theo Mã đơn / Người nhận..."
-        prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
-        value={searchQuery}
-        onChange={(e) => onSearchChange(e.target.value)}
-        allowClear
-        style={{
-          maxWidth: 320,
-          background: 'rgba(255, 255, 255, 0.04)',
-          borderColor: 'rgba(255, 255, 255, 0.12)',
-          color: '#f8fafc',
-          borderRadius: 8,
-        }}
-      />
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onStatusChange(opt.value)}
+              className={`order-filter-chip ${isActive ? 'active' : ''}`}
+              aria-pressed={isActive}
+            >
+              <span>{opt.label}</span>
+              {typeof count === 'number' && (
+                <span className="order-filter-badge">
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Search Bar matching height & SaaS styling */}
+      <div style={{ flex: '1 1 280px', maxWidth: 340, minWidth: 260 }}>
+        <Input
+          placeholder="Tìm mã đơn hoặc người nhận..."
+          prefix={<SearchOutlined style={{ color: 'var(--text-muted)', fontSize: 15 }} />}
+          suffix={
+            localQuery ? (
+              <CloseCircleFilled
+                onClick={handleClear}
+                style={{
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                }}
+              />
+            ) : null
+          }
+          value={localQuery}
+          onChange={(e) => setLocalQuery(e.target.value)}
+          allowClear={false}
+          className="order-search-input"
+        />
+      </div>
     </div>
   );
 };
+

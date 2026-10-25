@@ -2,6 +2,7 @@ import React from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import { useAmChart } from '../../hooks/useAmChart';
+import { getChartThemeTokens } from '../../utils/chartTheme';
 import type { ReconstructionTierDataPoint } from '../../types/dashboard';
 import { Card, Spin, Alert, Empty } from 'antd';
 import { Cpu } from 'lucide-react';
@@ -18,8 +19,9 @@ export const ReconstructionChart: React.FC<ReconstructionChartProps> = ({
   error,
 }) => {
   const { containerRef } = useAmChart(
-    (root) => {
+    (root, isDark) => {
       if (!data || data.length === 0) return;
+      const tokens = getChartThemeTokens(isDark);
 
       // 1. Create XY Chart (Horizontal Stacked Bar)
       const chart = root.container.children.push(
@@ -43,7 +45,7 @@ export const ReconstructionChart: React.FC<ReconstructionChartProps> = ({
       );
 
       yAxis.get('renderer').labels.template.setAll({
-        fill: am5.color(0xf8fafc),
+        fill: tokens.textColor,
         fontSize: 12,
         fontWeight: '600',
       });
@@ -60,13 +62,13 @@ export const ReconstructionChart: React.FC<ReconstructionChartProps> = ({
       );
 
       xAxis.get('renderer').labels.template.setAll({
-        fill: am5.color(0x94a3b8),
+        fill: tokens.textSecondary,
         fontSize: 11,
       });
 
       xAxis.get('renderer').grid.template.setAll({
-        stroke: am5.color(0xffffff),
-        strokeOpacity: 0.05,
+        stroke: tokens.gridColor,
+        strokeOpacity: tokens.gridOpacity,
       });
 
       // 4. Series 1: PREVIEW Tier
@@ -78,8 +80,8 @@ export const ReconstructionChart: React.FC<ReconstructionChartProps> = ({
           valueXField: 'preview',
           categoryYField: 'statusLabel',
           stacked: true,
-          fill: am5.color(0x0ea5e9),
-          stroke: am5.color(0x0ea5e9),
+          fill: am5.color(0x7C5CFC),
+          stroke: am5.color(0x7C5CFC),
           tooltip: am5.Tooltip.new(root, {
             labelText: '[bold]PREVIEW:[/] {valueX} jobs',
           }),
@@ -101,8 +103,8 @@ export const ReconstructionChart: React.FC<ReconstructionChartProps> = ({
           valueXField: 'highQuality',
           categoryYField: 'statusLabel',
           stacked: true,
-          fill: am5.color(0x8b5cf6),
-          stroke: am5.color(0x8b5cf6),
+          fill: am5.color(0xFFBFAE),
+          stroke: am5.color(0xFFBFAE),
           tooltip: am5.Tooltip.new(root, {
             labelText: '[bold]HIGH_QUALITY:[/] {valueX} jobs\n[bold]Tổng trạng thái:[/] {total}',
           }),
@@ -125,7 +127,7 @@ export const ReconstructionChart: React.FC<ReconstructionChartProps> = ({
       );
 
       legend.labels.template.setAll({
-        fill: am5.color(0x94a3b8),
+        fill: tokens.textSecondary,
         fontSize: 11,
       });
 
@@ -147,10 +149,10 @@ export const ReconstructionChart: React.FC<ReconstructionChartProps> = ({
     <Card
       bordered={false}
       style={{
-        background: '#0d1322',
-        borderRadius: 16,
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+        background: 'var(--bg-card)',
+        borderRadius: 'var(--radius-card, 24px)',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--shadow-card)',
         height: '100%',
       }}
       styles={{
@@ -159,19 +161,19 @@ export const ReconstructionChart: React.FC<ReconstructionChartProps> = ({
     >
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Cpu size={18} color="#a855f7" />
-          <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.1rem' }}>
+          <Cpu size={18} color="var(--primary)" />
+          <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1.1rem' }}>
             Tiến độ Tái tạo 3D & Cụm GPU
           </span>
         </div>
-        <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: 2 }}>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: 2 }}>
           Phân bố tác vụ giữa gói Xem trước miễn phí & Bản dựng 4K công nghiệp
         </div>
       </div>
 
       <div style={{ flex: 1, minHeight: 300, position: 'relative' }}>
         {isLoading && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(13, 19, 34, 0.7)', zIndex: 10 }}>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--glass-bg)', backdropFilter: 'blur(4px)', zIndex: 10 }}>
             <Spin tip="Đang tải dữ liệu cụm GPU..." />
           </div>
         )}

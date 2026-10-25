@@ -48,10 +48,10 @@ export const AdminPaymentsPage: React.FC = () => {
       key: 'txn',
       render: (_: any, r: AdminPaymentTransaction) => (
         <div>
-          <span style={{ fontWeight: 700, color: '#f8fafc', fontFamily: 'monospace' }}>
+          <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'monospace' }}>
             {r.gatewayTransactionId || r.id.substring(0, 8)}
           </span>
-          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             Đơn: #{r.orderNumber || r.orderId || '—'}
           </div>
         </div>
@@ -62,8 +62,8 @@ export const AdminPaymentsPage: React.FC = () => {
       key: 'customer',
       render: (_: any, r: AdminPaymentTransaction) => (
         <div>
-          <div style={{ fontWeight: 600, color: '#cbd5e1' }}>{r.userName || 'Khách hàng'}</div>
-          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{r.userEmail || ''}</div>
+          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{r.userName || 'Khách hàng'}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{r.userEmail || ''}</div>
         </div>
       ),
     },
@@ -94,7 +94,7 @@ export const AdminPaymentsPage: React.FC = () => {
       title: 'Thời gian thanh toán',
       key: 'paidAt',
       render: (_: any, r: AdminPaymentTransaction) => (
-        <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
           {r.paidAt
             ? dayjs(r.paidAt).format('DD/MM/YYYY HH:mm:ss')
             : dayjs(r.createdAt).format('DD/MM/YYYY HH:mm:ss')}
@@ -107,10 +107,10 @@ export const AdminPaymentsPage: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-payments-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
             Sổ cái Giao dịch & Đối soát Tài chính (Payments Ledger)
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
             Giám sát bất biến dòng tiền MoMo, ZaloPay, VietQR và trạng thái cổng thanh toán
           </div>
         </div>
@@ -119,11 +119,11 @@ export const AdminPaymentsPage: React.FC = () => {
         </Button>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <Input
             placeholder="Tìm theo mã giao dịch, mã đơn hoặc email khách hàng..."
-            prefix={<Search size={14} color="#94a3b8" />}
+            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -166,7 +166,7 @@ export const AdminPaymentsPage: React.FC = () => {
         </div>
       </Card>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Table
           columns={columns}
           dataSource={paymentsPage?.content || []}

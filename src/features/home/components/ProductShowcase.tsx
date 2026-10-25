@@ -48,7 +48,7 @@ export const ProductShowcase: React.FC = () => {
   }, [productsData]);
 
   return (
-    <section id="products" className="products-wrapper" style={{ padding: '80px 0', background: '#050811' }}>
+    <section id="products" className="products-wrapper" style={{ padding: '80px 0', background: 'var(--color-bg)' }}>
       <div className="home-container">
         {/* Section 1: Featured Categories */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
@@ -60,14 +60,14 @@ export const ProductShowcase: React.FC = () => {
             style={{
               fontSize: 'clamp(2rem, 3.2vw, 2.75rem)',
               fontWeight: 800,
-              color: '#ffffff',
+              color: 'var(--text-primary)',
               letterSpacing: '-0.02em',
               margin: '0 0 12px',
             }}
           >
             Định hình Kỷ niệm theo Cách của Bạn
           </h2>
-          <p style={{ color: '#94a3b8', maxWidth: 640, margin: '0 auto', fontSize: '1rem' }}>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: 640, margin: '0 auto', fontSize: '1rem' }}>
             Từ móc khóa charm bỏ túi đến tượng chân dung bán thân tinh xảo, từng sản phẩm được chế tác tỉ mỉ.
           </p>
         </div>
@@ -80,8 +80,8 @@ export const ProductShowcase: React.FC = () => {
                 <div
                   onClick={() => navigate(`/products?category=${cat.slug}`)}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-color)',
                     borderRadius: 14,
                     padding: '20px 16px',
                     textAlign: 'center',
@@ -91,8 +91,8 @@ export const ProductShowcase: React.FC = () => {
                   className="category-pill-card"
                 >
                   <div style={{ fontSize: '2rem', marginBottom: 8 }}>✨</div>
-                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '0.95rem' }}>{cat.name}</div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: 4 }}>
+                  <div style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.95rem' }}>{cat.name}</div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: 4 }}>
                     {cat.description || 'Xem sản phẩm'}
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export const ProductShowcase: React.FC = () => {
             <div style={{ color: '#0ea5e9', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase' }}>
               Bán chạy nhất (Best Sellers)
             </div>
-            <h3 style={{ color: '#ffffff', fontSize: '1.8rem', fontWeight: 800, margin: '4px 0 0' }}>
+            <h3 style={{ color: 'var(--text-primary)', fontSize: '1.8rem', fontWeight: 800, margin: '4px 0 0' }}>
               Tác phẩm Được Yêu thích Nhất
             </h3>
           </div>
@@ -134,8 +134,8 @@ export const ProductShowcase: React.FC = () => {
                   hoverable
                   onClick={() => navigate(`/products/${product.slug}`)}
                   style={{
-                    background: 'rgba(15, 23, 42, 0.65)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-color)',
                     borderRadius: 16,
                     overflow: 'hidden',
                     height: '100%',
@@ -145,7 +145,7 @@ export const ProductShowcase: React.FC = () => {
                   }}
                   bodyStyle={{ padding: 20, display: 'flex', flexDirection: 'column', flex: 1 }}
                   cover={
-                    <div style={{ height: 220, overflow: 'hidden', background: '#090d16', position: 'relative' }}>
+                    <div style={{ height: 220, overflow: 'hidden', background: 'var(--bg-elevated)', position: 'relative' }}>
                       {product.thumbnailUrl ? (
                         <img
                           src={product.thumbnailUrl}
@@ -171,10 +171,10 @@ export const ProductShowcase: React.FC = () => {
                   }
                 >
                   <div style={{ flex: 1 }}>
-                    <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '1.05rem', marginBottom: 8 }}>
+                    <div style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '1.05rem', marginBottom: 8 }}>
                       {product.name}
                     </div>
-                    <div style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: 16 }}>
+                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: 16 }}>
                       {product.shortDescription || product.description}
                     </div>
                   </div>
@@ -185,11 +185,11 @@ export const ProductShowcase: React.FC = () => {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       paddingTop: 14,
-                      borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderTop: '1px solid var(--border-color)',
                     }}
                   >
                     <div>
-                      <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Giá từ:</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Giá từ:</div>
                       <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#38bdf8' }}>
                         {formatCurrency(product.price, 'VND')}
                       </div>

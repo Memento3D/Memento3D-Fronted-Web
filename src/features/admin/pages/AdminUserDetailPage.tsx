@@ -63,7 +63,7 @@ export const AdminUserDetailPage: React.FC = () => {
       title: 'Thời gian',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (val: string) => <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{dayjs(val).format('DD/MM/YYYY HH:mm:ss')}</span>,
+      render: (val: string) => <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{dayjs(val).format('DD/MM/YYYY HH:mm:ss')}</span>,
     },
     {
       title: 'Hành động',
@@ -95,7 +95,7 @@ export const AdminUserDetailPage: React.FC = () => {
       </div>
 
       {/* User Profile Card */}
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 14, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
           <Avatar
             size={72}
@@ -105,7 +105,7 @@ export const AdminUserDetailPage: React.FC = () => {
           />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <h2 style={{ margin: 0, color: '#f8fafc', fontSize: '1.4rem', fontWeight: 800 }}>
+              <h2 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 800 }}>
                 {user.fullName || 'Người dùng'}
               </h2>
               <Tag color="magenta" style={{ fontWeight: 700 }}>
@@ -115,7 +115,7 @@ export const AdminUserDetailPage: React.FC = () => {
                 {user.status}
               </Tag>
             </div>
-            <div style={{ color: '#94a3b8', marginTop: 4, display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: '0.85rem' }}>
+            <div style={{ color: 'var(--text-secondary)', marginTop: 4, display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: '0.85rem' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Mail size={14} /> {user.email}
               </span>
@@ -136,11 +136,11 @@ export const AdminUserDetailPage: React.FC = () => {
       {/* User Statistics Highlights */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
               Tổng đơn hàng
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: 4 }}>
+            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
               {user.totalOrders ?? 0}
             </div>
             <div style={{ fontSize: '0.8rem', color: '#10b981', marginTop: 2 }}>
@@ -150,42 +150,42 @@ export const AdminUserDetailPage: React.FC = () => {
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
               Tổng chi tiêu tích lũy
             </div>
             <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', marginTop: 4 }}>
               {((user.totalSpent || 0) / 1000).toLocaleString('vi-VN')}k đ
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: 2 }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 2 }}>
               Doanh thu thực nhận
             </div>
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
               Tác vụ Tái tạo 3D
             </div>
             <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#a855f7', marginTop: 4 }}>
               {user.totalReconstructionJobs ?? 0}
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: 2 }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 2 }}>
               Pipeline AI quét 3D
             </div>
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
               Lệnh in đã gán
             </div>
             <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#38bdf8', marginTop: 4 }}>
               {user.totalPrintJobs ?? 0}
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: 2 }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 2 }}>
               Sản xuất xưởng
             </div>
           </Card>
@@ -195,12 +195,12 @@ export const AdminUserDetailPage: React.FC = () => {
       {/* Activity History Audit Table */}
       <Card
         title={
-          <span style={{ color: '#f8fafc', fontWeight: 700 }}>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
             Lịch sử hành động của tài khoản (Audit Trail)
           </span>
         }
         bordered={false}
-        style={{ background: '#1e293b', borderRadius: 14, border: '1px solid #334155' }}
+        style={{ background: 'var(--bg-card)', borderRadius: 14, border: '1px solid var(--border-color)' }}
       >
         <Table
           columns={auditColumns}

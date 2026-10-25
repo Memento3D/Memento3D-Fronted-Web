@@ -66,3 +66,22 @@ export const applyMementoChartTheme = (root: am5.Root, isDark = false) => {
 
   return customColorSet;
 };
+
+/**
+ * Returns dynamic am5 Colors and Hex strings tailored to Light / Dark mode
+ */
+export const getChartThemeTokens = (isDark: boolean) => ({
+  isDark,
+  textColor: isDark ? am5.color(0xF8F4FF) : am5.color(0x28243D),
+  textHex: isDark ? '#F8F4FF' : '#28243D',
+  textSecondary: isDark ? am5.color(0xC9C0DD) : am5.color(0x6A6282),
+  textSecondaryHex: isDark ? '#C9C0DD' : '#6A6282',
+  textMuted: isDark ? am5.color(0x8E86A8) : am5.color(0x8E86A8),
+  textMutedHex: isDark ? '#8E86A8' : '#8E86A8',
+  gridColor: isDark ? am5.color(0xFFFFFF) : am5.color(0x7C5CFC),
+  gridOpacity: isDark ? 0.08 : 0.08,
+  surfaceBg: isDark ? am5.color(0x1D192B) : am5.color(0xFFFFFF),
+  trackColor: isDark ? am5.color(0x252036) : am5.color(0xF1EBFF),
+  borderColor: isDark ? am5.color(0x45405A) : am5.color(0xE2D9F7),
+  sliceStroke: isDark ? am5.color(0x1D192B) : am5.color(0xFFFFFF),
+});

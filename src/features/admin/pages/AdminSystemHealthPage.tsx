@@ -68,10 +68,10 @@ export const AdminSystemHealthPage: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-system-health-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
             Tình trạng Sức khỏe Hạ tầng & Dịch vụ Nền tảng (System Health)
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
             Chẩn đoán kết nối cơ sở dữ liệu, bộ nhớ đệm Redis, worker AI tái tạo 3D và gateway máy in
           </div>
         </div>
@@ -87,9 +87,9 @@ export const AdminSystemHealthPage: React.FC = () => {
       <Card
         bordered={false}
         style={{
-          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
+          background: 'var(--bg-card)',
           borderRadius: 14,
-          border: '1px solid #334155',
+          border: '1px solid var(--border-color)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
@@ -122,7 +122,7 @@ export const AdminSystemHealthPage: React.FC = () => {
               />
             </div>
             <div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f8fafc' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 Trạng thái tổng thể:{' '}
                 <span
                   style={{
@@ -137,7 +137,7 @@ export const AdminSystemHealthPage: React.FC = () => {
                   {health?.status || 'HEALTHY'}
                 </span>
               </div>
-              <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                 Thời điểm kiểm tra cuối: {health?.timestamp ? dayjs(health.timestamp).format('HH:mm:ss DD/MM/YYYY') : 'Vừa xong'}
               </div>
             </div>
@@ -158,28 +158,28 @@ export const AdminSystemHealthPage: React.FC = () => {
               <Card
                 bordered={false}
                 style={{
-                  background: '#1e293b',
+                  background: 'var(--bg-card)',
                   borderRadius: 14,
-                  border: '1px solid #334155',
+                  border: '1px solid var(--border-color)',
                   height: '100%',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     {getServiceIcon(serviceName)}
-                    <span style={{ fontWeight: 700, color: '#f8fafc', textTransform: 'capitalize' }}>
+                    <span style={{ fontWeight: 700, color: 'var(--text-primary)', textTransform: 'capitalize' }}>
                       {serviceName}
                     </span>
                   </div>
                   {getStatusBadge(srv.status)}
                 </div>
 
-                <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: 8 }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: 8 }}>
                   {srv.message}
                 </div>
 
                 {srv.latencyMs !== undefined && (
-                  <div style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                     Độ trễ phản hồi (Latency):{' '}
                     <span
                       style={{

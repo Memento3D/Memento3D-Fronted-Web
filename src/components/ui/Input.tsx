@@ -85,14 +85,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
           aria-describedby={error ? `${inputId}-error` : undefined}
           style={{
             width: '100%',
-            height: '42px',
-            paddingLeft: leftIcon ? '40px' : '16px',
-            paddingRight: rightIcon ? '40px' : '16px',
-            borderRadius: 'var(--radius-input, 20px)',
+            height: '40px',
+            paddingLeft: leftIcon ? '38px' : '14px',
+            paddingRight: rightIcon ? '38px' : '14px',
+            borderRadius: 'var(--radius-input, 8px)',
             background: 'var(--bg-input, var(--color-surface))',
             color: 'var(--color-text-primary)',
             border: `1px solid ${error ? 'var(--color-danger)' : 'var(--color-border)'}`,
-            fontSize: '0.9rem',
+            fontSize: '0.875rem',
             fontFamily: 'var(--font-sans)',
             outline: 'none',
             transition: 'border-color var(--transition-fast), box-shadow var(--transition-fast)',
@@ -102,7 +102,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
           }}
           onFocus={(e) => {
             e.currentTarget.style.borderColor = error ? 'var(--color-danger)' : 'var(--color-primary)';
-            e.currentTarget.style.boxShadow = `0 0 0 3px ${error ? 'rgba(186, 26, 26, 0.15)' : 'var(--primary-glow)'}`;
+            e.currentTarget.style.boxShadow = `0 0 0 3px ${error ? 'rgba(186, 26, 26, 0.15)' : 'rgba(124, 92, 252, 0.16)'}`;
           }}
           onBlur={(e) => {
             e.currentTarget.style.borderColor = error ? 'var(--color-danger)' : 'var(--color-border)';

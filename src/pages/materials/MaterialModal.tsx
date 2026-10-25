@@ -112,7 +112,7 @@ export const MaterialModal: React.FC<Props> = ({
     <div className="modal-overlay" id="material-modal-overlay">
       <div className="modal-content" id="material-modal-card">
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             {material ? 'Edit Material Specification' : 'Register New Material (F01)'}
           </h2>
           <button 

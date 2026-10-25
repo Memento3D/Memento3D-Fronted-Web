@@ -347,7 +347,7 @@ export const CartPage: React.FC = () => {
                   }}
                 >
                   <CheckCircleOutlined style={{ color: 'var(--tertiary)' }} />
-                  <span>Hỗ trợ thanh toán MoMo, ZaloPay và Tiền mặt khi nhận hàng.</span>
+                  <span>Hỗ trợ thanh toán bảo mật qua VNPAY (QR, ATM, Visa) và Tiền mặt khi nhận hàng (COD).</span>
                 </div>
               </Card>
             </Col>

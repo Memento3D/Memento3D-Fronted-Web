@@ -21,13 +21,14 @@ export const AntdConfig: React.FC<AntdConfigProps> = ({ children }) => {
         algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: isDark
           ? {
-              colorPrimary: '#B6A3FF', // Atelier Forge Dark Violet
+              colorPrimary: '#B6A3FF',
               colorPrimaryHover: '#C7B7FF',
               colorInfo: '#B6A3FF',
               colorSuccess: '#8EC3A3',
               colorWarning: '#FFBA7A',
               colorError: '#FFB4AB',
-              borderRadius: 16,
+              borderRadius: 8,
+              controlHeight: 40,
               colorBgBase: '#151221',
               colorBgContainer: '#1D192B',
               colorBgElevated: '#252036',
@@ -39,13 +40,14 @@ export const AntdConfig: React.FC<AntdConfigProps> = ({ children }) => {
               fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
             }
           : {
-              colorPrimary: '#7C5CFC', // Atelier Forge Brand Violet
+              colorPrimary: '#7C5CFC',
               colorPrimaryHover: '#6945ED',
               colorInfo: '#7C5CFC',
               colorSuccess: '#466253',
               colorWarning: '#B35C00',
               colorError: '#BA1A1A',
-              borderRadius: 16,
+              borderRadius: 8,
+              controlHeight: 40,
               colorBgBase: '#F8F5FF',
               colorBgContainer: '#FFFFFF',
               colorBgElevated: '#FFFFFF',
@@ -63,36 +65,38 @@ export const AntdConfig: React.FC<AntdConfigProps> = ({ children }) => {
                 headerColor: '#C9C0DD',
                 rowHoverBg: 'rgba(182, 163, 255, 0.08)',
                 borderColor: '#45405A',
-                borderRadius: 24,
+                borderRadius: 8,
+                colorBgContainer: '#1D192B',
               }
             : {
                 headerBg: '#F7F1FF',
                 headerColor: '#6A6282',
                 rowHoverBg: '#F8F5FF',
                 borderColor: '#E2D9F7',
-                borderRadius: 24,
+                borderRadius: 8,
+                colorBgContainer: '#FFFFFF',
               },
           Card: isDark
             ? {
                 colorBgContainer: '#1D192B',
                 colorBorderSecondary: '#45405A',
-                borderRadiusLG: 24,
+                borderRadiusLG: 10,
               }
             : {
                 colorBgContainer: '#FFFFFF',
                 colorBorderSecondary: '#E2D9F7',
-                borderRadiusLG: 24,
+                borderRadiusLG: 10,
               },
           Modal: isDark
             ? {
                 contentBg: '#1D192B',
                 headerBg: '#1D192B',
-                borderRadiusLG: 28,
+                borderRadiusLG: 12,
               }
             : {
                 contentBg: '#FFFFFF',
                 headerBg: '#FFFFFF',
-                borderRadiusLG: 28,
+                borderRadiusLG: 12,
               },
           Drawer: isDark
             ? {
@@ -101,23 +105,56 @@ export const AntdConfig: React.FC<AntdConfigProps> = ({ children }) => {
             : {
                 colorBgElevated: '#FFFFFF',
               },
+          Dropdown: isDark
+            ? {
+                colorBgElevated: '#1D192B',
+                colorText: '#F8F4FF',
+                borderRadiusLG: 8,
+              }
+            : {
+                colorBgElevated: '#FFFFFF',
+                colorText: '#28243D',
+                borderRadiusLG: 8,
+              },
+          Select: isDark
+            ? {
+                borderRadius: 8,
+                controlHeight: 40,
+                colorBgContainer: '#252036',
+                colorBgElevated: '#1D192B',
+                colorText: '#F8F4FF',
+              }
+            : {
+                borderRadius: 8,
+                controlHeight: 40,
+                colorBgContainer: '#FFFFFF',
+                colorBgElevated: '#FFFFFF',
+                colorText: '#28243D',
+              },
+          Input: isDark
+            ? {
+                borderRadius: 8,
+                controlHeight: 40,
+                colorBgContainer: '#252036',
+                colorText: '#F8F4FF',
+              }
+            : {
+                borderRadius: 8,
+                controlHeight: 40,
+                colorBgContainer: '#FFFFFF',
+                colorText: '#28243D',
+              },
           Button: {
-            borderRadius: 9999,
-            primaryShadow: isDark
-              ? '0 0 16px rgba(182, 163, 255, 0.28)'
-              : '0 4px 14px rgba(124, 92, 252, 0.22)',
-          },
-          Input: {
-            borderRadius: 20,
-          },
-          Select: {
-            borderRadius: 20,
+            borderRadius: 6,
+            controlHeight: 40,
+            primaryShadow: '0 1px 2px 0 rgba(16, 24, 40, 0.05)',
           },
           Tag: {
-            borderRadiusSM: 9999,
+            borderRadiusSM: 4,
           },
           Pagination: {
             itemActiveBg: isDark ? '#B6A3FF' : '#7C5CFC',
+            borderRadius: 6,
           },
           Tabs: {
             inkBarColor: isDark ? '#B6A3FF' : '#7C5CFC',

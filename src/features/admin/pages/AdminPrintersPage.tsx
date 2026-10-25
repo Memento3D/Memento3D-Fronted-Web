@@ -52,8 +52,8 @@ export const AdminPrintersPage: React.FC = () => {
             }}
           />
           <div>
-            <div style={{ fontWeight: 700, color: '#f8fafc' }}>{r.name}</div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+            <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{r.name}</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
               {r.model || 'FDM CoreXY'} • IP: {r.ipAddress || '192.168.1.x'}
             </div>
           </div>
@@ -75,7 +75,7 @@ export const AdminPrintersPage: React.FC = () => {
       title: 'Nhiệt độ (Nozzle / Bed)',
       key: 'temp',
       render: (_: any, r: AdminPrinter) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#cbd5e1' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-primary)' }}>
           <Thermometer size={14} color="#f59e0b" />
           <span>
             {r.hotendTemp ?? 210}°C / {r.bedTemp ?? 60}°C
@@ -88,7 +88,7 @@ export const AdminPrintersPage: React.FC = () => {
       key: 'currentJob',
       render: (_: any, r: AdminPrinter) => (
         <div>
-          <span style={{ color: '#cbd5e1', fontSize: '0.85rem' }}>
+          <span style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>
             {r.currentJobName || r.currentJobId || '—'}
           </span>
           {r.progressPercentage !== undefined && r.progressPercentage > 0 && (
@@ -104,7 +104,7 @@ export const AdminPrintersPage: React.FC = () => {
       dataIndex: 'lastSeenAt',
       key: 'lastSeenAt',
       render: (d: string) => (
-        <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
           {d ? dayjs(d).format('DD/MM/YYYY HH:mm:ss') : 'Vừa xong'}
         </span>
       ),
@@ -115,10 +115,10 @@ export const AdminPrintersPage: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-printers-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
             Đội Máy in & Telemetry Phần cứng (Printer Farm)
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
             Giám sát thời gian thực nhiệt độ đầu đùn, bàn nhiệt và kết nối OctoPrint / Klipper
           </div>
         </div>
@@ -127,11 +127,11 @@ export const AdminPrintersPage: React.FC = () => {
         </Button>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <Input
             placeholder="Tìm theo tên máy in hoặc địa chỉ IP..."
-            prefix={<Search size={14} color="#94a3b8" />}
+            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -159,7 +159,7 @@ export const AdminPrintersPage: React.FC = () => {
         </div>
       </Card>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Table
           columns={columns}
           dataSource={printersPage?.content || []}

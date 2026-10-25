@@ -151,6 +151,9 @@ const CheckoutPage = React.lazy(() =>
 const PaymentResultPage = React.lazy(() =>
   import('./features/payment/pages/PaymentResultPage').then((m) => ({ default: m.PaymentResultPage }))
 );
+const VnpayReturnPage = React.lazy(() =>
+  import('./features/payment/pages/VnpayReturnPage').then((m) => ({ default: m.VnpayReturnPage }))
+);
 const ScanReconstructionPage = React.lazy(() =>
   import('./features/reconstruction/pages/ScanReconstructionPage').then((m) => ({ default: m.ScanReconstructionPage }))
 );
@@ -178,7 +181,8 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
-      staleTime: 5000,
+      staleTime: 60 * 1000, // 1 minute default stale time to eliminate redundant refetches
+      gcTime: 5 * 60 * 1000, // Keep cached data in memory for 5 minutes
     },
   },
 });
@@ -190,7 +194,7 @@ const RouteLoadingFallback: React.FC = () => (
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#050811',
+      background: 'var(--color-bg)',
     }}
   >
     <Spin size="large" />
@@ -399,6 +403,15 @@ export const App: React.FC = () => {
                         <CheckoutPage />
                       </ProtectedRoute>
                     }
+                  />
+                  {/* Payment Gateway Callbacks & Return Pages */}
+                  <Route
+                    path="/payment/vnpay/return"
+                    element={<VnpayReturnPage />}
+                  />
+                  <Route
+                    path="/payment/result"
+                    element={<PaymentResultPage />}
                   />
                   {/* User Profile & Account Security Management */}
                   <Route

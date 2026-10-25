@@ -148,13 +148,13 @@ export const StockCountsPage: React.FC = () => {
       title: 'Kho hàng',
       dataIndex: 'warehouseName',
       key: 'warehouse',
-      render: (name: string) => <Text style={{ color: '#e2e8f0' }}>{name}</Text>,
+      render: (name: string) => <Text style={{ color: 'var(--text-primary)' }}>{name}</Text>,
     },
     {
       title: 'Quy mô',
       dataIndex: 'items',
       key: 'items',
-      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} loại vật liệu</Text>,
+      render: (items: any[]) => <Text style={{ color: 'var(--text-secondary)' }}>{items?.length || 0} loại vật liệu</Text>,
     },
     {
       title: 'Trạng thái',
@@ -166,7 +166,7 @@ export const StockCountsPage: React.FC = () => {
       title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (val: string) => <Text style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(val).toLocaleDateString()}</Text>,
+      render: (val: string) => <Text style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{new Date(val).toLocaleDateString()}</Text>,
     },
     {
       title: 'Thao tác',
@@ -205,10 +205,10 @@ export const StockCountsPage: React.FC = () => {
     <div style={{ padding: 24, maxWidth: 1600, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary)', fontWeight: 800 }}>
             Kiểm kê & Đối soát tồn kho thực tế
           </Title>
-          <Text style={{ color: '#94a3b8' }}>
+          <Text style={{ color: 'var(--text-secondary)' }}>
             Quy trình đối soát: BẢN NHÁP → ĐANG KIỂM KÊ → CHỜ DUYỆT → HOÀN TẤT
           </Text>
         </div>
@@ -235,7 +235,7 @@ export const StockCountsPage: React.FC = () => {
         </Space>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Table 
           columns={columns} 
           dataSource={countsData?.content || []} 
@@ -314,7 +314,7 @@ export const StockCountsPage: React.FC = () => {
               <Descriptions.Item label="Thời gian hoàn tất">{activeCount.completedAt ? new Date(activeCount.completedAt).toLocaleString() : '—'}</Descriptions.Item>
             </Descriptions>
 
-            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Danh sách kiểm đếm & Sai lệch</Title>
+            <Title level={5} style={{ color: 'var(--text-primary)', marginTop: 16 }}>Danh sách kiểm đếm & Sai lệch</Title>
             <Table
               dataSource={activeCount.items || []}
               rowKey="id"

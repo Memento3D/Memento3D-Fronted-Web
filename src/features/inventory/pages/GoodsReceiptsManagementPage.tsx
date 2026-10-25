@@ -170,15 +170,15 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
       title: 'Kho hàng',
       dataIndex: 'warehouseName',
       key: 'warehouseName',
-      render: (name: string) => <Text strong style={{ color: '#e2e8f0' }}>{name || 'Kho hàng'}</Text>,
+      render: (name: string) => <Text strong style={{ color: 'var(--text-primary)' }}>{name || 'Kho hàng'}</Text>,
     },
     {
       title: 'Nhà cung cấp / Tham chiếu',
       key: 'supplierRef',
       render: (_: any, r: GoodsReceipt) => (
         <div>
-          <div style={{ color: '#cbd5e1' }}>{r.supplierName || '—'}</div>
-          {r.referenceNumber && <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Mã tham chiếu: {r.referenceNumber}</div>}
+          <div style={{ color: 'var(--text-primary)' }}>{r.supplierName || '—'}</div>
+          {r.referenceNumber && <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Mã tham chiếu: {r.referenceNumber}</div>}
         </div>
       ),
     },
@@ -186,7 +186,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
       title: 'Mặt hàng',
       dataIndex: 'items',
       key: 'items',
-      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} mặt hàng</Text>,
+      render: (items: any[]) => <Text style={{ color: 'var(--text-secondary)' }}>{items?.length || 0} mặt hàng</Text>,
     },
     {
       title: 'Trạng thái',
@@ -198,7 +198,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
       title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (val: string) => <Text style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(val).toLocaleDateString()}</Text>,
+      render: (val: string) => <Text style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{new Date(val).toLocaleDateString()}</Text>,
     },
     {
       title: 'Thao tác',
@@ -265,10 +265,10 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
       {/* Top Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary)', fontWeight: 800 }}>
             Quản lý phiếu nhập kho
           </Title>
-          <Text style={{ color: '#94a3b8' }}>
+          <Text style={{ color: 'var(--text-secondary)' }}>
             Quy trình nhập kho: BẢN NHÁP → ĐÃ GỬI DUYỆT → ĐÃ PHÊ DUYỆT → HOÀN TẤT
           </Text>
         </div>
@@ -298,7 +298,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
       </div>
 
       {/* Receipts Table */}
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Table 
           columns={columns} 
           dataSource={receiptsData?.content || []} 
@@ -439,7 +439,7 @@ export const GoodsReceiptsManagementPage: React.FC = () => {
               <Descriptions.Item label="Thời gian hoàn tất">{viewReceipt.completedAt ? new Date(viewReceipt.completedAt).toLocaleString() : '—'}</Descriptions.Item>
             </Descriptions>
 
-            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Danh sách mặt hàng nhập kho</Title>
+            <Title level={5} style={{ color: 'var(--text-primary)', marginTop: 16 }}>Danh sách mặt hàng nhập kho</Title>
             <Table
               dataSource={viewReceipt.items || []}
               rowKey="id"

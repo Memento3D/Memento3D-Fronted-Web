@@ -195,7 +195,7 @@ export const WarehouseTransfersPage: React.FC = () => {
       title: 'Mặt hàng',
       dataIndex: 'items',
       key: 'items',
-      render: (items: any[]) => <Text style={{ color: '#94a3b8' }}>{items?.length || 0} mặt hàng</Text>,
+      render: (items: any[]) => <Text style={{ color: 'var(--text-secondary)' }}>{items?.length || 0} mặt hàng</Text>,
     },
     {
       title: 'Trạng thái',
@@ -271,10 +271,10 @@ export const WarehouseTransfersPage: React.FC = () => {
     <div style={{ padding: 24, maxWidth: 1600, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#f8fafc', fontWeight: 800 }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--text-primary)', fontWeight: 800 }}>
             Điều chuyển giữa các kho
           </Title>
-          <Text style={{ color: '#94a3b8' }}>
+          <Text style={{ color: 'var(--text-secondary)' }}>
             Quy trình điều chuyển: BẢN NHÁP → GỬI DUYỆT → ĐÃ DUYỆT → ĐANG VẬN CHUYỂN → ĐÃ TIẾP NHẬN
           </Text>
         </div>
@@ -304,7 +304,7 @@ export const WarehouseTransfersPage: React.FC = () => {
         </Space>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Table 
           columns={columns} 
           dataSource={transfersData?.content || []} 
@@ -442,7 +442,7 @@ export const WarehouseTransfersPage: React.FC = () => {
               <Descriptions.Item label="Ghi chú" span={2}>{viewTransfer.notes || '—'}</Descriptions.Item>
             </Descriptions>
 
-            <Title level={5} style={{ color: '#e2e8f0', marginTop: 16 }}>Danh sách mặt hàng điều chuyển</Title>
+            <Title level={5} style={{ color: 'var(--text-primary)', marginTop: 16 }}>Danh sách mặt hàng điều chuyển</Title>
             <Table
               dataSource={viewTransfer.items || []}
               rowKey="id"

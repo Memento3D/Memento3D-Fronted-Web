@@ -12,18 +12,66 @@ export type OrderStatus =
   | 'CANCELLED'
   | 'REFUNDED';
 
-export type PaymentMethod = 'MOMO' | 'ZALOPAY' | 'CASH';
+export type PaymentMethod = 'MOMO' | 'ZALOPAY' | 'CASH' | 'VNPAY';
 
-export type PaymentStatus = 'PENDING' | 'PAID' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REFUNDED';
+export type PaymentStatus =
+  | 'PENDING'
+  | 'PAID'
+  | 'SUCCESS'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'REFUNDED'
+  | 'EXPIRED'
+  | 'PROCESSING';
+
+export interface VnpayPaymentResponse {
+  paymentId: string;
+  orderId: string;
+  paymentMethod: PaymentMethod;
+  status: PaymentStatus;
+  amount: number;
+  currency: string;
+  transactionRef: string;
+  paymentUrl: string;
+  expiresAt: string;
+  createdAt: string;
+}
+
+export interface VnpayReturnResponse {
+  orderId: string;
+  transactionRef: string;
+  status: PaymentStatus;
+  message: string;
+  amount: number;
+  bankCode?: string;
+  gatewayTransactionNo?: string;
+  responseCode?: string;
+  paymentDate?: string;
+}
 
 export interface OrderItemResponse {
   id: string;
   productId?: string;
+  productName?: string;
   productNameSnapshot: string;
+  thumbnailUrl?: string;
   thumbnailSnapshot?: string;
+  sku?: string;
+  categoryName?: string;
   unitPrice: number;
   quantity: number;
   subtotal: number;
+  material?: string;
+  technology?: string;
+  dimensions?: string;
+  color?: string;
+  finish?: string;
+  base?: string;
+  accessories?: string;
+  personalization?: string;
+  actualMaterial?: string;
+  productionStatus?: string;
+  customization?: Record<string, any>;
   customizationSnapshot?: Record<string, any>;
 }
 
@@ -35,8 +83,12 @@ export interface OrderResponse {
   subtotal?: number;
   discountAmount?: number;
   shippingFee?: number;
+  customizationFee?: number;
+  productionSurcharge?: number;
   totalAmount?: number;
   totalPrice: number;
+  paidAmount?: number;
+  remainingAmount?: number;
   currency: string;
   status: OrderStatus;
   paymentMethod?: PaymentMethod;
@@ -45,6 +97,16 @@ export interface OrderResponse {
   shippingAddress: string;
   phone: string;
   note?: string;
+  shippingCarrier?: string;
+  trackingCode?: string;
+  shippingStatus?: string;
+  itemCount?: number;
+  representativeProductName?: string;
+  representativeThumbnailUrl?: string;
+  isOutsourced?: boolean;
+  internalPartnerName?: string;
+  internalCost?: number;
+  internalQcNotes?: string;
   items?: OrderItemResponse[];
   createdAt: string;
   updatedAt: string;
@@ -83,9 +145,12 @@ export interface UpdateOrderRequest {
 export interface OrderListParams {
   page?: number;
   limit?: number;
-  status?: OrderStatus;
+  status?: OrderStatus | 'ALL';
   search?: string;
+  query?: string;
 }
+
+export type OrderStatusCounts = Record<string, number>;
 
 export interface CreatePaymentRequest {
   orderId: string;

@@ -38,6 +38,7 @@ export const ProductListPage: React.FC = () => {
 
   const [searchInput, setSearchInput] = useState<string>(keyword);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000000]);
+  const [committedPriceRange, setCommittedPriceRange] = useState<[number, number]>([0, 2000000]);
   const pageSize = 12;
 
   useEffect(() => {
@@ -57,14 +58,14 @@ export const ProductListPage: React.FC = () => {
     return [];
   }, [rawCategories]);
 
-  // Products Query
+  // Products Query (triggers only when committedPriceRange changes)
   const {
     data: productsData,
     isLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['products-list', page, keyword, selectedCategory, selectedCategoryId, sort, priceRange],
+    queryKey: ['products-list', page, keyword, selectedCategory, selectedCategoryId, sort, committedPriceRange],
     queryFn: () =>
       productApi.list({
         page: page - 1,
@@ -72,8 +73,8 @@ export const ProductListPage: React.FC = () => {
         keyword: keyword || undefined,
         categoryId: selectedCategoryId || undefined,
         categorySlug: selectedCategory || undefined,
-        minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
-        maxPrice: priceRange[1] < 2000000 ? priceRange[1] : undefined,
+        minPrice: committedPriceRange[0] > 0 ? committedPriceRange[0] : undefined,
+        maxPrice: committedPriceRange[1] < 2000000 ? committedPriceRange[1] : undefined,
         sort,
       }),
   });
@@ -97,6 +98,7 @@ export const ProductListPage: React.FC = () => {
   const handleResetFilters = () => {
     setSearchInput('');
     setPriceRange([0, 2000000]);
+    setCommittedPriceRange([0, 2000000]);
     setSearchParams(new URLSearchParams());
   };
 
@@ -201,6 +203,7 @@ export const ProductListPage: React.FC = () => {
                   step={50000}
                   value={priceRange}
                   onChange={(val) => setPriceRange(val as [number, number])}
+                  onChangeComplete={(val) => setCommittedPriceRange(val as [number, number])}
                 />
               </div>
             </Col>

@@ -57,10 +57,10 @@ export const AdminOrdersPage: React.FC = () => {
       key: 'orderNumber',
       render: (_: any, r: any) => (
         <div>
-          <span style={{ fontWeight: 700, color: '#f8fafc' }}>
+          <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
             {r.orderNumber || r.id?.substring(0, 8)}
           </span>
-          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             {dayjs(r.createdAt).format('DD/MM/YYYY HH:mm')}
           </div>
         </div>
@@ -71,10 +71,10 @@ export const AdminOrdersPage: React.FC = () => {
       key: 'customer',
       render: (_: any, r: any) => (
         <div>
-          <div style={{ fontWeight: 600, color: '#cbd5e1' }}>
+          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
             {r.customerName || r.shippingName || 'Khách vãng lai'}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
             {r.customerEmail || r.shippingPhone || ''}
           </div>
         </div>
@@ -128,10 +128,10 @@ export const AdminOrdersPage: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-orders-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
             Quản trị Đơn hàng Toàn Nền tảng
           </h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
             Giám sát trạng thái đơn hàng, đối soát thanh toán và luồng giao nhận
           </div>
         </div>
@@ -140,11 +140,11 @@ export const AdminOrdersPage: React.FC = () => {
         </Button>
       </div>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <Input
             placeholder="Tìm theo mã đơn, khách hàng hoặc số điện thoại..."
-            prefix={<Search size={14} color="#94a3b8" />}
+            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -189,7 +189,7 @@ export const AdminOrdersPage: React.FC = () => {
         </div>
       </Card>
 
-      <Card bordered={false} style={{ background: '#1e293b', borderRadius: 12, border: '1px solid #334155' }}>
+      <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <Table
           columns={columns}
           dataSource={ordersPage?.content || []}
@@ -244,7 +244,7 @@ export const AdminOrdersPage: React.FC = () => {
             </Descriptions>
 
             <Divider style={{ margin: '8px 0' }} />
-            <h4 style={{ margin: 0, color: '#f8fafc' }}>Sản phẩm trong đơn</h4>
+            <h4 style={{ margin: 0, color: 'var(--text-primary)' }}>Sản phẩm trong đơn</h4>
             {selectedOrder.items && selectedOrder.items.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {selectedOrder.items.map((item: any, idx: number) => (
@@ -253,17 +253,18 @@ export const AdminOrdersPage: React.FC = () => {
                     style={{
                       padding: 10,
                       borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.03)',
+                      background: 'var(--bg-elevated)',
+                      border: '1px solid var(--border-color)',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
                     }}
                   >
                     <div>
-                      <div style={{ fontWeight: 600, color: '#f8fafc' }}>
+                      <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                         {item.productName || item.name || `Sản phẩm #${idx + 1}`}
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                         Số lượng: x{item.quantity} • Đơn giá: {(item.unitPrice || item.price || 0).toLocaleString('vi-VN')} đ
                       </div>
                     </div>
@@ -274,7 +275,7 @@ export const AdminOrdersPage: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div style={{ color: '#94a3b8' }}>Không có chi tiết mặt hàng</div>
+              <div style={{ color: 'var(--text-secondary)' }}>Không có chi tiết mặt hàng</div>
             )}
           </div>
         )}
