@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
-  Table,
   Card,
   Tag,
   Button,
-  Input,
   Select,
   Space,
   Popconfirm,
@@ -15,10 +13,8 @@ import {
   App,
   Tooltip,
 } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
 import {
   PlusOutlined,
-  SearchOutlined,
   EditOutlined,
   StopOutlined,
   EyeOutlined,
@@ -32,6 +28,11 @@ import type { Material, MaterialType, CreateMaterialPayload, UpdateMaterialPaylo
 import { MaterialFormModal } from '../components/MaterialFormModal';
 import { MaterialDetailDrawer } from '../components/MaterialDetailDrawer';
 import { getStatusLabel } from '../../../locales/i18n';
+import { SearchBox } from '../../../components/ui/SearchBox';
+import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
+import { toServerColumns } from '../../../components/ui/data-table/toServerColumns';
+import type { LegacyColumn } from '../../../components/ui/data-table/toServerColumns';
+import { ServerDataTable, ColumnVisibilityMenu } from '../../../components/ui/data-table/ServerDataTable';
 
 const { Title, Text } = Typography;
 
@@ -44,12 +45,27 @@ export const MaterialManagementPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const { data, isLoading } = useMaterials({
-    search: search || undefined,
-    type: typeFilter,
-    limit: 100,
+  const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState({
+    pageSize: 10,
   });
 
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearch((prev) => {
+        if (prev !== value) resetPage();
+        return value;
+      });
+    },
+    [resetPage],
+  );
+
+  const queryParams = {
+    ...params,
+    search: search.trim() || undefined,
+    type: typeFilter,
+  };
+
+  const { data, isLoading, isFetching, isError, refetch } = useMaterials(queryParams);
   const { createMutation, updateMutation, deactivateMutation } = useMaterialMutations();
 
   const materials = data?.content || [];
@@ -96,14 +112,14 @@ export const MaterialManagementPage: React.FC = () => {
     }
   };
 
-  const columns: ColumnsType<Material> = [
+  const legacyColumns: LegacyColumn<Material>[] = [
     {
       title: 'Mã SKU / Tên',
       dataIndex: 'sku',
       key: 'sku',
-      sorter: (a, b) => a.sku.localeCompare(b.sku),
-      render: (sku: string, record) => (
-        <Space orientation="vertical" size={2}>
+      sorter: true,
+      render: (sku: string, record: Material) => (
+        <Space direction="vertical" size={2}>
           <Text
             strong
             copyable
@@ -122,36 +138,26 @@ export const MaterialManagementPage: React.FC = () => {
       title: 'Loại vật liệu',
       dataIndex: 'materialType',
       key: 'materialType',
-      filters: [
-        { text: 'PLA', value: 'PLA' },
-        { text: 'PETG', value: 'PETG' },
-        { text: 'ABS', value: 'ABS' },
-        { text: 'RESIN', value: 'RESIN' },
-        { text: 'TPU', value: 'TPU' },
-        { text: 'NYLON', value: 'NYLON' },
-      ],
-      onFilter: (value, record) => record.materialType === value,
-      render: (type: MaterialType) => {
-        return (
-          <Tag
-            style={{
-              borderRadius: 'var(--radius-full, 9999px)',
-              background: 'var(--surface-container, #F1EBFF)',
-              color: 'var(--primary, #7C5CFC)',
-              border: '1px solid var(--border-default, #E2D9F7)',
-              fontWeight: 600,
-              padding: '2px 10px',
-            }}
-          >
-            {type}
-          </Tag>
-        );
-      },
+      sorter: true,
+      render: (type: MaterialType) => (
+        <Tag
+          style={{
+            borderRadius: 'var(--radius-full, 9999px)',
+            background: 'var(--surface-container, #F1EBFF)',
+            color: 'var(--primary, #7C5CFC)',
+            border: '1px solid var(--border-default, #E2D9F7)',
+            fontWeight: 600,
+            padding: '2px 10px',
+          }}
+        >
+          {type}
+        </Tag>
+      ),
     },
     {
       title: 'Màu sắc',
       key: 'color',
-      render: (_, record) => (
+      render: (_: any, record: Material) => (
         <Space>
           <span
             style={{
@@ -170,8 +176,7 @@ export const MaterialManagementPage: React.FC = () => {
     {
       title: 'Nhiệt độ in',
       key: 'printTemp',
-      responsive: ['md'],
-      render: (_, record) => (
+      render: (_: any, record: Material) => (
         <Space size={4}>
           <FireOutlined style={{ color: '#f97316' }} />
           <span>
@@ -186,7 +191,7 @@ export const MaterialManagementPage: React.FC = () => {
       title: 'Đơn giá (đ/g)',
       dataIndex: 'unitCost',
       key: 'unitCost',
-      sorter: (a, b) => a.unitCost - b.unitCost,
+      sorter: true,
       render: (cost: number) => (
         <Text strong style={{ color: 'var(--tertiary, #466253)' }}>
           {Number(cost).toLocaleString()} đ/g
@@ -197,6 +202,7 @@ export const MaterialManagementPage: React.FC = () => {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
+      sorter: true,
       render: (status: string) => (
         <Tag style={{ borderRadius: 'var(--radius-full, 9999px)', background: status === 'ACTIVE' ? 'var(--mint-accent, #C9E8D5)' : 'var(--surface-container, #F1EBFF)', color: status === 'ACTIVE' ? 'var(--tertiary, #466253)' : 'var(--text-secondary, #6A6282)', border: 'none', fontWeight: 600 }}>
           {getStatusLabel(status)}
@@ -207,7 +213,7 @@ export const MaterialManagementPage: React.FC = () => {
       title: 'Thao tác',
       key: 'actions',
       align: 'right',
-      render: (_, record) => (
+      render: (_: any, record: Material) => (
         <Space>
           <Tooltip title="Xem chi tiết hồ sơ vật liệu">
             <Button
@@ -242,6 +248,19 @@ export const MaterialManagementPage: React.FC = () => {
     },
   ];
 
+  const tanstackColumns = useMemo(() => toServerColumns<Material>(legacyColumns), []);
+
+  const { table } = useServerTable<Material>({
+    data: materials,
+    columns: tanstackColumns,
+    rowCount: data?.totalElements ?? 0,
+    pagination,
+    sorting,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    getRowId: (m) => m.id,
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Page Header */}
@@ -254,15 +273,18 @@ export const MaterialManagementPage: React.FC = () => {
             Cơ sở dữ liệu vật liệu in, thông số nhiệt độ đùn và biểu phí đơn giá.
           </Text>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          size="large"
-          onClick={handleOpenCreate}
-          style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}
-        >
-          Thêm vật liệu mới
-        </Button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <ColumnVisibilityMenu table={table} />
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            size="large"
+            onClick={handleOpenCreate}
+            style={{ borderRadius: 'var(--radius-full, 9999px)', background: 'var(--primary, #7C5CFC)' }}
+          >
+            Thêm vật liệu mới
+          </Button>
+        </div>
       </div>
 
       {/* KPI Statistic Cards */}
@@ -271,7 +293,7 @@ export const MaterialManagementPage: React.FC = () => {
           <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
             <Statistic
               title={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Tổng số mã vật liệu</span>}
-              value={materials.length}
+              value={data?.totalElements ?? materials.length}
               valueStyle={{ color: 'var(--text-primary, #28243D)', fontWeight: 800 }}
               prefix={<ExperimentOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />}
               suffix={<Text type="secondary" style={{ fontSize: 13, color: 'var(--text-secondary, #6A6282)' }}>Loại</Text>}
@@ -306,18 +328,21 @@ export const MaterialManagementPage: React.FC = () => {
       <Card style={{ borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <Space wrap>
-            <Input
-              placeholder="Tìm kiếm theo mã SKU, tên, màu sắc..."
-              prefix={<SearchOutlined style={{ color: 'var(--text-secondary, #6A6282)' }} />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ width: 280, borderRadius: 'var(--radius-input, 20px)' }}
-              allowClear
-            />
+            <div style={{ width: 280 }}>
+              <SearchBox
+                placeholder="Tìm kiếm theo mã SKU, tên, màu sắc..."
+                defaultValue={search}
+                onChange={handleSearchChange}
+                debounceMs={350}
+              />
+            </div>
             <Select
               placeholder="Lọc loại nhựa"
               value={typeFilter}
-              onChange={(val) => setTypeFilter(val)}
+              onChange={(val) => {
+                setTypeFilter(val);
+                resetPage();
+              }}
               style={{ width: 160 }}
               allowClear
             >
@@ -330,17 +355,16 @@ export const MaterialManagementPage: React.FC = () => {
             </Select>
           </Space>
           <Text type="secondary" style={{ alignSelf: 'center' }}>
-            Hiển thị {materials.length} vật liệu
+            Tổng cộng: {data?.totalElements ?? materials.length} vật liệu
           </Text>
         </div>
 
-        <Table
-          columns={columns}
-          dataSource={materials}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{ pageSize: 10, showSizeChanger: true }}
-          bordered={false}
+        <ServerDataTable<Material>
+          table={table}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          isError={isError}
+          onRetry={refetch}
         />
       </Card>
 
@@ -366,3 +390,5 @@ export const MaterialManagementPage: React.FC = () => {
     </div>
   );
 };
+
+export default MaterialManagementPage;

@@ -12,35 +12,8 @@
   position: relative;
   font-family: var(--font-sans);
   scroll-behavior: smooth;
-  min-height: 100vh;
+  min-height: 100dvh;
   transition: background-color var(--transition-normal), color var(--transition-normal);
-}
-
-/* Atmospheric Ambient Lights */
-.home-wrapper::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 20%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(124, 92, 252, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  filter: blur(80px);
-  z-index: 0;
-}
-
-.home-wrapper::after {
-  content: '';
-  position: fixed;
-  bottom: 10%;
-  right: 15%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(255, 191, 174, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  filter: blur(90px);
-  z-index: 0;
 }
 
 /* Container */
@@ -54,13 +27,13 @@
 
 /* Section Common */
 .home-section {
-  padding: 90px 0;
+  padding: 72px 0;
   position: relative;
 }
 
 @media (max-width: 768px) {
   .home-section {
-    padding: 60px 0;
+    padding: 48px 0;
   }
 }
 
@@ -69,30 +42,29 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 16px;
-  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm, 6px);
   background: var(--surface-container, #F1EBFF);
   border: 1px solid var(--border-color, #E2D9F7);
   color: var(--primary, #7C5CFC);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 0.775rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
 }
 
 .section-title {
-  font-size: clamp(2rem, 3.5vw, 3rem);
-  font-weight: 800;
-  line-height: 1.15;
+  font-size: clamp(1.85rem, 3vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.25;
   color: var(--text-primary);
-  letter-spacing: -0.025em;
-  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
 }
 
 .section-subtitle {
-  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  font-size: clamp(0.95rem, 1.1vw, 1.05rem);
   line-height: 1.6;
   color: var(--text-secondary);
   max-width: 640px;
@@ -100,62 +72,32 @@
 }
 
 .gradient-text-indigo {
-  background: linear-gradient(135deg, var(--primary, #7C5CFC) 0%, var(--primary-system, #5F3ADD) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary, #7C5CFC);
 }
 
 .gradient-text-cyan {
-  background: linear-gradient(135deg, var(--secondary, #FFBFAE) 0%, var(--primary, #7C5CFC) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary, #7C5CFC);
 }
 
 .gradient-text-gold {
-  background: linear-gradient(135deg, var(--secondary, #FFBFAE) 0%, #E2765A 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--secondary, #FFBFAE);
 }
 
-/* Glass Card System */
+/* Glass Card System (Refined to Clean Flat Surface) */
 .home-glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-card, 24px);
-  box-shadow: var(--shadow-card);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: var(--radius-card, 10px);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   position: relative;
   overflow: hidden;
 }
 
 .home-glass-card:hover {
-  border-color: rgba(124, 92, 252, 0.35);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-floating);
-}
-
-/* Subtle Shimmer Overlay */
-.home-glass-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    transparent 100%
-  );
-  transition: left 0.8s ease;
-  pointer-events: none;
-}
-
-.home-glass-card:hover::before {
-  left: 100%;
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 /* Animations */

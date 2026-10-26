@@ -22,23 +22,16 @@ export const PaymentResultPage: React.FC = () => {
   // Query params from gateway redirect
   const orderId = searchParams.get('orderId') || searchParams.get('extraData');
   const paymentId = searchParams.get('paymentId');
-  const resultCode = searchParams.get('resultCode') || searchParams.get('status') || searchParams.get('errorCode');
   const rawMessage = searchParams.get('message') || searchParams.get('localMessage');
   const transId = searchParams.get('transId') || searchParams.get('apptransid');
-  const amount = searchParams.get('amount');
 
-  // Determine initial status
-  const initialIsSuccess = resultCode === '0' || resultCode === 'SUCCESS' || resultCode === '1';
-  const initialIsFailed = resultCode !== null && !initialIsSuccess && resultCode !== 'PENDING';
-
-  const [paymentStatus, setPaymentStatus] = useState<'PENDING' | 'SUCCESS' | 'FAILED' | 'TIMEOUT'>(() => {
-    if (initialIsSuccess) return 'SUCCESS';
-    if (initialIsFailed) return 'FAILED';
-    return 'PENDING';
-  });
+  // SECURITY: redirect query params are untrusted and never decide the outcome.
+  // The status always starts PENDING and is resolved only by backend verification.
+  const [paymentStatus, setPaymentStatus] = useState<'PENDING' | 'SUCCESS' | 'FAILED' | 'TIMEOUT'>('PENDING');
 
   const [statusMessage, setStatusMessage] = useState<string>(rawMessage || '');
-  const [verifiedAmount, setVerifiedAmount] = useState<number | string | null>(amount);
+  // Display amount is only set from backend-confirmed data
+  const [verifiedAmount, setVerifiedAmount] = useState<number | string | null>(null);
   const [isPolling, setIsPolling] = useState<boolean>(false);
 
   const pollCountRef = useRef<number>(0);
@@ -101,7 +94,7 @@ export const PaymentResultPage: React.FC = () => {
 
   // Watchdog timeout and fallback polling
   useEffect(() => {
-    if (paymentStatus === 'SUCCESS' || paymentStatus === 'FAILED') {
+    if (paymentStatus === 'SUCCESS' || paymentStatus === 'FAILED' || paymentStatus === 'TIMEOUT') {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
       return;
     }

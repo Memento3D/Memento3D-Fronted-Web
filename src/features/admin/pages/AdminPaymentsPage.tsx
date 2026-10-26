@@ -1,38 +1,53 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useCallback, useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
   Button,
   Tag,
   Card,
-  Input,
   Select,
 } from 'antd';
 import {
-  Search,
   RefreshCw,
 } from 'lucide-react';
 import { adminApi } from '../api/adminApi';
 import type { AdminPaymentTransaction } from '../types/admin.types';
 import dayjs from 'dayjs';
+import { SearchBox } from '../../../components/ui/SearchBox';
+import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
+import { toServerColumns } from '../../../components/ui/data-table/toServerColumns';
+import type { LegacyColumn } from '../../../components/ui/data-table/toServerColumns';
+import { ServerDataTable, ColumnVisibilityMenu } from '../../../components/ui/data-table/ServerDataTable';
+import { queryKeys } from '../../../lib/query/queryKeys';
 
 export const AdminPaymentsPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [methodFilter, setMethodFilter] = useState<string | undefined>(undefined);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
 
-  const { data: paymentsPage, isLoading, refetch } = useQuery({
-    queryKey: ['admin-payments', page, pageSize, search, statusFilter, methodFilter],
-    queryFn: () =>
-      adminApi.getPayments({
-        page,
-        size: pageSize,
-        search: search.trim() || undefined,
-        status: statusFilter,
-        paymentMethod: methodFilter,
-      }),
+  const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState();
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearch((prev) => {
+        if (prev !== value) resetPage();
+        return value;
+      });
+    },
+    [resetPage],
+  );
+
+  const paymentsFilters = {
+    ...params,
+    search: search.trim() || undefined,
+    transactionReference: search.trim() || undefined,
+    status: statusFilter,
+    paymentMethod: methodFilter,
+  };
+
+  const { data: paymentsPage, isLoading, isFetching, isError, refetch } = useQuery({
+    queryKey: queryKeys.admin.payments(paymentsFilters),
+    queryFn: ({ signal }) => adminApi.getPayments(paymentsFilters, signal),
+    placeholderData: keepPreviousData,
   });
 
   const getStatusTag = (status: string) => {
@@ -42,10 +57,11 @@ export const AdminPaymentsPage: React.FC = () => {
     return <Tag>{status}</Tag>;
   };
 
-  const columns = [
+  const legacyColumns: LegacyColumn<AdminPaymentTransaction>[] = [
     {
       title: 'Mã giao dịch (Txn ID)',
-      key: 'txn',
+      key: 'createdAt',
+      sorter: true,
       render: (_: any, r: AdminPaymentTransaction) => (
         <div>
           <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'monospace' }}>
@@ -71,7 +87,7 @@ export const AdminPaymentsPage: React.FC = () => {
       title: 'Số tiền',
       dataIndex: 'amount',
       key: 'amount',
-      sorter: (a: any, b: any) => (a.amount || 0) - (b.amount || 0),
+      sorter: true,
       render: (val: number) => (
         <span style={{ fontWeight: 700, color: '#10b981' }}>
           {(val || 0).toLocaleString('vi-VN')} đ
@@ -82,17 +98,20 @@ export const AdminPaymentsPage: React.FC = () => {
       title: 'Phương thức',
       dataIndex: 'paymentMethod',
       key: 'paymentMethod',
+      sorter: true,
       render: (val: string) => <Tag color="purple">{val || 'CASH'}</Tag>,
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
+      sorter: true,
       render: (st: string) => getStatusTag(st),
     },
     {
       title: 'Thời gian thanh toán',
       key: 'paidAt',
+      sorter: true,
       render: (_: any, r: AdminPaymentTransaction) => (
         <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
           {r.paidAt
@@ -102,6 +121,17 @@ export const AdminPaymentsPage: React.FC = () => {
       ),
     },
   ];
+
+  const { table } = useServerTable<AdminPaymentTransaction>({
+    data: paymentsPage?.content ?? [],
+    columns: toServerColumns(legacyColumns),
+    rowCount: paymentsPage?.totalElements ?? 0,
+    sorting,
+    onSortingChange: setSorting,
+    pagination,
+    onPaginationChange: setPagination,
+    getRowId: (p) => p.id,
+  });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-payments-view">
@@ -114,23 +144,23 @@ export const AdminPaymentsPage: React.FC = () => {
             Giám sát bất biến dòng tiền MoMo, ZaloPay, VietQR và trạng thái cổng thanh toán
           </div>
         </div>
-        <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
-          Làm mới
-        </Button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <ColumnVisibilityMenu table={table} />
+          <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
+            Làm mới
+          </Button>
+        </div>
       </div>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <Input
+          <SearchBox
             placeholder="Tìm theo mã giao dịch, mã đơn hoặc email khách hàng..."
-            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
+            onChange={handleSearchChange}
+            debounceMs={350}
+            width="100%"
             style={{ minWidth: 280, flex: 1 }}
-            allowClear
           />
 
           <Select
@@ -139,7 +169,7 @@ export const AdminPaymentsPage: React.FC = () => {
             value={statusFilter}
             onChange={(v) => {
               setStatusFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 170 }}
           >
@@ -154,7 +184,7 @@ export const AdminPaymentsPage: React.FC = () => {
             value={methodFilter}
             onChange={(v) => {
               setMethodFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 170 }}
           >
@@ -167,20 +197,12 @@ export const AdminPaymentsPage: React.FC = () => {
       </Card>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
-        <Table
-          columns={columns}
-          dataSource={paymentsPage?.content || []}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            current: page + 1,
-            pageSize,
-            total: paymentsPage?.totalElements || 0,
-            onChange: (p, ps) => {
-              setPage(p - 1);
-              setPageSize(ps);
-            },
-          }}
+        <ServerDataTable<AdminPaymentTransaction>
+          table={table}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          isError={isError}
+          onRetry={() => refetch()}
         />
       </Card>
     </div>

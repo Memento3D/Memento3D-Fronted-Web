@@ -141,8 +141,12 @@
   justify-content: center;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
   z-index: 3;
+}
+
+.product-fav-btn:active {
+  transform: scale(0.92);
 }
 
 .product-fav-btn:hover {

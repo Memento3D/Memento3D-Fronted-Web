@@ -36,11 +36,11 @@ export const DriverHomePage: React.FC = () => {
         <QuoteCard role="DRIVER" />
 
         {/* 3. Primary Highlight: CHUYẾN GIAO TIẾP THEO */}
-        <div className="next-task-card" style={{ borderColor: 'rgba(16, 185, 129, 0.35)', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.08) 100%)' }}>
+        <div className="next-task-card" style={{ borderColor: 'var(--border-default)', background: 'var(--surface-container)', borderRadius: 'var(--radius-card, 10px)', boxShadow: 'var(--shadow-sm)' }}>
           <div className="next-task-header">
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span className="next-task-badge" style={{ background: '#10b981' }}>
+                <span className="next-task-badge" style={{ background: 'var(--tertiary)' }}>
                   <Navigation size={12} style={{ fill: '#fff' }} />
                   CHUYẾN GIAO TIẾP THEO
                 </span>
@@ -52,7 +52,7 @@ export const DriverHomePage: React.FC = () => {
                 Nguyễn Minh Khang &bull; 0912-345-678
               </h2>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                <MapPin size={14} color="#10b981" />
+                <MapPin size={14} color="var(--tertiary)" />
                 <span>Số 182 Lê Duẩn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</span>
               </div>
             </div>
@@ -63,13 +63,13 @@ export const DriverHomePage: React.FC = () => {
               icon={<ArrowRight size={16} />}
               onClick={() => navigate('/driver/deliveries')}
               style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                borderColor: 'transparent',
-                fontWeight: 700,
-                height: 44,
-                padding: '0 24px',
-                borderRadius: 10,
-                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)',
+                background: 'var(--tertiary)',
+                borderColor: 'var(--tertiary)',
+                fontWeight: 600,
+                height: 40,
+                padding: '0 20px',
+                borderRadius: 'var(--radius-sm, 6px)',
+                boxShadow: 'var(--shadow-sm)',
               }}
             >
               Xem chuyến tiếp theo

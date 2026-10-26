@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Row,
   Col,
@@ -28,6 +28,13 @@ import {
   PhoneOutlined,
   EnvironmentOutlined,
   CarOutlined,
+  ExperimentOutlined,
+  ToolOutlined,
+  GoldOutlined,
+  BgColorsOutlined,
+  SkinOutlined,
+  GiftOutlined,
+  FormOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -127,7 +134,40 @@ export const ManagerOrderDetailPage: React.FC = () => {
   const isCash = order.paymentMethod === 'CASH';
   const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === 'SUCCESS';
   const totalAmount = order.totalAmount ?? order.totalPrice;
-  const items = order.items && order.items.length > 0 ? order.items : [];
+  const items = useMemo(() => {
+    if (order.items && order.items.length > 0) {
+      return order.items;
+    }
+    const repName = order.representativeProductName || (order as any).productName || 'Kỷ vật 3D Điêu khắc Cá nhân hóa';
+    const repThumb = order.representativeThumbnailUrl || (order as any).thumbnailUrl;
+    const qty = order.itemCount || 1;
+    const subtotal = order.subtotal || totalAmount || 0;
+    const unitPrice = qty > 0 ? Math.round(subtotal / qty) : subtotal;
+
+    return [
+      {
+        id: order.id + '-item',
+        productId: (order as any).productId || order.scanId || undefined,
+        productName: repName,
+        productNameSnapshot: repName,
+        thumbnailUrl: repThumb,
+        thumbnailSnapshot: repThumb,
+        sku: (order as any).sku || `MM3D-${orderCode}`,
+        categoryName: (order as any).categoryName || 'Kỷ vật 3D Bespoke',
+        unitPrice,
+        quantity: qty,
+        subtotal,
+        material: (order as any).material || (order as any).actualMaterial || 'Nhựa quang hóa Resin cao cấp (SLA)',
+        technology: (order as any).technology || 'SLA Công nghiệp',
+        dimensions: (order as any).dimensions || 'Tiêu chuẩn (15cm x 10cm x 10cm)',
+        color: (order as any).color || 'Bản màu gốc PolyJet / Đơn sắc hoàn thiện',
+        finish: (order as any).finish || 'Xử lý UV & Phủ bóng mờ cao cấp',
+        base: (order as any).base || 'Đế gỗ óc chó Walnut tự nhiên',
+        personalization: order.note || (order as any).personalization,
+        productionStatus: order.status,
+      },
+    ];
+  }, [order, orderCode, totalAmount]);
 
   const internalCost = order.internalCost || 0;
   const grossProfit = Math.max(0, totalAmount - internalCost);
@@ -172,7 +212,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
                     : st === 'SHIPPED'
                     ? '#f59e0b'
                     : st === 'DELIVERED'
-                    ? '#22c55e'
+                    ? 'var(--tertiary)'
                     : undefined,
                 borderColor:
                   st === 'PRINTING'
@@ -180,7 +220,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
                     : st === 'SHIPPED'
                     ? '#f59e0b'
                     : st === 'DELIVERED'
-                    ? '#22c55e'
+                    ? 'var(--tertiary)'
                     : undefined,
               }}
             >
@@ -194,8 +234,8 @@ export const ManagerOrderDetailPage: React.FC = () => {
               icon={<PrinterOutlined />}
               onClick={() => setPrintJobModalOpen(true)}
               style={{
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
-                borderColor: 'transparent',
+                background: 'var(--primary)',
+                borderColor: 'var(--primary)',
                 fontWeight: 600,
                 borderRadius: 8,
               }}
@@ -266,45 +306,45 @@ export const ManagerOrderDetailPage: React.FC = () => {
               </div>
             }
             style={{
-              background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%)',
-              border: '1px solid rgba(14, 165, 233, 0.25)',
+              background: 'var(--surface-container)',
+              border: '1px solid var(--border-default)',
               borderRadius: 12,
               marginBottom: 24,
             }}
             styles={{ body: { padding: 20 } }}
           >
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
-              <div style={{ padding: '10px 14px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
+              <div style={{ padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Xưởng đối tác gia công</div>
                 <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginTop: 2, fontSize: '0.95rem' }}>
                   {order.internalPartnerName || 'Xưởng chế tác Memento3D Lab'}
                 </div>
               </div>
 
-              <div style={{ padding: '10px 14px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
+              <div style={{ padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Chi phí thuê xưởng / gia công (Giá vốn)</div>
                 <div style={{ fontWeight: 700, color: '#ef4444', marginTop: 2, fontSize: '0.95rem' }}>
                   {internalCost > 0 ? formatCurrency(internalCost, order.currency || 'VND') : 'Chưa nhập chi phí'}
                 </div>
               </div>
 
-              <div style={{ padding: '10px 14px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
+              <div style={{ padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Lợi nhuận gộp ước tính</div>
-                <div style={{ fontWeight: 700, color: '#22c55e', marginTop: 2, fontSize: '0.95rem' }}>
+                <div style={{ fontWeight: 700, color: 'var(--tertiary)', marginTop: 2, fontSize: '0.95rem' }}>
                   {formatCurrency(grossProfit, order.currency || 'VND')}
                 </div>
               </div>
 
-              <div style={{ padding: '10px 14px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
+              <div style={{ padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Trạng thái gia công tại xưởng</div>
-                <div style={{ fontWeight: 700, color: '#38bdf8', marginTop: 2, fontSize: '0.95rem' }}>
+                <div style={{ fontWeight: 700, color: '#0284c7', marginTop: 2, fontSize: '0.95rem' }}>
                   {order.status === 'PRINTING' ? 'Đang chạy lệnh in máy SLA' : order.status === 'READY' ? 'Đã hoàn thiện & đóng gói' : 'Hàng đợi kỹ thuật'}
                 </div>
               </div>
 
-              <div style={{ gridColumn: '1 / -1', padding: '10px 14px', background: 'var(--surface-container)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
+              <div style={{ gridColumn: '1 / -1', padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <FileDoneOutlined style={{ color: '#22c55e' }} /> Ghi chú kiểm định chất lượng (QC Notes):
+                  <FileDoneOutlined style={{ color: 'var(--tertiary)' }} /> Ghi chú kiểm định chất lượng (QC Notes):
                 </div>
                 <div style={{ color: 'var(--text-primary)', marginTop: 4, fontSize: '0.875rem' }}>
                   {order.internalQcNotes || 'Chưa ghi nhận phản hồi QC. Sản phẩm đạt dung sai kích thước tiêu chuẩn ±0.2mm.'}
@@ -315,7 +355,14 @@ export const ManagerOrderDetailPage: React.FC = () => {
 
           {/* Purchased Products & Detailed Material Specs */}
           <Card
-            title={<span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Danh sách sản phẩm & Thông số kỹ thuật</span>}
+            title={
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Danh sách sản phẩm & Thông số kỹ thuật chế tác</span>
+                <Tag style={{ borderRadius: 6, background: 'var(--surface-container)', color: 'var(--text-secondary)', border: '1px solid var(--border-default)' }}>
+                  {items.length} mục sản phẩm
+                </Tag>
+              </div>
+            }
             style={{
               background: 'var(--bg-card)',
               border: '1px solid var(--border-default)',
@@ -326,15 +373,16 @@ export const ManagerOrderDetailPage: React.FC = () => {
             styles={{ body: { padding: 20 } }}
           >
             {items.map((item, idx) => (
-              <div key={item.id || idx} style={{ marginBottom: idx < items.length - 1 ? 20 : 0 }}>
-                <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+              <div key={item.id || idx} style={{ marginBottom: idx < items.length - 1 ? 24 : 0 }}>
+                <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
                   <div
                     style={{
-                      width: 64,
-                      height: 64,
+                      width: 72,
+                      height: 72,
                       borderRadius: 8,
                       overflow: 'hidden',
                       background: 'var(--surface-container)',
+                      border: '1px solid var(--border-default)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -344,39 +392,100 @@ export const ManagerOrderDetailPage: React.FC = () => {
                     {item.thumbnailUrl || item.thumbnailSnapshot ? (
                       <img src={item.thumbnailUrl || item.thumbnailSnapshot} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <InboxOutlined style={{ fontSize: 24, color: '#7c5cfc' }} />
+                      <InboxOutlined style={{ fontSize: 28, color: 'var(--primary)' }} />
                     )}
                   </div>
 
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1rem' }}>
+                  <div style={{ flex: 1, minWidth: 240 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 8 }}>
+                      <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1.05rem' }}>
                         {item.productName || item.productNameSnapshot || 'Kỷ vật 3D'}
                       </div>
-                      <div style={{ fontWeight: 700, color: 'var(--primary)' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1.1rem' }}>
                         {formatCurrency(item.subtotal, order.currency || 'VND')}
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: 12, fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 4 }}>
-                      <span>SKU: <strong style={{ color: 'var(--text-primary)' }}>{item.sku || 'N/A'}</strong></span>
+                    <div style={{ display: 'flex', gap: 12, fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: 4, flexWrap: 'wrap' }}>
+                      <span>Mã SKU: <strong style={{ color: 'var(--text-primary)' }}>{item.sku || 'N/A'}</strong></span>
                       <span>•</span>
-                      <span>Đơn giá: {formatCurrency(item.unitPrice, order.currency || 'VND')}</span>
+                      <span>Đơn giá: <strong style={{ color: 'var(--text-primary)' }}>{formatCurrency(item.unitPrice, order.currency || 'VND')}</strong></span>
                       <span>•</span>
-                      <span>Số lượng: x{item.quantity}</span>
+                      <span>Số lượng: <strong style={{ color: 'var(--text-primary)' }}>x{item.quantity}</strong></span>
+                      <span>•</span>
+                      <span>Trạng thái: <Tag color="blue" style={{ borderRadius: 4, margin: 0 }}>{item.productionStatus || order.status}</Tag></span>
                     </div>
 
-                    {/* Material Specs */}
-                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 8, fontSize: '0.8rem' }}>
-                      <Tag color="blue" style={{ borderRadius: 6, margin: 0 }}>Vật liệu: {item.material || 'Chưa xác định'}</Tag>
-                      <Tag color="cyan" style={{ borderRadius: 6, margin: 0 }}>Công nghệ: {item.technology || 'SLA'}</Tag>
-                      <Tag color="gold" style={{ borderRadius: 6, margin: 0 }}>Kích thước: {item.dimensions || 'Tiêu chuẩn'}</Tag>
-                      <Tag color="purple" style={{ borderRadius: 6, margin: 0 }}>Màu sắc: {item.color || 'Tự nhiên'}</Tag>
+                    {/* Detailed Specifications Grid */}
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: 8,
+                        marginTop: 12,
+                      }}
+                    >
+                      <div style={{ padding: '6px 10px', background: 'var(--surface-container)', borderRadius: 6, border: '1px solid var(--border-default)', fontSize: '0.8rem' }}>
+                        <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <ExperimentOutlined style={{ color: 'var(--primary)' }} /> Vật liệu:
+                        </span>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>{item.material || 'Nhựa quang hóa Resin cao cấp'}</div>
+                      </div>
+
+                      <div style={{ padding: '6px 10px', background: 'var(--surface-container)', borderRadius: 6, border: '1px solid var(--border-default)', fontSize: '0.8rem' }}>
+                        <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <ToolOutlined style={{ color: '#0284c7' }} /> Công nghệ:
+                        </span>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>{item.technology || 'In đắp lớp quang hóa SLA'}</div>
+                      </div>
+
+                      <div style={{ padding: '6px 10px', background: 'var(--surface-container)', borderRadius: 6, border: '1px solid var(--border-default)', fontSize: '0.8rem' }}>
+                        <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <GoldOutlined style={{ color: '#d97706' }} /> Kích thước:
+                        </span>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>{item.dimensions || 'Tiêu chuẩn (15cm)'}</div>
+                      </div>
+
+                      <div style={{ padding: '6px 10px', background: 'var(--surface-container)', borderRadius: 6, border: '1px solid var(--border-default)', fontSize: '0.8rem' }}>
+                        <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <BgColorsOutlined style={{ color: '#db2777' }} /> Màu sắc:
+                        </span>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>{item.color || 'Bản màu PolyJet / Đơn sắc'}</div>
+                      </div>
+
+                      {item.finish && (
+                        <div style={{ padding: '6px 10px', background: 'var(--surface-container)', borderRadius: 6, border: '1px solid var(--border-default)', fontSize: '0.8rem' }}>
+                          <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                            <SkinOutlined style={{ color: '#7c3aed' }} /> Kiểu hoàn thiện:
+                          </span>
+                          <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>{item.finish}</div>
+                        </div>
+                      )}
+
+                      {item.base && (
+                        <div style={{ padding: '6px 10px', background: 'var(--surface-container)', borderRadius: 6, border: '1px solid var(--border-default)', fontSize: '0.8rem' }}>
+                          <span style={{ color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                            <GiftOutlined style={{ color: 'var(--tertiary)' }} /> Đế trưng bày:
+                          </span>
+                          <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>{item.base}</div>
+                        </div>
+                      )}
                     </div>
+
+                    {item.personalization && (
+                      <div style={{ marginTop: 8, padding: '6px 10px', background: 'var(--surface-container)', borderRadius: 6, border: '1px solid var(--border-default)', fontSize: '0.8rem' }}>
+                        <span style={{ color: 'var(--primary)', display: 'inline-flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+                          <FormOutlined /> Ghi chú cá nhân hóa / Khắc tên:
+                        </span>
+                        <div style={{ color: 'var(--text-primary)', marginTop: 2, fontStyle: 'italic' }}>
+                          "{item.personalization}"
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {idx < items.length - 1 && <Divider style={{ borderColor: 'var(--border-subtle)', margin: '16px 0' }} />}
+                {idx < items.length - 1 && <Divider style={{ borderColor: 'var(--border-subtle)', margin: '18px 0' }} />}
               </div>
             ))}
           </Card>

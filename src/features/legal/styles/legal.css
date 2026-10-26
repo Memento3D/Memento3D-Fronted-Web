@@ -4,7 +4,7 @@
    ========================================================================== */
 
 .legal-page-wrapper {
-  min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--bg-app);
   color: var(--text-primary);
   padding: 32px 16px 80px;

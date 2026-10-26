@@ -15,6 +15,8 @@
     "@amcharts/amcharts5": "^5.21.2",
     "@ant-design/icons": "^6.3.4",
     "@tanstack/react-query": "^5.104.4",
+    "@tanstack/react-table": "^9.3.1",
+    "@tanstack/react-virtual": "^3.14.22",
     "@types/three": "^0.186.0",
     "antd": "^6.6.6",
     "axios": "^1.20.0",
@@ -29,6 +31,8 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^5.104.5",
+    "@tanstack/react-query-devtools": "^5.104.5",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",

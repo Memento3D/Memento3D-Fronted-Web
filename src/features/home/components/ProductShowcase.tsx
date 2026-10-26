@@ -5,6 +5,7 @@ import {
   FireOutlined,
   ShoppingCartOutlined,
   AppstoreOutlined,
+  InboxOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -14,9 +15,19 @@ import { useCart } from '../../cart/context/CartContext';
 import { formatCurrency } from '../../orders/utils/orderFormatters';
 import type { ProductCategory } from '../../products/types/product.types';
 
+import { prefetchChunk } from '../../../utils/prefetch';
+
 export const ProductShowcase: React.FC = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
+
+  const handlePrefetchProductList = () => {
+    prefetchChunk('ProductListPage', () => import('../../products/pages/ProductListPage'));
+  };
+
+  const handlePrefetchProductDetail = () => {
+    prefetchChunk('ProductDetailPage', () => import('../../products/pages/ProductDetailPage'));
+  };
 
   // Categories from Backend API
   const { data: rawCategories } = useQuery({
@@ -90,7 +101,9 @@ export const ProductShowcase: React.FC = () => {
                   }}
                   className="category-pill-card"
                 >
-                  <div style={{ fontSize: '2rem', marginBottom: 8 }}>✨</div>
+                  <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'center' }}>
+                    <AppstoreOutlined style={{ fontSize: 24, color: 'var(--primary)' }} />
+                  </div>
                   <div style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.95rem' }}>{cat.name}</div>
                   <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: 4 }}>
                     {cat.description || 'Xem sản phẩm'}
@@ -104,10 +117,10 @@ export const ProductShowcase: React.FC = () => {
         {/* Section 2: Featured Products Grid */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 32 }}>
           <div>
-            <div style={{ color: '#0ea5e9', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase' }}>
+            <div style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase' }}>
               Bán chạy nhất (Best Sellers)
             </div>
-            <h3 style={{ color: 'var(--text-primary)', fontSize: '1.8rem', fontWeight: 800, margin: '4px 0 0' }}>
+            <h3 style={{ color: 'var(--text-primary)', fontSize: '1.6rem', fontWeight: 800, margin: '4px 0 0' }}>
               Tác phẩm Được Yêu thích Nhất
             </h3>
           </div>
@@ -116,7 +129,9 @@ export const ProductShowcase: React.FC = () => {
             type="link"
             icon={<ArrowRightOutlined />}
             onClick={() => navigate('/products')}
-            style={{ color: '#38bdf8', fontWeight: 700, fontSize: '0.95rem' }}
+            onMouseEnter={handlePrefetchProductList}
+            onFocus={handlePrefetchProductList}
+            style={{ color: 'var(--primary)', fontWeight: 600, fontSize: '0.95rem' }}
           >
             Xem tất cả sản phẩm
           </Button>
@@ -133,19 +148,21 @@ export const ProductShowcase: React.FC = () => {
                 <Card
                   hoverable
                   onClick={() => navigate(`/products/${product.slug}`)}
+                  onMouseEnter={handlePrefetchProductDetail}
+                  onFocus={handlePrefetchProductDetail}
                   style={{
                     background: 'var(--bg-card)',
                     border: '1px solid var(--border-color)',
-                    borderRadius: 16,
+                    borderRadius: 'var(--radius-card, 10px)',
                     overflow: 'hidden',
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
-                    transition: 'all 0.3s ease',
+                    transition: 'border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease',
                   }}
                   bodyStyle={{ padding: 20, display: 'flex', flexDirection: 'column', flex: 1 }}
                   cover={
-                    <div style={{ height: 220, overflow: 'hidden', background: 'var(--bg-elevated)', position: 'relative' }}>
+                    <div style={{ height: 220, overflow: 'hidden', background: 'var(--bg-viewport-3d, #F3EEFF)', position: 'relative' }}>
                       {product.thumbnailUrl ? (
                         <img
                           src={product.thumbnailUrl}
@@ -153,8 +170,8 @@ export const ProductShowcase: React.FC = () => {
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                       ) : (
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>
-                          📦
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <InboxOutlined style={{ fontSize: 32, color: 'var(--text-muted)' }} />
                         </div>
                       )}
                       {product.featured && (

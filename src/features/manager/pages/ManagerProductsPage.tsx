@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
-  Table,
   Button,
   Input,
   Select,
@@ -19,17 +18,23 @@ import {
 } from 'antd';
 import {
   PlusOutlined,
-  SearchOutlined,
   EditOutlined,
   DeleteOutlined,
   ReloadOutlined,
   FireOutlined,
+  InboxOutlined,
 } from '@ant-design/icons';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { productApi } from '../../products/api/productApi';
 import { categoryApi } from '../../products/api/categoryApi';
 import { formatCurrency } from '../../orders/utils/orderFormatters';
 import type { Product, CreateProductRequest, UpdateProductRequest } from '../../products/types/product.types';
+import { SearchBox } from '../../../components/ui/SearchBox';
+import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
+import { toServerColumns } from '../../../components/ui/data-table/toServerColumns';
+import type { LegacyColumn } from '../../../components/ui/data-table/toServerColumns';
+import { ServerDataTable, ColumnVisibilityMenu } from '../../../components/ui/data-table/ServerDataTable';
+import { queryKeys } from '../../../lib/query/queryKeys';
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -38,30 +43,66 @@ export const ManagerProductsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [keyword, setKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [form] = Form.useForm();
 
+  const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState({
+    pageSize: 10,
+  });
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setKeyword((prev) => {
+        if (prev !== value) resetPage();
+        return value;
+      });
+    },
+    [resetPage],
+  );
+
   // Categories
   const { data: categories = [] } = useQuery({
-    queryKey: ['manager-categories-all'],
+    queryKey: queryKeys.categories.list(),
     queryFn: () => categoryApi.list(false),
   });
 
-  // Products
-  const { data: productsData, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['manager-products', page, keyword, selectedCategory],
-    queryFn: () =>
-      productApi.list({
-        page: page - 1,
-        size: pageSize,
-        keyword: keyword || undefined,
-        categorySlug: selectedCategory || undefined,
-        sort: 'newest',
-      }),
+  // Products filters
+  const productFilters = {
+    ...params,
+    keyword: keyword.trim() || undefined,
+    categorySlug: selectedCategory || undefined,
+  };
+
+  const mapTableSortToProductSort = (sortParam?: string): 'newest' | 'priceAsc' | 'priceDesc' | 'popular' => {
+    if (!sortParam) return 'newest';
+    if (sortParam.startsWith('price,asc')) return 'priceAsc';
+    if (sortParam.startsWith('price,desc')) return 'priceDesc';
+    return 'newest';
+  };
+
+  // Products Query
+  const {
+    data: productsData,
+    isLoading,
+    refetch,
+    isFetching,
+    isError,
+  } = useQuery({
+    queryKey: queryKeys.products.list(productFilters),
+    queryFn: ({ signal }) =>
+      productApi.list(
+        {
+          page: params.page,
+          size: params.size,
+          keyword: productFilters.keyword,
+          categorySlug: productFilters.categorySlug,
+          sort: mapTableSortToProductSort(params.sort),
+        },
+        signal,
+      ),
+    placeholderData: keepPreviousData,
   });
 
   // Create Mutation
@@ -69,7 +110,7 @@ export const ManagerProductsPage: React.FC = () => {
     mutationFn: (payload: CreateProductRequest) => productApi.create(payload),
     onSuccess: () => {
       message.success('Đã thêm sản phẩm thành công');
-      queryClient.invalidateQueries({ queryKey: ['manager-products'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
       setModalOpen(false);
       form.resetFields();
     },
@@ -82,7 +123,7 @@ export const ManagerProductsPage: React.FC = () => {
       productApi.update(id, payload),
     onSuccess: () => {
       message.success('Đã cập nhật sản phẩm thành công');
-      queryClient.invalidateQueries({ queryKey: ['manager-products'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
       setModalOpen(false);
       setEditingProduct(null);
       form.resetFields();
@@ -96,7 +137,7 @@ export const ManagerProductsPage: React.FC = () => {
       productApi.updateStatus(id, active),
     onSuccess: () => {
       message.success('Đã cập nhật trạng thái hoạt động');
-      queryClient.invalidateQueries({ queryKey: ['manager-products'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
     },
     onError: (err: any) => message.error(err.message || 'Không thể đổi trạng thái'),
   });
@@ -106,7 +147,7 @@ export const ManagerProductsPage: React.FC = () => {
     mutationFn: (id: string) => productApi.delete(id),
     onSuccess: () => {
       message.success('Đã xóa sản phẩm');
-      queryClient.invalidateQueries({ queryKey: ['manager-products'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
     },
     onError: (err: any) => message.error(err.message || 'Không thể xóa sản phẩm'),
   });
@@ -172,6 +213,137 @@ export const ManagerProductsPage: React.FC = () => {
     }
   };
 
+  const legacyColumns: LegacyColumn<Product>[] = [
+    {
+      title: 'Sản phẩm',
+      key: 'product',
+      sorter: true,
+      render: (_: any, p: Product) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {p.thumbnailUrl ? (
+            <img
+              src={p.thumbnailUrl}
+              alt=""
+              style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', objectFit: 'cover' }}
+            />
+          ) : (
+            <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', background: 'var(--surface-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <InboxOutlined style={{ fontSize: 20, color: 'var(--text-muted)' }} />
+            </div>
+          )}
+          <div>
+            <div style={{ fontWeight: 700, color: 'var(--text-primary, #28243D)' }}>{p.name}</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #6A6282)' }}>/{p.slug}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Danh mục',
+      key: 'category',
+      render: (_: any, p: Product) => (
+        <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary-system, #5F3ADD)', border: 'none', fontWeight: 600 }}>
+          {p.category?.name || 'Chưa phân loại'}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Đơn giá',
+      dataIndex: 'price',
+      key: 'price',
+      align: 'right',
+      sorter: true,
+      render: (price: number) => (
+        <span style={{ fontWeight: 700, color: 'var(--primary, #7C5CFC)' }}>
+          {formatCurrency(price, 'VND')}
+        </span>
+      ),
+    },
+    {
+      title: 'Khả dụng',
+      dataIndex: 'availability',
+      key: 'availability',
+      render: (av: string) => {
+        const label = av === 'AVAILABLE' ? 'Sẵn sàng' : av === 'OUT_OF_STOCK' ? 'Hết hàng' : av === 'DISCONTINUED' ? 'Ngừng kinh doanh' : av;
+        const isAvail = av === 'AVAILABLE';
+        const isOutOfStock = av === 'OUT_OF_STOCK';
+        return (
+          <Tag
+            style={{
+              borderRadius: 'var(--radius-pill, 9999px)',
+              background: isAvail ? 'var(--tertiary-mint, #C9E8D5)' : isOutOfStock ? 'var(--secondary-peach, #FFBFAE)' : 'var(--surface-container, #F1EBFF)',
+              color: isAvail ? 'var(--tertiary, #466253)' : isOutOfStock ? '#7C3F2E' : 'var(--text-secondary, #6A6282)',
+              border: 'none',
+              fontWeight: 600,
+            }}
+          >
+            {label}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: 'Nổi bật',
+      dataIndex: 'featured',
+      key: 'featured',
+      render: (f: boolean) => (
+        f ? (
+          <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--secondary-peach, #FFBFAE)', color: '#7C3F2E', border: 'none', fontWeight: 600 }}>
+            <FireOutlined /> Nổi bật
+          </Tag>
+        ) : (
+          <Text type="secondary">-</Text>
+        )
+      ),
+    },
+    {
+      title: 'Trạng thái',
+      key: 'active',
+      render: (_: any, p: Product) => (
+        <Switch
+          checked={p.active}
+          checkedChildren="Hiện"
+          unCheckedChildren="Ẩn"
+          onChange={(checked) => toggleStatusMutation.mutate({ id: p.id, active: checked })}
+        />
+      ),
+    },
+    {
+      title: 'Thao tác',
+      key: 'actions',
+      align: 'right',
+      render: (_: any, p: Product) => (
+        <Space>
+          <Button size="small" icon={<EditOutlined />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} onClick={() => handleOpenEdit(p)}>
+            Sửa
+          </Button>
+          <Popconfirm
+            title="Xóa sản phẩm này?"
+            description="Hành động này không thể hoàn tác."
+            onConfirm={() => deleteMutation.mutate(p.id)}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Button size="small" danger icon={<DeleteOutlined />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
+  const tanstackColumns = useMemo(() => toServerColumns<Product>(legacyColumns), []);
+
+  const { table } = useServerTable<Product>({
+    data: productsData?.content || [],
+    columns: tanstackColumns,
+    rowCount: productsData?.totalElements ?? 0,
+    pagination,
+    sorting,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    getRowId: (p) => p.id,
+  });
+
   return (
     <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
@@ -183,6 +355,7 @@ export const ManagerProductsPage: React.FC = () => {
         </div>
 
         <Space wrap>
+          <ColumnVisibilityMenu table={table} />
           <Button icon={<ReloadOutlined spin={isFetching} />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} onClick={() => refetch()}>
             Làm mới
           </Button>
@@ -207,14 +380,11 @@ export const ManagerProductsPage: React.FC = () => {
       <Card style={{ background: '#fff', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)', marginBottom: 20 }}>
         <Row gutter={[16, 16]}>
           <Col xs={24} md={10}>
-            <Input
+            <SearchBox
               placeholder="Tìm theo tên sản phẩm..."
-              prefix={<SearchOutlined />}
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              onPressEnter={() => setPage(1)}
-              allowClear
-              style={{ borderRadius: 'var(--radius-input, 20px)' }}
+              defaultValue={keyword}
+              onChange={handleSearchChange}
+              debounceMs={350}
             />
           </Col>
           <Col xs={24} md={8}>
@@ -223,7 +393,7 @@ export const ManagerProductsPage: React.FC = () => {
               value={selectedCategory || undefined}
               onChange={(val) => {
                 setSelectedCategory(val || '');
-                setPage(1);
+                resetPage();
               }}
               allowClear
               style={{ width: '100%', borderRadius: 'var(--radius-input, 20px)' }}
@@ -238,131 +408,12 @@ export const ManagerProductsPage: React.FC = () => {
 
       {/* Table */}
       <Card style={{ background: '#fff', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
-        <Table
-          dataSource={productsData?.content || []}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            current: page,
-            total: productsData?.totalElements || 0,
-            pageSize,
-            onChange: (p) => setPage(p),
-          }}
-          columns={[
-            {
-              title: 'Sản phẩm',
-              key: 'product',
-              render: (_, p: Product) => (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {p.thumbnailUrl ? (
-                    <img
-                      src={p.thumbnailUrl}
-                      alt=""
-                      style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', background: 'var(--surface-container, #F1EBFF)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      📦
-                    </div>
-                  )}
-                  <div>
-                    <div style={{ fontWeight: 700, color: 'var(--text-primary, #28243D)' }}>{p.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #6A6282)' }}>/{p.slug}</div>
-                  </div>
-                </div>
-              ),
-            },
-            {
-              title: 'Danh mục',
-              key: 'category',
-              render: (_, p: Product) => (
-                <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary-system, #5F3ADD)', border: 'none', fontWeight: 600 }}>
-                  {p.category?.name || 'Chưa phân loại'}
-                </Tag>
-              ),
-            },
-            {
-              title: 'Đơn giá',
-              dataIndex: 'price',
-              key: 'price',
-              align: 'right',
-              render: (price) => (
-                <span style={{ fontWeight: 700, color: 'var(--primary, #7C5CFC)' }}>
-                  {formatCurrency(price, 'VND')}
-                </span>
-              ),
-            },
-            {
-              title: 'Khả dụng',
-              dataIndex: 'availability',
-              key: 'availability',
-              render: (av) => {
-                const label = av === 'AVAILABLE' ? 'Sẵn sàng' : av === 'OUT_OF_STOCK' ? 'Hết hàng' : av === 'DISCONTINUED' ? 'Ngừng kinh doanh' : av;
-                const isAvail = av === 'AVAILABLE';
-                const isOutOfStock = av === 'OUT_OF_STOCK';
-                return (
-                  <Tag
-                    style={{
-                      borderRadius: 'var(--radius-pill, 9999px)',
-                      background: isAvail ? 'var(--tertiary-mint, #C9E8D5)' : isOutOfStock ? 'var(--secondary-peach, #FFBFAE)' : 'var(--surface-container, #F1EBFF)',
-                      color: isAvail ? 'var(--tertiary, #466253)' : isOutOfStock ? '#7C3F2E' : 'var(--text-secondary, #6A6282)',
-                      border: 'none',
-                      fontWeight: 600,
-                    }}
-                  >
-                    {label}
-                  </Tag>
-                );
-              },
-            },
-            {
-              title: 'Nổi bật',
-              dataIndex: 'featured',
-              key: 'featured',
-              render: (f) => (
-                f ? (
-                  <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--secondary-peach, #FFBFAE)', color: '#7C3F2E', border: 'none', fontWeight: 600 }}>
-                    <FireOutlined /> Nổi bật
-                  </Tag>
-                ) : (
-                  <Text type="secondary">-</Text>
-                )
-              ),
-            },
-            {
-              title: 'Trạng thái',
-              key: 'active',
-              render: (_, p: Product) => (
-                <Switch
-                  checked={p.active}
-                  checkedChildren="Hiện"
-                  unCheckedChildren="Ẩn"
-                  onChange={(checked) => toggleStatusMutation.mutate({ id: p.id, active: checked })}
-                />
-              ),
-            },
-            {
-              title: 'Thao tác',
-              key: 'actions',
-              align: 'right',
-              render: (_, p: Product) => (
-                <Space>
-                  <Button size="small" icon={<EditOutlined />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} onClick={() => handleOpenEdit(p)}>
-                    Sửa
-                  </Button>
-                  <Popconfirm
-                    title="Xóa sản phẩm này?"
-                    description="Hành động này không thể hoàn tác."
-                    onConfirm={() => deleteMutation.mutate(p.id)}
-                    okText="Xóa"
-                    cancelText="Hủy"
-                  >
-                    <Button size="small" danger icon={<DeleteOutlined />} style={{ borderRadius: 'var(--radius-pill, 9999px)' }} />
-                  </Popconfirm>
-                </Space>
-              ),
-            },
-          ]}
+        <ServerDataTable<Product>
+          table={table}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          isError={isError}
+          onRetry={refetch}
         />
       </Card>
 
@@ -447,3 +498,5 @@ export const ManagerProductsPage: React.FC = () => {
     </div>
   );
 };
+
+export default ManagerProductsPage;

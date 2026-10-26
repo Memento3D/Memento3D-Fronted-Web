@@ -1,44 +1,65 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useCallback, useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
   Button,
   Tag,
   Card,
-  Input,
   Select,
   Progress,
 } from 'antd';
 import {
-  Search,
   RefreshCw,
   Thermometer,
 } from 'lucide-react';
 import { adminApi } from '../api/adminApi';
 import type { AdminPrinter } from '../types/admin.types';
 import dayjs from 'dayjs';
+import { SearchBox } from '../../../components/ui/SearchBox';
+import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
+import { toServerColumns } from '../../../components/ui/data-table/toServerColumns';
+import type { LegacyColumn } from '../../../components/ui/data-table/toServerColumns';
+import { ServerDataTable, ColumnVisibilityMenu } from '../../../components/ui/data-table/ServerDataTable';
+import { queryKeys } from '../../../lib/query/queryKeys';
 
 export const AdminPrintersPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
 
-  const { data: printersPage, isLoading, refetch } = useQuery({
-    queryKey: ['admin-printers', page, pageSize, search, statusFilter],
-    queryFn: () =>
-      adminApi.getPrinters({
-        page,
-        size: pageSize,
-        search: search.trim() || undefined,
-        status: statusFilter,
-      }),
+  const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState();
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearch((prev) => {
+        if (prev !== value) resetPage();
+        return value;
+      });
+    },
+    [resetPage],
+  );
+
+  const printersFilters = {
+    ...params,
+    search: search.trim() || undefined,
+    status: statusFilter,
+  };
+
+  const {
+    data: printersPage,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: queryKeys.admin.printers(printersFilters),
+    queryFn: ({ signal }) => adminApi.getPrinters(printersFilters, signal),
+    placeholderData: keepPreviousData,
   });
 
-  const columns = [
+  const legacyColumns: LegacyColumn<AdminPrinter>[] = [
     {
       title: 'Tên máy in',
       key: 'name',
+      sorter: true,
       render: (_: any, r: AdminPrinter) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span
@@ -63,6 +84,7 @@ export const AdminPrintersPage: React.FC = () => {
     {
       title: 'Trạng thái',
       key: 'status',
+      sorter: true,
       render: (_: any, r: AdminPrinter) => {
         let color = 'default';
         if (r.status === 'PRINTING') color = 'processing';
@@ -103,6 +125,7 @@ export const AdminPrintersPage: React.FC = () => {
       title: 'Lần cuối nhìn thấy',
       dataIndex: 'lastSeenAt',
       key: 'lastSeenAt',
+      sorter: true,
       render: (d: string) => (
         <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
           {d ? dayjs(d).format('DD/MM/YYYY HH:mm:ss') : 'Vừa xong'}
@@ -110,6 +133,19 @@ export const AdminPrintersPage: React.FC = () => {
       ),
     },
   ];
+
+  const tanstackColumns = React.useMemo(() => toServerColumns(legacyColumns), []);
+
+  const { table } = useServerTable<AdminPrinter>({
+    data: printersPage?.content || [],
+    columns: tanstackColumns,
+    rowCount: printersPage?.totalElements ?? 0,
+    pagination,
+    sorting,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    getRowId: (p) => p.id,
+  });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-printers-view">
@@ -122,24 +158,24 @@ export const AdminPrintersPage: React.FC = () => {
             Giám sát thời gian thực nhiệt độ đầu đùn, bàn nhiệt và kết nối OctoPrint / Klipper
           </div>
         </div>
-        <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
-          Làm mới
-        </Button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <ColumnVisibilityMenu table={table} />
+          <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
+            Làm mới
+          </Button>
+        </div>
       </div>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <Input
-            placeholder="Tìm theo tên máy in hoặc địa chỉ IP..."
-            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
-            style={{ minWidth: 280, flex: 1 }}
-            allowClear
-          />
+          <div style={{ minWidth: 280, flex: 1 }}>
+            <SearchBox
+              placeholder="Tìm theo tên máy in hoặc địa chỉ IP..."
+              defaultValue={search}
+              onChange={handleSearchChange}
+              debounceMs={350}
+            />
+          </div>
 
           <Select
             placeholder="Trạng thái máy in"
@@ -147,7 +183,7 @@ export const AdminPrintersPage: React.FC = () => {
             value={statusFilter}
             onChange={(v) => {
               setStatusFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 180 }}
           >
@@ -160,20 +196,12 @@ export const AdminPrintersPage: React.FC = () => {
       </Card>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
-        <Table
-          columns={columns}
-          dataSource={printersPage?.content || []}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            current: page + 1,
-            pageSize,
-            total: printersPage?.totalElements || 0,
-            onChange: (p, ps) => {
-              setPage(p - 1);
-              setPageSize(ps);
-            },
-          }}
+        <ServerDataTable<AdminPrinter>
+          table={table}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          isError={isError}
+          onRetry={refetch}
         />
       </Card>
     </div>

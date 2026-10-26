@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './lib/query/queryClient';
 import { AntdConfig } from './components/AntdConfig';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
@@ -15,27 +16,29 @@ import { WarehouseProvider } from './features/warehouse/context/WarehouseContext
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 import { RoleGuard } from './features/auth/components/RoleGuard';
 import { GuestRoute } from './features/auth/components/GuestRoute';
-import { LoginPage } from './features/auth/pages/LoginPage';
-import { RegisterPage } from './features/auth/pages/RegisterPage';
-import { EmailVerificationPage } from './features/auth/pages/EmailVerificationPage';
-import { VerifyEmailResultPage } from './features/auth/pages/VerifyEmailResultPage';
-import { CompleteRegistrationPage } from './features/auth/pages/CompleteRegistrationPage';
-import { TermsPage } from './features/legal/pages/TermsPage';
-import { PrivacyPolicyPage } from './features/legal/pages/PrivacyPolicyPage';
-import { OAuthCallbackPage } from './features/auth/pages/OAuthCallbackPage';
-import { ForbiddenPage } from './features/auth/pages/ForbiddenPage';
-import { WarehouseSelectPage } from './features/auth/pages/WarehouseSelectPage';
-import { NoWarehouseAccessPage } from './features/auth/pages/NoWarehouseAccessPage';
-import { ForgotPasswordPage } from './features/auth/pages/ForgotPasswordPage';
-import { ResetPasswordPage } from './features/auth/pages/ResetPasswordPage';
-import { ProfilePage } from './features/profile/pages/ProfilePage';
-
 import { Spin } from 'antd';
 import { HomePage } from './features/home/pages/HomePage';
-import { ProductListPage } from './features/products/pages/ProductListPage';
-import { ProductDetailPage } from './features/products/pages/ProductDetailPage';
-import { CategoryListPage } from './features/products/pages/CategoryListPage';
-import { CartPage } from './features/cart/pages/CartPage';
+
+// Lazy-loaded Public, Catalog & Auth Pages for optimal initial payload
+const LoginPage = React.lazy(() => import('./features/auth/pages/LoginPage').then((m) => ({ default: m.LoginPage })));
+const RegisterPage = React.lazy(() => import('./features/auth/pages/RegisterPage').then((m) => ({ default: m.RegisterPage })));
+const EmailVerificationPage = React.lazy(() => import('./features/auth/pages/EmailVerificationPage').then((m) => ({ default: m.EmailVerificationPage })));
+const VerifyEmailResultPage = React.lazy(() => import('./features/auth/pages/VerifyEmailResultPage').then((m) => ({ default: m.VerifyEmailResultPage })));
+const CompleteRegistrationPage = React.lazy(() => import('./features/auth/pages/CompleteRegistrationPage').then((m) => ({ default: m.CompleteRegistrationPage })));
+const TermsPage = React.lazy(() => import('./features/legal/pages/TermsPage').then((m) => ({ default: m.TermsPage })));
+const PrivacyPolicyPage = React.lazy(() => import('./features/legal/pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })));
+const OAuthCallbackPage = React.lazy(() => import('./features/auth/pages/OAuthCallbackPage').then((m) => ({ default: m.OAuthCallbackPage })));
+const ForbiddenPage = React.lazy(() => import('./features/auth/pages/ForbiddenPage').then((m) => ({ default: m.ForbiddenPage })));
+const WarehouseSelectPage = React.lazy(() => import('./features/auth/pages/WarehouseSelectPage').then((m) => ({ default: m.WarehouseSelectPage })));
+const NoWarehouseAccessPage = React.lazy(() => import('./features/auth/pages/NoWarehouseAccessPage').then((m) => ({ default: m.NoWarehouseAccessPage })));
+const ForgotPasswordPage = React.lazy(() => import('./features/auth/pages/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })));
+const ResetPasswordPage = React.lazy(() => import('./features/auth/pages/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })));
+const ProfilePage = React.lazy(() => import('./features/profile/pages/ProfilePage').then((m) => ({ default: m.ProfilePage })));
+
+const ProductListPage = React.lazy(() => import('./features/products/pages/ProductListPage').then((m) => ({ default: m.ProductListPage })));
+const ProductDetailPage = React.lazy(() => import('./features/products/pages/ProductDetailPage').then((m) => ({ default: m.ProductDetailPage })));
+const CategoryListPage = React.lazy(() => import('./features/products/pages/CategoryListPage').then((m) => ({ default: m.CategoryListPage })));
+const CartPage = React.lazy(() => import('./features/cart/pages/CartPage').then((m) => ({ default: m.CartPage })));
 
 // Actor Home Pages (Dedicated per Actor)
 const ManagerHomePage = React.lazy(() =>
@@ -176,16 +179,12 @@ const DriverDeliveriesPage = React.lazy(() =>
   import('./features/driver/pages/DriverDeliveriesPage').then((m) => ({ default: m.DriverDeliveriesPage }))
 );
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 60 * 1000, // 1 minute default stale time to eliminate redundant refetches
-      gcTime: 5 * 60 * 1000, // Keep cached data in memory for 5 minutes
-    },
-  },
-});
+// Devtools are lazy-loaded and only exist in development builds
+const ReactQueryDevtools = import.meta.env.DEV
+  ? React.lazy(() =>
+      import('@tanstack/react-query-devtools').then((m) => ({ default: m.ReactQueryDevtools }))
+    )
+  : () => null;
 
 const RouteLoadingFallback: React.FC = () => (
   <div
@@ -223,6 +222,11 @@ const RootRoute: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
+      {import.meta.env.DEV && (
+        <React.Suspense fallback={null}>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </React.Suspense>
+      )}
       <ThemeProvider>
         <AntdConfig>
           <ErrorBoundary>

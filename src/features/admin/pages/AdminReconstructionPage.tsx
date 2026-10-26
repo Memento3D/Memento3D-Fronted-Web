@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useCallback, useState } from 'react';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
   Button,
   Tag,
   Space,
   Card,
-  Input,
   Select,
   Modal,
   Descriptions,
@@ -15,7 +13,6 @@ import {
   Progress,
 } from 'antd';
 import {
-  Search,
   RefreshCw,
   RotateCw,
   Eye,
@@ -24,34 +21,57 @@ import {
 import { adminApi } from '../api/adminApi';
 import type { AdminReconstructionJob } from '../types/admin.types';
 import dayjs from 'dayjs';
+import { SearchBox } from '../../../components/ui/SearchBox';
+import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
+import { toServerColumns } from '../../../components/ui/data-table/toServerColumns';
+import type { LegacyColumn } from '../../../components/ui/data-table/toServerColumns';
+import { ServerDataTable, ColumnVisibilityMenu } from '../../../components/ui/data-table/ServerDataTable';
+import { queryKeys } from '../../../lib/query/queryKeys';
 
 export const AdminReconstructionPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [tierFilter, setTierFilter] = useState<string | undefined>(undefined);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
   const [selectedJob, setSelectedJob] = useState<AdminReconstructionJob | null>(null);
 
-  const { data: jobsPage, isLoading, refetch } = useQuery({
-    queryKey: ['admin-reconstruction', page, pageSize, search, statusFilter, tierFilter],
-    queryFn: () =>
-      adminApi.getReconstructionJobs({
-        page,
-        size: pageSize,
-        search: search.trim() || undefined,
-        status: statusFilter,
-        tier: tierFilter,
-      }),
+  const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState();
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearch((prev) => {
+        if (prev !== value) resetPage();
+        return value;
+      });
+    },
+    [resetPage],
+  );
+
+  const reconstructionFilters = {
+    ...params,
+    search: search.trim() || undefined,
+    status: statusFilter,
+    tier: tierFilter,
+  };
+
+  const {
+    data: jobsPage,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: queryKeys.admin.reconstruction(reconstructionFilters),
+    queryFn: ({ signal }) => adminApi.getReconstructionJobs(reconstructionFilters, signal),
+    placeholderData: keepPreviousData,
   });
 
   const retryMutation = useMutation({
     mutationFn: (id: string) => adminApi.retryReconstructionJob(id),
     onSuccess: () => {
       message.success('Đã gửi yêu cầu thử lại tác vụ tái tạo 3D');
-      queryClient.invalidateQueries({ queryKey: ['admin-reconstruction'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reconstruction'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard() });
     },
     onError: (err: any) => message.error(err.message || 'Không thể thử lại tác vụ này'),
   });
@@ -64,10 +84,11 @@ export const AdminReconstructionPage: React.FC = () => {
     return <Tag>{status}</Tag>;
   };
 
-  const columns = [
+  const legacyColumns: LegacyColumn<AdminReconstructionJob>[] = [
     {
       title: 'Mã tác vụ (Job ID)',
       key: 'jobId',
+      sorter: true,
       render: (_: any, r: AdminReconstructionJob) => (
         <div>
           <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'monospace' }}>
@@ -83,6 +104,7 @@ export const AdminReconstructionPage: React.FC = () => {
       title: 'Người dùng',
       dataIndex: 'userEmail',
       key: 'userEmail',
+      sorter: true,
       render: (val: string) => <span style={{ color: 'var(--text-primary)' }}>{val || 'Hệ thống'}</span>,
     },
     {
@@ -110,6 +132,7 @@ export const AdminReconstructionPage: React.FC = () => {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
+      sorter: true,
       render: (st: string) => getStatusTag(st),
     },
     {
@@ -127,7 +150,6 @@ export const AdminReconstructionPage: React.FC = () => {
             Chi tiết
           </Button>
 
-          {/* Idempotent Retry only for FAILED jobs */}
           {r.status === 'FAILED' && (
             <Popconfirm
               title="Thử lại tác vụ tái tạo 3D"
@@ -152,6 +174,19 @@ export const AdminReconstructionPage: React.FC = () => {
     },
   ];
 
+  const tanstackColumns = React.useMemo(() => toServerColumns(legacyColumns), []);
+
+  const { table } = useServerTable<AdminReconstructionJob>({
+    data: jobsPage?.content || [],
+    columns: tanstackColumns,
+    rowCount: jobsPage?.totalElements ?? 0,
+    pagination,
+    sorting,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    getRowId: (r) => r.id,
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-reconstruction-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -163,24 +198,24 @@ export const AdminReconstructionPage: React.FC = () => {
             Theo dõi tiến trình Photogrammetry & Gaussian Splatting từ ảnh chụp điện thoại
           </div>
         </div>
-        <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
-          Làm mới
-        </Button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <ColumnVisibilityMenu table={table} />
+          <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
+            Làm mới
+          </Button>
+        </div>
       </div>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <Input
-            placeholder="Tìm theo ID tác vụ hoặc email người dùng..."
-            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
-            style={{ minWidth: 280, flex: 1 }}
-            allowClear
-          />
+          <div style={{ minWidth: 280, flex: 1 }}>
+            <SearchBox
+              placeholder="Tìm theo ID tác vụ hoặc email người dùng..."
+              defaultValue={search}
+              onChange={handleSearchChange}
+              debounceMs={350}
+            />
+          </div>
 
           <Select
             placeholder="Trạng thái"
@@ -188,7 +223,7 @@ export const AdminReconstructionPage: React.FC = () => {
             value={statusFilter}
             onChange={(v) => {
               setStatusFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 160 }}
           >
@@ -204,7 +239,7 @@ export const AdminReconstructionPage: React.FC = () => {
             value={tierFilter}
             onChange={(v) => {
               setTierFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 160 }}
           >
@@ -215,20 +250,12 @@ export const AdminReconstructionPage: React.FC = () => {
       </Card>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
-        <Table
-          columns={columns}
-          dataSource={jobsPage?.content || []}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            current: page + 1,
-            pageSize,
-            total: jobsPage?.totalElements || 0,
-            onChange: (p, ps) => {
-              setPage(p - 1);
-              setPageSize(ps);
-            },
-          }}
+        <ServerDataTable<AdminReconstructionJob>
+          table={table}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          isError={isError}
+          onRetry={refetch}
         />
       </Card>
 

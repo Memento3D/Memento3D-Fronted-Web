@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import type { ActivityTimelineItem } from '../../types/dashboard';
 import { StatusBadge } from '../common/StatusBadge';
+import { VirtualList } from '../ui/VirtualList';
 
 export interface ActivityTimelineProps {
   activities: ActivityTimelineItem[];
@@ -144,7 +145,37 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ activities }
       </div>
 
       <div style={{ maxHeight: 380, overflowY: 'auto', paddingRight: 8 }}>
-        <Timeline items={timelineItems} />
+        {activities.length > 15 ? (
+          <VirtualList
+            items={activities}
+            maxHeight={380}
+            estimateSize={64}
+            getItemKey={(item) => item.id}
+            renderItem={(act) => (
+              <div style={{ display: 'flex', gap: 12, paddingBottom: 14 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  {getIcon(act.type, act.severity)}
+                  <div style={{ flex: 1, width: 2, background: 'var(--border-color)', marginTop: 4 }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                    <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.875rem' }}>
+                      {act.title}
+                    </span>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600 }}>
+                      {act.timeFormatted}
+                    </span>
+                  </div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                    {act.description}
+                  </div>
+                </div>
+              </div>
+            )}
+          />
+        ) : (
+          <Timeline items={timelineItems} />
+        )}
       </div>
     </Card>
   );

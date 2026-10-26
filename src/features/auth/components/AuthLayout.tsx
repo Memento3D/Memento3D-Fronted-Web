@@ -15,42 +15,20 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ portalConfig, children }
   return (
     <div
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         width: '100vw',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'var(--bg-app, #F8F5FF)',
-        backgroundImage: `
-          radial-gradient(circle at 20% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%),
-          radial-gradient(circle at 80% 25%, rgba(255, 191, 174, 0.1) 0%, transparent 45%),
-          radial-gradient(circle at 50% 85%, rgba(201, 232, 213, 0.08) 0%, transparent 50%)
-        `,
+        backgroundColor: 'var(--bg-app)',
         padding: '32px 16px',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {/* Background ambient lighting effects */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '-10%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '600px',
-          height: '350px',
-          background: 'linear-gradient(135deg, rgba(124, 92, 252, 0.15) 0%, rgba(255, 191, 174, 0.12) 100%)',
-          filter: 'blur(120px)',
-          opacity: 0.8,
-          pointerEvents: 'none',
-          borderRadius: '50%',
-        }}
-      />
-
       {/* Main Auth Container */}
-      <div style={{ width: '100%', maxWidth: '460px', zIndex: 1 }} className="animate-enter">
+      <div style={{ width: '100%', maxWidth: '440px', zIndex: 1 }} className="animate-enter">
         {/* Branding & Header */}
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div
@@ -58,43 +36,43 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ portalConfig, children }
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '56px',
-              height: '56px',
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, var(--primary, #7C5CFC) 0%, var(--primary-system, #5F3ADD) 100%)',
-              boxShadow: '0 8px 24px var(--primary-glow)',
+              width: '48px',
+              height: '48px',
+              borderRadius: 'var(--radius-sm, 8px)',
+              background: 'var(--primary)',
+              boxShadow: 'var(--shadow-sm)',
               marginBottom: 16,
             }}
           >
-            <Cpu size={30} color="#FFFFFF" />
+            <Cpu size={26} color="#FFFFFF" />
           </div>
 
           <div style={{ marginBottom: 8 }}>
             <Tag
-              color="purple"
               style={{
                 textTransform: 'uppercase',
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                padding: '4px 14px',
-                borderRadius: '9999px',
-                background: 'var(--surface-container, #F1EBFF)',
-                color: 'var(--primary-system, #5F3ADD)',
-                border: '1px solid var(--border-color, #E2D9F7)',
+                fontWeight: 600,
+                letterSpacing: '0.04em',
+                padding: '3px 12px',
+                borderRadius: 'var(--radius-sm, 4px)',
+                background: 'var(--surface-container)',
+                color: 'var(--primary)',
+                border: '1px solid var(--border-color)',
+                fontSize: '0.725rem',
               }}
             >
               {portalConfig.badge}
             </Tag>
           </div>
 
-          <Title level={2} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 800, letterSpacing: '-0.02em' }}>
+          <Title level={2} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 700, fontSize: '1.5rem', letterSpacing: '-0.02em' }}>
             {portalConfig.title}
           </Title>
 
           <Paragraph
             style={{
               color: 'var(--text-secondary)',
-              fontSize: '0.9rem',
+              fontSize: '0.875rem',
               marginTop: 6,
               marginBottom: 0,
             }}
@@ -106,12 +84,12 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ portalConfig, children }
         {/* Form Card */}
         <Card
           style={{
-            background: 'var(--bg-card, #FFFFFF)',
-            border: '1px solid var(--border-color, #E2D9F7)',
-            borderRadius: 'var(--radius-modal, 28px)',
-            boxShadow: 'var(--shadow-floating)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-modal, 12px)',
+            boxShadow: 'var(--shadow-card)',
           }}
-          bodyStyle={{ padding: '36px 32px' }}
+          bodyStyle={{ padding: '28px 24px' }}
         >
           {children}
         </Card>
@@ -119,11 +97,11 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ portalConfig, children }
         {/* Portal Quick Switcher for All Actors */}
         <div
           style={{
-            marginTop: 20,
-            padding: '14px 18px',
-            background: 'var(--surface-container, #F1EBFF)',
-            border: '1px solid var(--border-color, #E2D9F7)',
-            borderRadius: '20px',
+            marginTop: 18,
+            padding: '12px 16px',
+            background: 'var(--surface-container)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-card, 10px)',
             textAlign: 'center',
           }}
         >

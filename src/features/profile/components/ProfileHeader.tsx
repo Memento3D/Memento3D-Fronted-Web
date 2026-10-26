@@ -107,18 +107,18 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onUserUpdate
       style={{
         background: 'var(--bg-card)',
         border: '1px solid var(--border-default)',
-        borderRadius: 'var(--radius-card-feature)',
-        padding: '28px 32px',
-        boxShadow: 'var(--shadow-card)',
-        marginBottom: '28px',
+        borderRadius: 'var(--radius-card, 10px)',
+        padding: '24px 28px',
+        boxShadow: 'var(--shadow-sm)',
+        marginBottom: '24px',
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '24px',
+        gap: '20px',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
         {/* Avatar with upload action */}
         <div style={{ position: 'relative' }}>
           <Avatar
@@ -126,8 +126,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onUserUpdate
             src={user.avatarUrl}
             icon={!user.avatarUrl && <UserOutlined style={{ color: 'var(--primary)' }} />}
             style={{
-              border: '3px solid var(--primary)',
-              boxShadow: '0 8px 20px rgba(124, 92, 252, 0.25)',
+              border: '2px solid var(--primary)',
+              boxShadow: 'var(--shadow-sm)',
               backgroundColor: 'var(--surface-container)',
             }}
           />
@@ -154,7 +154,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onUserUpdate
               backgroundColor: 'var(--primary)',
               borderColor: 'var(--primary)',
               color: '#fff',
-              boxShadow: '0 2px 8px rgba(124, 92, 252, 0.4)',
+              boxShadow: 'none',
             }}
           />
         </div>

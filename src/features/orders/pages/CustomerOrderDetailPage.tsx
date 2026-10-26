@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Row,
   Col,
@@ -35,6 +35,7 @@ import {
   GiftOutlined,
   FormOutlined,
   CopyOutlined,
+  LockOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useOrderDetail } from '../hooks/useOrderDetail';
@@ -194,7 +195,40 @@ export const CustomerOrderDetailPage: React.FC = () => {
     }
   };
 
-  const items = order.items && order.items.length > 0 ? order.items : [];
+  const items = useMemo(() => {
+    if (order.items && order.items.length > 0) {
+      return order.items;
+    }
+    const repName = order.representativeProductName || (order as any).productName || 'Kỷ vật 3D Điêu khắc Cá nhân hóa';
+    const repThumb = order.representativeThumbnailUrl || (order as any).thumbnailUrl;
+    const qty = order.itemCount || 1;
+    const subtotal = order.subtotal || totalAmount || 0;
+    const unitPrice = qty > 0 ? Math.round(subtotal / qty) : subtotal;
+
+    return [
+      {
+        id: order.id + '-item-1',
+        productId: (order as any).productId || order.scanId || undefined,
+        productName: repName,
+        productNameSnapshot: repName,
+        thumbnailUrl: repThumb,
+        thumbnailSnapshot: repThumb,
+        sku: (order as any).sku || `MM3D-${orderCode}`,
+        categoryName: (order as any).categoryName || 'Kỷ vật 3D Bespoke',
+        unitPrice,
+        quantity: qty,
+        subtotal,
+        material: (order as any).material || (order as any).actualMaterial || 'Nhựa quang hóa Resin cao cấp (SLA)',
+        technology: (order as any).technology || 'In 3D đắp lớp quang hóa SLA (Dung sai ±0.05mm)',
+        dimensions: (order as any).dimensions || 'Kích thước để bàn tiêu chuẩn (15cm)',
+        color: (order as any).color || 'Bản màu gốc PolyJet / Đơn sắc hoàn thiện',
+        finish: (order as any).finish || 'Xử lý UV & Phủ bóng mờ cao cấp',
+        base: (order as any).base || 'Đế gỗ óc chó Walnut tự nhiên',
+        personalization: order.note || (order as any).personalization,
+        productionStatus: order.status,
+      },
+    ];
+  }, [order, orderCode, totalAmount]);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
@@ -808,16 +842,17 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       borderColor: 'var(--primary)',
                       fontWeight: 700,
                       marginTop: 12,
-                      borderRadius: 8,
-                      boxShadow: '0 2px 10px rgba(124, 92, 252, 0.3)',
+                      borderRadius: 'var(--radius-sm, 6px)',
+                      boxShadow: 'none',
                     }}
                   >
                     Thanh toán ngay
                   </Button>
                 )}
 
-                <div style={{ marginTop: 14, padding: '12px', background: 'var(--surface-container)', borderRadius: 8, fontSize: '0.775rem', color: 'var(--text-secondary)' }}>
-                  🔒 Giao dịch được bảo mật bởi chuẩn mã hóa VNPAY & Ngân hàng Nhà nước. Hỗ trợ khách hàng 24/7 qua hotline 1900-3D-MEMO.
+                <div style={{ marginTop: 14, padding: '12px', background: 'var(--surface-container)', borderRadius: 'var(--radius-sm, 6px)', fontSize: '0.775rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>
+                  <LockOutlined style={{ marginRight: 8, color: 'var(--primary)', fontSize: '1rem', flexShrink: 0 }} />
+                  <span>Giao dịch được bảo mật bởi chuẩn mã hóa VNPAY & Ngân hàng Nhà nước. Hỗ trợ khách hàng 24/7 qua hotline 1900-3D-MEMO.</span>
                 </div>
               </div>
             </Card>

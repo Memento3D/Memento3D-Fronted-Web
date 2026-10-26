@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
   Button,
   Input,
   Select,
@@ -19,7 +18,6 @@ import {
   Col,
 } from 'antd';
 import {
-  Search,
   UserPlus,
   RefreshCw,
   Eye,
@@ -36,6 +34,12 @@ import { useAuth } from '../../auth/hooks/useAuth';
 import { getRoleLabel } from '../../../locales/i18n';
 import type { AdminUserDetail, AdminCreateUserRequest, AdminUpdateUserRequest } from '../types/admin.types';
 import dayjs from 'dayjs';
+import { SearchBox } from '../../../components/ui/SearchBox';
+import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
+import { toServerColumns } from '../../../components/ui/data-table/toServerColumns';
+import type { LegacyColumn } from '../../../components/ui/data-table/toServerColumns';
+import { ServerDataTable, ColumnVisibilityMenu } from '../../../components/ui/data-table/ServerDataTable';
+import { queryKeys } from '../../../lib/query/queryKeys';
 
 export const AdminUsersPage: React.FC = () => {
   const { user: currentUser } = useAuth();
@@ -47,10 +51,19 @@ export const AdminUsersPage: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<string | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [providerFilter, setProviderFilter] = useState<string | undefined>(undefined);
-  const [page, setPage] = useState<number>(0);
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [sortField, setSortField] = useState<string>('createdAt');
-  const [sortOrder, setSortOrder] = useState<string>('desc');
+  // Server-driven table state (page/size/sort). Default sort: createdAt DESC.
+  const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState();
+
+  // Stable identity is required: SearchBox re-arms its debounce when onChange changes
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearch((prev) => {
+        if (prev !== value) resetPage();
+        return value;
+      });
+    },
+    [resetPage],
+  );
 
   // Modals state
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -61,18 +74,18 @@ export const AdminUsersPage: React.FC = () => {
   const [editForm] = Form.useForm();
 
   // Query: Users with server pagination & filters
-  const { data: usersPage, isLoading, refetch } = useQuery({
-    queryKey: ['admin-users', page, pageSize, search, roleFilter, statusFilter, providerFilter, sortField, sortOrder],
-    queryFn: () =>
-      adminApi.getUsers({
-        page,
-        size: pageSize,
-        search: search.trim() || undefined,
-        role: roleFilter,
-        status: statusFilter,
-        provider: providerFilter,
-        sort: `${sortField},${sortOrder}`,
-      }),
+  const usersFilters = {
+    ...params,
+    search: search.trim() || undefined,
+    role: roleFilter,
+    status: statusFilter,
+    provider: providerFilter,
+  };
+
+  const { data: usersPage, isLoading, isFetching, isError, refetch } = useQuery({
+    queryKey: queryKeys.admin.users(usersFilters),
+    queryFn: ({ signal }) => adminApi.getUsers(usersFilters, signal),
+    placeholderData: keepPreviousData,
   });
 
   // Mutations
@@ -82,7 +95,7 @@ export const AdminUsersPage: React.FC = () => {
       message.success('Tạo tài khoản người dùng thành công');
       setCreateModalOpen(false);
       createForm.resetFields();
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.usersAll });
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard-summary'] });
     },
     onError: (err: any) => message.error(err.message || 'Không thể tạo tài khoản'),
@@ -95,7 +108,7 @@ export const AdminUsersPage: React.FC = () => {
       message.success('Cập nhật thông tin tài khoản thành công');
       setEditModalOpen(false);
       setSelectedUser(null);
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.usersAll });
     },
     onError: (err: any) => message.error(err.message || 'Không thể cập nhật tài khoản'),
   });
@@ -104,7 +117,7 @@ export const AdminUsersPage: React.FC = () => {
     mutationFn: (id: string) => adminApi.lockUser(id),
     onSuccess: () => {
       message.success('Đã khóa tài khoản thành công');
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.usersAll });
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard-summary'] });
     },
     onError: (err: any) => message.error(err.message || 'Không thể khóa tài khoản'),
@@ -114,7 +127,7 @@ export const AdminUsersPage: React.FC = () => {
     mutationFn: (id: string) => adminApi.unlockUser(id),
     onSuccess: () => {
       message.success('Đã mở khóa tài khoản thành công');
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.usersAll });
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard-summary'] });
     },
     onError: (err: any) => message.error(err.message || 'Không thể mở khóa tài khoản'),
@@ -124,7 +137,7 @@ export const AdminUsersPage: React.FC = () => {
     mutationFn: (id: string) => adminApi.activateUser(id),
     onSuccess: () => {
       message.success('Đã kích hoạt tài khoản');
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.usersAll });
     },
     onError: (err: any) => message.error(err.message),
   });
@@ -133,7 +146,7 @@ export const AdminUsersPage: React.FC = () => {
     mutationFn: (id: string) => adminApi.deactivateUser(id),
     onSuccess: () => {
       message.success('Đã tạm ngưng tài khoản');
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.usersAll });
     },
     onError: (err: any) => message.error(err.message),
   });
@@ -142,7 +155,7 @@ export const AdminUsersPage: React.FC = () => {
     mutationFn: (id: string) => adminApi.deleteUser(id),
     onSuccess: () => {
       message.success('Đã xử lý xóa tài khoản an toàn');
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.usersAll });
     },
     onError: (err: any) => message.error(err.message || 'Không thể xóa tài khoản'),
   });
@@ -150,7 +163,7 @@ export const AdminUsersPage: React.FC = () => {
   // Action Guards (Rule 1, 2, 3: Admin cannot lock, deactivate, or delete self)
   const isSelf = (targetUser: AdminUserDetail) => currentUser?.id === targetUser.id;
 
-  const columns = [
+  const legacyColumns: LegacyColumn<AdminUserDetail>[] = [
     {
       title: 'Tài khoản',
       key: 'user',
@@ -254,6 +267,7 @@ export const AdminUsersPage: React.FC = () => {
     {
       title: 'Thao tác',
       key: 'actions',
+      hideable: false,
       render: (_: any, r: AdminUserDetail) => (
         <Space size="small">
           {/* View detail */}
@@ -356,6 +370,17 @@ export const AdminUsersPage: React.FC = () => {
     },
   ];
 
+  const { table } = useServerTable<AdminUserDetail>({
+    data: usersPage?.content ?? [],
+    columns: toServerColumns(legacyColumns),
+    rowCount: usersPage?.totalElements ?? 0,
+    sorting,
+    onSortingChange: setSorting,
+    pagination,
+    onPaginationChange: setPagination,
+    getRowId: (u) => u.id,
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-users-view">
       {/* Top Header */}
@@ -370,6 +395,7 @@ export const AdminUsersPage: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', gap: 12 }}>
+          <ColumnVisibilityMenu table={table} />
           <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
             Làm mới
           </Button>
@@ -381,8 +407,8 @@ export const AdminUsersPage: React.FC = () => {
               setCreateModalOpen(true);
             }}
             style={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-              border: 'none',
+              background: 'var(--primary)',
+              borderColor: 'var(--primary)',
               fontWeight: 600,
             }}
           >
@@ -394,16 +420,13 @@ export const AdminUsersPage: React.FC = () => {
       {/* Filter & Search Bar */}
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Input
+          <SearchBox
             placeholder="Tìm theo họ tên, email hoặc số điện thoại..."
-            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
+            onChange={handleSearchChange}
+            debounceMs={350}
+            width="100%"
             style={{ minWidth: 280, flex: 1 }}
-            allowClear
           />
 
           <Select
@@ -412,7 +435,7 @@ export const AdminUsersPage: React.FC = () => {
             value={roleFilter}
             onChange={(v) => {
               setRoleFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 170 }}
           >
@@ -431,7 +454,7 @@ export const AdminUsersPage: React.FC = () => {
             value={statusFilter}
             onChange={(v) => {
               setStatusFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 150 }}
           >
@@ -447,7 +470,7 @@ export const AdminUsersPage: React.FC = () => {
             value={providerFilter}
             onChange={(v) => {
               setProviderFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 130 }}
           >
@@ -459,29 +482,13 @@ export const AdminUsersPage: React.FC = () => {
 
       {/* Users Data Table with Server Pagination */}
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
-        <Table
-          columns={columns}
-          dataSource={usersPage?.content || []}
-          rowKey="id"
-          loading={isLoading}
+        <ServerDataTable<AdminUserDetail>
+          table={table}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          isError={isError}
+          onRetry={() => refetch()}
           scroll={{ x: 1000 }}
-          pagination={{
-            current: page + 1,
-            pageSize: pageSize,
-            total: usersPage?.totalElements || 0,
-            showSizeChanger: true,
-            pageSizeOptions: ['10', '20', '50'],
-            onChange: (p, ps) => {
-              setPage(p - 1);
-              setPageSize(ps);
-            },
-          }}
-          onChange={(_pagination, _filters, sorter: any) => {
-            if (sorter && sorter.field) {
-              setSortField(sorter.field);
-              setSortOrder(sorter.order === 'ascend' ? 'asc' : 'desc');
-            }
-          }}
         />
       </Card>
 

@@ -111,7 +111,7 @@ export const AdminDashboardPage: React.FC = () => {
       <Row gutter={[16, 16]}>
         {/* Users KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 10px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Người dùng
@@ -132,7 +132,7 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Orders KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 10px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Đơn hàng
@@ -153,7 +153,7 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Revenue KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 10px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Doanh thu
@@ -178,7 +178,7 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Catalog KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 10px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Sản phẩm & Danh mục
@@ -199,7 +199,7 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* 3D Reconstruction KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 10px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Tái tạo 3D AI
@@ -220,7 +220,7 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Printers Hardware KPI */}
         <Col xs={24} sm={12} lg={4}>
-          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+          <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-card, 10px)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Đội máy in
