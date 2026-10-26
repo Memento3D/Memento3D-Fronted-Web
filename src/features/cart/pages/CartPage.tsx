@@ -18,6 +18,7 @@ import {
   ArrowRightOutlined,
   ShoppingOutlined,
   CheckCircleOutlined,
+  InboxOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -152,7 +153,7 @@ export const CartPage: React.FC = () => {
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
                           ) : (
-                            <span style={{ fontSize: '1.8rem' }}>📦</span>
+                            <InboxOutlined style={{ fontSize: 24, color: 'var(--text-muted)' }} />
                           )}
                         </div>
                       </Col>

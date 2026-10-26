@@ -1,37 +1,51 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useCallback, useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
   Button,
   Tag,
   Card,
-  Input,
   Select,
   Progress,
 } from 'antd';
 import {
-  Search,
   RefreshCw,
 } from 'lucide-react';
 import { adminApi } from '../api/adminApi';
 import type { AdminPrintJob } from '../types/admin.types';
 import dayjs from 'dayjs';
+import { SearchBox } from '../../../components/ui/SearchBox';
+import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
+import { toServerColumns } from '../../../components/ui/data-table/toServerColumns';
+import type { LegacyColumn } from '../../../components/ui/data-table/toServerColumns';
+import { ServerDataTable, ColumnVisibilityMenu } from '../../../components/ui/data-table/ServerDataTable';
+import { queryKeys } from '../../../lib/query/queryKeys';
 
 export const AdminPrintJobsPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
 
-  const { data: jobsPage, isLoading, refetch } = useQuery({
-    queryKey: ['admin-print-jobs', page, pageSize, search, statusFilter],
-    queryFn: () =>
-      adminApi.getPrintJobs({
-        page,
-        size: pageSize,
-        search: search.trim() || undefined,
-        status: statusFilter,
-      }),
+  const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState();
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearch((prev) => {
+        if (prev !== value) resetPage();
+        return value;
+      });
+    },
+    [resetPage],
+  );
+
+  const printJobsFilters = {
+    ...params,
+    search: search.trim() || undefined,
+    status: statusFilter,
+  };
+
+  const { data: jobsPage, isLoading, isFetching, isError, refetch } = useQuery({
+    queryKey: queryKeys.admin.printJobs(printJobsFilters),
+    queryFn: ({ signal }) => adminApi.getPrintJobs(printJobsFilters, signal),
+    placeholderData: keepPreviousData,
   });
 
   const getStatusTag = (status: string) => {
@@ -42,10 +56,11 @@ export const AdminPrintJobsPage: React.FC = () => {
     return <Tag>{status}</Tag>;
   };
 
-  const columns = [
+  const legacyColumns: LegacyColumn<AdminPrintJob>[] = [
     {
       title: 'Lệnh in (Job ID)',
-      key: 'job',
+      key: 'createdAt',
+      sorter: true,
       render: (_: any, r: AdminPrintJob) => (
         <div>
           <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -81,6 +96,7 @@ export const AdminPrintJobsPage: React.FC = () => {
     {
       title: 'Tiến độ',
       key: 'progress',
+      sorter: true,
       render: (_: any, r: AdminPrintJob) => (
         <div style={{ width: 120 }}>
           <Progress
@@ -95,9 +111,21 @@ export const AdminPrintJobsPage: React.FC = () => {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
+      sorter: true,
       render: (st: string) => getStatusTag(st),
     },
   ];
+
+  const { table } = useServerTable<AdminPrintJob>({
+    data: jobsPage?.content ?? [],
+    columns: toServerColumns(legacyColumns),
+    rowCount: jobsPage?.totalElements ?? 0,
+    sorting,
+    onSortingChange: setSorting,
+    pagination,
+    onPaginationChange: setPagination,
+    getRowId: (j) => j.id,
+  });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-print-jobs-view">
@@ -110,23 +138,23 @@ export const AdminPrintJobsPage: React.FC = () => {
             Theo dõi phân công máy in, tiến độ đùn nhựa và tiêu hao vật tư
           </div>
         </div>
-        <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
-          Làm mới
-        </Button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <ColumnVisibilityMenu table={table} />
+          <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
+            Làm mới
+          </Button>
+        </div>
       </div>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <Input
+          <SearchBox
             placeholder="Tìm theo mã lệnh in hoặc đơn hàng..."
-            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
+            onChange={handleSearchChange}
+            debounceMs={350}
+            width="100%"
             style={{ minWidth: 280, flex: 1 }}
-            allowClear
           />
 
           <Select
@@ -135,7 +163,7 @@ export const AdminPrintJobsPage: React.FC = () => {
             value={statusFilter}
             onChange={(v) => {
               setStatusFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 170 }}
           >
@@ -148,20 +176,12 @@ export const AdminPrintJobsPage: React.FC = () => {
       </Card>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
-        <Table
-          columns={columns}
-          dataSource={jobsPage?.content || []}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            current: page + 1,
-            pageSize,
-            total: jobsPage?.totalElements || 0,
-            onChange: (p, ps) => {
-              setPage(p - 1);
-              setPageSize(ps);
-            },
-          }}
+        <ServerDataTable<AdminPrintJob>
+          table={table}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          isError={isError}
+          onRetry={() => refetch()}
         />
       </Card>
     </div>

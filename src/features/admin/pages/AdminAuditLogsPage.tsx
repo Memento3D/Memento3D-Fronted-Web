@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
   Button,
   Tag,
   Card,
@@ -16,30 +15,45 @@ import {
 import { adminApi } from '../api/adminApi';
 import type { AdminAuditLog } from '../types/admin.types';
 import dayjs from 'dayjs';
+import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
+import { toServerColumns } from '../../../components/ui/data-table/toServerColumns';
+import type { LegacyColumn } from '../../../components/ui/data-table/toServerColumns';
+import { ServerDataTable, ColumnVisibilityMenu } from '../../../components/ui/data-table/ServerDataTable';
+import { queryKeys } from '../../../lib/query/queryKeys';
 
 export const AdminAuditLogsPage: React.FC = () => {
   const [actionFilter, setActionFilter] = useState<string | undefined>(undefined);
   const [resourceFilter, setResourceFilter] = useState<string | undefined>(undefined);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(15);
   const [selectedLog, setSelectedLog] = useState<AdminAuditLog | null>(null);
 
-  const { data: auditPage, isLoading, refetch } = useQuery({
-    queryKey: ['admin-audit-logs-page', page, pageSize, actionFilter, resourceFilter],
-    queryFn: () =>
-      adminApi.getAuditLogs({
-        page,
-        size: pageSize,
-        action: actionFilter,
-        resourceType: resourceFilter,
-      }),
+  const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState({
+    pageSize: 15,
   });
 
-  const columns = [
+  const auditFilters = {
+    ...params,
+    action: actionFilter,
+    resourceType: resourceFilter,
+  };
+
+  const {
+    data: auditPage,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: queryKeys.admin.auditLogs(auditFilters),
+    queryFn: ({ signal }) => adminApi.getAuditLogs(auditFilters, signal),
+    placeholderData: keepPreviousData,
+  });
+
+  const legacyColumns: LegacyColumn<AdminAuditLog>[] = [
     {
       title: 'Thời gian',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      sorter: true,
       render: (d: string) => (
         <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
           {dayjs(d).format('DD/MM/YYYY HH:mm:ss')}
@@ -66,12 +80,14 @@ export const AdminAuditLogsPage: React.FC = () => {
       title: 'Hành động',
       dataIndex: 'action',
       key: 'action',
+      sorter: true,
       render: (val: string) => <Tag color="blue" style={{ fontWeight: 600 }}>{val}</Tag>,
     },
     {
       title: 'Loại tài nguyên',
       dataIndex: 'entityType',
       key: 'entityType',
+      sorter: true,
       render: (val: string) => <Tag color="cyan">{val || 'RESOURCE'}</Tag>,
     },
     {
@@ -103,6 +119,19 @@ export const AdminAuditLogsPage: React.FC = () => {
     },
   ];
 
+  const tanstackColumns = React.useMemo(() => toServerColumns(legacyColumns), []);
+
+  const { table } = useServerTable<AdminAuditLog>({
+    data: auditPage?.content || [],
+    columns: tanstackColumns,
+    rowCount: auditPage?.totalElements ?? 0,
+    pagination,
+    sorting,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    getRowId: (a) => a.id,
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-audit-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -114,9 +143,12 @@ export const AdminAuditLogsPage: React.FC = () => {
             Lưu vết toàn bộ thao tác bảo mật, phân quyền, cấu hình và biến động dữ liệu quan trọng
           </div>
         </div>
-        <Button icon={<RefreshCw size={14} />} onClick={() => refetch()} style={{ borderRadius: 'var(--radius-full, 9999px)' }}>
-          Làm mới
-        </Button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <ColumnVisibilityMenu table={table} />
+          <Button icon={<RefreshCw size={14} />} onClick={() => refetch()} style={{ borderRadius: 'var(--radius-full, 9999px)' }}>
+            Làm mới
+          </Button>
+        </div>
       </div>
 
       <Card style={{ background: 'var(--surface-card, #FFFFFF)', borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
@@ -127,7 +159,7 @@ export const AdminAuditLogsPage: React.FC = () => {
             value={actionFilter}
             onChange={(v) => {
               setActionFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 220 }}
           >
@@ -146,7 +178,7 @@ export const AdminAuditLogsPage: React.FC = () => {
             value={resourceFilter}
             onChange={(v) => {
               setResourceFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 180 }}
           >
@@ -159,20 +191,12 @@ export const AdminAuditLogsPage: React.FC = () => {
       </Card>
 
       <Card style={{ background: 'var(--surface-card, #FFFFFF)', borderRadius: 'var(--radius-card-standard, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
-        <Table
-          columns={columns}
-          dataSource={auditPage?.content || []}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            current: page + 1,
-            pageSize,
-            total: auditPage?.totalElements || 0,
-            onChange: (p, ps) => {
-              setPage(p - 1);
-              setPageSize(ps);
-            },
-          }}
+        <ServerDataTable<AdminAuditLog>
+          table={table}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          isError={isError}
+          onRetry={refetch}
         />
       </Card>
 

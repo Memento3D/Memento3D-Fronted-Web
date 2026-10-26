@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useCallback, useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
   Button,
-  Input,
   Select,
   Tag,
   Card,
@@ -12,32 +10,49 @@ import {
   Divider,
 } from 'antd';
 import {
-  Search,
   RefreshCw,
   Eye,
 } from 'lucide-react';
 import { adminApi } from '../api/adminApi';
 import { getStatusLabel } from '../../../locales/i18n';
 import dayjs from 'dayjs';
+import { SearchBox } from '../../../components/ui/SearchBox';
+import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
+import { toServerColumns } from '../../../components/ui/data-table/toServerColumns';
+import type { LegacyColumn } from '../../../components/ui/data-table/toServerColumns';
+import { ServerDataTable, ColumnVisibilityMenu } from '../../../components/ui/data-table/ServerDataTable';
+import { queryKeys } from '../../../lib/query/queryKeys';
 
 export const AdminOrdersPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<string | undefined>(undefined);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
 
-  const { data: ordersPage, isLoading, refetch } = useQuery({
-    queryKey: ['admin-orders', page, pageSize, search, statusFilter, paymentStatusFilter],
-    queryFn: () =>
-      adminApi.getOrders({
-        page,
-        size: pageSize,
-        search: search.trim() || undefined,
-        status: statusFilter,
-        paymentStatus: paymentStatusFilter,
-      }),
+  const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState();
+
+  // Stable identity: SearchBox re-arms its debounce when onChange changes
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearch((prev) => {
+        if (prev !== value) resetPage();
+        return value;
+      });
+    },
+    [resetPage],
+  );
+
+  const ordersFilters = {
+    ...params,
+    search: search.trim() || undefined,
+    status: statusFilter,
+    paymentStatus: paymentStatusFilter,
+  };
+
+  const { data: ordersPage, isLoading, isFetching, isError, refetch } = useQuery({
+    queryKey: queryKeys.admin.orders(ordersFilters),
+    queryFn: ({ signal }) => adminApi.getOrders(ordersFilters, signal),
+    placeholderData: keepPreviousData,
   });
 
   const getOrderStatusTag = (status: string) => {
@@ -51,10 +66,12 @@ export const AdminOrdersPage: React.FC = () => {
     return <Tag color={color}>{getStatusLabel(status)}</Tag>;
   };
 
-  const columns = [
+  const legacyColumns: LegacyColumn<any>[] = [
     {
       title: 'Mã đơn hàng',
-      key: 'orderNumber',
+      // Sorts server-side by createdAt (the cell also shows the creation time)
+      key: 'createdAt',
+      sorter: true,
       render: (_: any, r: any) => (
         <div>
           <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -102,7 +119,7 @@ export const AdminOrdersPage: React.FC = () => {
       title: 'Tổng tiền',
       dataIndex: 'totalAmount',
       key: 'totalAmount',
-      sorter: (a: any, b: any) => (a.totalAmount || 0) - (b.totalAmount || 0),
+      sorter: true,
       render: (val: number) => (
         <span style={{ fontWeight: 700, color: '#10b981' }}>
           {(val || 0).toLocaleString('vi-VN')} đ
@@ -112,6 +129,7 @@ export const AdminOrdersPage: React.FC = () => {
     {
       title: 'Thao tác',
       key: 'actions',
+      hideable: false,
       render: (_: any, r: any) => (
         <Button
           size="small"
@@ -124,6 +142,17 @@ export const AdminOrdersPage: React.FC = () => {
     },
   ];
 
+  const { table } = useServerTable<any>({
+    data: ordersPage?.content ?? [],
+    columns: toServerColumns(legacyColumns),
+    rowCount: ordersPage?.totalElements ?? 0,
+    sorting,
+    onSortingChange: setSorting,
+    pagination,
+    onPaginationChange: setPagination,
+    getRowId: (o) => String(o.id),
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} id="admin-orders-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -135,23 +164,23 @@ export const AdminOrdersPage: React.FC = () => {
             Giám sát trạng thái đơn hàng, đối soát thanh toán và luồng giao nhận
           </div>
         </div>
-        <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
-          Làm mới
-        </Button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <ColumnVisibilityMenu table={table} />
+          <Button icon={<RefreshCw size={14} />} onClick={() => refetch()}>
+            Làm mới
+          </Button>
+        </div>
       </div>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <Input
+          <SearchBox
             placeholder="Tìm theo mã đơn, khách hàng hoặc số điện thoại..."
-            prefix={<Search size={14} style={{ color: 'var(--text-secondary)' }} />}
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
+            onChange={handleSearchChange}
+            debounceMs={350}
+            width="100%"
             style={{ minWidth: 280, flex: 1 }}
-            allowClear
           />
 
           <Select
@@ -160,7 +189,7 @@ export const AdminOrdersPage: React.FC = () => {
             value={statusFilter}
             onChange={(v) => {
               setStatusFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 180 }}
           >
@@ -178,7 +207,7 @@ export const AdminOrdersPage: React.FC = () => {
             value={paymentStatusFilter}
             onChange={(v) => {
               setPaymentStatusFilter(v);
-              setPage(0);
+              resetPage();
             }}
             style={{ width: 170 }}
           >
@@ -190,20 +219,12 @@ export const AdminOrdersPage: React.FC = () => {
       </Card>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
-        <Table
-          columns={columns}
-          dataSource={ordersPage?.content || []}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            current: page + 1,
-            pageSize,
-            total: ordersPage?.totalElements || 0,
-            onChange: (p, ps) => {
-              setPage(p - 1);
-              setPageSize(ps);
-            },
-          }}
+        <ServerDataTable<any>
+          table={table}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          isError={isError}
+          onRetry={() => refetch()}
         />
       </Card>
 

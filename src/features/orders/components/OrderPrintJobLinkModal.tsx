@@ -134,10 +134,10 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
             htmlType="submit"
             loading={createJobMutation.isPending}
             style={{
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-              borderColor: 'transparent',
+              background: 'var(--primary)',
+              borderColor: 'var(--primary)',
               fontWeight: 600,
-              borderRadius: 8,
+              borderRadius: 'var(--radius-sm, 6px)',
             }}
           >
             Tạo Lệnh in 3D

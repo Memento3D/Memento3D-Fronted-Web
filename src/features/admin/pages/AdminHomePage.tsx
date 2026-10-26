@@ -107,7 +107,7 @@ export const AdminHomePage: React.FC = () => {
             icon={<UserPlus size={16} />}
             onClick={() => navigate('/admin/users')}
             style={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+              background: 'var(--primary)',
               border: 'none',
               borderRadius: 8,
               height: 40,
@@ -180,23 +180,23 @@ export const AdminHomePage: React.FC = () => {
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
                   {loadingSummary ? <Spin size="small" /> : summary?.users?.total ?? 0}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: '#10b981', marginTop: 4 }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--tertiary)', marginTop: 4 }}>
                   +{summary?.users?.newToday ?? 0} hôm nay • {summary?.users?.active ?? 0} hoạt động
                 </div>
               </div>
               <div
                 style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 12,
-                  background: 'rgba(99, 102, 241, 0.15)',
-                  color: '#6366f1',
+                  width: 44,
+                  height: 44,
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  background: 'var(--surface-container)',
+                  color: 'var(--primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <Users size={24} />
+                <Users size={22} />
               </div>
             </div>
           </Card>
@@ -207,8 +207,9 @@ export const AdminHomePage: React.FC = () => {
             bordered={false}
             style={{
               background: 'var(--bg-card)',
-              borderRadius: 14,
+              borderRadius: 'var(--radius-card, 10px)',
               border: '1px solid var(--border-color)',
+              boxShadow: 'var(--shadow-sm)',
               cursor: 'pointer',
             }}
             onClick={() => navigate('/admin/orders')}
@@ -293,8 +294,9 @@ export const AdminHomePage: React.FC = () => {
             bordered={false}
             style={{
               background: 'var(--bg-card)',
-              borderRadius: 14,
+              borderRadius: 'var(--radius-card, 10px)',
               border: '1px solid var(--border-color)',
+              boxShadow: 'var(--shadow-sm)',
               cursor: 'pointer',
             }}
             onClick={() => navigate('/admin/reconstruction')}
@@ -307,23 +309,23 @@ export const AdminHomePage: React.FC = () => {
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>
                   {loadingSummary ? <Spin size="small" /> : summary?.reconstruction?.total ?? 0}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: '#a855f7', marginTop: 4 }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--primary)', marginTop: 4 }}>
                   {summary?.reconstruction?.completed ?? 0} hoàn tất • {summary?.reconstruction?.running ?? 0} đang chạy
                 </div>
               </div>
               <div
                 style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 12,
-                  background: 'rgba(168, 85, 247, 0.15)',
-                  color: '#a855f7',
+                  width: 44,
+                  height: 44,
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  background: 'var(--surface-container)',
+                  color: 'var(--primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <Box size={24} />
+                <Box size={22} />
               </div>
             </div>
           </Card>

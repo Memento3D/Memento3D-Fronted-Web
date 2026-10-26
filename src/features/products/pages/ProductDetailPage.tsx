@@ -21,6 +21,7 @@ import {
   SafetyCertificateOutlined,
   CarOutlined,
   AppstoreOutlined,
+  InboxOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -29,6 +30,7 @@ import { useCart } from '../../cart/context/CartContext';
 import { formatCurrency } from '../../orders/utils/orderFormatters';
 import { Navbar } from '../../home/components/Navbar';
 import { Footer } from '../../home/components/Footer';
+import { prefetchChunk } from '../../../utils/prefetch';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -37,6 +39,11 @@ export const ProductDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+
+  const handleWarmupCheckout = () => {
+    prefetchChunk('CheckoutPage', () => import('../../orders/pages/CheckoutPage'));
+    prefetchChunk('CartPage', () => import('../../cart/pages/CartPage'));
+  };
 
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedSize, setSelectedSize] = useState<string>('Standard (12-15cm)');
@@ -55,7 +62,7 @@ export const ProductDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="home-wrapper" style={{ minHeight: '100vh' }}>
+      <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
         <Navbar />
         <div style={{ textAlign: 'center', padding: '120px 0' }}>
           <Spin size="large" />
@@ -67,16 +74,16 @@ export const ProductDetailPage: React.FC = () => {
 
   if (isError || !product) {
     return (
-      <div className="home-wrapper" style={{ minHeight: '100vh' }}>
+      <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
         <Navbar />
         <div style={{ maxWidth: 600, margin: '100px auto', textAlign: 'center', padding: 24 }}>
-          <Title level={3} style={{ color: '#ef4444' }}>
+          <Title level={3} style={{ color: 'var(--color-error, #ef4444)' }}>
             Không tìm thấy sản phẩm
           </Title>
-          <Text style={{ color: '#94a3b8', display: 'block', marginBottom: 24 }}>
+          <Text style={{ color: 'var(--text-secondary)', display: 'block', marginBottom: 24 }}>
             Sản phẩm có thể đã ngừng cung cấp hoặc đường dẫn không chính xác.
           </Text>
-          <Button type="primary" onClick={() => navigate('/products')}>
+          <Button type="primary" onClick={() => navigate('/products')} style={{ borderRadius: 'var(--radius-sm, 6px)' }}>
             Xem tất cả sản phẩm
           </Button>
         </div>
@@ -120,7 +127,7 @@ export const ProductDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="home-wrapper" style={{ minHeight: '100vh' }}>
+    <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
       <Navbar />
 
       <main style={{ maxWidth: 1240, margin: '0 auto', padding: '100px 24px 60px' }}>
@@ -129,7 +136,7 @@ export const ProductDetailPage: React.FC = () => {
           type="text"
           icon={<ArrowLeftOutlined />}
           onClick={() => navigate('/products')}
-          style={{ color: '#94a3b8', marginBottom: 24, paddingLeft: 0 }}
+          style={{ color: 'var(--text-secondary)', marginBottom: 24, paddingLeft: 0 }}
         >
           Quay lại danh mục sản phẩm
         </Button>
@@ -139,10 +146,10 @@ export const ProductDetailPage: React.FC = () => {
           <Col xs={24} md={12}>
             <div
               style={{
-                borderRadius: 20,
+                borderRadius: 'var(--radius-card, 10px)',
                 overflow: 'hidden',
-                background: '#090d16',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                background: 'var(--surface-container)',
+                border: '1px solid var(--border-color)',
                 marginBottom: 16,
                 height: 440,
                 display: 'flex',
@@ -157,7 +164,10 @@ export const ProductDetailPage: React.FC = () => {
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               ) : (
-                <div style={{ fontSize: '4rem', color: '#475569' }}>📦</div>
+                <div style={{ fontSize: '3rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                  <InboxOutlined />
+                  <span style={{ fontSize: '0.9rem' }}>Chưa có hình ảnh</span>
+                </div>
               )}
             </div>
 
@@ -170,13 +180,13 @@ export const ProductDetailPage: React.FC = () => {
                     style={{
                       width: 80,
                       height: 80,
-                      borderRadius: 10,
+                      borderRadius: 'var(--radius-sm, 6px)',
                       overflow: 'hidden',
                       cursor: 'pointer',
                       border:
                         selectedImageIndex === idx
-                          ? '2px solid #38bdf8'
-                          : '1px solid rgba(255, 255, 255, 0.1)',
+                          ? '2px solid var(--primary)'
+                          : '1px solid var(--border-color)',
                       flexShrink: 0,
                     }}
                   >
@@ -189,33 +199,34 @@ export const ProductDetailPage: React.FC = () => {
             {/* Customization CTA banner */}
             <Card
               style={{
-                background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%)',
-                border: '1px solid rgba(14, 165, 233, 0.25)',
-                borderRadius: 16,
+                background: 'var(--surface-container)',
+                border: '1px solid var(--border-color)',
+                borderRadius: 'var(--radius-card, 10px)',
                 marginTop: 24,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div
                   style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    background: 'rgba(14, 165, 233, 0.2)',
+                    width: 44,
+                    height: 44,
+                    borderRadius: 'var(--radius-sm, 8px)',
+                    background: 'var(--lavender-bg)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#38bdf8',
-                    fontSize: '1.5rem',
+                    color: 'var(--primary)',
+                    fontSize: '1.3rem',
+                    flexShrink: 0,
                   }}
                 >
                   <CameraOutlined />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '1rem' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
                     Tạo mô hình 3D từ ảnh chụp của bạn?
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                  <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
                     Tải lên 20-50 bức ảnh để AI tái cấu trúc 3D chân dung của bạn trước khi in.
                   </div>
                 </div>
@@ -225,7 +236,7 @@ export const ProductDetailPage: React.FC = () => {
                   style={{
                     background: 'var(--primary)',
                     borderColor: 'var(--primary)',
-                    borderRadius: 'var(--radius-full)',
+                    borderRadius: 'var(--radius-sm, 6px)',
                   }}
                 >
                   Tùy biến với ảnh
@@ -386,14 +397,16 @@ export const ProductDetailPage: React.FC = () => {
                 disabled={isOutOfStock}
                 loading={isAdding}
                 onClick={handleAddToCart}
+                onMouseEnter={handleWarmupCheckout}
+                onFocus={handleWarmupCheckout}
                 style={{
                   flex: 1,
-                  height: 50,
-                  borderRadius: 'var(--radius-full)',
+                  height: 48,
+                  borderRadius: 'var(--radius-sm, 6px)',
                   background: 'var(--surface-container)',
                   borderColor: 'var(--border-color)',
                   color: 'var(--text-primary)',
-                  fontWeight: 700,
+                  fontWeight: 600,
                 }}
               >
                 Thêm vào giỏ hàng
@@ -406,14 +419,16 @@ export const ProductDetailPage: React.FC = () => {
                 disabled={isOutOfStock}
                 loading={isAdding}
                 onClick={handleBuyNow}
+                onMouseEnter={handleWarmupCheckout}
+                onFocus={handleWarmupCheckout}
                 style={{
                   flex: 1,
-                  height: 50,
-                  borderRadius: 'var(--radius-full)',
+                  height: 48,
+                  borderRadius: 'var(--radius-sm, 6px)',
                   background: 'var(--primary)',
                   borderColor: 'var(--primary)',
-                  fontWeight: 700,
-                  boxShadow: 'var(--shadow-glow)',
+                  fontWeight: 600,
+                  boxShadow: 'none',
                 }}
               >
                 Mua ngay
@@ -426,10 +441,10 @@ export const ProductDetailPage: React.FC = () => {
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
                 gap: 12,
-                marginTop: 28,
-                padding: 18,
+                marginTop: 24,
+                padding: 16,
                 background: 'var(--surface-container, #F1EBFF)',
-                borderRadius: 'var(--radius-default, 16px)',
+                borderRadius: 'var(--radius-card, 10px)',
                 border: '1px solid var(--border-color, #E2D9F7)',
               }}
             >

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Badge, Popover, Button, List, Typography, Space, Tooltip, notification as antdNotification } from 'antd';
+import { Badge, Popover, Button, Typography, Space, Tooltip, notification as antdNotification } from 'antd';
 import {
   BellOutlined,
   CheckOutlined,
@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { notificationService, type AppNotification } from '../../services/notificationService';
 import { useRealTime, useEventSubscription } from '../../shared/realtime';
 import type { NotificationData, RealTimeEvent } from '../../shared/realtime';
+import { VirtualList } from '../ui/VirtualList';
 
 const { Text } = Typography;
 
@@ -156,101 +157,106 @@ export const NotificationCenter: React.FC = () => {
         )}
       </div>
 
-      <List
-        loading={isLoading}
-        dataSource={notifications}
-        locale={{
-          emptyText: (
+      {isLoading ? (
+        <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>
+          Đang tải thông báo...
+        </div>
+      ) : (
+        <VirtualList
+          items={notifications}
+          maxHeight={380}
+          estimateSize={78}
+          emptyPlaceholder={
             <div style={{ padding: '24px 0', color: 'var(--text-secondary)', textAlign: 'center' }}>
               Không có thông báo mới
             </div>
-          ),
-        }}
-        style={{ maxHeight: 380, overflowY: 'auto' }}
-        renderItem={(item) => (
-          <List.Item
-            key={item.id}
-            onClick={() => handleNotificationClick(item)}
-            style={{
-              padding: '10px 12px',
-              borderRadius: 'var(--radius-default, 16px)',
-              cursor: 'pointer',
-              background: item.isRead ? 'transparent' : 'var(--surface-container, #F1EBFF)',
-              marginBottom: 4,
-              borderBottom: '1px solid var(--border-subtle)',
-              transition: 'background 0.2s',
-            }}
-          >
-            <div style={{ display: 'flex', gap: 12, width: '100%', alignItems: 'flex-start' }}>
-              <div
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: '50%',
-                  background: 'var(--surface-container)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                  marginTop: 2,
-                  border: '1px solid var(--border-color)',
-                }}
-              >
-                {getNotificationIcon(item.type)}
-              </div>
-
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text
-                    style={{
-                      color: item.isRead ? 'var(--text-secondary)' : 'var(--text-primary)',
-                      fontWeight: item.isRead ? 500 : 700,
-                      fontSize: '0.85rem',
-                    }}
-                    ellipsis
-                  >
-                    {item.title}
-                  </Text>
-                  {!item.isRead && (
-                    <span
-                      style={{
-                        width: 7,
-                        height: 7,
-                        borderRadius: '50%',
-                        backgroundColor: 'var(--primary)',
-                        flexShrink: 0,
-                        marginLeft: 6,
-                        boxShadow: '0 0 6px var(--primary-glow)',
-                      }}
-                    />
-                  )}
-                </div>
-
+          }
+          getItemKey={(item) => item.id}
+          renderItem={(item) => (
+            <div
+              key={item.id}
+              onClick={() => handleNotificationClick(item)}
+              style={{
+                padding: '10px 12px',
+                borderRadius: 'var(--radius-default, 16px)',
+                cursor: 'pointer',
+                background: item.isRead ? 'transparent' : 'var(--surface-container, #F1EBFF)',
+                marginBottom: 4,
+                borderBottom: '1px solid var(--border-subtle)',
+                transition: 'background 0.2s',
+              }}
+            >
+              <div style={{ display: 'flex', gap: 12, width: '100%', alignItems: 'flex-start' }}>
                 <div
                   style={{
-                    color: 'var(--text-secondary)',
-                    fontSize: '0.775rem',
-                    lineHeight: 1.4,
+                    width: 34,
+                    height: 34,
+                    borderRadius: '50%',
+                    background: 'var(--surface-container)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
                     marginTop: 2,
+                    border: '1px solid var(--border-color)',
                   }}
                 >
-                  {item.message}
+                  {getNotificationIcon(item.type)}
                 </div>
 
-                <div
-                  style={{
-                    color: 'var(--text-muted)',
-                    fontSize: '0.7rem',
-                    marginTop: 4,
-                  }}
-                >
-                  {item.createdAt ? new Date(item.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <Text
+                      style={{
+                        color: item.isRead ? 'var(--text-secondary)' : 'var(--text-primary)',
+                        fontWeight: item.isRead ? 500 : 700,
+                        fontSize: '0.85rem',
+                      }}
+                      ellipsis
+                    >
+                      {item.title}
+                    </Text>
+                    {!item.isRead && (
+                      <span
+                        style={{
+                          width: 7,
+                          height: 7,
+                          borderRadius: '50%',
+                          backgroundColor: 'var(--primary)',
+                          flexShrink: 0,
+                          marginLeft: 6,
+                          boxShadow: 'none',
+                        }}
+                      />
+                    )}
+                  </div>
+
+                  <div
+                    style={{
+                      color: 'var(--text-secondary)',
+                      fontSize: '0.775rem',
+                      lineHeight: 1.4,
+                      marginTop: 2,
+                    }}
+                  >
+                    {item.message}
+                  </div>
+
+                  <div
+                    style={{
+                      color: 'var(--text-muted)',
+                      fontSize: '0.7rem',
+                      marginTop: 4,
+                    }}
+                  >
+                    {item.createdAt ? new Date(item.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
+                  </div>
                 </div>
               </div>
             </div>
-          </List.Item>
-        )}
-      />
+          )}
+        />
+      )}
     </div>
   );
 
@@ -264,8 +270,8 @@ export const NotificationCenter: React.FC = () => {
       overlayInnerStyle={{
         background: 'var(--bg-card, #FFFFFF)',
         border: '1px solid var(--border-color, #E2D9F7)',
-        borderRadius: 'var(--radius-card, 24px)',
-        boxShadow: 'var(--shadow-floating)',
+        borderRadius: 'var(--radius-modal, 12px)',
+        boxShadow: 'var(--shadow-md)',
         padding: '16px 18px',
       }}
     >

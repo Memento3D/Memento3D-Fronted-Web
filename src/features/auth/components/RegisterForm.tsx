@@ -206,11 +206,11 @@ export const RegisterForm: React.FC = () => {
             icon={<ArrowRightOutlined />}
             style={{
               height: '46px',
-              borderRadius: '8px',
+              borderRadius: 'var(--radius-sm, 6px)',
               fontWeight: 700,
-              background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-              border: 'none',
-              boxShadow: '0 4px 14px rgba(2, 132, 199, 0.4)',
+              background: 'var(--primary)',
+              borderColor: 'var(--primary)',
+              boxShadow: 'none',
             }}
           >
             Tạo tài khoản Memento3D

@@ -97,18 +97,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed, onToggleC
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, overflow: 'hidden' }}>
           <div
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-system) 100%)',
+              width: 36,
+              height: 36,
+              borderRadius: 'var(--radius-sm, 6px)',
+              background: 'var(--primary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 4px 14px var(--primary-glow)',
+              boxShadow: 'none',
               flexShrink: 0,
             }}
           >
-            <ShieldAlert size={20} color="#FFFFFF" />
+            <ShieldAlert size={18} color="#FFFFFF" />
           </div>
           {!collapsed && (
             <div style={{ whiteSpace: 'nowrap' }}>

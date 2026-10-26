@@ -1,4 +1,15 @@
 import React from 'react';
+import {
+  UserOutlined,
+  KeyOutlined,
+  ReadOutlined,
+  HeartOutlined,
+  SmileOutlined,
+  AppstoreOutlined,
+  ThunderboltOutlined,
+  ExperimentOutlined,
+  InboxOutlined,
+} from '@ant-design/icons';
 import type { ProductCategory } from '../types/product.types';
 import './categoryCard.css';
 
@@ -10,20 +21,20 @@ export interface CategoryCardProps {
   className?: string;
 }
 
-// Map slugs or names to curated 3D emoji/glyphs or badge colors
-const getCategoryIcon = (category: ProductCategory): string => {
+// Map slugs or names to curated icons
+const getCategoryIcon = (category: ProductCategory): React.ReactNode => {
   const name = (category.name || '').toLowerCase();
   const slug = (category.slug || '').toLowerCase();
 
-  if (name.includes('figure') || slug.includes('figure')) return '🗿';
-  if (name.includes('keychain') || name.includes('móc khóa') || slug.includes('keychain')) return '🔑';
-  if (name.includes('tốt nghiệp') || name.includes('graduation') || slug.includes('grad')) return '🎓';
-  if (name.includes('cặp đôi') || name.includes('couple') || slug.includes('couple')) return '💑';
-  if (name.includes('thú cưng') || name.includes('pet') || slug.includes('pet')) return '🐾';
-  if (name.includes('trang trí') || name.includes('decor') || slug.includes('decor')) return '🏺';
-  if (name.includes('phụ kiện') || name.includes('access') || slug.includes('access')) return '✨';
-  if (name.includes('tùy chỉnh') || name.includes('custom') || slug.includes('custom')) return '🔮';
-  return '📦';
+  if (name.includes('figure') || slug.includes('figure')) return <UserOutlined />;
+  if (name.includes('keychain') || name.includes('móc khóa') || slug.includes('keychain')) return <KeyOutlined />;
+  if (name.includes('tốt nghiệp') || name.includes('graduation') || slug.includes('grad')) return <ReadOutlined />;
+  if (name.includes('cặp đôi') || name.includes('couple') || slug.includes('couple')) return <HeartOutlined />;
+  if (name.includes('thú cưng') || name.includes('pet') || slug.includes('pet')) return <SmileOutlined />;
+  if (name.includes('trang trí') || name.includes('decor') || slug.includes('decor')) return <AppstoreOutlined />;
+  if (name.includes('phụ kiện') || name.includes('access') || slug.includes('access')) return <ThunderboltOutlined />;
+  if (name.includes('tùy chỉnh') || name.includes('custom') || slug.includes('custom')) return <ExperimentOutlined />;
+  return <InboxOutlined />;
 };
 
 export const CategoryCard: React.FC<CategoryCardProps> = ({

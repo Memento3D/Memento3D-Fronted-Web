@@ -69,13 +69,13 @@ export const EmailVerificationPage: React.FC = () => {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        width: '100vw',
+        minHeight: '100dvh',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 191, 174, 0.12) 0%, transparent 40%), var(--bg-app, #F8F5FF)',
+        backgroundColor: 'var(--bg-app)',
         padding: '24px 16px',
         position: 'relative',
         overflow: 'hidden',
@@ -86,8 +86,8 @@ export const EmailVerificationPage: React.FC = () => {
           style={{
             background: 'var(--surface-card, #FFFFFF)',
             border: '1px solid var(--border-default, #E2D9F7)',
-            borderRadius: 'var(--radius-card-feature, 28px)',
-            boxShadow: 'var(--shadow-floating)',
+            borderRadius: 'var(--radius-modal, 12px)',
+            boxShadow: 'var(--shadow-md)',
             textAlign: 'center',
           }}
           styles={{ body: { padding: '40px 32px' } }}
@@ -98,9 +98,9 @@ export const EmailVerificationPage: React.FC = () => {
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '68px',
-              height: '68px',
-              borderRadius: '24px',
+              width: '60px',
+              height: '60px',
+              borderRadius: 'var(--radius-sm, 8px)',
               background: 'var(--surface-container, #F1EBFF)',
               border: '1px solid var(--border-default, #E2D9F7)',
               boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.15)',

@@ -51,13 +51,13 @@ export const CompleteRegistrationPage: React.FC = () => {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        width: '100vw',
+        minHeight: '100dvh',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 191, 174, 0.12) 0%, transparent 40%), var(--bg-app, #F8F5FF)',
+        backgroundColor: 'var(--bg-app)',
         padding: '24px 16px',
         position: 'relative',
         overflow: 'hidden',
@@ -68,8 +68,8 @@ export const CompleteRegistrationPage: React.FC = () => {
           style={{
             background: 'var(--surface-card, #FFFFFF)',
             border: '1px solid var(--border-default, #E2D9F7)',
-            borderRadius: 'var(--radius-card-feature, 28px)',
-            boxShadow: 'var(--shadow-floating)',
+            borderRadius: 'var(--radius-modal, 12px)',
+            boxShadow: 'var(--shadow-md)',
           }}
           styles={{ body: { padding: '36px 30px' } }}
         >

@@ -67,12 +67,12 @@ export const WarehouseSelectPage: React.FC = () => {
   return (
     <div
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 191, 174, 0.12) 0%, transparent 40%), var(--bg-app, #F8F5FF)',
+        backgroundColor: 'var(--bg-app)',
         padding: '32px 16px',
       }}
     >
@@ -83,16 +83,16 @@ export const WarehouseSelectPage: React.FC = () => {
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 56,
-              height: 56,
-              borderRadius: 20,
+              width: 50,
+              height: 50,
+              borderRadius: 'var(--radius-sm, 8px)',
               background: 'var(--surface-container, #F1EBFF)',
               border: '1px solid var(--border-default, #E2D9F7)',
-              boxShadow: '0 8px 24px -4px rgba(124, 92, 252, 0.15)',
+              boxShadow: 'none',
               marginBottom: 16,
             }}
           >
-            <HomeOutlined style={{ fontSize: 28, color: 'var(--primary, #7C5CFC)' }} />
+            <HomeOutlined style={{ fontSize: 24, color: 'var(--primary, #7C5CFC)' }} />
           </div>
           <Title level={2} style={{ color: 'var(--text-primary, #28243D)', margin: 0, fontWeight: 800 }}>
             Chọn cơ sở kho làm việc
@@ -111,9 +111,9 @@ export const WarehouseSelectPage: React.FC = () => {
                 style={{
                   background: 'var(--surface-card, #FFFFFF)',
                   border: '1px solid var(--border-default, #E2D9F7)',
-                  borderRadius: 'var(--radius-card-standard, 24px)',
-                  boxShadow: 'var(--shadow-card)',
-                  transition: 'all 0.25s ease',
+                  borderRadius: 'var(--radius-card, 10px)',
+                  boxShadow: 'var(--shadow-sm)',
+                  transition: 'border-color 0.2s ease',
                 }}
                 styles={{ body: { padding: 24 } }}
               >

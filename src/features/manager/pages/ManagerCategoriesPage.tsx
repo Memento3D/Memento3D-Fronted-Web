@@ -17,6 +17,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   ReloadOutlined,
+  FolderOutlined,
 } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoryApi } from '../../products/api/categoryApi';
@@ -179,8 +180,8 @@ export const ManagerCategoriesPage: React.FC = () => {
                       style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', objectFit: 'cover' }}
                     />
                   ) : (
-                    <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', background: 'var(--surface-container, #F1EBFF)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      📁
+                    <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm, 8px)', background: 'var(--surface-container)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <FolderOutlined style={{ fontSize: 20, color: 'var(--primary)' }} />
                     </div>
                   )}
                   <div>

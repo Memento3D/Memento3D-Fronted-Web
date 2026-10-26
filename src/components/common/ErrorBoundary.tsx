@@ -113,12 +113,12 @@ export class ErrorBoundary extends Component<Props, State> {
                 icon={<ReloadOutlined />}
                 onClick={this.handleReset}
                 style={{
-                  background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                  borderColor: '#0284c7',
+                  background: 'var(--primary)',
+                  borderColor: 'var(--primary)',
                   height: 40,
                   padding: '0 20px',
                   fontWeight: 600,
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-sm, 6px)',
                 }}
               >
                 Thử tải lại thành phần
@@ -132,7 +132,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   color: 'var(--text-primary)',
                   height: 40,
                   padding: '0 20px',
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-sm, 6px)',
                 }}
               >
                 Tải lại trang web

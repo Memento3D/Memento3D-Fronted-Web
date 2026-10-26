@@ -10,8 +10,8 @@ export interface PageResponse<T> {
 }
 
 export const materialApi = {
-  list: async (params?: MaterialListParams): Promise<PageResponse<Material>> => {
-    const res = await apiClient.get<PageResponse<Material>>('/materials', { params });
+  list: async (params?: MaterialListParams, signal?: AbortSignal): Promise<PageResponse<Material>> => {
+    const res = await apiClient.get<PageResponse<Material>>('/materials', { params, signal });
     return res.data;
   },
 

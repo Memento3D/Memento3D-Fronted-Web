@@ -59,14 +59,12 @@ export const PrinterFleetSection: React.FC<PrinterFleetSectionProps> = ({ printe
                 bordered={false}
                 style={{
                   background: 'var(--bg-card, #FFFFFF)',
-                  borderRadius: 'var(--radius-card, 24px)',
+                  borderRadius: 'var(--radius-card, 10px)',
                   border: isBusy
                     ? '1.5px solid var(--primary, #7C5CFC)'
                     : '1px solid var(--border-color, #E2D9F7)',
-                  boxShadow: isBusy
-                    ? 'var(--shadow-floating)'
-                    : 'var(--shadow-card)',
-                  transition: 'all 0.25s ease',
+                  boxShadow: 'var(--shadow-sm)',
+                  transition: 'border-color 0.2s ease',
                   overflow: 'hidden',
                 }}
                 styles={{ body: { padding: '20px' } }}
@@ -88,14 +86,14 @@ export const PrinterFleetSection: React.FC<PrinterFleetSectionProps> = ({ printe
                 <div style={{ marginBottom: 16 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: 6 }}>
                     <span style={{ color: 'var(--text-secondary)' }}>Công suất hoạt động</span>
-                    <span style={{ color: isBusy ? 'var(--primary)' : 'var(--text-secondary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                    <span style={{ color: isBusy ? 'var(--primary)' : 'var(--text-secondary)', fontWeight: 700 }}>
                       {printer.utilizationRate}%
                     </span>
                   </div>
                   <Progress
                     percent={printer.utilizationRate}
                     showInfo={false}
-                    strokeColor={isBusy ? { '0%': '#7C5CFC', '100%': '#FFBFAE' } : 'var(--border-color)'}
+                    strokeColor={isBusy ? 'var(--primary)' : 'var(--border-color)'}
                     trailColor="var(--surface-container, #F1EBFF)"
                     size={['100%', 8]}
                   />
@@ -105,7 +103,7 @@ export const PrinterFleetSection: React.FC<PrinterFleetSectionProps> = ({ printe
                 <div
                   style={{
                     background: 'var(--surface-container, #F1EBFF)',
-                    borderRadius: 'var(--radius-default, 16px)',
+                    borderRadius: 'var(--radius-sm, 8px)',
                     padding: '12px 14px',
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',

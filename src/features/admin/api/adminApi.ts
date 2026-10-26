@@ -47,17 +47,21 @@ export const adminApi = {
   },
 
   // 2. User Management
-  getUsers: async (params?: {
-    search?: string;
-    role?: string;
-    status?: string;
-    provider?: string;
-    page?: number;
-    size?: number;
-    sort?: string;
-  }): Promise<PageResponse<AdminUserDetail>> => {
+  getUsers: async (
+    params?: {
+      search?: string;
+      role?: string;
+      status?: string;
+      provider?: string;
+      page?: number;
+      size?: number;
+      sort?: string;
+    },
+    signal?: AbortSignal,
+  ): Promise<PageResponse<AdminUserDetail>> => {
     const res = await apiClient.get<PageResponse<AdminUserDetail>>('/admin/users', {
       params,
+      signal,
     });
     return res.data;
   },
@@ -113,18 +117,22 @@ export const adminApi = {
   },
 
   // 3. Orders Management
-  getOrders: async (params?: {
-    search?: string;
-    status?: string;
-    paymentStatus?: string;
-    dateFrom?: string;
-    dateTo?: string;
-    page?: number;
-    size?: number;
-    sort?: string;
-  }): Promise<PageResponse<any>> => {
+  getOrders: async (
+    params?: {
+      search?: string;
+      status?: string;
+      paymentStatus?: string;
+      dateFrom?: string;
+      dateTo?: string;
+      page?: number;
+      size?: number;
+      sort?: string;
+    },
+    signal?: AbortSignal,
+  ): Promise<PageResponse<any>> => {
     const res = await apiClient.get<PageResponse<any>>('/admin/orders', {
       params,
+      signal,
     });
     return res.data;
   },
@@ -182,16 +190,20 @@ export const adminApi = {
   },
 
   // 5. 3D AI Reconstruction Monitoring
-  getReconstructionJobs: async (params?: {
-    status?: string;
-    tier?: string;
-    search?: string;
-    page?: number;
-    size?: number;
-  }): Promise<PageResponse<AdminReconstructionJob>> => {
+  getReconstructionJobs: async (
+    params?: {
+      status?: string;
+      tier?: string;
+      search?: string;
+      page?: number;
+      size?: number;
+      sort?: string;
+    },
+    signal?: AbortSignal,
+  ): Promise<PageResponse<AdminReconstructionJob>> => {
     const res = await apiClient.get<PageResponse<AdminReconstructionJob>>(
       '/admin/reconstruction',
-      { params }
+      { params, signal }
     );
     return res.data;
   },
@@ -209,54 +221,75 @@ export const adminApi = {
   },
 
   // 6. Hardware Printer & Print Jobs
-  getPrinters: async (params?: {
-    status?: string;
-    search?: string;
-    page?: number;
-    size?: number;
-  }): Promise<PageResponse<AdminPrinter>> => {
+  getPrinters: async (
+    params?: {
+      status?: string;
+      search?: string;
+      page?: number;
+      size?: number;
+      sort?: string;
+    },
+    signal?: AbortSignal,
+  ): Promise<PageResponse<AdminPrinter>> => {
     const res = await apiClient.get<PageResponse<AdminPrinter>>('/admin/printers', {
       params,
+      signal,
     });
     return res.data;
   },
 
-  getPrintJobs: async (params?: {
-    status?: string;
-    search?: string;
-    page?: number;
-    size?: number;
-  }): Promise<PageResponse<AdminPrintJob>> => {
+  getPrintJobs: async (
+    params?: {
+      status?: string;
+      search?: string;
+      page?: number;
+      size?: number;
+      sort?: string;
+    },
+    signal?: AbortSignal,
+  ): Promise<PageResponse<AdminPrintJob>> => {
     const res = await apiClient.get<PageResponse<AdminPrintJob>>('/admin/print-jobs', {
       params,
+      signal,
     });
     return res.data;
   },
 
   // 7. Payments Ledger
-  getPayments: async (params?: {
-    status?: string;
-    paymentMethod?: string;
-    search?: string;
-    page?: number;
-    size?: number;
-  }): Promise<PageResponse<AdminPaymentTransaction>> => {
+  getPayments: async (
+    params?: {
+      status?: string;
+      paymentMethod?: string;
+      search?: string;
+      transactionReference?: string;
+      page?: number;
+      size?: number;
+      sort?: string;
+    },
+    signal?: AbortSignal,
+  ): Promise<PageResponse<AdminPaymentTransaction>> => {
     const res = await apiClient.get<PageResponse<AdminPaymentTransaction>>('/admin/payments', {
       params,
+      signal,
     });
     return res.data;
   },
 
   // 8. System Audit Logs
-  getAuditLogs: async (params?: {
-    actorId?: string;
-    action?: string;
-    resourceType?: string;
-    page?: number;
-    size?: number;
-  }): Promise<PageResponse<AdminAuditLog>> => {
+  getAuditLogs: async (
+    params?: {
+      actorId?: string;
+      action?: string;
+      resourceType?: string;
+      page?: number;
+      size?: number;
+      sort?: string;
+    },
+    signal?: AbortSignal,
+  ): Promise<PageResponse<AdminAuditLog>> => {
     const res = await apiClient.get<PageResponse<AdminAuditLog>>('/admin/audit-logs', {
       params,
+      signal,
     });
     return res.data;
   },

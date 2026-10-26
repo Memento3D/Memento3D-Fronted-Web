@@ -27,4 +27,5 @@ scripts/
 .env
 .env.*
 !.env.example
+.taste-skill/
 

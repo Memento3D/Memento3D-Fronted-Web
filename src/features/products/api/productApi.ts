@@ -8,7 +8,7 @@ import type {
 } from '../types/product.types';
 
 export const productApi = {
-  list: async (params?: ProductFilterParams): Promise<ProductListResponse> => {
+  list: async (params?: ProductFilterParams, signal?: AbortSignal): Promise<ProductListResponse> => {
     const res = await apiClient.get<ProductListResponse>('/products', {
       params: {
         page: params?.page ?? 0,
@@ -21,6 +21,7 @@ export const productApi = {
         sort: params?.sort || 'newest',
         featured: params?.featured,
       },
+      signal,
     });
     return res.data;
   },

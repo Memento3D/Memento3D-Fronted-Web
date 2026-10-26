@@ -45,6 +45,16 @@ export const ProductListPage: React.FC = () => {
     setSearchInput(keyword);
   }, [keyword]);
 
+  // Debounced auto-search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchInput !== keyword) {
+        updateUrl({ keyword: searchInput, page: 1 });
+      }
+    }, 450);
+    return () => clearTimeout(handler);
+  }, [searchInput]);
+
   // Categories Query
   const { data: rawCategories = [] } = useQuery({
     queryKey: ['categories-active'],
@@ -103,7 +113,7 @@ export const ProductListPage: React.FC = () => {
   };
 
   return (
-    <div className="home-wrapper" style={{ minHeight: '100vh' }}>
+    <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
       <Navbar />
 
       <main style={{ maxWidth: 1280, margin: '0 auto', padding: '110px 24px 60px' }}>

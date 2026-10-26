@@ -108,9 +108,9 @@ export const PrinterPerformanceChart: React.FC<PrinterPerformanceChartProps> = (
       bordered={false}
       style={{
         background: 'var(--bg-card)',
-        borderRadius: 'var(--radius-card, 24px)',
+        borderRadius: 'var(--radius-card, 10px)',
         border: '1px solid var(--border-color)',
-        boxShadow: 'var(--shadow-card)',
+        boxShadow: 'var(--shadow-sm)',
       }}
       styles={{ body: { padding: '24px' } }}
     >
@@ -140,7 +140,7 @@ export const PrinterPerformanceChart: React.FC<PrinterPerformanceChartProps> = (
                 style={{
                   background: 'var(--mint-subtle)',
                   border: '1px solid var(--mint)',
-                  borderRadius: 12,
+                  borderRadius: 'var(--radius-sm, 8px)',
                   padding: '14px',
                 }}
               >
@@ -162,7 +162,7 @@ export const PrinterPerformanceChart: React.FC<PrinterPerformanceChartProps> = (
                 style={{
                   background: 'var(--danger-bg)',
                   border: '1px solid var(--danger-border)',
-                  borderRadius: 12,
+                  borderRadius: 'var(--radius-sm, 8px)',
                   padding: '14px',
                 }}
               >
@@ -184,7 +184,7 @@ export const PrinterPerformanceChart: React.FC<PrinterPerformanceChartProps> = (
                 style={{
                   background: 'var(--info-bg)',
                   border: '1px solid var(--info-border)',
-                  borderRadius: 12,
+                  borderRadius: 'var(--radius-sm, 8px)',
                   padding: '14px',
                 }}
               >
@@ -206,7 +206,7 @@ export const PrinterPerformanceChart: React.FC<PrinterPerformanceChartProps> = (
                 style={{
                   background: 'var(--secondary-container)',
                   border: '1px solid var(--secondary)',
-                  borderRadius: 12,
+                  borderRadius: 'var(--radius-sm, 8px)',
                   padding: '14px',
                 }}
               >

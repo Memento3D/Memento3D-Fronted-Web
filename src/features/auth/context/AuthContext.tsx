@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { authApi } from '../api/authApi';
 import { tokenStorage } from '../utils/tokenStorage';
 import type { User, LoginPayload, AuthResponse } from '../types/auth.types';
+import { clearAuthCache } from '../../../lib/query/queryClient';
 
 interface AuthContextValue {
   user: User | null;
@@ -35,6 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       console.warn('Failed to restore auth session:', err);
       tokenStorage.clearTokens();
+      await clearAuthCache();
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -45,9 +47,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initSession();
 
     // Listen to session expired events from apiClient interceptor
-    const handleSessionExpired = () => {
+    const handleSessionExpired = async () => {
       setUser(null);
       tokenStorage.clearTokens();
+      await clearAuthCache();
     };
 
     window.addEventListener('memento3d:session-expired', handleSessionExpired);
@@ -59,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (payload: LoginPayload): Promise<User> => {
     setIsLoading(true);
     try {
+      await clearAuthCache();
       const authRes: AuthResponse = await authApi.login(payload);
       tokenStorage.setTokens(authRes.accessToken, authRes.refreshToken);
       setUser(authRes.user);
@@ -71,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithTokens = async (accessToken: string, refreshToken?: string): Promise<User> => {
     setIsLoading(true);
     try {
+      await clearAuthCache();
       tokenStorage.setTokens(accessToken, refreshToken);
       const currentUser = await authApi.getCurrentUser();
       setUser(currentUser);
@@ -87,6 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await authApi.logout({ refreshToken }).catch(() => {});
     } finally {
       tokenStorage.clearTokens();
+      await clearAuthCache();
       setUser(null);
       setIsLoading(false);
     }

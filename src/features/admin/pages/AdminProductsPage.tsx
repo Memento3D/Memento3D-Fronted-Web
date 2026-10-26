@@ -274,7 +274,7 @@ export const AdminProductsPage: React.FC = () => {
                 productForm.resetFields();
                 setProductModalOpen(true);
               }}
-              style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', border: 'none' }}
+              style={{ background: 'var(--primary)', borderColor: 'var(--primary)', fontWeight: 600 }}
             >
               Thêm sản phẩm
             </Button>
@@ -287,7 +287,7 @@ export const AdminProductsPage: React.FC = () => {
                 categoryForm.resetFields();
                 setCategoryModalOpen(true);
               }}
-              style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', border: 'none' }}
+              style={{ background: 'var(--primary)', borderColor: 'var(--primary)', fontWeight: 600 }}
             >
               Thêm danh mục
             </Button>

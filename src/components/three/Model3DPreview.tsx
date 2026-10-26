@@ -32,7 +32,12 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const meshRef = useRef<THREE.Mesh | null>(null);
   const [wireframe, setWireframe] = useState<boolean>(initialWireframe);
-  const [autoRotate, setAutoRotate] = useState<boolean>(true);
+  const [autoRotate, setAutoRotate] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return false;
+    }
+    return true;
+  });
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [materialTheme, setMaterialTheme] = useState<'resin' | 'pla' | 'gold' | 'cyber'>('resin');
   const [activeModelType, setActiveModelType] = useState<'bust' | 'gear' | 'torus'>('bust');
@@ -151,15 +156,31 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
     meshRef.current = mesh;
     scene.add(mesh);
 
-    // 7. Animation Loop
+    // 7. Animation Loop with Visibility State Optimization
     let animId: number;
+    let isRunning = true;
+
     const animate = () => {
+      if (!isRunning) return;
       animId = requestAnimationFrame(animate);
       controls.autoRotate = autoRotate;
       controls.update();
       renderer.render(scene, camera);
     };
     animate();
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isRunning = false;
+        cancelAnimationFrame(animId);
+      } else {
+        if (!isRunning) {
+          isRunning = true;
+          animate();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // 8. Resize Handler
     const handleResize = () => {
@@ -174,7 +195,9 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
     window.addEventListener('resize', handleResize);
 
     return () => {
+      isRunning = false;
       cancelAnimationFrame(animId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('resize', handleResize);
       controls.dispose();
       geometry.dispose();
@@ -210,7 +233,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
           background: '#F3EEFF',
           padding: 0,
           overflow: 'hidden',
-          borderRadius: 'var(--radius-card-feature, 28px)',
+          borderRadius: 'var(--radius-modal, 12px)',
         },
       }}
       title={
@@ -218,7 +241,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <Box size={20} color="var(--primary, #7C5CFC)" />
             <span style={{ color: 'var(--text-primary, #28243D)', fontWeight: 700, fontSize: '1.05rem', fontFamily: 'var(--font-family, "Plus Jakarta Sans")' }}>{title}</span>
-            <Tag style={{ borderRadius: 'var(--radius-pill, 9999px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary-system, #5F3ADD)', border: 'none', fontWeight: 600 }}>Web-GL 4K Engine</Tag>
+            <Tag style={{ borderRadius: 'var(--radius-sm, 6px)', background: 'var(--surface-container, #F1EBFF)', color: 'var(--primary-system, #5F3ADD)', border: 'none', fontWeight: 600 }}>Web-GL 4K Engine</Tag>
           </div>
         </div>
       }
@@ -238,9 +261,9 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
             background: 'rgba(255, 255, 255, 0.85)',
             backdropFilter: 'blur(16px)',
             padding: '6px 10px',
-            borderRadius: 'var(--radius-pill, 9999px)',
+            borderRadius: 'var(--radius-sm, 8px)',
             border: '1px solid var(--border-default, #E2D9F7)',
-            boxShadow: 'var(--shadow-card)',
+            boxShadow: 'var(--shadow-sm)',
           }}
         >
           <Tooltip title={autoRotate ? 'Dừng xoay tự động' : 'Tự động xoay'}>
@@ -248,7 +271,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
               size="small"
               type={autoRotate ? 'primary' : 'default'}
               icon={autoRotate ? <Pause size={14} /> : <Play size={14} />}
-              style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
+              style={{ borderRadius: 'var(--radius-sm, 6px)' }}
               onClick={() => setAutoRotate(!autoRotate)}
             />
           </Tooltip>
@@ -257,7 +280,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
               size="small"
               type={wireframe ? 'primary' : 'default'}
               icon={<Eye size={14} />}
-              style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
+              style={{ borderRadius: 'var(--radius-sm, 6px)' }}
               onClick={() => setWireframe(!wireframe)}
             />
           </Tooltip>
@@ -265,7 +288,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
             <Button
               size="small"
               icon={<RotateCcw size={14} />}
-              style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
+              style={{ borderRadius: 'var(--radius-sm, 6px)' }}
               onClick={handleResetCamera}
             />
           </Tooltip>
@@ -273,7 +296,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
             <Button
               size="small"
               icon={isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-              style={{ borderRadius: 'var(--radius-pill, 9999px)' }}
+              style={{ borderRadius: 'var(--radius-sm, 6px)' }}
               onClick={toggleFullscreen}
             />
           </Tooltip>
@@ -291,12 +314,11 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: 10,
-            background: 'rgba(255, 255, 255, 0.85)',
-            backdropFilter: 'blur(16px)',
+            background: 'var(--surface-container, rgba(255, 255, 255, 0.95))',
             padding: '10px 18px',
-            borderRadius: 'var(--radius-default, 16px)',
+            borderRadius: 'var(--radius-card, 10px)',
             border: '1px solid var(--border-default, #E2D9F7)',
-            boxShadow: 'var(--shadow-card)',
+            boxShadow: 'var(--shadow-sm)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -306,7 +328,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                 size="small"
                 type={activeModelType === 'bust' ? 'primary' : 'text'}
                 onClick={() => setActiveModelType('bust')}
-                style={{ borderRadius: 'var(--radius-pill, 9999px)', fontWeight: 600 }}
+                style={{ borderRadius: 'var(--radius-sm, 6px)', fontWeight: 600 }}
               >
                 Kỷ vật Đa diện
               </Button>
@@ -314,7 +336,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                 size="small"
                 type={activeModelType === 'gear' ? 'primary' : 'text'}
                 onClick={() => setActiveModelType('gear')}
-                style={{ borderRadius: 'var(--radius-pill, 9999px)', fontWeight: 600 }}
+                style={{ borderRadius: 'var(--radius-sm, 6px)', fontWeight: 600 }}
               >
                 Vòng Ring
               </Button>
@@ -322,7 +344,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                 size="small"
                 type={activeModelType === 'torus' ? 'primary' : 'text'}
                 onClick={() => setActiveModelType('torus')}
-                style={{ borderRadius: 'var(--radius-pill, 9999px)', fontWeight: 600 }}
+                style={{ borderRadius: 'var(--radius-sm, 6px)', fontWeight: 600 }}
               >
                 Khớp Nối Torus
               </Button>
@@ -341,7 +363,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                   background: '#7C5CFC',
                   border: materialTheme === 'resin' ? '2.5px solid #28243D' : '2px solid transparent',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(124, 92, 252, 0.3)',
+                  boxShadow: 'none',
                 }}
                 title="Atelier Violet 8K"
               />
@@ -354,7 +376,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                   background: '#C9E8D5',
                   border: materialTheme === 'pla' ? '2.5px solid #28243D' : '2px solid transparent',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(70, 98, 83, 0.2)',
+                  boxShadow: 'none',
                 }}
                 title="Mint Fresh"
               />
@@ -367,7 +389,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                   background: '#FFBFAE',
                   border: materialTheme === 'gold' ? '2.5px solid #28243D' : '2px solid transparent',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(255, 191, 174, 0.3)',
+                  boxShadow: 'none',
                 }}
                 title="Peach Velvet"
               />
@@ -380,7 +402,7 @@ export const Model3DPreview: React.FC<Model3DPreviewProps> = ({
                   background: '#5F3ADD',
                   border: materialTheme === 'cyber' ? '2.5px solid #28243D' : '2px solid transparent',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(95, 58, 221, 0.3)',
+                  boxShadow: 'none',
                 }}
                 title="Deep Royal Violet"
               />

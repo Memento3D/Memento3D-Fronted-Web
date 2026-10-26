@@ -99,7 +99,7 @@ export const ProfilePage: React.FC = () => {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
+    <div style={{ minHeight: '100dvh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
       <Navbar />
 
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: '120px 24px 60px' }}>
