@@ -9,9 +9,12 @@ import {
 } from 'antd';
 import {
   RefreshCw,
+  Cpu,
 } from 'lucide-react';
 import { adminApi } from '../api/adminApi';
 import type { AdminPrintJob } from '../types/admin.types';
+import type { ResinProductionJobResponse } from '../../../types/printJob';
+import { ResinProductionModal } from '../components/ResinProductionModal';
 import dayjs from 'dayjs';
 import { SearchBox } from '../../../components/ui/SearchBox';
 import { useServerTable, useServerTableState } from '../../../components/ui/data-table/useServerTable';
@@ -23,6 +26,7 @@ import { queryKeys } from '../../../lib/query/queryKeys';
 export const AdminPrintJobsPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+  const [selectedResinJob, setSelectedResinJob] = useState<ResinProductionJobResponse | null>(null);
 
   const { sorting, pagination, setSorting, setPagination, resetPage, params } = useServerTableState();
 
@@ -114,6 +118,31 @@ export const AdminPrintJobsPage: React.FC = () => {
       sorter: true,
       render: (st: string) => getStatusTag(st),
     },
+    {
+      title: 'Sản xuất Resin',
+      key: 'resinAction',
+      render: (_: any, r: AdminPrintJob) => (
+        <Button
+          size="small"
+          type="primary"
+          ghost
+          icon={<Cpu size={13} />}
+          style={{ borderColor: '#8b5cf6', color: '#a78bfa' }}
+          onClick={() =>
+            setSelectedResinJob({
+              printJobId: r.id,
+              orderId: r.orderId || '',
+              orderNumber: r.orderNumber,
+              orderItemId: r.id,
+              jobStatus: (r.status as any) || 'AWAITING_SLICING',
+              targetMachineModel: 'ELEGOO Saturn 4 Ultra 16K',
+            })
+          }
+        >
+          Saturn 16K
+        </Button>
+      ),
+    },
   ];
 
   const { table } = useServerTable<AdminPrintJob>({
@@ -184,6 +213,13 @@ export const AdminPrintJobsPage: React.FC = () => {
           onRetry={() => refetch()}
         />
       </Card>
+
+      <ResinProductionModal
+        visible={!!selectedResinJob}
+        job={selectedResinJob}
+        onClose={() => setSelectedResinJob(null)}
+        onRefresh={() => refetch()}
+      />
     </div>
   );
 };

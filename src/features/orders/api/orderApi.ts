@@ -5,6 +5,7 @@ import type {
   CreateOrderRequest,
   UpdateOrderRequest,
   OrderListParams,
+  OrderFeasibilityReviewRequest,
 } from '../types/order.types';
 
 export const orderApi = {
@@ -85,5 +86,27 @@ export const orderApi = {
    */
   cancel: async (orderId: string): Promise<void> => {
     await apiClient.delete(`/orders/${orderId}`);
+  },
+
+  /**
+   * Customer accepts final workshop quotation and lead time.
+   */
+  acceptQuote: async (orderId: string): Promise<OrderResponse> => {
+    const res = await apiClient.post<OrderResponse>(`/orders/${orderId}/accept-quote`);
+    return res.data;
+  },
+
+  /**
+   * Workshop manager reviews feasibility (FEASIBLE, REVISION_REQUESTED, REJECTED).
+   */
+  reviewFeasibility: async (
+    orderId: string,
+    payload: OrderFeasibilityReviewRequest
+  ): Promise<OrderResponse> => {
+    const res = await apiClient.post<OrderResponse>(
+      `/manager/orders/${orderId}/feasibility-review`,
+      payload
+    );
+    return res.data;
   },
 };

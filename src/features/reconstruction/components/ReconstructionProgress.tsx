@@ -147,7 +147,7 @@ export const ReconstructionProgress: React.FC<ReconstructionProgressProps> = ({
 
       {status === 'FAILED' && (
         <Alert
-          message="Lỗi trong quá trình tái tạo 3D"
+          title="Lỗi trong quá trình tái tạo 3D"
           description={errorMessage || 'Tác vụ gặp sự cố khi xử lý dữ liệu ảnh point cloud.'}
           type="error"
           showIcon
@@ -165,7 +165,7 @@ export const ReconstructionProgress: React.FC<ReconstructionProgressProps> = ({
       {status === 'COMPLETED' && (
         <div style={{ textAlign: 'center', marginTop: 16 }}>
           <Alert
-            message="Mô hình 3D đã được tái tạo thành công!"
+            title="Mô hình 3D đã được tái tạo thành công!"
             description="Bạn có thể xoay, phóng to thu nhỏ và kiểm tra bản xem trước 3D có watermark ngay bên dưới."
             type="success"
             showIcon

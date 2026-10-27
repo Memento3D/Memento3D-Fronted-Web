@@ -107,9 +107,24 @@ export interface OrderResponse {
   internalPartnerName?: string;
   internalCost?: number;
   internalQcNotes?: string;
+  feasibilityStatus?: 'PENDING_REVIEW' | 'FEASIBLE' | 'REVISION_REQUESTED' | 'REJECTED' | 'ACCEPTED';
+  feasibilityNotes?: string;
+  estimatedProductionDays?: number;
+  revisionGlbUrl?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  customerAcceptedAt?: string;
   items?: OrderItemResponse[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface OrderFeasibilityReviewRequest {
+  status: 'FEASIBLE' | 'REVISION_REQUESTED' | 'REJECTED';
+  notes: string;
+  finalPrice?: number;
+  estimatedDays?: number;
+  revisionGlbUrl?: string;
 }
 
 export interface OrderListResponse {
