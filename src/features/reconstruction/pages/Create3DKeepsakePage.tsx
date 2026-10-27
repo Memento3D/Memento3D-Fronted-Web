@@ -72,7 +72,7 @@ export const Create3DKeepsakePage: React.FC = () => {
     };
   }, [images]);
 
-  const minImages = capabilities?.minImages ?? 10;
+  const minImages = capabilities?.minImages ?? 1;
   const maxImages = capabilities?.maxImages ?? 50;
 
   // Add captured or picked file to image list
@@ -120,7 +120,7 @@ export const Create3DKeepsakePage: React.FC = () => {
   // Submit flow: Create Scan Session -> Upload Images -> Submit Reconstruction Job
   const handleSubmitJob = async () => {
     if (images.length < minImages) {
-      message.error(`Vui lòng tải lên tối thiểu ${minImages} ảnh để AI có thể tái tạo góc nhìn 3D chính xác.`);
+      message.error(`Vui lòng thêm tối thiểu ${minImages} ảnh để AI có thể phân tích và tái tạo mô hình 3D.`);
       return;
     }
 
@@ -156,18 +156,22 @@ export const Create3DKeepsakePage: React.FC = () => {
         setUploadProgress(pct);
       }
 
+      if (!primaryBackendImageId) {
+        throw new Error('Không thể xác nhận mã định danh ảnh trên hệ thống lưu trữ. Vui lòng thử lại.');
+      }
+
       // 3. Submit Reconstruction Job
-      setStatusMessage('Đang gửi lệnh tái tạo lên cụm AI DeepTech...');
+      setStatusMessage('Đang gửi lệnh tái tạo lên cụm AI FastAPI / Hunyuan3D-2...');
       setUploadProgress(85);
 
-      await scanReconstructionService.submitJob(scan.id, primaryBackendImageId);
+      const job = await scanReconstructionService.submitJob(scan.id, primaryBackendImageId);
       setUploadProgress(100);
       setStatusMessage('Khởi tạo thành công! Đang chuyển hướng tới màn hình theo dõi 3D...');
 
       message.success('Đã bắt đầu dựng mô hình 3D! Cụm GPU đang xử lý ảnh của bạn.');
       setTimeout(() => {
-        navigate(`/reconstruction/${scan.id}`);
-      }, 800);
+        navigate(`/reconstruction/${scan.id}`, { state: { jobId: job.jobId } });
+      }, 600);
     } catch (err: any) {
       message.error(err.message || 'Không thể tạo mô hình 3D. Vui lòng kiểm tra kết nối mạng và thử lại.');
       setIsSubmitting(false);

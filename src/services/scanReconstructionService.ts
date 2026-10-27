@@ -60,14 +60,14 @@ export const scanReconstructionService = {
       const res = await apiClient.get<ReconstructionCapabilities>('/reconstruction/capabilities');
       return res.data;
     } catch {
-      // Graceful fallback defaults if server capability endpoint not reachable
+      // Graceful fallback defaults (Hunyuan3D-2 single-view to multi-view)
       return {
-        provider: 'AI_3D_GAUSSIAN',
-        minImages: 10,
+        provider: 'FASTAPI',
+        minImages: 1,
         maxImages: 50,
         supportedFormats: ['image/jpeg', 'image/png', 'image/webp'],
         maxFileSizeMb: 20,
-        guidelines: 'Chụp 10-30 góc ảnh rõ nét, bao quát 360 độ quanh vật thể trong điều kiện ánh sáng tự nhiên đầy đủ.',
+        guidelines: 'Hỗ trợ chụp từ 1 ảnh góc chuẩn bằng camera laptop hoặc tải 1-50 ảnh đa góc. AI Hunyuan3D-2 tối ưu cho chủ thể chân dung, tượng nhỏ, đồ thủ công trong điều kiện đủ sáng.',
       };
     }
   },
@@ -83,12 +83,23 @@ export const scanReconstructionService = {
   uploadImage: async (scanId: string, file: File): Promise<ScanImageItem> => {
     const formData = new FormData();
     formData.append('file', file);
-    const res = await apiClient.post<ScanImageItem>(`/scans/${scanId}/images`, formData, {
+    const res = await apiClient.post<any>(`/scans/${scanId}/images`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return res.data;
+    const imgData = res.data?.image || res.data;
+    return {
+      id: imgData.id,
+      scanId: imgData.scan_id || scanId,
+      fileName: imgData.original_filename || file.name,
+      fileSizeBytes: imgData.file_size_bytes || file.size,
+      uploadStatus: imgData.upload_status || 'uploaded',
+      thumbnailUrl: imgData.thumbnail_path,
+      previewUrl: imgData.preview_url,
+      fullUrl: imgData.full_url,
+      createdAt: imgData.created_at,
+    };
   },
 
   getScanImages: async (scanId: string, page = 1, limit = 100): Promise<{ images: ScanImageItem[]; total: number }> => {
@@ -111,38 +122,83 @@ export const scanReconstructionService = {
       input_image_id: inputImageId,
       tier: 'PREVIEW',
     });
+    const data = res.data;
     return {
-      jobId: res.data.jobId || res.data.id,
-      scanId: res.data.scanId || scanId,
-      status: res.data.status?.toLowerCase() || 'queued',
-      stage: res.data.stage || 'queued',
-      message: res.data.message,
-      progressPercent: res.data.progressPercent ?? 0,
-      modelUrl: res.data.modelUrl,
-      createdAt: res.data.createdAt,
+      jobId: data.job_id || data.jobId || data.id,
+      scanId: data.scan_id || data.scanId || scanId,
+      status: (data.status || 'queued').toLowerCase() as any,
+      stage: data.stage || 'queued',
+      message: data.error_message || data.errorMessage || data.message,
+      progressPercent: data.progress ?? data.progressPercent ?? 0,
+      modelUrl: data.modelUrl,
+      createdAt: data.created_at || data.createdAt,
+    };
+  },
+
+  getLatestJobForScan: async (scanId: string): Promise<ReconstructionJobItem> => {
+    const res = await apiClient.get<any>(`/scans/${scanId}/reconstruction-jobs`);
+    const data = res.data;
+    return {
+      jobId: data.job_id || data.jobId || data.id,
+      scanId: data.scan_id || data.scanId || scanId,
+      status: (data.status || 'queued').toLowerCase() as any,
+      stage: data.stage || 'queued',
+      message: data.error_message || data.errorMessage || data.message,
+      progressPercent: data.progress ?? data.progressPercent ?? 0,
+      modelUrl: data.modelUrl,
+      createdAt: data.created_at || data.createdAt,
+      completedAt: data.completed_at || data.completedAt,
     };
   },
 
   getJobById: async (jobId: string): Promise<ReconstructionJobItem> => {
     const res = await apiClient.get<any>(`/reconstruction-jobs/${jobId}`);
+    const data = res.data;
     return {
-      jobId: res.data.jobId || res.data.id || jobId,
-      scanId: res.data.scanId,
-      status: res.data.status?.toLowerCase() || 'running',
-      stage: res.data.stage || 'running',
-      message: res.data.message,
-      progressPercent: res.data.progressPercent ?? res.data.progress ?? 0,
-      modelUrl: res.data.modelUrl,
-      previewUrl: res.data.previewUrl,
-      createdAt: res.data.createdAt,
-      completedAt: res.data.completedAt,
+      jobId: data.job_id || data.jobId || data.id || jobId,
+      scanId: data.scan_id || data.scanId,
+      status: (data.status || 'running').toLowerCase() as any,
+      stage: data.stage || 'running',
+      message: data.error_message || data.errorMessage || data.message,
+      progressPercent: data.progress ?? data.progressPercent ?? 0,
+      modelUrl: data.modelUrl,
+      previewUrl: data.previewUrl,
+      createdAt: data.created_at || data.createdAt,
+      completedAt: data.completed_at || data.completedAt,
     };
   },
 
   getJobOutputs: async (jobId: string): Promise<ModelOutputItem[]> => {
     try {
-      const res = await apiClient.get<ModelOutputItem[]>(`/reconstruction-jobs/${jobId}/outputs`);
-      return res.data || [];
+      const res = await apiClient.get<any[]>(`/reconstruction-jobs/${jobId}/outputs`);
+      const items = res.data || [];
+      return items.map((it: any) => ({
+        id: it.output_id || it.id,
+        jobId: it.job_id || it.jobId || jobId,
+        fileFormat: it.format || it.file_format || 'glb',
+        outputUrl: it.delivery_url || it.deliveryUrl || it.outputUrl || it.url,
+        fileSizeBytes: it.file_size_bytes || it.fileSizeBytes || 0,
+        isPrimary: it.is_primary ?? true,
+        storageProvider: it.storage_provider || it.storageProvider,
+      }));
+    } catch {
+      return [];
+    }
+  },
+
+  getDemoOutputs: async (): Promise<ModelOutputItem[]> => {
+    try {
+      const res = await apiClient.get<any[]>('/reconstruction-jobs/demo/outputs');
+      const items = res.data || [];
+      return items.map((it: any) => ({
+        id: it.output_id || it.id,
+        jobId: it.job_id || it.jobId || 'demo',
+        fileFormat: it.format || 'glb',
+        outputUrl: it.delivery_url || it.outputUrl,
+        fileSizeBytes: it.file_size_bytes || 0,
+        isPrimary: true,
+        storageProvider: 'demo',
+      }));
     } catch {
       return [];
     }

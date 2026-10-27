@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { Card, Button, Space, Slider, Tag, Typography, Tooltip, Alert, Spin } from 'antd';
+import { Card, Button, Space, Slider, Tag, Typography, Tooltip, Alert, Spin, Drawer } from 'antd';
 import {
   RotateLeftOutlined,
   PlayCircleOutlined,
@@ -12,6 +12,8 @@ import {
   PrinterOutlined,
   InfoCircleOutlined,
   CheckCircleFilled,
+  WarningOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -21,6 +23,9 @@ export interface Keepsake3DViewerProps {
   modelName?: string;
   onProceedToOrder?: () => void;
   isUnlocked?: boolean;
+  isProcessing?: boolean;
+  statusMessage?: string;
+  onRetry?: () => void;
 }
 
 export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
@@ -28,6 +33,9 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
   modelName = 'Kỷ vật 3D Cá nhân hóa',
   onProceedToOrder,
   isUnlocked = false,
+  isProcessing = false,
+  statusMessage,
+  onRetry,
 }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
 
@@ -45,8 +53,12 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
 
   // State
   const [activeTab, setActiveTab] = useState<'inspect' | 'simulation'>('inspect');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [hasValidModel, setHasValidModel] = useState(false);
+
+  // Separate Demo Showcase modal/drawer state
+  const [showDemoDrawer, setShowDemoDrawer] = useState(false);
 
   // Simulation controls state
   const [isSimulating, setIsSimulating] = useState(false);
@@ -173,7 +185,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
     peachFill.position.set(2, -3, 3);
     scene.add(peachFill);
 
-    // 6. Virtual 3D Print Bed (Grid + Circular / Rectangular Platform)
+    // 6. Virtual 3D Print Bed (Grid + Circular Platform)
     const bedGroup = new THREE.Group();
     const bedGrid = new THREE.GridHelper(4.0, 40, 0x7c5cfc, 0x2e274a);
     bedGrid.position.y = -0.01;
@@ -189,11 +201,13 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
 
     scene.add(bedGroup);
 
-    // 7. Load Model (GLB or fallback procedural sculpture geometry)
-    setLoading(true);
-    setLoadError(null);
-
+    // 7. Load Model (ONLY from actual modelUrl, NO silent fallback to arbitrary geometric primitives!)
     const applyModelToScene = (object: THREE.Group) => {
+      // Remove any previous model group
+      if (modelGroupRef.current) {
+        scene.remove(modelGroupRef.current);
+      }
+
       // Compute bounding box
       const box = new THREE.Box3().setFromObject(object);
       boundingBoxRef.current = box;
@@ -219,7 +233,6 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
           mesh.receiveShadow = true;
 
           if (mesh.material) {
-            // Clone material to avoid polluting global loader cache
             if (Array.isArray(mesh.material)) {
               mesh.material = mesh.material.map((m) => {
                 const cloned = m.clone();
@@ -255,10 +268,14 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
 
       scene.add(object);
       modelGroupRef.current = object;
+      setHasValidModel(true);
       setLoading(false);
+      setLoadError(null);
     };
 
     if (modelUrl && modelUrl.trim() !== '') {
+      setLoading(true);
+      setLoadError(null);
       const loader = new GLTFLoader();
       loader.load(
         modelUrl,
@@ -267,15 +284,22 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
         },
         undefined,
         (error) => {
-          console.warn('Could not load custom GLB from remote URL, falling back to demo model:', error);
-          setLoadError('Không thể tải file GLB từ máy chủ. Hiển thị mô hình kỷ vật mẫu thay thế.');
-          // Fallback procedural memorial bust
-          createFallbackModel(applyModelToScene);
+          console.error('Failed to load GLB model from URL:', modelUrl, error);
+          setLoading(false);
+          setHasValidModel(false);
+          setLoadError(
+            'Không thể tải file mô hình 3D (.glb) từ máy chủ lưu trữ. Vui lòng thử tải lại hoặc liên hệ hỗ trợ kỹ thuật.'
+          );
         }
       );
     } else {
-      // Fallback procedural memorial keepsake sculpture
-      createFallbackModel(applyModelToScene);
+      // Honest state: If no URL is provided, leave print bed empty and display truthful status overlay
+      if (modelGroupRef.current) {
+        scene.remove(modelGroupRef.current);
+        modelGroupRef.current = null;
+      }
+      setHasValidModel(false);
+      setLoading(false);
     }
 
     // 8. Render Animation Loop
@@ -317,41 +341,6 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
     };
   }, [modelUrl, cleanupScene, updateClippingHeight]);
 
-  // Helper to construct a beautiful procedural sculpture if remote GLB is not yet generated
-  const createFallbackModel = (callback: (obj: THREE.Group) => void) => {
-    const group = new THREE.Group();
-
-    // Material with pearlescent SLA resin finish
-    const resinMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xe8e2f8,
-      metalness: 0.1,
-      roughness: 0.25,
-      transmission: 0.35,
-      thickness: 1.2,
-      clearcoat: 0.8,
-      clearcoatRoughness: 0.15,
-    });
-
-    // Torus Knot sculpture
-    const torusGeo = new THREE.TorusKnotGeometry(0.7, 0.22, 128, 32);
-    const torusMesh = new THREE.Mesh(torusGeo, resinMaterial);
-    torusMesh.position.y = 1.0;
-    group.add(torusMesh);
-
-    // Natural walnut wooden pedestal base
-    const baseGeo = new THREE.CylinderGeometry(1.0, 1.1, 0.25, 48);
-    const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x4a2e1b,
-      roughness: 0.6,
-      metalness: 0.05,
-    });
-    const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-    baseMesh.position.y = 0.125;
-    group.add(baseMesh);
-
-    callback(group);
-  };
-
   // Reset Camera View
   const handleResetCamera = () => {
     if (!cameraRef.current || !controlsRef.current) return;
@@ -362,6 +351,9 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
 
   // Toggle Tab
   const handleTabChange = (tab: 'inspect' | 'simulation') => {
+    if (tab === 'simulation' && !hasValidModel) {
+      return;
+    }
     setActiveTab(tab);
     if (tab === 'inspect') {
       // In inspection mode, reveal entire model
@@ -376,6 +368,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
 
   // Simulation Controls
   const handleToggleSimulation = () => {
+    if (!hasValidModel) return;
     if (simProgressRef.current >= 100) {
       simProgressRef.current = 0;
       setSimProgress(0);
@@ -387,6 +380,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
   };
 
   const handleRestartSimulation = () => {
+    if (!hasValidModel) return;
     simProgressRef.current = 0;
     setSimProgress(0);
     updateClippingHeight(0);
@@ -395,6 +389,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
   };
 
   const handleSliderChange = (val: number) => {
+    if (!hasValidModel) return;
     simProgressRef.current = val;
     setSimProgress(val);
     updateClippingHeight(val);
@@ -429,16 +424,16 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Tag color="purple" style={{ borderRadius: 6, fontWeight: 700, padding: '2px 10px' }}>
-            3D GLB
+          <Tag color={hasValidModel ? 'purple' : 'default'} style={{ borderRadius: 6, fontWeight: 700, padding: '2px 10px' }}>
+            {hasValidModel ? (isUnlocked ? '3D GLB HOÀN THIỆN' : '3D GLB XEM TRƯỚC') : 'BÀN IN ẢO'}
           </Tag>
           <Title level={4} style={{ color: '#fff', margin: 0, fontWeight: 700 }}>
             {modelName}
           </Title>
         </div>
 
-        {/* Tab Toggle: Inspect vs Print Simulation */}
-        <Space>
+        {/* Tab Toggle: Inspect vs Print Simulation & Demo Showcase */}
+        <Space wrap>
           <Button
             type={activeTab === 'inspect' ? 'primary' : 'default'}
             icon={<EyeOutlined />}
@@ -454,34 +449,59 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
             Xem 3D 360°
           </Button>
 
+          <Tooltip title={!hasValidModel ? 'Cần có mô hình 3D thực tế của bạn trước khi chạy minh họa in' : ''}>
+            <Button
+              type={activeTab === 'simulation' ? 'primary' : 'default'}
+              icon={<PrinterOutlined />}
+              onClick={() => handleTabChange('simulation')}
+              disabled={!hasValidModel}
+              style={{
+                borderRadius: 8,
+                fontWeight: 600,
+                background: activeTab === 'simulation' ? '#0ea5e9' : 'transparent',
+                borderColor: activeTab === 'simulation' ? '#0ea5e9' : '#443C68',
+                color: hasValidModel ? '#fff' : 'rgba(255, 255, 255, 0.35)',
+              }}
+            >
+              Minh họa quá trình in
+            </Button>
+          </Tooltip>
+
           <Button
-            type={activeTab === 'simulation' ? 'primary' : 'default'}
-            icon={<PrinterOutlined />}
-            onClick={() => handleTabChange('simulation')}
+            icon={<AppstoreOutlined />}
+            onClick={() => setShowDemoDrawer(true)}
             style={{
               borderRadius: 8,
-              fontWeight: 600,
-              background: activeTab === 'simulation' ? '#0ea5e9' : 'transparent',
-              borderColor: activeTab === 'simulation' ? '#0ea5e9' : '#443C68',
-              color: '#fff',
+              background: 'rgba(255, 255, 255, 0.06)',
+              borderColor: 'rgba(255, 255, 255, 0.15)',
+              color: 'var(--text-secondary, #948aa8)',
             }}
           >
-            Minh họa quá trình in (MVP)
+            Mô hình mẫu
           </Button>
         </Space>
       </div>
 
       {loadError && (
         <Alert
-          type="info"
-          message={loadError}
+          type="error"
+          message="Lỗi nạp mô hình 3D"
+          description={loadError}
           showIcon
-          style={{ margin: 12, borderRadius: 8 }}
+          action={
+            onRetry ? (
+              <Button size="small" type="primary" onClick={onRetry} style={{ borderRadius: 6 }}>
+                Thử lại tải GLB
+              </Button>
+            ) : undefined
+          }
+          style={{ margin: 12, borderRadius: 10 }}
         />
       )}
 
       {/* 3D WebGL Canvas Container */}
       <div style={{ position: 'relative', width: '100%', height: 480, background: '#0e0d14' }}>
+        {/* Loading Spinner */}
         {loading && (
           <div
             style={{
@@ -497,7 +517,54 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
           >
             <Spin size="large" />
             <Text style={{ color: '#fff', marginTop: 16, fontWeight: 600 }}>
-              Đang kết xuất mô hình 3D WebGL...
+              Đang tải và kết xuất mô hình 3D GLB từ ảnh chụp của bạn...
+            </Text>
+          </div>
+        )}
+
+        {/* Empty State / Processing Truthful Overlay */}
+        {!hasValidModel && !loading && !loadError && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(14, 13, 20, 0.65)',
+              zIndex: 8,
+              padding: 24,
+              textAlign: 'center',
+              pointerEvents: 'none',
+            }}
+          >
+            <div
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: '50%',
+                background: 'rgba(124, 92, 252, 0.15)',
+                color: 'var(--primary, #7C5CFC)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 26,
+                marginBottom: 16,
+              }}
+            >
+              {isProcessing ? <Spin /> : <PrinterOutlined />}
+            </div>
+            <Title level={4} style={{ color: '#fff', margin: '0 0 8px', fontWeight: 700 }}>
+              {isProcessing
+                ? 'AI đang dựng mô hình 3D từ ảnh chụp của bạn...'
+                : 'Chưa có mô hình 3D được nạp'}
+            </Title>
+            <Text style={{ color: 'var(--text-secondary, #948aa8)', maxWidth: 460, fontSize: '0.9rem' }}>
+              {statusMessage ||
+                (isProcessing
+                  ? 'Khi cụm AI xử lý hoàn tất, mô hình 3D thực tế của bạn sẽ tự động xuất hiện trên bàn in ảo này.'
+                  : 'Hãy tải ảnh hoặc chụp bằng camera laptop để tạo kỷ vật 3D chân thực.')}
             </Text>
           </div>
         )}
@@ -505,8 +572,8 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
         {/* The Three.js Mount Point */}
         <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
 
-        {/* Mandatory MVP Print Simulation Watermark & Label */}
-        {activeTab === 'simulation' && (
+        {/* Mandatory Print Simulation Watermark & Label */}
+        {activeTab === 'simulation' && hasValidModel && (
           <div
             style={{
               position: 'absolute',
@@ -526,28 +593,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
             }}
           >
             <PrinterOutlined style={{ color: '#38bdf8' }} />
-            <span>Minh họa quá trình in</span>
-          </div>
-        )}
-
-        {/* Freemium Watermark in Inspect mode */}
-        {activeTab === 'inspect' && !isUnlocked && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 16,
-              right: 16,
-              background: 'rgba(255, 191, 174, 0.2)',
-              border: '1px solid #FF9E87',
-              padding: '4px 12px',
-              borderRadius: 9999,
-              color: '#FFBFAE',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              backdropFilter: 'blur(8px)',
-            }}
-          >
-            🔒 Bản xem trước kiểm tra độ phân giải
+            <span>Minh họa quá trình in (Mặt cắt mô hình của bạn)</span>
           </div>
         )}
 
@@ -578,7 +624,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
       </div>
 
       {/* Simulation Controls or Inspection Footer Bar */}
-      {activeTab === 'simulation' ? (
+      {activeTab === 'simulation' && hasValidModel ? (
         <div
           style={{
             padding: '20px 24px',
@@ -621,7 +667,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
                 {simProgress}%
               </Text>
               <Text style={{ color: 'var(--text-secondary, #948aa8)', fontSize: '0.8rem', display: 'block' }}>
-                Tiến độ minh họa lớp in
+                Tiến độ lớp cắt trực quan
               </Text>
             </div>
           </div>
@@ -638,7 +684,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
             }}
           />
 
-          {/* Mandatory Disclaimer */}
+          {/* Truthful Simulation Disclaimer */}
           <div
             style={{
               marginTop: 14,
@@ -656,7 +702,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <InfoCircleOutlined style={{ color: '#38bdf8' }} />
               <Text style={{ color: '#bae6fd', fontSize: '0.82rem' }}>
-                Đây là hiệu ứng minh họa, không phản ánh thời gian và đường chạy máy in thực tế.
+                Minh họa quá trình in sử dụng chính mô hình 3D thực tế của bạn qua mặt cắt Three.js. Tiến độ này mang tính trực quan hóa, không phản ánh thời gian sản xuất resin tại xưởng.
               </Text>
             </div>
 
@@ -670,7 +716,7 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
                   fontWeight: 700,
                 }}
               >
-                Bỏ qua minh họa & Đặt hàng ngay
+                Đặt hàng chế tác
               </Button>
             )}
           </div>
@@ -691,15 +737,31 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
         >
           <div>
             <div style={{ color: '#fff', fontWeight: 700, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <CheckCircleFilled style={{ color: 'var(--tertiary, #22c55e)' }} />
-              <span>Mô hình xem trước đã sẵn sàng kiểm tra sản xuất</span>
+              {hasValidModel ? (
+                <>
+                  <CheckCircleFilled style={{ color: 'var(--tertiary, #22c55e)' }} />
+                  <span>Mô hình 3D thực tế của bạn đã được tải thành công</span>
+                </>
+              ) : isProcessing ? (
+                <>
+                  <Spin size="small" />
+                  <span>Đang theo dõi quá trình xử lý AI thời gian thực</span>
+                </>
+              ) : (
+                <>
+                  <InfoCircleOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
+                  <span>Chờ dữ liệu ảnh để bắt đầu tái tạo</span>
+                </>
+              )}
             </div>
             <Text style={{ color: 'var(--text-secondary, #948aa8)', fontSize: '0.85rem' }}>
-              Mô hình xem trước. Khả năng sản xuất sẽ được xưởng kiểm tra trước khi xác nhận đơn.
+              {hasValidModel
+                ? 'Bạn có thể xoay 360 độ hoặc chuyển sang tab "Minh họa quá trình in" để xem hiệu ứng bồi đắp từng lớp.'
+                : 'Mọi mô hình hiển thị tại đây đều là kết quả thực tế từ ảnh chụp của bạn, không dùng vật thể ngẫu nhiên.'}
             </Text>
           </div>
 
-          {onProceedToOrder && (
+          {onProceedToOrder && hasValidModel && (
             <Button
               type="primary"
               size="large"
@@ -719,6 +781,54 @@ export const Keepsake3DViewer: React.FC<Keepsake3DViewerProps> = ({
           )}
         </div>
       )}
+
+      {/* Dedicated Separate Sample Model Drawer */}
+      <Drawer
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <AppstoreOutlined style={{ color: 'var(--primary, #7C5CFC)' }} />
+            <span>Mô Hình Mẫu Tham Khảo (Phòng Trưng Bày)</span>
+          </div>
+        }
+        placement="right"
+        width={420}
+        open={showDemoDrawer}
+        onClose={() => setShowDemoDrawer(false)}
+        styles={{
+          body: { background: '#0B0A10', color: 'var(--text-primary)' },
+          header: { background: '#14121E', borderBottom: '1px solid #2E274A' },
+        }}
+      >
+        <Alert
+          type="warning"
+          showIcon
+          icon={<WarningOutlined />}
+          message="MẪU THAM KHẢO — KHÔNG PHẢI KỶ VẬT CỦA BẠN"
+          description="Khu vực này trưng bày các tác phẩm mẫu đã được xử lý hoàn thiện để bạn tham khảo chất lượng bề mặt và độ chi tiết của công nghệ in Resin SLA."
+          style={{ marginBottom: 20, borderRadius: 10 }}
+        />
+
+        <Card
+          style={{
+            background: '#14121E',
+            borderColor: '#2E274A',
+            borderRadius: 16,
+            marginBottom: 16,
+          }}
+          styles={{ body: { padding: 16 } }}
+        >
+          <Title level={5} style={{ color: '#fff', margin: '0 0 6px' }}>
+            Tượng chân dung Điêu khắc Mẫu
+          </Title>
+          <Text style={{ color: 'var(--text-secondary, #948aa8)', fontSize: '0.85rem', display: 'block', marginBottom: 12 }}>
+            Mô hình mẫu chuẩn glTF 2.0 với độ phân giải lưới 50.000 đa giác và chất liệu phủ mô phỏng nhựa resin quang hóa.
+          </Text>
+          <Tag color="cyan">glTF Binary (.glb)</Tag>
+          <Tag color="purple">SLA Resin Finish</Tag>
+        </Card>
+      </Drawer>
     </Card>
   );
 };
+
+export default Keepsake3DViewer;
