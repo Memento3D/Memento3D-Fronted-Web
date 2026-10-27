@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { notification } from 'antd';
+import axios from 'axios';
 import { useAuth } from '../../features/auth/context/AuthContext';
 import { tokenStorage } from '../../features/auth/utils/tokenStorage';
+import { BASE_URL } from '../../services/apiClient';
 import type { ConnectionStatus, RealTimeEvent, RealTimeEventType } from './eventTypes';
 
 type EventCallback<T = any> = (event: RealTimeEvent<T>) => void;
@@ -21,6 +23,7 @@ const MAX_DEDUP_SIZE = 300;
 const INITIAL_BACKOFF_MS = 1000;
 const MAX_BACKOFF_MS = 30000;
 const HEARTBEAT_TIMEOUT_MS = 45000;
+const MAX_RETRY_ATTEMPTS = 5;
 
 export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
@@ -33,6 +36,8 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heartbeatWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const backoffDelayRef = useRef<number>(INITIAL_BACKOFF_MS);
+  const consecutiveFailuresRef = useRef<number>(0);
+  const isRefreshingTokenRef = useRef<boolean>(false);
   const processedEventIdsRef = useRef<Set<string>>(new Set());
 
   // Subscription registries
@@ -203,8 +208,7 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       eventSourceRef.current = null;
     }
 
-    const apiBase = import.meta.env.VITE_API_BASE_URL || '/api/v1';
-    const sseUrl = `${apiBase}/events/stream?token=${encodeURIComponent(token)}`;
+    const sseUrl = `${BASE_URL}/events/stream?token=${encodeURIComponent(token)}`;
 
     setConnectionStatus((prev) => (prev === 'CONNECTED' ? 'CONNECTED' : 'CONNECTING'));
 
@@ -213,6 +217,7 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     es.onopen = () => {
       setConnectionStatus('CONNECTED');
+      consecutiveFailuresRef.current = 0;
       backoffDelayRef.current = INITIAL_BACKOFF_MS;
       resetHeartbeatWatchdog();
       console.log('[RealTime] Connected to Memento3D real-time event stream');
@@ -257,13 +262,50 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       });
     });
 
-    es.onerror = () => {
-      console.warn('[RealTime] SSE stream error. Closing and scheduling reconnection...');
-      setConnectionStatus('RECONNECTING');
+    es.onerror = async () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
       }
+
+      consecutiveFailuresRef.current += 1;
+      const failures = consecutiveFailuresRef.current;
+
+      // Handle potential 401 token expiration: attempt refresh if we have a refresh token
+      const refreshToken = tokenStorage.getRefreshToken();
+      if (failures >= 2 && refreshToken && !isRefreshingTokenRef.current) {
+        isRefreshingTokenRef.current = true;
+        try {
+          const refreshRes = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken });
+          const newAccessToken = refreshRes.data?.accessToken;
+          const newRefreshToken = refreshRes.data?.refreshToken;
+          if (newAccessToken) {
+            tokenStorage.setTokens(newAccessToken, newRefreshToken);
+            consecutiveFailuresRef.current = 0;
+            backoffDelayRef.current = INITIAL_BACKOFF_MS;
+            isRefreshingTokenRef.current = false;
+            connectStream();
+            return;
+          }
+        } catch {
+          // Token refresh failed -> session has expired
+          isRefreshingTokenRef.current = false;
+          tokenStorage.clearTokens();
+          window.dispatchEvent(new CustomEvent('memento3d:session-expired'));
+          setConnectionStatus('DISCONNECTED');
+          console.warn('[RealTime] Phiên đăng nhập đã hết hạn. Đã dừng kết nối thời gian thực.');
+          return;
+        }
+        isRefreshingTokenRef.current = false;
+      }
+
+      if (failures >= MAX_RETRY_ATTEMPTS) {
+        setConnectionStatus('DISCONNECTED');
+        console.warn(`[RealTime] Đã thử kết nối ${failures} lần không thành công. Dừng kết nối.`);
+        return;
+      }
+
+      setConnectionStatus('RECONNECTING');
       scheduleReconnection();
     };
   }, [isAuthenticated, handleIncomingEvent, resetHeartbeatWatchdog]);
@@ -272,6 +314,13 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const scheduleReconnection = useCallback(() => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+
+    const currentToken = tokenStorage.getAccessToken();
+    if (!isAuthenticated || !currentToken || consecutiveFailuresRef.current >= MAX_RETRY_ATTEMPTS) {
+      setConnectionStatus('DISCONNECTED');
+      return;
     }
 
     const currentBackoff = backoffDelayRef.current;
@@ -280,17 +329,17 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     backoffDelayRef.current = Math.min(currentBackoff * 1.8, MAX_BACKOFF_MS);
 
-    console.log(`[RealTime] Will attempt reconnection in ${Math.round(delay)}ms`);
     reconnectTimeoutRef.current = setTimeout(() => {
       connectStream();
     }, delay);
-  }, [connectStream]);
+  }, [isAuthenticated, connectStream]);
 
   const reconnectStream = useCallback(() => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
+    consecutiveFailuresRef.current = 0;
     backoffDelayRef.current = INITIAL_BACKOFF_MS;
     connectStream();
   }, [connectStream]);
@@ -300,6 +349,7 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (isAuthenticated && user) {
       connectStream();
     } else {
+      consecutiveFailuresRef.current = 0;
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
@@ -316,6 +366,7 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     return () => {
+      consecutiveFailuresRef.current = 0;
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;

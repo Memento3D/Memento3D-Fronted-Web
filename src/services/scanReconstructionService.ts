@@ -72,10 +72,11 @@ export const scanReconstructionService = {
     }
   },
 
-  createScan: async (name: string, inputMode = 'IMAGE_SET'): Promise<ScanSession> => {
+  createScan: async (name: string, inputMode = 'image'): Promise<ScanSession> => {
+    const normalizedInputMode = inputMode.toLowerCase() === 'image_set' ? 'image' : inputMode.toLowerCase();
     const res = await apiClient.post<ScanSession>('/scans', {
       name: name.trim(),
-      input_mode: inputMode,
+      input_mode: normalizedInputMode,
     });
     return res.data;
   },
@@ -85,7 +86,7 @@ export const scanReconstructionService = {
     formData.append('file', file);
     const res = await apiClient.post<any>(`/scans/${scanId}/images`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': undefined,
       },
     });
     const imgData = res.data?.image || res.data;

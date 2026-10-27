@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Modal, Button, Alert, Space, Typography, Tooltip, message } from 'antd';
+import { Modal, Button, Alert, Space, Typography, Tooltip, App } from 'antd';
 import {
   CameraOutlined,
   ReloadOutlined,
@@ -25,8 +25,11 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   onPhotoCaptured,
   onSelectUploadFiles,
 }) => {
+  const { message } = App.useApp();
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const activeRequestIdRef = useRef<number>(0);
 
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
@@ -37,6 +40,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
   // Stop camera tracks and release hardware resources cleanly
   const stopCamera = useCallback(() => {
+    activeRequestIdRef.current += 1;
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => {
         try {
@@ -64,6 +68,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
   // Request camera and stream video (video-only, strictly NO audio/microphone)
   const initCameraStream = useCallback(async () => {
+    const requestId = ++activeRequestIdRef.current;
     setCameraError(null);
     clearCaptured();
 
@@ -114,22 +119,44 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
         audio: false,
       });
 
+      // Guard against stale requests / modal closed before getUserMedia resolved
+      if (requestId !== activeRequestIdRef.current || !open) {
+        stream.getTracks().forEach((track) => {
+          try {
+            track.stop();
+          } catch {
+            // ignore
+          }
+        });
+        return;
+      }
+
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        try {
+          await videoRef.current.play();
+        } catch (playErr: any) {
+          // Ignore AbortError caused by rapid user actions or tab switching
+          if (playErr.name !== 'AbortError') {
+            console.warn('[CameraCapture] video.play() notice:', playErr);
+          }
+        }
       }
       setIsCameraActive(true);
     } catch (err: any) {
+      // Only record error if this is still the active request
+      if (requestId !== activeRequestIdRef.current) return;
+
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         setCameraError(
-          'Bạn đã từ chối quyền truy cập camera. Vui lòng bấm vào biểu tượng ổ khóa/camera trên thanh địa chỉ trình duyệt để Cấp quyền (Allow), sau đó bấm thử lại hoặc chọn tải ảnh từ máy tính.'
+          'Bạn đã từ chối quyền truy cập camera. Vui lòng bấm vào biểu tượng ổ khóa/camera trên thanh địa chỉ trình duyệt để Cấp quyền (Allow), sau đó bấm Thử lại hoặc chọn tải ảnh từ máy tính.'
         );
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        setCameraError('Không tìm thấy thiết bị camera trên máy tính của bạn. Vui lòng kiểm tra cáp cắm webcam hoặc chọn tải ảnh.');
+        setCameraError('Không tìm thấy thiết bị camera trên máy tính của bạn. Vui lòng kiểm tra webcam hoặc chọn tải ảnh từ máy tính.');
       } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
         setCameraError(
-          'Camera đang bận hoặc đang được sử dụng bởi ứng dụng khác (Zoom, Microsoft Teams, Skype, Google Meet, v.v.). Vui lòng đóng ứng dụng đó và thử lại.'
+          'Camera đang bận hoặc đang được sử dụng bởi ứng dụng khác (Zoom, Microsoft Teams, Skype, Google Meet). Vui lòng đóng ứng dụng đó và bấm Thử lại.'
         );
       } else if (err.name === 'SecurityError') {
         setCameraError('Bảo mật trình duyệt đã chặn truy cập camera do chính sách nguồn (Security Policy). Vui lòng tải ảnh từ thiết bị.');
@@ -137,9 +164,9 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
         setCameraError(err.message || 'Không thể khởi động camera. Vui lòng thử lại hoặc tải ảnh từ máy tính.');
       }
     }
-  }, [clearCaptured]);
+  }, [open, clearCaptured]);
 
-  // Start camera when modal opens
+  // Start camera when modal opens, cleanly stop when closed
   useEffect(() => {
     if (open) {
       setSessionCapturedCount(0);
@@ -247,86 +274,61 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
           )}
         </div>
       }
-      destroyOnClose
+      destroyOnHidden
       centered
       styles={{
         body: { padding: '16px 0 0' },
       }}
     >
-      {cameraError ? (
-        <div style={{ padding: '24px 16px', textAlign: 'center' }}>
-          <Alert
-            type="error"
-            message="Không thể khởi động Camera"
-            description={cameraError}
-            showIcon
-            style={{ marginBottom: 24, textAlign: 'left', borderRadius: 12 }}
-          />
-          <Space size="middle">
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={() => initCameraStream()}
-              style={{ borderRadius: 8 }}
-            >
-              Thử lại Camera
-            </Button>
-            <Button
-              type="primary"
-              icon={<UploadOutlined />}
-              onClick={() => {
-                handleCloseModal();
-                if (onSelectUploadFiles) onSelectUploadFiles();
-              }}
-              style={{ borderRadius: 8, background: 'var(--primary, #7C5CFC)' }}
-            >
-              Chọn tải ảnh từ máy tính
-            </Button>
-          </Space>
-        </div>
-      ) : (
-        <div>
-          {/* Viewport Frame */}
-          <div
+      <div>
+        {/* Viewport Frame - Video is permanently kept in DOM to avoid interruption */}
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: 440,
+            background: '#0B0A10',
+            borderRadius: 16,
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {/* Live Video Element - Kept permanently mounted in DOM */}
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
             style={{
-              position: 'relative',
               width: '100%',
-              height: 440,
-              background: '#0B0A10',
-              borderRadius: 16,
-              overflow: 'hidden',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              height: '100%',
+              objectFit: 'cover',
+              transform: isMirrored ? 'scaleX(-1)' : 'none',
+              display: capturedPreviewUrl ? 'none' : 'block',
             }}
-          >
-            {capturedPreviewUrl ? (
-              // Review Captured Frame
-              <img
-                src={capturedPreviewUrl}
-                alt="Captured Snapshot"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain',
-                }}
-              />
-            ) : (
-              // Live Video Stream
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  transform: isMirrored ? 'scaleX(-1)' : 'none',
-                }}
-              />
-            )}
+          />
 
-            {/* Viewfinder crosshairs overlay */}
+          {/* Review Captured Frame Overlay */}
+          {capturedPreviewUrl && (
+            <img
+              src={capturedPreviewUrl}
+              alt="Captured Snapshot"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                background: '#0B0A10',
+                zIndex: 5,
+              }}
+            />
+          )}
+
+          {/* Viewfinder crosshairs overlay */}
+          {!cameraError && (
             <div
               style={{
                 position: 'absolute',
@@ -337,6 +339,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
+                zIndex: 6,
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: 10 }}>
@@ -354,108 +357,155 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                 </Text>
               </div>
             </div>
+          )}
 
-            {/* Mirror Toggle Button */}
-            {!capturedPreviewUrl && (
-              <Tooltip title={isMirrored ? 'Tắt lật gương xem trước' : 'Bật lật gương xem trước'}>
+          {/* Mirror Toggle Button */}
+          {!capturedPreviewUrl && !cameraError && (
+            <Tooltip title={isMirrored ? 'Tắt lật gương xem trước' : 'Bật lật gương xem trước'}>
+              <Button
+                shape="circle"
+                icon={<SwapOutlined />}
+                onClick={() => setIsMirrored(!isMirrored)}
+                style={{
+                  position: 'absolute',
+                  top: 16,
+                  right: 16,
+                  background: 'rgba(0, 0, 0, 0.65)',
+                  color: '#fff',
+                  borderColor: 'transparent',
+                  zIndex: 7,
+                }}
+              />
+            </Tooltip>
+          )}
+
+          {/* Camera Error Overlay - Displays over video without unmounting the video element */}
+          {cameraError && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(11, 10, 16, 0.92)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '24px 32px',
+                textAlign: 'center',
+                zIndex: 20,
+              }}
+            >
+              <Alert
+                type="error"
+                title="Không thể khởi động Camera"
+                description={cameraError}
+                showIcon
+                style={{ marginBottom: 24, textAlign: 'left', borderRadius: 12, width: '100%', maxWidth: 580 }}
+              />
+              <Space size="middle">
                 <Button
-                  shape="circle"
-                  icon={<SwapOutlined />}
-                  onClick={() => setIsMirrored(!isMirrored)}
-                  style={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 16,
-                    background: 'rgba(0, 0, 0, 0.65)',
-                    color: '#fff',
-                    borderColor: 'transparent',
+                  icon={<ReloadOutlined />}
+                  onClick={() => initCameraStream()}
+                  style={{ borderRadius: 8 }}
+                >
+                  Thử lại Camera
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<UploadOutlined />}
+                  onClick={() => {
+                    handleCloseModal();
+                    if (onSelectUploadFiles) onSelectUploadFiles();
                   }}
-                />
-              </Tooltip>
-            )}
-          </div>
-
-          {/* Action Bar */}
-          <div
-            style={{
-              padding: '18px 8px 8px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 12,
-            }}
-          >
-            <Text style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.85rem' }}>
-              {capturedPreviewUrl
-                ? 'Bạn có thể giữ ảnh này, chụp lại hoặc chụp thêm góc ảnh khác.'
-                : '💡 Không yêu cầu microphone. Ảnh chụp sẽ được mã hóa và gửi tới pipeline AI 3D.'}
-            </Text>
-
-            <Space size="middle" wrap>
-              {capturedPreviewUrl ? (
-                <>
-                  <Button
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={handleDeleteCaptured}
-                    style={{ borderRadius: 8 }}
-                  >
-                    Xóa ảnh
-                  </Button>
-                  <Button
-                    icon={<ReloadOutlined />}
-                    onClick={handleRetake}
-                    style={{ borderRadius: 8 }}
-                  >
-                    Chụp lại
-                  </Button>
-                  <Button
-                    icon={<PlusOutlined />}
-                    onClick={handleKeepAndTakeMore}
-                    style={{ borderRadius: 8, borderColor: 'var(--primary, #7C5CFC)', color: 'var(--primary, #7C5CFC)' }}
-                  >
-                    Lưu & Chụp thêm
-                  </Button>
-                  <Button
-                    type="primary"
-                    icon={<CheckOutlined />}
-                    onClick={handleUseAndFinish}
-                    style={{
-                      background: 'var(--primary, #7C5CFC)',
-                      borderRadius: 8,
-                      fontWeight: 600,
-                    }}
-                  >
-                    Lưu & Sử dụng
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button onClick={handleCloseModal} style={{ borderRadius: 8 }}>
-                    Hủy
-                  </Button>
-                  <Button
-                    type="primary"
-                    size="large"
-                    icon={<CameraOutlined />}
-                    onClick={handleCaptureFrame}
-                    disabled={!isCameraActive}
-                    style={{
-                      background: 'var(--primary, #7C5CFC)',
-                      borderRadius: 9999,
-                      fontWeight: 700,
-                      padding: '0 32px',
-                    }}
-                  >
-                    Chụp ảnh ngay
-                  </Button>
-                </>
-              )}
-            </Space>
-          </div>
+                  style={{ borderRadius: 8, background: 'var(--primary, #7C5CFC)' }}
+                >
+                  Chọn tải ảnh từ máy tính
+                </Button>
+              </Space>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Action Bar */}
+        <div
+          style={{
+            padding: '18px 8px 8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 12,
+          }}
+        >
+          <Text style={{ color: 'var(--text-secondary, #6A6282)', fontSize: '0.85rem' }}>
+            {capturedPreviewUrl
+              ? 'Bạn có thể giữ ảnh này, chụp lại hoặc chụp thêm góc ảnh khác.'
+              : '💡 Không yêu cầu microphone. Ảnh chụp sẽ được mã hóa và gửi tới pipeline AI 3D.'}
+          </Text>
+
+          <Space size="middle" wrap>
+            {capturedPreviewUrl ? (
+              <>
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={handleDeleteCaptured}
+                  style={{ borderRadius: 8 }}
+                >
+                  Xóa ảnh
+                </Button>
+                <Button
+                  icon={<ReloadOutlined />}
+                  onClick={handleRetake}
+                  style={{ borderRadius: 8 }}
+                >
+                  Chụp lại
+                </Button>
+                <Button
+                  icon={<PlusOutlined />}
+                  onClick={handleKeepAndTakeMore}
+                  style={{ borderRadius: 8, borderColor: 'var(--primary, #7C5CFC)', color: 'var(--primary, #7C5CFC)' }}
+                >
+                  Lưu & Chụp thêm
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<CheckOutlined />}
+                  onClick={handleUseAndFinish}
+                  style={{
+                    background: 'var(--primary, #7C5CFC)',
+                    borderRadius: 8,
+                    fontWeight: 600,
+                  }}
+                >
+                  Lưu & Sử dụng
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={handleCloseModal} style={{ borderRadius: 8 }}>
+                  Hủy
+                </Button>
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<CameraOutlined />}
+                  onClick={handleCaptureFrame}
+                  disabled={!isCameraActive || !!cameraError}
+                  style={{
+                    background: 'var(--primary, #7C5CFC)',
+                    borderRadius: 9999,
+                    fontWeight: 700,
+                    padding: '0 32px',
+                  }}
+                >
+                  Chụp ảnh ngay
+                </Button>
+              </>
+            )}
+          </Space>
+        </div>
+      </div>
     </Modal>
   );
 };

@@ -10,7 +10,7 @@ import {
   Alert,
   Typography,
   Tag,
-  message,
+  App,
 } from 'antd';
 import {
   PrinterOutlined,
@@ -70,6 +70,7 @@ export const OrderKeepsakeModal: React.FC<OrderKeepsakeModalProps> = ({
   modelName = 'Kỷ vật 3D chân dung (Scan AI)',
 }) => {
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -139,12 +140,12 @@ export const OrderKeepsakeModal: React.FC<OrderKeepsakeModalProps> = ({
         </div>
       }
       centered
-      destroyOnClose
+      destroyOnHidden
     >
       <Alert
         type="info"
         showIcon
-        message="Kiểm tra khả năng sản xuất"
+        title="Kiểm tra khả năng sản xuất"
         description="Đơn hàng được khởi tạo ở trạng thái Chờ kiểm tra khả năng sản xuất. Kỹ thuật viên xưởng in sẽ kiểm duyệt lưới đa giác 3D, đối chiếu chi tiết và xác nhận báo giá cuối cùng trước khi tiến hành thanh toán."
         style={{ marginBottom: 20, borderRadius: 10 }}
       />

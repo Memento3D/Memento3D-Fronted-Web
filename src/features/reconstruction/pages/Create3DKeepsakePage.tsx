@@ -8,7 +8,7 @@ import {
   Tag,
   Typography,
   Progress,
-  message,
+  App,
   Popconfirm,
 } from 'antd';
 import {
@@ -37,6 +37,7 @@ interface LocalImageItem {
 
 export const Create3DKeepsakePage: React.FC = () => {
   const navigate = useNavigate();
+  const { message } = App.useApp();
 
   const [capabilities, setCapabilities] = useState<ReconstructionCapabilities | null>(null);
 
@@ -173,8 +174,15 @@ export const Create3DKeepsakePage: React.FC = () => {
         navigate(`/reconstruction/${scan.id}`, { state: { jobId: job.jobId } });
       }, 600);
     } catch (err: any) {
-      message.error(err.message || 'Không thể tạo mô hình 3D. Vui lòng kiểm tra kết nối mạng và thử lại.');
+      const backendErrorMsg =
+        err.response?.data?.message ||
+        err.response?.data?.error?.message ||
+        err.message ||
+        'Không thể tạo phiên quét 3D. Vui lòng kiểm tra kết nối mạng và thử lại.';
+      message.error(backendErrorMsg);
       setIsSubmitting(false);
+      setUploadProgress(0);
+      setStatusMessage('');
     }
   };
 
