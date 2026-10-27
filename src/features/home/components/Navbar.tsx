@@ -115,6 +115,12 @@ export const Navbar: React.FC = () => {
       onClick: () => navigate('/orders'),
     },
     {
+      key: 'my-models',
+      icon: <CodeSandboxOutlined style={{ color: 'var(--primary)' }} />,
+      label: 'Mô hình 3D của tôi',
+      onClick: () => navigate('/my-models'),
+    },
+    {
       key: 'dashboard',
       icon: <DashboardOutlined />,
       label: 'Cổng quản trị & Vận hành',
@@ -185,7 +191,7 @@ export const Navbar: React.FC = () => {
           </span>
           <span
             className="nav-item-link highlight-link"
-            onClick={() => navigate('/reconstruction/demo')}
+            onClick={() => navigate('/create-keepsake')}
           >
             <ThunderboltOutlined style={{ marginRight: 4 }} />
             Tạo mô hình 3D

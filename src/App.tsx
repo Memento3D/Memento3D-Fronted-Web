@@ -160,6 +160,12 @@ const VnpayReturnPage = React.lazy(() =>
 const ScanReconstructionPage = React.lazy(() =>
   import('./features/reconstruction/pages/ScanReconstructionPage').then((m) => ({ default: m.ScanReconstructionPage }))
 );
+const Create3DKeepsakePage = React.lazy(() =>
+  import('./features/reconstruction/pages/Create3DKeepsakePage').then((m) => ({ default: m.Create3DKeepsakePage }))
+);
+const MyModelsPage = React.lazy(() =>
+  import('./features/reconstruction/pages/MyModelsPage').then((m) => ({ default: m.MyModelsPage }))
+);
 const ManagerOrdersPage = React.lazy(() =>
   import('./features/orders/pages/ManagerOrdersPage').then((m) => ({ default: m.ManagerOrdersPage }))
 );
@@ -455,6 +461,30 @@ export const App: React.FC = () => {
                     element={
                       <ProtectedRoute>
                         <ScanReconstructionPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/create-keepsake"
+                    element={
+                      <ProtectedRoute>
+                        <Create3DKeepsakePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/my-models"
+                    element={
+                      <ProtectedRoute>
+                        <MyModelsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/customer/models"
+                    element={
+                      <ProtectedRoute>
+                        <MyModelsPage />
                       </ProtectedRoute>
                     }
                   />

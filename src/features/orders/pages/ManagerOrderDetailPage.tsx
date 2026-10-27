@@ -13,6 +13,8 @@ import {
   message,
   Popconfirm,
   Skeleton,
+  Radio,
+  InputNumber,
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -35,12 +37,14 @@ import {
   SkinOutlined,
   GiftOutlined,
   FormOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useOrderDetail } from '../hooks/useOrderDetail';
 import { useUpdateOrder } from '../hooks/useUpdateOrder';
 import { usePaymentsList, useConfirmCash } from '../hooks/useOrderPayment';
+import { orderApi } from '../api/orderApi';
 import { printJobApi } from '../../printjob/api/printJobApi';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import { OrderTimeline } from '../components/OrderTimeline';
@@ -61,6 +65,10 @@ export const ManagerOrderDetailPage: React.FC = () => {
   const [editAddressOpen, setEditAddressOpen] = useState(false);
   const [printJobModalOpen, setPrintJobModalOpen] = useState(false);
   const [form] = Form.useForm();
+
+  const [feasibilityModalOpen, setFeasibilityModalOpen] = useState(false);
+  const [feasibilityForm] = Form.useForm();
+  const [isReviewing, setIsReviewing] = useState(false);
 
   // Fetch linked print jobs for this order
   const { refetch: refetchPrintJobs } = useQuery({
@@ -128,6 +136,26 @@ export const ManagerOrderDetailPage: React.FC = () => {
       refetch();
     } catch (err: any) {
       message.error(err.message || 'Không thể cập nhật');
+    }
+  };
+
+  const handleReviewFeasibility = async (values: any) => {
+    try {
+      setIsReviewing(true);
+      await orderApi.reviewFeasibility(order.id, {
+        status: values.status,
+        notes: values.notes,
+        finalPrice: values.finalPrice ? Number(values.finalPrice) : undefined,
+        estimatedDays: values.estimatedDays ? Number(values.estimatedDays) : undefined,
+        revisionGlbUrl: values.revisionGlbUrl || undefined,
+      });
+      message.success('Đã cập nhật kết quả thẩm định kỹ thuật & báo giá thành công!');
+      setFeasibilityModalOpen(false);
+      refetch();
+    } catch (err: any) {
+      message.error(err.message || 'Không thể cập nhật thẩm định kỹ thuật');
+    } finally {
+      setIsReviewing(false);
     }
   };
 
@@ -243,6 +271,31 @@ export const ManagerOrderDetailPage: React.FC = () => {
               Lập lệnh in 3D
             </Button>
           )}
+
+          {order.scanId && (
+            <Button
+              type="primary"
+              icon={<SafetyCertificateOutlined />}
+              onClick={() => {
+                feasibilityForm.setFieldsValue({
+                  status: order.feasibilityStatus || 'FEASIBLE',
+                  notes: order.feasibilityNotes || '',
+                  finalPrice: order.totalAmount ?? order.totalPrice,
+                  estimatedDays: order.estimatedProductionDays || 3,
+                  revisionGlbUrl: order.revisionGlbUrl || '',
+                });
+                setFeasibilityModalOpen(true);
+              }}
+              style={{
+                background: '#8b5cf6',
+                borderColor: '#8b5cf6',
+                fontWeight: 600,
+                borderRadius: 8,
+              }}
+            >
+              Thẩm định kỹ thuật & Báo giá
+            </Button>
+          )}
         </Space>
       </div>
 
@@ -297,6 +350,108 @@ export const ManagerOrderDetailPage: React.FC = () => {
       <Row gutter={[24, 24]}>
         {/* Left Column: Products, Material Specs & Internal Workshop Outsourcing */}
         <Col xs={24} lg={15}>
+          {/* PHẦN ĐẶC THÙ: HỒ SƠ 3D SCAN & THẨM ĐỊNH KHẢ NĂNG SẢN XUẤT */}
+          {order.scanId && (
+            <Card
+              title={
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#8b5cf6' }}>
+                    <SafetyCertificateOutlined style={{ fontSize: 18 }} />
+                    <span style={{ fontWeight: 800 }}>Hồ sơ Kỷ vật 3D & Thẩm định Khả năng Sản xuất</span>
+                  </div>
+                  <Tag
+                    color={
+                      order.feasibilityStatus === 'ACCEPTED'
+                        ? 'blue'
+                        : order.feasibilityStatus === 'FEASIBLE'
+                        ? 'green'
+                        : order.feasibilityStatus === 'REVISION_REQUESTED'
+                        ? 'orange'
+                        : order.feasibilityStatus === 'REJECTED'
+                        ? 'red'
+                        : 'gold'
+                    }
+                    style={{ borderRadius: 6, fontWeight: 700 }}
+                  >
+                    {order.feasibilityStatus === 'ACCEPTED'
+                      ? 'Khách đã duyệt báo giá'
+                      : order.feasibilityStatus === 'FEASIBLE'
+                      ? 'Đạt điều kiện sản xuất'
+                      : order.feasibilityStatus === 'REVISION_REQUESTED'
+                      ? 'Yêu cầu chỉnh sửa file'
+                      : order.feasibilityStatus === 'REJECTED'
+                      ? 'Từ chối sản xuất'
+                      : 'Chờ xưởng thẩm định'}
+                  </Tag>
+                </div>
+              }
+              style={{
+                background: 'var(--surface-container)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 12,
+                marginBottom: 24,
+              }}
+              styles={{ body: { padding: 20 } }}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
+                <div style={{ padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Mã Scan / Reconstruction Job</div>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginTop: 2, fontFamily: 'monospace' }}>
+                    {order.scanId}
+                  </div>
+                </div>
+
+                <div style={{ padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Thời gian sản xuất dự kiến</div>
+                  <div style={{ fontWeight: 700, color: '#0284c7', marginTop: 2 }}>
+                    {order.estimatedProductionDays ? `${order.estimatedProductionDays} ngày làm việc` : 'Chưa định lượng'}
+                  </div>
+                </div>
+
+                <div style={{ padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Thời điểm khách duyệt báo giá</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>
+                    {order.customerAcceptedAt ? formatOrderDate(order.customerAcceptedAt) : 'Chưa duyệt'}
+                  </div>
+                </div>
+
+                <div style={{ gridColumn: '1 / -1', padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-default)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Ghi chú kỹ thuật từ xưởng (Feasibility Notes):</div>
+                  <div style={{ color: 'var(--text-primary)', marginTop: 4, fontSize: '0.875rem' }}>
+                    {order.feasibilityNotes || 'Chưa có ghi chú thẩm định từ kỹ thuật viên.'}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 16, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <Button
+                  icon={<EyeOutlined />}
+                  onClick={() => navigate(`/reconstruction/${order.scanId}`)}
+                  style={{ borderRadius: 8 }}
+                >
+                  Xem mô hình 3D gốc
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<SafetyCertificateOutlined />}
+                  onClick={() => {
+                    feasibilityForm.setFieldsValue({
+                      status: order.feasibilityStatus || 'FEASIBLE',
+                      notes: order.feasibilityNotes || '',
+                      finalPrice: order.totalAmount ?? order.totalPrice,
+                      estimatedDays: order.estimatedProductionDays || 3,
+                      revisionGlbUrl: order.revisionGlbUrl || '',
+                    });
+                    setFeasibilityModalOpen(true);
+                  }}
+                  style={{ background: '#8b5cf6', borderColor: '#8b5cf6', borderRadius: 8 }}
+                >
+                  Cập nhật Thẩm định & Báo giá
+                </Button>
+              </div>
+            </Card>
+          )}
+
           {/* PHẦN 4: THÔNG TIN NỘI BỘ XƯỞNG GIA CÔNG THUÊ NGOÀI (ADMIN / MANAGER ONLY) */}
           <Card
             title={
@@ -740,6 +895,112 @@ export const ManagerOrderDetailPage: React.FC = () => {
           refetchPrintJobs();
         }}
       />
+
+      {/* Feasibility Review Modal */}
+      <Modal
+        open={feasibilityModalOpen}
+        onCancel={() => setFeasibilityModalOpen(false)}
+        title="Thẩm định Khả năng Sản xuất & Báo giá Xưởng"
+        onOk={() => feasibilityForm.submit()}
+        confirmLoading={isReviewing}
+        okText="Lưu thẩm định & Gửi khách"
+        cancelText="Đóng"
+        width={640}
+      >
+        <Form
+          form={feasibilityForm}
+          layout="vertical"
+          onFinish={handleReviewFeasibility}
+          initialValues={{
+            status: order.feasibilityStatus || 'FEASIBLE',
+            notes: order.feasibilityNotes || '',
+            finalPrice: order.totalAmount ?? order.totalPrice,
+            estimatedDays: order.estimatedProductionDays || 3,
+            revisionGlbUrl: order.revisionGlbUrl || '',
+          }}
+        >
+          <Form.Item
+            name="status"
+            label="Kết luận thẩm định kỹ thuật"
+            rules={[{ required: true, message: 'Vui lòng chọn kết luận' }]}
+          >
+            <Radio.Group style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <Radio value="FEASIBLE">
+                <span style={{ fontWeight: 600, color: '#22c55e' }}>Đạt điều kiện sản xuất (Feasible)</span>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Mô hình 3D kín, độ dày thành đạt chuẩn in, chốt báo giá cuối và số ngày sản xuất cho khách.
+                </div>
+              </Radio>
+              <Radio value="REVISION_REQUESTED">
+                <span style={{ fontWeight: 600, color: '#f59e0b' }}>Yêu cầu chỉnh sửa mô hình (Revision Requested)</span>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Cần xử lý lưới mesh, lấp lỗ hổng hoặc tải phiên bản 3D đã sửa để khách phê duyệt.
+                </div>
+              </Radio>
+              <Radio value="REJECTED">
+                <span style={{ fontWeight: 600, color: '#ef4444' }}>Không thể sản xuất (Rejected)</span>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Mô hình vượt quá khả năng công nghệ hoặc vi phạm chính sách in ấn.
+                </div>
+              </Radio>
+            </Radio.Group>
+          </Form.Item>
+
+          <Form.Item noStyle shouldUpdate={(prev, cur) => prev.status !== cur.status}>
+            {({ getFieldValue }) => {
+              const currentStatus = getFieldValue('status');
+              return (
+                <>
+                  {currentStatus === 'FEASIBLE' && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                      <Form.Item
+                        name="finalPrice"
+                        label="Báo giá sản xuất chính thức (VNĐ)"
+                        rules={[{ required: true, message: 'Vui lòng nhập báo giá' }]}
+                      >
+                        <InputNumber
+                          style={{ width: '100%' }}
+                          formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                          parser={(v) => (v ? Number(v.replace(/\$\s?|(,*)/g, '')) : 0) as any}
+                          min={50000}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="estimatedDays"
+                        label="Thời gian sản xuất dự kiến (ngày)"
+                        rules={[{ required: true, message: 'Vui lòng nhập số ngày' }]}
+                      >
+                        <InputNumber style={{ width: '100%' }} min={1} max={30} />
+                      </Form.Item>
+                    </div>
+                  )}
+
+                  {currentStatus === 'REVISION_REQUESTED' && (
+                    <Form.Item
+                      name="revisionGlbUrl"
+                      label="Đường dẫn file GLB đã chỉnh sửa (nếu kỹ thuật viên sửa sẵn)"
+                    >
+                      <Input placeholder="https://res.cloudinary.com/.../model-fixed.glb" />
+                    </Form.Item>
+                  )}
+                </>
+              );
+            }}
+          </Form.Item>
+
+          <Form.Item
+            name="notes"
+            label="Ghi chú kỹ thuật & hướng dẫn xưởng gửi cho khách hàng"
+            rules={[{ required: true, message: 'Vui lòng nhập ghi chú thẩm định' }]}
+          >
+            <Input.TextArea
+              rows={4}
+              placeholder="Ví dụ: Mô hình đã được kiểm tra độ dày thành tối thiểu 1.5mm, phù hợp công nghệ SLA Resin. Khách hàng vui lòng duyệt báo giá để đưa vào máy in."
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

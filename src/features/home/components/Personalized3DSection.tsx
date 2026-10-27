@@ -54,7 +54,7 @@ export const Personalized3DSection: React.FC = () => {
   const navigate = useNavigate();
 
   const handleStartCustom3D = () => {
-    navigate('/reconstruction/demo');
+    navigate('/create-keepsake');
   };
 
   return (

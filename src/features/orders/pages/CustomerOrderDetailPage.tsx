@@ -36,12 +36,16 @@ import {
   FormOutlined,
   CopyOutlined,
   LockOutlined,
+  CheckCircleOutlined,
+  SafetyCertificateOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useOrderDetail } from '../hooks/useOrderDetail';
 import { useUpdateOrder } from '../hooks/useUpdateOrder';
 import { useCancelOrder } from '../hooks/useCancelOrder';
 import { usePaymentsList, useOrderPayments } from '../hooks/useOrderPayment';
+import { orderApi } from '../api/orderApi';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import { OrderTimeline } from '../components/OrderTimeline';
 import { OrderPaymentModal } from '../components/OrderPaymentModal';
@@ -127,11 +131,47 @@ export const CustomerOrderDetailPage: React.FC = () => {
   const orderCode = order.orderCode || order.id.slice(0, 8).toUpperCase();
   const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === 'SUCCESS';
   const isCash = order.paymentMethod === 'CASH';
-  const isEligibleToPay = !isPaid && order.status !== 'CANCELLED' && order.status !== 'COMPLETED';
+
+  const isBespokeScan = Boolean(order.scanId);
+  const feasibilityStatus = order.feasibilityStatus || 'PENDING_REVIEW';
+  const isFeasibilityPending = isBespokeScan && feasibilityStatus === 'PENDING_REVIEW';
+  const isFeasibilityFeasible = isBespokeScan && feasibilityStatus === 'FEASIBLE';
+  const isFeasibilityAccepted = isBespokeScan && feasibilityStatus === 'ACCEPTED';
+  const isEligibleToPay =
+    !isPaid &&
+    order.status !== 'CANCELLED' &&
+    order.status !== 'COMPLETED' &&
+    (!isBespokeScan || isFeasibilityFeasible || isFeasibilityAccepted);
+
   const isEligibleToCancel = canCustomerCancel(order.status);
   const totalAmount = order.totalAmount ?? order.totalPrice;
   const paidAmount = order.paidAmount ?? (isPaid ? totalAmount : 0);
   const remainingAmount = order.remainingAmount ?? Math.max(0, totalAmount - paidAmount);
+
+  const [acceptingQuoteLoading, setAcceptingQuoteLoading] = useState(false);
+
+  const handleAcceptQuote = async () => {
+    try {
+      setAcceptingQuoteLoading(true);
+      await orderApi.acceptQuote(order.id);
+      message.success('Đã chấp thuận báo giá và thời gian sản xuất! Đơn hàng sẵn sàng thanh toán.');
+      refetch();
+    } catch (err: any) {
+      message.error(err.message || 'Không thể duyệt báo giá. Vui lòng thử lại.');
+    } finally {
+      setAcceptingQuoteLoading(false);
+    }
+  };
+
+  const handleConfirmDelivery = async () => {
+    try {
+      await updateOrderMutation.mutateAsync({ status: 'DELIVERED' });
+      message.success('Cảm ơn bạn đã xác nhận nhận hàng! Đơn hàng đã chuyển sang trạng thái Đã giao.');
+      refetch();
+    } catch (err: any) {
+      message.error(err.message || 'Không thể xác nhận giao hàng');
+    }
+  };
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(orderCode);
@@ -340,6 +380,171 @@ export const CustomerOrderDetailPage: React.FC = () => {
         {/* 3.6 ORDER TIMELINE */}
         <OrderTimeline status={order.status} createdAt={order.createdAt} updatedAt={order.updatedAt} />
 
+        {/* Feasibility Alert for Bespoke 3D Scan */}
+        {isBespokeScan && (
+          <div style={{ marginBottom: 24 }}>
+            {isFeasibilityPending && (
+              <Alert
+                message="Xưởng đang thẩm định khả năng sản xuất & Lập báo giá"
+                description={
+                  <div>
+                    <p style={{ margin: '4px 0 8px' }}>
+                      Kỷ vật 3D của bạn đang được xưởng Memento3D thẩm định độ kín lưới, độ dày thành và vật liệu tối ưu.
+                      Báo giá chính thức và thời gian giao hàng dự kiến sẽ được xưởng phản hồi sớm nhất.
+                    </p>
+                    <Button
+                      size="small"
+                      icon={<EyeOutlined />}
+                      onClick={() => navigate(`/reconstruction/${order.scanId}`)}
+                    >
+                      Xem lại mô hình 3D
+                    </Button>
+                  </div>
+                }
+                type="warning"
+                showIcon
+                icon={<SafetyCertificateOutlined style={{ fontSize: 20, color: '#f59e0b' }} />}
+                style={{
+                  background: 'rgba(245, 158, 11, 0.08)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  borderRadius: 10,
+                }}
+              />
+            )}
+
+            {isFeasibilityFeasible && (
+              <Alert
+                message="Xưởng đã duyệt thành công mô hình & Gửi báo giá chính thức"
+                description={
+                  <div>
+                    <p style={{ margin: '4px 0 8px' }}>
+                      <strong>Báo giá chính thức:</strong> {formatCurrency(totalAmount, order.currency || 'VND')} •{' '}
+                      <strong>Thời gian chế tác dự kiến:</strong> {order.estimatedProductionDays || 3} ngày làm việc
+                      {order.feasibilityNotes && (
+                        <span style={{ display: 'block', marginTop: 4 }}>
+                          <strong>Ghi chú từ kỹ thuật viên:</strong> {order.feasibilityNotes}
+                        </span>
+                      )}
+                    </p>
+                    <Space wrap style={{ marginTop: 8 }}>
+                      <Button
+                        type="primary"
+                        icon={<CheckCircleOutlined />}
+                        loading={acceptingQuoteLoading}
+                        onClick={handleAcceptQuote}
+                        style={{
+                          background: 'var(--primary)',
+                          borderColor: 'var(--primary)',
+                          fontWeight: 700,
+                          borderRadius: 8,
+                        }}
+                      >
+                        Duyệt báo giá & Chốt đặt sản xuất
+                      </Button>
+                      <Button
+                        icon={<EyeOutlined />}
+                        onClick={() => navigate(`/reconstruction/${order.scanId}`)}
+                        style={{ borderRadius: 8 }}
+                      >
+                        Kiểm tra lại mô hình 3D
+                      </Button>
+                    </Space>
+                  </div>
+                }
+                type="success"
+                showIcon
+                icon={<CheckCircleOutlined style={{ fontSize: 20, color: '#22c55e' }} />}
+                style={{
+                  background: 'rgba(34, 197, 94, 0.08)',
+                  border: '1px solid rgba(34, 197, 94, 0.3)',
+                  borderRadius: 10,
+                }}
+              />
+            )}
+
+            {isFeasibilityAccepted && !isPaid && (
+              <Alert
+                message="Báo giá đã được chấp thuận — Sẵn sàng thanh toán VNPAY"
+                description={
+                  <div>
+                    <p style={{ margin: '4px 0 8px' }}>
+                      Bạn đã đồng ý với phương án sản xuất và báo giá từ xưởng ({formatCurrency(totalAmount, order.currency || 'VND')}).
+                      Vui lòng thanh toán trực tuyến qua VNPAY để kích hoạt lệnh in 3D vào dây chuyền máy SLA.
+                    </p>
+                    <Button
+                      type="primary"
+                      icon={<CreditCardOutlined />}
+                      onClick={() => setPaymentModalOpen(true)}
+                      style={{
+                        background: 'var(--primary)',
+                        borderColor: 'var(--primary)',
+                        fontWeight: 700,
+                        borderRadius: 8,
+                      }}
+                    >
+                      Thanh toán VNPAY ngay
+                    </Button>
+                  </div>
+                }
+                type="info"
+                showIcon
+                icon={<CreditCardOutlined style={{ fontSize: 20, color: 'var(--primary)' }} />}
+                style={{
+                  background: 'rgba(124, 92, 252, 0.08)',
+                  border: '1px solid rgba(124, 92, 252, 0.3)',
+                  borderRadius: 10,
+                }}
+              />
+            )}
+
+            {feasibilityStatus === 'REVISION_REQUESTED' && (
+              <Alert
+                message="Xưởng đề xuất điều chỉnh mô hình 3D"
+                description={
+                  <div>
+                    <p style={{ margin: '4px 0 8px' }}>
+                      <strong>Yêu cầu từ xưởng:</strong> {order.feasibilityNotes || 'Mô hình cần được sửa đổi độ dày thành.'}
+                    </p>
+                    {order.revisionGlbUrl && (
+                      <div style={{ marginTop: 8 }}>
+                        <Button
+                          type="primary"
+                          icon={<EyeOutlined />}
+                          onClick={() => window.open(order.revisionGlbUrl, '_blank')}
+                          style={{ borderRadius: 8 }}
+                        >
+                          Tải/Xem phiên bản 3D đã chỉnh sửa
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                }
+                type="warning"
+                showIcon
+                style={{
+                  background: 'rgba(245, 158, 11, 0.08)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  borderRadius: 10,
+                }}
+              />
+            )}
+
+            {feasibilityStatus === 'REJECTED' && (
+              <Alert
+                message="Xưởng không thể tiếp nhận sản xuất mô hình này"
+                description={order.feasibilityNotes || 'Mô hình không đáp ứng yêu cầu công nghệ in ấn 3D.'}
+                type="error"
+                showIcon
+                style={{
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: 10,
+                }}
+              />
+            )}
+          </div>
+        )}
+
         {/* Alerts for active phases */}
         {order.status === 'PRINTING' && (
           <Alert
@@ -365,7 +570,22 @@ export const CustomerOrderDetailPage: React.FC = () => {
         {order.status === 'SHIPPED' && (
           <Alert
             message="Đơn hàng đang trên đường vận chuyển tới bạn"
-            description={`Kiện hàng đã xuất kho và được bàn giao cho đối tác ${order.shippingCarrier || 'vận chuyển'}. Mã vận đơn: ${order.trackingCode || 'Đang cập nhật'}.`}
+            description={
+              <div>
+                <p style={{ margin: '4px 0 8px' }}>
+                  Kiện hàng đã xuất kho và được bàn giao cho đối tác {order.shippingCarrier || 'vận chuyển'}. Mã vận đơn: {order.trackingCode || 'Đang cập nhật'}.
+                </p>
+                <Button
+                  type="primary"
+                  icon={<CheckCircleOutlined />}
+                  onClick={handleConfirmDelivery}
+                  loading={updateOrderMutation.isPending}
+                  style={{ borderRadius: 8, marginTop: 4 }}
+                >
+                  Đã nhận được hàng thành công
+                </Button>
+              </div>
+            }
             type="success"
             showIcon
             icon={<CarOutlined style={{ fontSize: 20, color: 'var(--tertiary)' }} />}
