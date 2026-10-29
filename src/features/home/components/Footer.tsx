@@ -1,3 +1,4 @@
+import { isCustomerRole } from '../../auth/utils/postLoginDestination';
 import React from 'react';
 import { Row, Col } from 'antd';
 import {
@@ -88,7 +89,7 @@ export const Footer: React.FC = () => {
             <h5 className="footer-col-title">Dịch vụ & Tính năng</h5>
             <ul className="footer-links-list">
               <li>
-                <span onClick={() => navigate('/reconstruction/demo')}>
+                <span onClick={() => navigate(isCustomerRole(user?.role) ? '/create-keepsake' : '/reconstruction/demo')}>
                   Tạo mô hình 3D từ ảnh
                 </span>
               </li>

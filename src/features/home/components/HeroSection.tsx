@@ -1,3 +1,5 @@
+import { useAuth } from '../../auth/hooks/useAuth';
+import { isCustomerRole } from '../../auth/utils/postLoginDestination';
 import React from 'react';
 import { Button, Tag } from 'antd';
 import {
@@ -14,9 +16,10 @@ import './heroSection.css';
 
 export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleCreate3D = () => {
-    navigate('/reconstruction/demo');
+    navigate(isCustomerRole(user?.role) ? '/create-keepsake' : '/reconstruction/demo');
   };
 
   const handleExploreProducts = () => {

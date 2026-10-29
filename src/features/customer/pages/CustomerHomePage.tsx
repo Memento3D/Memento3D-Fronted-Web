@@ -87,7 +87,7 @@ export const CustomerHomePage: React.FC = () => {
               type="primary"
               size="large"
               icon={<ThunderboltOutlined />}
-              onClick={() => navigate('/reconstruction/demo')}
+              onClick={() => navigate('/create-keepsake')}
               style={{
                 height: 40,
                 padding: '0 20px',

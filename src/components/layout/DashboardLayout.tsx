@@ -50,7 +50,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     const path = location.pathname;
     if (user?.role === 'ROLE_USER') {
       if (path === '/checkout') return 'Thanh toán';
-      if (path === '/create-keepsake') return 'Tạo kỷ vật 3D';
       if (path === '/my-models' || path === '/customer/models') return 'Mô hình của tôi';
       const item = getCustomerNavigationItem(path);
       if (item) return item.label;

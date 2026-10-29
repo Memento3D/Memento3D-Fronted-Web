@@ -1,3 +1,4 @@
+import { isCustomerRole } from '../../auth/utils/postLoginDestination';
 import React, { useState, useEffect } from 'react';
 import { Button, Dropdown, Avatar, Tag, Drawer, Badge, Tooltip } from 'antd';
 import type { MenuProps } from 'antd';
@@ -394,7 +395,7 @@ export const Navbar: React.FC = () => {
               className="mobile-nav-item mobile-highlight-item"
               onClick={() => {
                 setMobileMenuOpen(false);
-                navigate('/reconstruction/demo');
+                navigate(isCustomerRole(user?.role) ? '/create-keepsake' : '/reconstruction/demo');
               }}
             >
               <ThunderboltOutlined style={{ marginRight: 6 }} />
