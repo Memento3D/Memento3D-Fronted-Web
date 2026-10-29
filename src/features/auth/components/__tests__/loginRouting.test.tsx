@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoginForm } from '../LoginForm';
 import { RoleGuard } from '../RoleGuard';
+import { CustomerRoute } from '../CustomerRoute';
 import { ACTOR_PORTAL_CONFIGS } from '../../utils/resolveActorRoute';
 import type { LoginPayload, User } from '../../types/auth.types';
 
@@ -66,11 +67,43 @@ describe.each(Object.values(ACTOR_PORTAL_CONFIGS))('login through $path', (porta
 
 it('keeps invalid credentials on login and displays a friendly error', async () => {
   state.login.mockRejectedValue({ response: { status: 401, data: { message: 'private server details' } } });
-  renderToStaticMarkup(<MemoryRouter><LoginForm portalConfig={ACTOR_PORTAL_CONFIGS.customer} /></MemoryRouter>);
+  renderToStaticMarkup(<MemoryRouter initialEntries={['/login?redirect=/cart']}><LoginForm portalConfig={ACTOR_PORTAL_CONFIGS.customer} /></MemoryRouter>);
   await state.submit!({ email: 'user@example.com', password: 'wrong' });
   expect(state.navigate).not.toHaveBeenCalled();
   expect(state.error).toHaveBeenCalledWith(expect.stringContaining('Email'));
   expect(state.error).not.toHaveBeenCalledWith(expect.stringContaining('private server details'));
+});
+
+it.each(['/cart', '/checkout', '/products/some-slug'])('returns a customer to %s after login', async (path) => {
+  state.login.mockResolvedValue({ role: 'ROLE_USER', email: 'user@example.com' });
+  renderToStaticMarkup(<MemoryRouter initialEntries={[`/login?redirect=${encodeURIComponent(path)}`]}>
+    <LoginForm portalConfig={ACTOR_PORTAL_CONFIGS.customer} />
+  </MemoryRouter>);
+  await state.submit!({ email: 'user@example.com', password: 'password' });
+  expect(state.navigate).toHaveBeenCalledExactlyOnceWith(path, { replace: true });
+});
+
+it('ignores cart continuation after manager authentication', async () => {
+  state.login.mockResolvedValue({ role: 'ROLE_MANAGER', email: 'manager@example.com' });
+  renderToStaticMarkup(<MemoryRouter initialEntries={['/login?redirect=/cart']}>
+    <LoginForm portalConfig={ACTOR_PORTAL_CONFIGS.customer} />
+  </MemoryRouter>);
+  await state.submit!({ email: 'manager@example.com', password: 'password' });
+  expect(state.navigate).toHaveBeenCalledExactlyOnceWith('/manager/home', { replace: true });
+});
+
+it.each(['/cart', '/checkout'])('protects %s before login and after logout or expiry', (path) => {
+  const render = () => renderToStaticMarkup(<MemoryRouter initialEntries={[path]}>
+    <CustomerRoute><span>customer content</span></CustomerRoute>
+  </MemoryRouter>);
+  expect(render()).toContain(`/login?redirect=${encodeURIComponent(path)}`);
+  state.user = { role: 'ROLE_USER' } as User;
+  expect(render()).toContain('customer content');
+  state.user = null;
+  expect(render()).not.toContain('customer content');
+  state.user = { role: 'ROLE_MANAGER' } as User;
+  expect(render()).toContain('/manager/home');
+  expect(render()).not.toContain('customer content');
 });
 
 it('blocks a manager from admin and operator portals', () => {

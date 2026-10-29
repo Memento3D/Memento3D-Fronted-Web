@@ -11,6 +11,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import type { Product } from '../types/product.types';
 import { formatCurrency } from '../../orders/utils/orderFormatters';
+import { useAuth } from '../../auth/hooks/useAuth';
+import { getCustomerEntryRoute, isCustomerRole } from '../../auth/utils/postLoginDestination';
 import { useCart } from '../../cart/context/CartContext';
 import './productCard.css';
 
@@ -27,6 +29,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { user } = useAuth();
   const [imageError, setImageError] = useState(false);
   const [isFavorite, setIsFavorite] = useState<boolean>(() => {
     try {
@@ -63,6 +66,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   const handleAddToCartClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!isCustomerRole(user?.role)) {
+      navigate(getCustomerEntryRoute(user?.role, `/products/${product.slug || product.id}`));
+      return;
+    }
     if (onAddToCart) {
       onAddToCart(product, e);
       return;
@@ -73,7 +80,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       const success = await addToCart({
         productId: product.id,
         quantity: 1,
-      });
+      }, `/products/${product.slug || product.id}`);
       if (success) {
         setJustAdded(true);
         setTimeout(() => setJustAdded(false), 1800);

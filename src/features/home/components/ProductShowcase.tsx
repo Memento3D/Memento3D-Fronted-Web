@@ -218,7 +218,7 @@ export const ProductShowcase: React.FC = () => {
                         icon={<ShoppingCartOutlined />}
                         onClick={async (e) => {
                           e.stopPropagation();
-                          await addToCart({ productId: product.id, quantity: 1 });
+                          await addToCart({ productId: product.id, quantity: 1 }, `/products/${product.slug || product.id}`);
                         }}
                         style={{
                           background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',

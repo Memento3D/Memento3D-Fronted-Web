@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, message } from 'antd';
 import { GoogleOutlined } from '@ant-design/icons';
 import { authApi } from '../api/authApi';
+import { resolveSafeRedirect } from '../utils/postLoginDestination';
 import { tokenStorage } from '../utils/tokenStorage';
 
 interface GoogleLoginButtonProps {
@@ -18,8 +19,10 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
-      if (intendedRedirect) {
-        tokenStorage.saveIntendedUrl(intendedRedirect);
+      tokenStorage.clearIntendedUrl();
+      const safeRedirect = resolveSafeRedirect(intendedRedirect);
+      if (safeRedirect) {
+        tokenStorage.saveIntendedUrl(safeRedirect);
       }
       const url = await authApi.getGoogleLoginUrl();
       window.location.href = url;

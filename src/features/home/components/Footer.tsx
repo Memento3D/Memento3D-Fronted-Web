@@ -7,11 +7,14 @@ import {
   PhoneOutlined,
   HeartFilled,
 } from '@ant-design/icons';
+import { getCustomerEntryRoute } from '../../auth/utils/postLoginDestination';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/hooks/useAuth';
 import './footer.css';
 
 export const Footer: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <footer className="memento-footer">
@@ -100,7 +103,7 @@ export const Footer: React.FC = () => {
                 </span>
               </li>
               <li>
-                <span onClick={() => navigate('/cart')}>
+                <span onClick={() => navigate(getCustomerEntryRoute(user?.role, '/cart'))}>
                   Giỏ hàng của bạn
                 </span>
               </li>

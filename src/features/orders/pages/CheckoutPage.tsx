@@ -84,8 +84,8 @@ export const CheckoutPage: React.FC = () => {
             window.location.assign(vnpayRes.paymentUrl);
             return;
           }
-        } catch (vnpayErr: any) {
-          message.error({ content: vnpayErr.message || 'Không thể tạo phiên thanh toán VNPAY', key: 'vnpay-loading' });
+        } catch {
+          message.error({ content: 'Không thể tạo phiên thanh toán VNPAY', key: 'vnpay-loading' });
           navigate(`/orders/${order.id}`);
           return;
         }
@@ -94,8 +94,8 @@ export const CheckoutPage: React.FC = () => {
       // If MOMO or ZALOPAY: Open payment modal or redirect
       message.success('Đơn hàng đã được tạo. Vui lòng hoàn tất thanh toán.');
       setPaymentModalOpen(true);
-    } catch (err: any) {
-      message.error(err.message || 'Không thể tạo đơn hàng. Vui lòng thử lại.');
+    } catch {
+      message.error('Không thể tạo đơn hàng. Vui lòng thử lại.');
     } finally {
       setIsSubmitting(false);
     }
