@@ -1,3 +1,4 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import React, { useState, useEffect } from 'react';
 import { Tabs, Breadcrumb, Button, Spin, Alert } from 'antd';
@@ -15,8 +16,6 @@ import { ProfileHeader } from '../components/ProfileHeader';
 import { PersonalInfoTab } from '../components/PersonalInfoTab';
 import { AddressManagerTab } from '../components/AddressManagerTab';
 import { SecurityTab } from '../components/SecurityTab';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 import type { User } from '../../auth/types/auth.types';
 
 export const ProfilePage: React.FC = () => {
@@ -104,10 +103,7 @@ export const ProfilePage: React.FC = () => {
   ];
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '120px 24px 60px' }}>
+    <ShoppingPageFrame publicStyle={{ minHeight: '100dvh', background: 'var(--bg-app)', color: 'var(--text-primary)' }} contentStyle={{ maxWidth: 1100, margin: '0 auto', padding: '120px 24px 60px' }}>
 
         {profileError && !loading && <ErrorState onRetry={() => {
           setProfileError(false);
@@ -170,9 +166,6 @@ export const ProfilePage: React.FC = () => {
             style={{ marginTop: 24, borderRadius: 'var(--radius-default)' }}
           />
         )}
-      </main>
-
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };

@@ -1,3 +1,4 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import React, { useState, useEffect } from 'react';
 import {
@@ -18,8 +19,6 @@ import {
   CloseCircleOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 import { scanReconstructionService } from '../../../services/scanReconstructionService';
 import type { ReconstructionJobItem } from '../../../services/scanReconstructionService';
 
@@ -70,10 +69,7 @@ export const MyModelsPage: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-bg, #0B0A10)', color: 'var(--text-primary)' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1120, margin: '0 auto', padding: '110px 24px 60px' }}>
+    <ShoppingPageFrame publicStyle={{ minHeight: '100vh', background: 'var(--color-bg, #0B0A10)', color: 'var(--text-primary)' }} contentStyle={{ maxWidth: 1120, margin: '0 auto', padding: '110px 24px 60px' }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
           <div>
@@ -239,10 +235,7 @@ export const MyModelsPage: React.FC = () => {
             ))}
           </div>
         )}
-      </main>
-
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };
 

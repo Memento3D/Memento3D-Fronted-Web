@@ -4,6 +4,8 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 import { getRoleLabel } from '../../locales/i18n';
+import { DashboardShellContext } from './DashboardShellContext';
+import { getCustomerNavigationItem } from './navigationConfig';
 
 const SIDEBAR_COLLAPSE_KEY = 'memento3d-sidebar-collapsed';
 
@@ -46,6 +48,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const getPageTitle = (): string => {
     if (defaultTitle) return defaultTitle;
     const path = location.pathname;
+    if (user?.role === 'ROLE_USER') {
+      if (path === '/checkout') return 'Thanh toán';
+      if (path === '/create-keepsake') return 'Tạo kỷ vật 3D';
+      if (path === '/my-models' || path === '/customer/models') return 'Mô hình của tôi';
+      const item = getCustomerNavigationItem(path);
+      if (item) return item.label;
+    }
     if (path.includes('/admin/home')) return 'Tổng quan Quản trị';
     if (path.includes('/admin/dashboard')) return 'Chỉ số Hệ thống';
     if (path.includes('/admin/users')) return 'Quản lý Tài khoản';
@@ -94,6 +103,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   };
 
   return (
+    <DashboardShellContext.Provider value={true}>
     <div
       id="dashboard-layout-root"
       style={{
@@ -145,5 +155,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </main>
       </div>
     </div>
+    </DashboardShellContext.Provider>
   );
 };

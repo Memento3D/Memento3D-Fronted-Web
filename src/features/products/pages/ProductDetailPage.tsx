@@ -1,3 +1,4 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import React, { useState } from 'react';
 import {
@@ -29,8 +30,6 @@ import { useQuery } from '@tanstack/react-query';
 import { productApi } from '../api/productApi';
 import { useCart } from '../../cart/context/CartContext';
 import { formatCurrency } from '../../orders/utils/orderFormatters';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 import { prefetchChunk } from '../../../utils/prefetch';
 
 const { Title, Text, Paragraph } = Typography;
@@ -63,31 +62,25 @@ export const ProductDetailPage: React.FC = () => {
 
   if (isLoading || (isError && isFetching)) {
     return (
-      <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
-        <Navbar />
-        <div style={{ textAlign: 'center', padding: '120px 0' }}>
+      <ShoppingPageFrame publicClassName="home-wrapper" publicStyle={{ minHeight: '100dvh' }}
+        contentStyle={{ textAlign: 'center', padding: '120px 0' }} showPublicFooter={false}>
           <Spin size="large" />
           <div style={{ marginTop: 16, color: 'var(--text-muted)' }}>Đang tải thông tin sản phẩm...</div>
-        </div>
-      </div>
+      </ShoppingPageFrame>
     );
   }
 
   if (isError) {
-    return <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
-      <Navbar />
-      <main style={{ maxWidth: 1240, margin: '0 auto', padding: '100px 24px 60px' }}>
+    return <ShoppingPageFrame publicClassName="home-wrapper" publicStyle={{ minHeight: '100dvh' }}
+      contentStyle={{ maxWidth: 1240, margin: '0 auto', padding: '100px 24px 60px' }}>
         <ErrorState onRetry={() => { void refetch(); }} />
-      </main>
-      <Footer />
-    </div>;
+    </ShoppingPageFrame>;
   }
 
   if (!product) {
     return (
-      <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
-        <Navbar />
-        <div style={{ maxWidth: 600, margin: '100px auto', textAlign: 'center', padding: 24 }}>
+      <ShoppingPageFrame publicClassName="home-wrapper" publicStyle={{ minHeight: '100dvh' }}
+        contentStyle={{ maxWidth: 600, margin: '100px auto', textAlign: 'center', padding: 24 }}>
           <Title level={3} style={{ color: 'var(--color-error, #ef4444)' }}>
             Không tìm thấy sản phẩm
           </Title>
@@ -97,9 +90,7 @@ export const ProductDetailPage: React.FC = () => {
           <Button type="primary" onClick={() => navigate('/products')} style={{ borderRadius: 'var(--radius-sm, 6px)' }}>
             Xem tất cả sản phẩm
           </Button>
-        </div>
-        <Footer />
-      </div>
+      </ShoppingPageFrame>
     );
   }
 
@@ -138,10 +129,7 @@ export const ProductDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1240, margin: '0 auto', padding: '100px 24px 60px' }}>
+    <ShoppingPageFrame publicClassName="home-wrapper" publicStyle={{ minHeight: '100dvh' }} contentStyle={{ maxWidth: 1240, margin: '0 auto', padding: '100px 24px 60px' }}>
         {/* Back Link */}
         <Button
           type="text"
@@ -478,9 +466,6 @@ export const ProductDetailPage: React.FC = () => {
             </div>
           </Col>
         </Row>
-      </main>
-
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };

@@ -1,3 +1,4 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import React, { useState } from 'react';
 import {
@@ -25,8 +26,6 @@ import { useAuth } from '../../auth/hooks/useAuth';
 import { useCart } from '../../cart/context/CartContext';
 import { formatCurrency } from '../utils/orderFormatters';
 import { OrderPaymentModal } from '../components/OrderPaymentModal';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 import type { OrderResponse, PaymentMethod } from '../types/order.types';
 import { apiClient } from '../../../services/apiClient';
 import { paymentApi } from '../api/paymentApi';
@@ -104,10 +103,7 @@ export const CheckoutPage: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1160, margin: '0 auto', padding: '120px 24px 60px' }}>
+    <ShoppingPageFrame publicStyle={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }} contentStyle={{ maxWidth: 1160, margin: '0 auto', padding: '120px 24px 60px' }}>
         {/* Breadcrumb Back */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <Button
@@ -512,9 +508,6 @@ export const CheckoutPage: React.FC = () => {
             }}
           />
         )}
-      </main>
-
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };

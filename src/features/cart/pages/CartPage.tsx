@@ -1,3 +1,4 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import React from 'react';
 import {
@@ -24,8 +25,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../../orders/utils/orderFormatters';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 
 const { Title, Text } = Typography;
 
@@ -37,10 +36,7 @@ export const CartPage: React.FC = () => {
   const isEmpty = items.length === 0;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '120px 24px 60px' }}>
+    <ShoppingPageFrame publicStyle={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }} contentStyle={{ maxWidth: 1200, margin: '0 auto', padding: '120px 24px 60px' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
           <div>
@@ -357,9 +353,6 @@ export const CartPage: React.FC = () => {
             </Col>
           </Row>
         )}
-      </main>
-
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };
