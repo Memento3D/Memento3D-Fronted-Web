@@ -41,9 +41,9 @@ export const VnpayReturnPage: React.FC = () => {
         if (isMounted) {
           setVerificationResult(response);
         }
-      } catch (err: any) {
+      } catch {
         if (isMounted) {
-          setErrorMessage(err.message || 'Không thể xác thực giao dịch VNPAY. Vui lòng kiểm tra lại đơn hàng.');
+          setErrorMessage('Không thể xác thực giao dịch VNPAY. Vui lòng kiểm tra lại đơn hàng.');
         }
       } finally {
         if (isMounted) {

@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import {
   Table,
@@ -41,7 +42,7 @@ export const ManagerOrdersPage: React.FC = () => {
     setPage(1);
   };
 
-  const { data, isLoading, refetch, isFetching } = useOrders({
+  const { data, isLoading, isError, refetch, isFetching } = useOrders({
     page,
     limit: pageSize,
     status: statusFilter,
@@ -106,6 +107,7 @@ export const ManagerOrdersPage: React.FC = () => {
       />
 
       {/* Table */}
+      <ReadState isLoading={isLoading} isError={isError} isFetching={isFetching} onRetry={() => { void refetch(); }}>
       <Table
         dataSource={orders}
         rowKey="id"
@@ -248,6 +250,7 @@ export const ManagerOrdersPage: React.FC = () => {
           },
         ]}
       />
+      </ReadState>
 
       {/* Link Print Job Modal */}
       {printJobOrder && (

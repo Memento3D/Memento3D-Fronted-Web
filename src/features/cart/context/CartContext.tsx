@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { message } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getCustomerEntryRoute, isCustomerRole } from '../../auth/utils/postLoginDestination';
@@ -10,6 +10,7 @@ interface CartContextType {
   cart: Cart | null;
   cartCount: number;
   isLoading: boolean;
+  errorMessage: string | null;
   refreshCart: () => Promise<void>;
   addToCart: (payload: AddToCartRequest, returnTo?: string) => Promise<boolean>;
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
@@ -26,8 +27,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const canUseCart = isAuthenticated && isCustomerRole(user?.role);
   const ownerId = canUseCart ? user?.id : undefined;
   const [cartState, setCartState] = useState<{ ownerId: string; cart: Cart } | null>(null);
+  const [readError, setReadError] = useState<{ ownerId: string; message: string } | null>(null);
+  const [readOwner, setReadOwner] = useState<string | null>(null);
+  const latestRead = useRef(0);
   // Never expose the previous account's cart after logout, expiry, or account switching.
   const cart = canUseCart && cartState?.ownerId === ownerId ? cartState?.cart || null : null;
+  const errorMessage = canUseCart && readError?.ownerId === ownerId ? readError?.message || null : null;
 
   const requireCustomer = (returnTo?: string): boolean => {
     if (canUseCart) return true;
@@ -38,18 +43,25 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const refreshCart = useCallback(async () => {
+    const requestId = ++latestRead.current;
     if (!canUseCart || !ownerId) {
       setCartState(null);
+      setReadError(null);
+      setReadOwner(null);
       return;
     }
     try {
       setIsLoading(true);
+      setReadError(null);
       const data = await cartApi.getCart();
-      setCartState({ ownerId, cart: data });
+      if (requestId === latestRead.current) setCartState({ ownerId, cart: data });
     } catch {
-      // User may not be logged in or cart empty
+      if (requestId === latestRead.current) setReadError({ ownerId, message: 'Không thể tải giỏ hàng. Vui lòng thử lại.' });
     } finally {
-      setIsLoading(false);
+      if (requestId === latestRead.current) {
+        setReadOwner(ownerId);
+        setIsLoading(false);
+      }
     }
   }, [canUseCart, ownerId]);
 
@@ -108,7 +120,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         cart,
         cartCount,
-        isLoading,
+        isLoading: canUseCart && (isLoading || readOwner !== ownerId),
+        errorMessage,
         refreshCart,
         addToCart,
         updateQuantity,

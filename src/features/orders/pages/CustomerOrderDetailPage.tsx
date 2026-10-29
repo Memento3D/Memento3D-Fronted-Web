@@ -1,3 +1,5 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
+import { EmptyState } from '../../../components/ui/EmptyState';
 import React, { useState, useMemo } from 'react';
 import {
   Row,
@@ -61,7 +63,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const { data: order, isLoading, isError, error, refetch, isFetching } = useOrderDetail(id);
+  const { data: order, isLoading, isError, refetch, isFetching } = useOrderDetail(id);
   const { data: payments = [] } = usePaymentsList();
   const { data: specificPayments = [] } = useOrderPayments(id);
 
@@ -101,7 +103,47 @@ export const CustomerOrderDetailPage: React.FC = () => {
     }
   });
 
-  if (isLoading) {
+  const [acceptingQuoteLoading, setAcceptingQuoteLoading] = useState(false);
+
+  const items = useMemo(() => {
+    if (!order) return [];
+    const orderCode = order.orderCode || order.id.slice(0, 8).toUpperCase();
+    const totalAmount = order.totalAmount ?? order.totalPrice;
+    if (order.items && order.items.length > 0) {
+      return order.items;
+    }
+    const repName = order.representativeProductName || (order as any).productName || 'Kỷ vật 3D Điêu khắc Cá nhân hóa';
+    const repThumb = order.representativeThumbnailUrl || (order as any).thumbnailUrl;
+    const qty = order.itemCount || 1;
+    const subtotal = order.subtotal || totalAmount || 0;
+    const unitPrice = qty > 0 ? Math.round(subtotal / qty) : subtotal;
+
+    return [
+      {
+        id: order.id + '-item-1',
+        productId: (order as any).productId || order.scanId || undefined,
+        productName: repName,
+        productNameSnapshot: repName,
+        thumbnailUrl: repThumb,
+        thumbnailSnapshot: repThumb,
+        sku: (order as any).sku || `MM3D-${orderCode}`,
+        categoryName: (order as any).categoryName || 'Kỷ vật 3D Bespoke',
+        unitPrice,
+        quantity: qty,
+        subtotal,
+        material: (order as any).material || (order as any).actualMaterial || 'Nhựa quang hóa Resin cao cấp (SLA)',
+        technology: (order as any).technology || 'In 3D đắp lớp quang hóa SLA (Dung sai ±0.05mm)',
+        dimensions: (order as any).dimensions || 'Kích thước để bàn tiêu chuẩn (15cm)',
+        color: (order as any).color || 'Bản màu gốc PolyJet / Đơn sắc hoàn thiện',
+        finish: (order as any).finish || 'Xử lý UV & Phủ bóng mờ cao cấp',
+        base: (order as any).base || 'Đế gỗ óc chó Walnut tự nhiên',
+        personalization: order.note || (order as any).personalization,
+        productionStatus: order.status,
+      },
+    ];
+  }, [order]);
+
+  if (isLoading || (isError && isFetching)) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--bg-app)', padding: '120px 24px 60px' }}>
         <div style={{ maxWidth: 1140, margin: '0 auto' }}>
@@ -111,20 +153,15 @@ export const CustomerOrderDetailPage: React.FC = () => {
     );
   }
 
-  if (isError || !order) {
-    return (
-      <div style={{ minHeight: '100vh', background: 'var(--bg-app)', padding: '120px 24px', textAlign: 'center' }}>
-        <div style={{ maxWidth: 600, margin: '60px auto', color: 'var(--text-primary)' }}>
-          <h2 style={{ color: '#ef4444' }}>Không tìm thấy đơn hàng</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            {error?.message || 'Đơn hàng không tồn tại hoặc bạn không có quyền truy cập.'}
-          </p>
-          <Button type="primary" onClick={() => navigate('/customer/orders')} style={{ borderRadius: 8 }}>
-            Quay lại danh sách
-          </Button>
-        </div>
-      </div>
-    );
+  if (isError) {
+    return <ErrorState onRetry={() => { void refetch(); }} />;
+  }
+
+  if (!order) {
+    return <div style={{ padding: 24, textAlign: 'center' }}>
+      <EmptyState title="Không tìm thấy đơn hàng." />
+      <Button onClick={() => navigate('/customer/orders')}>Quay lại danh sách</Button>
+    </div>;
   }
 
   const orderPayments = specificPayments.length > 0 ? specificPayments : payments.filter((p) => p.orderId === order.id);
@@ -147,8 +184,6 @@ export const CustomerOrderDetailPage: React.FC = () => {
   const totalAmount = order.totalAmount ?? order.totalPrice;
   const paidAmount = order.paidAmount ?? (isPaid ? totalAmount : 0);
   const remainingAmount = order.remainingAmount ?? Math.max(0, totalAmount - paidAmount);
-
-  const [acceptingQuoteLoading, setAcceptingQuoteLoading] = useState(false);
 
   const handleAcceptQuote = async () => {
     try {
@@ -235,40 +270,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
     }
   };
 
-  const items = useMemo(() => {
-    if (order.items && order.items.length > 0) {
-      return order.items;
-    }
-    const repName = order.representativeProductName || (order as any).productName || 'Kỷ vật 3D Điêu khắc Cá nhân hóa';
-    const repThumb = order.representativeThumbnailUrl || (order as any).thumbnailUrl;
-    const qty = order.itemCount || 1;
-    const subtotal = order.subtotal || totalAmount || 0;
-    const unitPrice = qty > 0 ? Math.round(subtotal / qty) : subtotal;
 
-    return [
-      {
-        id: order.id + '-item-1',
-        productId: (order as any).productId || order.scanId || undefined,
-        productName: repName,
-        productNameSnapshot: repName,
-        thumbnailUrl: repThumb,
-        thumbnailSnapshot: repThumb,
-        sku: (order as any).sku || `MM3D-${orderCode}`,
-        categoryName: (order as any).categoryName || 'Kỷ vật 3D Bespoke',
-        unitPrice,
-        quantity: qty,
-        subtotal,
-        material: (order as any).material || (order as any).actualMaterial || 'Nhựa quang hóa Resin cao cấp (SLA)',
-        technology: (order as any).technology || 'In 3D đắp lớp quang hóa SLA (Dung sai ±0.05mm)',
-        dimensions: (order as any).dimensions || 'Kích thước để bàn tiêu chuẩn (15cm)',
-        color: (order as any).color || 'Bản màu gốc PolyJet / Đơn sắc hoàn thiện',
-        finish: (order as any).finish || 'Xử lý UV & Phủ bóng mờ cao cấp',
-        base: (order as any).base || 'Đế gỗ óc chó Walnut tự nhiên',
-        personalization: order.note || (order as any).personalization,
-        productionStatus: order.status,
-      },
-    ];
-  }, [order, orderCode, totalAmount]);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>

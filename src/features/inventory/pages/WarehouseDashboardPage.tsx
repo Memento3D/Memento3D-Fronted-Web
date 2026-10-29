@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import {
   Table,
@@ -48,6 +49,7 @@ export const WarehouseDashboardPage: React.FC = () => {
   const {
     data: balancesData,
     isLoading,
+    isError,
     refetch,
     isFetching,
   } = useInventoryBalances({
@@ -333,6 +335,7 @@ export const WarehouseDashboardPage: React.FC = () => {
           </Text>
         </div>
 
+        <ReadState isLoading={isLoading} isError={isError} isFetching={isFetching} onRetry={() => { void refetch(); }}>
         <Table
           columns={columns}
           dataSource={balances}
@@ -340,6 +343,7 @@ export const WarehouseDashboardPage: React.FC = () => {
           loading={isLoading}
           pagination={{ pageSize: 15, showSizeChanger: true }}
         />
+        </ReadState>
       </Card>
 
       {/* Receipt Modal */}

@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import {
   Table,
@@ -45,7 +46,7 @@ export const PrintJobOperationsPage: React.FC = () => {
 
   const [createForm] = Form.useForm();
 
-  const { data: jobsData, isLoading, refetch, isFetching } = usePrintJobs({ limit: 50 });
+  const { data: jobsData, isLoading, isError, refetch, isFetching } = usePrintJobs({ limit: 50 });
   const { data: warehousesData } = useWarehouses({ limit: 100 });
   const { data: materialsData } = useMaterials({ limit: 100 });
 
@@ -327,6 +328,7 @@ export const PrintJobOperationsPage: React.FC = () => {
 
       {/* Table */}
       <Card>
+        <ReadState isLoading={isLoading} isError={isError} isFetching={isFetching} onRetry={() => { void refetch(); }}>
         <Table
           columns={columns}
           dataSource={jobs}
@@ -334,6 +336,7 @@ export const PrintJobOperationsPage: React.FC = () => {
           loading={isLoading}
           pagination={{ pageSize: 12 }}
         />
+        </ReadState>
       </Card>
 
       {/* Create Job Modal */}

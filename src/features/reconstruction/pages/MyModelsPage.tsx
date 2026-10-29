@@ -1,3 +1,4 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -29,6 +30,9 @@ export const MyModelsPage: React.FC = () => {
   const [jobs, setJobs] = useState<ReconstructionJobItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [hasError, setHasError] = useState(false);
+  const [reload, setReload] = useState(0);
+
   useEffect(() => {
     let isMounted = true;
     scanReconstructionService
@@ -37,7 +41,7 @@ export const MyModelsPage: React.FC = () => {
         if (isMounted) setJobs(data.jobs);
       })
       .catch(() => {
-        // Handle error gracefully
+        if (isMounted) setHasError(true);
       })
       .finally(() => {
         if (isMounted) setIsLoading(false);
@@ -46,7 +50,7 @@ export const MyModelsPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [reload]);
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -105,6 +109,12 @@ export const MyModelsPage: React.FC = () => {
               Đang tải danh sách mô hình 3D...
             </Text>
           </div>
+        ) : hasError ? (
+          <ErrorState onRetry={() => {
+            setHasError(false);
+            setIsLoading(true);
+            setReload((value) => value + 1);
+          }} />
         ) : jobs.length === 0 ? (
           <Card
             style={{

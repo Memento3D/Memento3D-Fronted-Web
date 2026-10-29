@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -30,34 +31,37 @@ export const AdminDashboardPage: React.FC = () => {
   const [userGrowthPeriod, setUserGrowthPeriod] = useState<string>('30d');
 
   // 1. Dashboard summary
-  const {
-    data: summary,
-    isLoading: loadingSummary,
-    refetch: refetchSummary,
-    isFetching,
-  } = useQuery({
+  const summaryQuery = useQuery({
     queryKey: ['admin-dashboard-summary'],
     queryFn: adminApi.getDashboardSummary,
     refetchInterval: 30000,
   });
+  const {
+    data: summary,
+    isLoading: loadingSummary,
+    refetch: refetchSummary,
+    isFetching } = summaryQuery;
 
   // 2. Revenue trend
-  const { data: revenueData, isLoading: loadingRevenue } = useQuery({
+  const revenueQuery = useQuery({
     queryKey: ['admin-dashboard-revenue', revenuePeriod],
     queryFn: () => adminApi.getRevenueTrend(revenuePeriod),
   });
+  const { data: revenueData, isLoading: loadingRevenue } = revenueQuery;
 
   // 3. User growth
-  const { data: userGrowthData, isLoading: loadingGrowth } = useQuery({
+  const growthQuery = useQuery({
     queryKey: ['admin-dashboard-user-growth', userGrowthPeriod],
     queryFn: () => adminApi.getUserGrowth(userGrowthPeriod),
   });
+  const { data: userGrowthData, isLoading: loadingGrowth } = growthQuery;
 
   // 4. Category performance
-  const { data: categoryData, isLoading: loadingCategories } = useQuery({
+  const categoryQuery = useQuery({
     queryKey: ['admin-dashboard-category-performance'],
     queryFn: adminApi.getCategoryPerformance,
   });
+  const { data: categoryData, isLoading: loadingCategories } = categoryQuery;
 
   const categoryColumns = [
     {
@@ -88,6 +92,8 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }} id="admin-analytics-view">
+      <ReadState isLoading={summaryQuery.isPending || revenueQuery.isPending || growthQuery.isPending || categoryQuery.isPending} isError={summaryQuery.isError || revenueQuery.isError || growthQuery.isError || categoryQuery.isError}
+        isFetching={summaryQuery.isFetching || revenueQuery.isFetching || growthQuery.isFetching || categoryQuery.isFetching} hasData={summaryQuery.data != null && revenueQuery.data != null && growthQuery.data != null && categoryQuery.data != null} onRetry={() => { void summaryQuery.refetch(); void revenueQuery.refetch(); void growthQuery.refetch(); void categoryQuery.refetch(); }}>
       {/* Top Header Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
@@ -362,6 +368,7 @@ export const AdminDashboardPage: React.FC = () => {
           pagination={false}
         />
       </Card>
+      </ReadState>
     </div>
   );
 };

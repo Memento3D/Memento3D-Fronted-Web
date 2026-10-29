@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -44,12 +45,12 @@ export const AdminProductsPage: React.FC = () => {
   const [categoryForm] = Form.useForm();
 
   // Queries
-  const { data: productsPage, isLoading: loadingProducts, refetch: refetchProducts } = useQuery({
+  const { data: productsPage, isLoading: loadingProducts, isError: productsError, isFetching: fetchingProducts, refetch: refetchProducts } = useQuery({
     queryKey: ['admin-products', productPage, productSearch],
     queryFn: () => adminApi.getProducts({ page: productPage, size: 10, search: productSearch.trim() || undefined }),
   });
 
-  const { data: categories, isLoading: loadingCategories, refetch: refetchCategories } = useQuery({
+  const { data: categories, isLoading: loadingCategories, isError: categoriesError, isFetching: fetchingCategories, refetch: refetchCategories } = useQuery({
     queryKey: ['admin-categories'],
     queryFn: adminApi.getCategories,
   });
@@ -323,6 +324,7 @@ export const AdminProductsPage: React.FC = () => {
                       allowClear
                     />
                   </div>
+                  <ReadState isLoading={loadingProducts} isError={productsError} isFetching={fetchingProducts} onRetry={() => { void refetchProducts(); }}>
                   <Table
                     columns={productColumns}
                     dataSource={productsPage?.content || []}
@@ -335,6 +337,7 @@ export const AdminProductsPage: React.FC = () => {
                       onChange: (p) => setProductPage(p - 1),
                     }}
                   />
+                  </ReadState>
                 </div>
               ),
             },
@@ -347,6 +350,7 @@ export const AdminProductsPage: React.FC = () => {
                 </Space>
               ),
               children: (
+                <ReadState isLoading={loadingCategories} isError={categoriesError} isFetching={fetchingCategories} onRetry={() => { void refetchCategories(); }}>
                 <Table
                   columns={categoryColumns}
                   dataSource={categories || []}
@@ -354,6 +358,7 @@ export const AdminProductsPage: React.FC = () => {
                   loading={loadingCategories}
                   pagination={{ pageSize: 10 }}
                 />
+                </ReadState>
               ),
             },
           ]}

@@ -1,3 +1,4 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
 import React, { useState } from 'react';
 import {
   Row,
@@ -53,14 +54,14 @@ export const ProductDetailPage: React.FC = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   const [isAdding, setIsAdding] = useState<boolean>(false);
 
-  const { data: product, isLoading, isError } = useQuery({
+  const { data: product, isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: ['product-detail', slug],
     queryFn: () => (slug ? productApi.getBySlug(slug) : null),
     enabled: Boolean(slug),
     staleTime: 5 * 60 * 1000,
   });
 
-  if (isLoading) {
+  if (isLoading || (isError && isFetching)) {
     return (
       <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
         <Navbar />
@@ -72,7 +73,17 @@ export const ProductDetailPage: React.FC = () => {
     );
   }
 
-  if (isError || !product) {
+  if (isError) {
+    return <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
+      <Navbar />
+      <main style={{ maxWidth: 1240, margin: '0 auto', padding: '100px 24px 60px' }}>
+        <ErrorState onRetry={() => { void refetch(); }} />
+      </main>
+      <Footer />
+    </div>;
+  }
+
+  if (!product) {
     return (
       <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
         <Navbar />

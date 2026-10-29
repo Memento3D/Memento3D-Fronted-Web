@@ -1,3 +1,4 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
 import React from 'react';
 import {
   Row,
@@ -30,7 +31,7 @@ const { Title, Text } = Typography;
 
 export const CartPage: React.FC = () => {
   const navigate = useNavigate();
-  const { cart, isLoading, updateQuantity, removeItem, clearCart } = useCart();
+  const { cart, isLoading, errorMessage, refreshCart, updateQuantity, removeItem, clearCart } = useCart();
 
   const items = cart?.items || [];
   const isEmpty = items.length === 0;
@@ -66,11 +67,13 @@ export const CartPage: React.FC = () => {
           )}
         </div>
 
-        {isLoading && !cart ? (
+        {isLoading ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <Spin size="large" />
             <div style={{ marginTop: 16, color: 'var(--text-secondary)' }}>Đang tải giỏ hàng...</div>
           </div>
+        ) : errorMessage ? (
+          <ErrorState message={errorMessage} onRetry={() => { void refreshCart(); }} />
         ) : isEmpty ? (
           <Card
             style={{

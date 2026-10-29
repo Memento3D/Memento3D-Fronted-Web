@@ -1,3 +1,4 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
 import React, { useState } from 'react';
 import {
   Row,
@@ -36,7 +37,7 @@ const { TextArea } = Input;
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { cart, isLoading: isCartLoading, refreshCart } = useCart();
+  const { cart, isLoading: isCartLoading, errorMessage: cartError, refreshCart } = useCart();
   const [form] = Form.useForm();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('VNPAY');
@@ -48,6 +49,7 @@ export const CheckoutPage: React.FC = () => {
   const isCartEmpty = cartItems.length === 0;
 
   const handleSubmit = async (values: any) => {
+    if (isCartLoading || cartError) return;
     if (isCartEmpty) {
       message.error('Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng.');
       return;
@@ -127,10 +129,12 @@ export const CheckoutPage: React.FC = () => {
           </Text>
         </div>
 
-        {isCartLoading && !cart ? (
+        {isCartLoading ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
             <Spin size="large" />
           </div>
+        ) : cartError ? (
+          <ErrorState message={cartError} onRetry={() => { void refreshCart(); }} />
         ) : isCartEmpty ? (
           <Card
             style={{

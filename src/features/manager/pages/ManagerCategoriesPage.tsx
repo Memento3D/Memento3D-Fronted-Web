@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import {
   Table,
@@ -31,7 +32,7 @@ export const ManagerCategoriesPage: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<ProductCategory | null>(null);
   const [form] = Form.useForm();
 
-  const { data: categories = [], isLoading, refetch, isFetching } = useQuery({
+  const { data: categories = [], isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['manager-categories-all'],
     queryFn: () => categoryApi.list(false),
   });
@@ -155,6 +156,7 @@ export const ManagerCategoriesPage: React.FC = () => {
       </div>
 
       <Card style={{ background: '#fff', borderRadius: 'var(--radius-card, 24px)', border: '1px solid var(--border-default, #E2D9F7)', boxShadow: 'var(--shadow-card)' }}>
+        <ReadState isLoading={isLoading} isError={isError} isFetching={isFetching} onRetry={() => { void refetch(); }}>
         <Table
           dataSource={categories}
           rowKey="id"
@@ -234,6 +236,7 @@ export const ManagerCategoriesPage: React.FC = () => {
             },
           ]}
         />
+        </ReadState>
       </Card>
 
       {/* Modal Create / Edit */}

@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tag, Skeleton } from 'antd';
@@ -28,23 +29,27 @@ export const CustomerHomePage: React.FC = () => {
   const { greeting } = getGreeting(user?.fullName || user?.email?.split('@')[0]);
 
   // Fetch customer's own recent orders (real data)
-  const { data: ordersData, isLoading: isOrdersLoading } = useOrders({
+  const ordersQuery = useOrders({
     page: 1,
     limit: 4,
   });
+  const { data: ordersData, isLoading: isOrdersLoading } = ordersQuery;
 
   // Fetch real categories from database (shared cache with product catalog)
-  const { data: realCategories, isLoading: isCategoriesLoading } = useQuery({
+  const categoryQuery = useQuery({
     queryKey: ['categories-active'],
     queryFn: () => categoryApi.list(true),
     staleTime: 10 * 60 * 1000,
   });
+  const { data: realCategories, isLoading: isCategoriesLoading } = categoryQuery;
 
   const recentOrders = ordersData?.orders || [];
   const categoriesList = realCategories && realCategories.length > 0 ? realCategories : [];
 
   return (
     <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', paddingBottom: 40 }}>
+      <ReadState isLoading={ordersQuery.isPending || categoryQuery.isPending} isError={ordersQuery.isError || categoryQuery.isError}
+        isFetching={ordersQuery.isFetching || categoryQuery.isFetching} hasData={ordersQuery.data != null && categoryQuery.data != null} onRetry={() => { void ordersQuery.refetch(); void categoryQuery.refetch(); }}>
         {/* 1. Customer Hero Banner */}
         <div
           style={{
@@ -288,6 +293,7 @@ export const CustomerHomePage: React.FC = () => {
             </div>
           )}
         </div>
+      </ReadState>
     </div>
   );
 };

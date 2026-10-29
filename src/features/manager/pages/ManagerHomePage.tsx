@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -29,21 +30,22 @@ export const ManagerHomePage: React.FC = () => {
   const navigate = useNavigate();
 
   // 1. Fetch real dashboard overview
+  const dashboardQuery = useQuery({
+    queryKey: ['manager-home-overview'],
+    queryFn: () => dashboardApi.getDashboardData('today'),
+  });
   const {
     data: dashboardData,
     isLoading: isDashLoading,
     refetch,
-    isFetching,
-  } = useQuery({
-    queryKey: ['manager-home-overview'],
-    queryFn: () => dashboardApi.getDashboardData('today'),
-  });
+    isFetching } = dashboardQuery;
 
   // 2. Fetch inventory low stock items
-  const { data: inventoryData } = useQuery({
+  const inventoryQuery = useQuery({
     queryKey: ['manager-home-inventory-balances'],
     queryFn: () => inventoryService.listBalances({ limit: 10 }),
   });
+  const { data: inventoryData } = inventoryQuery;
 
   const summary = dashboardData?.summary;
   const printerFleet: PrinterFleetItem[] = dashboardData?.printerFleet || [];
@@ -113,6 +115,8 @@ export const ManagerHomePage: React.FC = () => {
 
   return (
     <div className="actor-home-container" id="manager-home-page">
+      <ReadState isLoading={dashboardQuery.isPending || inventoryQuery.isPending} isError={dashboardQuery.isError || inventoryQuery.isError}
+        isFetching={dashboardQuery.isFetching || inventoryQuery.isFetching} hasData={dashboardQuery.data != null && inventoryQuery.data != null} onRetry={() => { void dashboardQuery.refetch(); void inventoryQuery.refetch(); }}>
       {/* 1. Hero Greeting */}
       <HomeGreeting
         user={user}
@@ -239,6 +243,7 @@ export const ManagerHomePage: React.FC = () => {
 
       {/* 5. Section "Việc cần chú ý hôm nay" */}
       <TodayTasks tasks={attentionTasks} />
+      </ReadState>
     </div>
   );
 };

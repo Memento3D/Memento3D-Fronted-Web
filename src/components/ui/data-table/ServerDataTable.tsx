@@ -3,6 +3,7 @@ import type { ColumnsType, TableProps } from 'antd/es/table';
 import { Columns3 } from 'lucide-react';
 import { EmptyState } from '../EmptyState';
 import { ErrorState } from '../ErrorState';
+import { LoadingState } from '../LoadingState';
 import type { ServerTableFeatures } from './useServerTable';
 import type { ReactTable } from '@tanstack/react-table';
 
@@ -42,6 +43,9 @@ export function ServerDataTable<T extends object>({
   className = '',
   scroll = { x: 'max-content' },
 }: ServerDataTableProps<T>) {
+  if (isLoading || (isError && isFetching)) {
+    return <LoadingState />;
+  }
   if (isError) {
     return <ErrorState message={errorMessage} onRetry={onRetry} />;
   }
@@ -108,7 +112,7 @@ export function ServerDataTable<T extends object>({
           }
         }}
         locale={{
-          emptyText: <EmptyState title={emptyTitle} description={emptyDescription} />,
+          emptyText: isFetching ? null : <EmptyState title={emptyTitle} description={emptyDescription} />,
         }}
       />
     </div>

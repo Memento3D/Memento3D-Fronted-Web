@@ -1,3 +1,5 @@
+import { ReadState } from '../../../components/ui/ReadState';
+import { EmptyState } from '../../../components/ui/EmptyState';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -24,7 +26,7 @@ import { adminApi } from '../api/adminApi';
 import dayjs from 'dayjs';
 
 export const AdminSystemHealthPage: React.FC = () => {
-  const { data: health, isLoading, refetch, isFetching } = useQuery({
+  const { data: health, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['admin-system-health'],
     queryFn: adminApi.getSystemHealth,
     refetchInterval: 15000,
@@ -83,6 +85,9 @@ export const AdminSystemHealthPage: React.FC = () => {
         </Button>
       </div>
 
+      <ReadState isLoading={isLoading} isError={isError} isFetching={isFetching}
+        isEmpty={!health} onRetry={() => { void refetch(); }}>
+      <>
       {/* Overall Status Banner */}
       <Card
         bordered={false}
@@ -134,7 +139,7 @@ export const AdminSystemHealthPage: React.FC = () => {
                         : '#ef4444',
                   }}
                 >
-                  {health?.status || 'HEALTHY'}
+                  {health?.status || 'N/A'}
                 </span>
               </div>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
@@ -151,6 +156,8 @@ export const AdminSystemHealthPage: React.FC = () => {
         <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Spin size="large" />
         </div>
+      ) : Object.keys(health?.services || {}).length === 0 ? (
+        <EmptyState title="Ch?a c? d? li?u d?ch v?." />
       ) : (
         <Row gutter={[16, 16]}>
           {Object.entries(health?.services || {}).map(([serviceName, srv]) => (
@@ -178,16 +185,16 @@ export const AdminSystemHealthPage: React.FC = () => {
                   {srv.message}
                 </div>
 
-                {srv.latencyMs !== undefined && (
+                {(
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                     Độ trễ phản hồi (Latency):{' '}
                     <span
                       style={{
                         fontWeight: 700,
-                        color: srv.latencyMs < 50 ? '#10b981' : srv.latencyMs < 200 ? '#f59e0b' : '#ef4444',
+                        color: typeof srv.latencyMs !== 'number' ? 'var(--text-secondary)' : srv.latencyMs < 50 ? '#10b981' : srv.latencyMs < 200 ? '#f59e0b' : '#ef4444',
                       }}
                     >
-                      {srv.latencyMs} ms
+                      {typeof srv.latencyMs === 'number' && Number.isFinite(srv.latencyMs) ? `${srv.latencyMs} ms` : 'N/A'}
                     </span>
                   </div>
                 )}
@@ -196,6 +203,8 @@ export const AdminSystemHealthPage: React.FC = () => {
           ))}
         </Row>
       )}
+      </>
+      </ReadState>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -34,34 +35,39 @@ export const WarehouseHomePage: React.FC = () => {
   const activeWarehouseId = localStorage.getItem('memento3d_active_warehouse_id');
 
   // Fetch balances to identify low stock items
-  const { data: inventoryData, isLoading: isLowStockLoading } = useQuery({
+  const inventoryQuery = useQuery({
     queryKey: ['warehouse-home-balances'],
     queryFn: () => inventoryService.listBalances({ limit: 50 }),
   });
+  const { data: inventoryData, isLoading: isLowStockLoading } = inventoryQuery;
 
   // Fetch receipts list
-  const { data: receiptsData, isLoading: isReceiptsLoading } = useQuery({
+  const receiptsQuery = useQuery({
     queryKey: ['warehouse-home-receipts'],
     queryFn: () => wmsEnterpriseApi.getGoodsReceipts({ size: 50 }),
   });
+  const { data: receiptsData, isLoading: isReceiptsLoading } = receiptsQuery;
 
   // Fetch issues list
-  const { data: issuesData, isLoading: isIssuesLoading } = useQuery({
+  const issuesQuery = useQuery({
     queryKey: ['warehouse-home-issues'],
     queryFn: () => wmsEnterpriseApi.getStockIssues({ size: 50 }),
   });
+  const { data: issuesData, isLoading: isIssuesLoading } = issuesQuery;
 
   // Fetch materials catalog
-  const { data: materialsData, isLoading: isMatLoading } = useQuery({
+  const materialsQuery = useQuery({
     queryKey: ['warehouse-home-materials'],
     queryFn: () => materialService.list({ limit: 100 }),
   });
+  const { data: materialsData, isLoading: isMatLoading } = materialsQuery;
 
   // Fetch user authorized warehouses
-  const { data: authorizedWarehouses = [] } = useQuery({
+  const warehousesQuery = useQuery({
     queryKey: ['warehouse-home-my-warehouses'],
     queryFn: warehouseApi.getMyWarehouses,
   });
+  const { data: authorizedWarehouses = [] } = warehousesQuery;
 
   const activeWarehouse = authorizedWarehouses.find((w) => w.id === activeWarehouseId) || authorizedWarehouses[0];
 
@@ -114,6 +120,8 @@ export const WarehouseHomePage: React.FC = () => {
 
   return (
     <div className="actor-home-container" id="warehouse-home-page">
+      <ReadState isLoading={inventoryQuery.isPending || receiptsQuery.isPending || issuesQuery.isPending || materialsQuery.isPending || warehousesQuery.isPending} isError={inventoryQuery.isError || receiptsQuery.isError || issuesQuery.isError || materialsQuery.isError || warehousesQuery.isError}
+        isFetching={inventoryQuery.isFetching || receiptsQuery.isFetching || issuesQuery.isFetching || materialsQuery.isFetching || warehousesQuery.isFetching} hasData={inventoryQuery.data != null && receiptsQuery.data != null && issuesQuery.data != null && materialsQuery.data != null && warehousesQuery.data != null} onRetry={() => { void inventoryQuery.refetch(); void receiptsQuery.refetch(); void issuesQuery.refetch(); void materialsQuery.refetch(); void warehousesQuery.refetch(); }}>
       {/* 1. Hero Greeting */}
       <HomeGreeting
         user={user}
@@ -242,6 +250,7 @@ export const WarehouseHomePage: React.FC = () => {
 
       {/* 5. Section "Việc cần chú ý hôm nay" */}
       <TodayTasks tasks={attentionTasks} />
+      </ReadState>
     </div>
   );
 };

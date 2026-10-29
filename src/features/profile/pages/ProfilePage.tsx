@@ -1,3 +1,4 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
 import React, { useState, useEffect } from 'react';
 import { Tabs, Breadcrumb, Button, Spin, Alert } from 'antd';
 import {
@@ -26,6 +27,8 @@ export const ProfilePage: React.FC = () => {
 
   const [profileUser, setProfileUser] = useState<User | null>(authUser);
   const [loading, setLoading] = useState(false);
+  const [profileError, setProfileError] = useState(false);
+  const [reloadProfile, setReloadProfile] = useState(0);
 
   // Determine active tab from pathname or query param
   const getInitialTab = (): string => {
@@ -44,19 +47,21 @@ export const ProfilePage: React.FC = () => {
   useEffect(() => {
     const fetchLatestProfile = async () => {
       setLoading(true);
+      setProfileError(false);
       try {
         const data = await profileApi.getProfile();
         setProfileUser(data);
         updateUser(data);
       } catch (err) {
         console.warn('Failed to load profile details:', err);
+        setProfileError(true);
       } finally {
         setLoading(false);
       }
     };
 
     fetchLatestProfile();
-  }, []);
+  }, [reloadProfile]);
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
@@ -103,6 +108,12 @@ export const ProfilePage: React.FC = () => {
       <Navbar />
 
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: '120px 24px 60px' }}>
+
+        {profileError && !loading && <ErrorState onRetry={() => {
+          setProfileError(false);
+          setLoading(true);
+          setReloadProfile((value) => value + 1);
+        }} />}
         {/* Navigation Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <Breadcrumb

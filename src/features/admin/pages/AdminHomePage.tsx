@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -32,22 +33,23 @@ export const AdminHomePage: React.FC = () => {
   const navigate = useNavigate();
 
   // 1. Fetch real summary metrics from backend
-  const {
-    data: summary,
-    isLoading: loadingSummary,
-    refetch: refetchSummary,
-    isFetching,
-  } = useQuery({
+  const summaryQuery = useQuery({
     queryKey: ['admin-home-summary'],
     queryFn: adminApi.getDashboardSummary,
     refetchInterval: 30000,
   });
+  const {
+    data: summary,
+    isLoading: loadingSummary,
+    refetch: refetchSummary,
+    isFetching } = summaryQuery;
 
   // 2. Fetch real recent audit logs for activity stream
-  const { data: auditLogs, isLoading: loadingAudit } = useQuery({
+  const auditQuery = useQuery({
     queryKey: ['admin-home-recent-audit'],
     queryFn: () => adminApi.getAuditLogs({ size: 6 }),
   });
+  const { data: auditLogs, isLoading: loadingAudit } = auditQuery;
 
   // 3. Time-based dynamic greeting
   const getGreeting = () => {
@@ -64,6 +66,8 @@ export const AdminHomePage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }} id="admin-home-view">
+      <ReadState isLoading={summaryQuery.isPending || auditQuery.isPending} isError={summaryQuery.isError || auditQuery.isError}
+        isFetching={summaryQuery.isFetching || auditQuery.isFetching} hasData={summaryQuery.data != null && auditQuery.data != null} onRetry={() => { void summaryQuery.refetch(); void auditQuery.refetch(); }}>
       {/* 1. Header Banner */}
       <div
         style={{
@@ -508,6 +512,7 @@ export const AdminHomePage: React.FC = () => {
           </div>
         )}
       </Card>
+      </ReadState>
     </div>
   );
 };

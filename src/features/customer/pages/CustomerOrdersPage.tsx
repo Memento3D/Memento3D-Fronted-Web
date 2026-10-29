@@ -44,7 +44,7 @@ export const CustomerOrdersPage: React.FC = () => {
   };
 
   // Direct server-side filtered & paginated query
-  const { data, isLoading, isError, error, refetch, isFetching } = useOrders({
+  const { data, isLoading, isError, refetch, isFetching } = useOrders({
     page,
     limit: pageSize,
     status: statusFilter,
@@ -163,7 +163,7 @@ export const CustomerOrdersPage: React.FC = () => {
         />
 
         {/* Content State */}
-        {isLoading ? (
+        {isLoading || (isError && isFetching) ? (
           <div style={{ padding: '16px 0' }}>
             <Skeleton active paragraph={{ rows: 3 }} style={{ marginBottom: 20 }} />
             <Skeleton active paragraph={{ rows: 3 }} style={{ marginBottom: 20 }} />
@@ -183,7 +183,7 @@ export const CustomerOrdersPage: React.FC = () => {
               Không thể tải danh sách đơn hàng
             </div>
             <div style={{ color: 'var(--text-on-danger)', marginBottom: 16 }}>
-              {error?.message || 'Có lỗi xảy ra khi kết nối máy chủ.'}
+              {'Vui lòng thử lại.'}
             </div>
             <Button type="primary" onClick={() => refetch()} style={{ borderRadius: 8 }}>
               Thử lại

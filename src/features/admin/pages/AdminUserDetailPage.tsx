@@ -1,3 +1,5 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
+import { ReadState } from '../../../components/ui/ReadState';
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -28,26 +30,28 @@ export const AdminUserDetailPage: React.FC = () => {
   const navigate = useNavigate();
 
   // User detail
-  const { data: user, isLoading: loadingUser } = useQuery({
+  const { data: user, isLoading: loadingUser, isError: userError, isFetching: fetchingUser, refetch: refetchUser } = useQuery({
     queryKey: ['admin-user-detail', id],
     queryFn: () => adminApi.getUserById(id!),
     enabled: !!id,
   });
 
   // User's audit activities
-  const { data: auditLogs, isLoading: loadingAudit } = useQuery({
+  const { data: auditLogs, isLoading: loadingAudit, isError: auditError, isFetching: fetchingAudit, refetch: refetchAudit } = useQuery({
     queryKey: ['admin-user-audit', id],
     queryFn: () => adminApi.getAuditLogs({ actorId: id, size: 20 }),
     enabled: !!id,
   });
 
-  if (loadingUser) {
+  if (loadingUser || (userError && fetchingUser)) {
     return (
       <div style={{ height: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Spin size="large" />
       </div>
     );
   }
+
+  if (userError) return <ErrorState onRetry={() => { void refetchUser(); }} />;
 
   if (!user) {
     return (
@@ -202,6 +206,7 @@ export const AdminUserDetailPage: React.FC = () => {
         bordered={false}
         style={{ background: 'var(--bg-card)', borderRadius: 14, border: '1px solid var(--border-color)' }}
       >
+        <ReadState isLoading={loadingAudit} isError={auditError} isFetching={fetchingAudit} onRetry={() => { void refetchAudit(); }}>
         <Table
           columns={auditColumns}
           dataSource={auditLogs?.content || []}
@@ -209,6 +214,7 @@ export const AdminUserDetailPage: React.FC = () => {
           loading={loadingAudit}
           pagination={{ pageSize: 10 }}
         />
+        </ReadState>
       </Card>
     </div>
   );
