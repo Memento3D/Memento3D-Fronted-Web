@@ -173,13 +173,8 @@ export const Create3DKeepsakePage: React.FC = () => {
       setTimeout(() => {
         navigate(`/reconstruction/${scan.id}`, { state: { jobId: job.jobId } });
       }, 600);
-    } catch (err: any) {
-      const backendErrorMsg =
-        err.response?.data?.message ||
-        err.response?.data?.error?.message ||
-        err.message ||
-        'Không thể tạo phiên quét 3D. Vui lòng kiểm tra kết nối mạng và thử lại.';
-      message.error(backendErrorMsg);
+    } catch {
+      message.error('Không thể tạo phiên quét 3D. Vui lòng kiểm tra kết nối mạng và thử lại.');
       setIsSubmitting(false);
       setUploadProgress(0);
       setStatusMessage('');

@@ -1,3 +1,5 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
+import { EmptyState } from '../../../components/ui/EmptyState';
 import React, { useState, useMemo } from 'react';
 import {
   Row,
@@ -57,7 +59,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data: order, isLoading, isError, error, refetch, isFetching } = useOrderDetail(id);
+  const { data: order, isLoading, isError, refetch, isFetching } = useOrderDetail(id);
   const updateOrderMutation = useUpdateOrder(id || '');
   const { data: payments = [], refetch: refetchPayments } = usePaymentsList();
   const confirmCashMutation = useConfirmCash();
@@ -77,7 +79,45 @@ export const ManagerOrderDetailPage: React.FC = () => {
     enabled: Boolean(id),
   });
 
-  if (isLoading) {
+  const items = useMemo(() => {
+    if (!order) return [];
+    const orderCode = order.orderCode || order.id.slice(0, 8).toUpperCase();
+    const totalAmount = order.totalAmount ?? order.totalPrice;
+    if (order.items && order.items.length > 0) {
+      return order.items;
+    }
+    const repName = order.representativeProductName || (order as any).productName || 'Kỷ vật 3D Điêu khắc Cá nhân hóa';
+    const repThumb = order.representativeThumbnailUrl || (order as any).thumbnailUrl;
+    const qty = order.itemCount || 1;
+    const subtotal = order.subtotal || totalAmount || 0;
+    const unitPrice = qty > 0 ? Math.round(subtotal / qty) : subtotal;
+
+    return [
+      {
+        id: order.id + '-item',
+        productId: (order as any).productId || order.scanId || undefined,
+        productName: repName,
+        productNameSnapshot: repName,
+        thumbnailUrl: repThumb,
+        thumbnailSnapshot: repThumb,
+        sku: (order as any).sku || `MM3D-${orderCode}`,
+        categoryName: (order as any).categoryName || 'Kỷ vật 3D Bespoke',
+        unitPrice,
+        quantity: qty,
+        subtotal,
+        material: (order as any).material || (order as any).actualMaterial || 'Nhựa quang hóa Resin cao cấp (SLA)',
+        technology: (order as any).technology || 'SLA Công nghiệp',
+        dimensions: (order as any).dimensions || 'Tiêu chuẩn (15cm x 10cm x 10cm)',
+        color: (order as any).color || 'Bản màu gốc PolyJet / Đơn sắc hoàn thiện',
+        finish: (order as any).finish || 'Xử lý UV & Phủ bóng mờ cao cấp',
+        base: (order as any).base || 'Đế gỗ óc chó Walnut tự nhiên',
+        personalization: order.note || (order as any).personalization,
+        productionStatus: order.status,
+      },
+    ];
+  }, [order]);
+
+  if (isLoading || (isError && isFetching)) {
     return (
       <div style={{ padding: 24, maxWidth: 1300, margin: '0 auto' }}>
         <Skeleton active paragraph={{ rows: 10 }} />
@@ -85,16 +125,15 @@ export const ManagerOrderDetailPage: React.FC = () => {
     );
   }
 
-  if (isError || !order) {
-    return (
-      <div style={{ padding: 60, textAlign: 'center' }}>
-        <h3 style={{ color: '#ef4444' }}>Không tìm thấy đơn hàng</h3>
-        <p style={{ color: 'var(--text-secondary)' }}>{error?.message || 'Đơn hàng không tồn tại'}</p>
-        <Button onClick={() => navigate('/manager/orders')} style={{ borderRadius: 8 }}>
-          Quay lại danh sách
-        </Button>
-      </div>
-    );
+  if (isError) {
+    return <ErrorState onRetry={() => { void refetch(); }} />;
+  }
+
+  if (!order) {
+    return <div style={{ padding: 24, textAlign: 'center' }}>
+      <EmptyState title="Không tìm thấy đơn hàng." />
+      <Button onClick={() => navigate('/manager/orders')}>Quay lại danh sách</Button>
+    </div>;
   }
 
   const orderPayments = payments.filter((p) => p.orderId === order.id);
@@ -162,40 +201,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
   const isCash = order.paymentMethod === 'CASH';
   const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === 'SUCCESS';
   const totalAmount = order.totalAmount ?? order.totalPrice;
-  const items = useMemo(() => {
-    if (order.items && order.items.length > 0) {
-      return order.items;
-    }
-    const repName = order.representativeProductName || (order as any).productName || 'Kỷ vật 3D Điêu khắc Cá nhân hóa';
-    const repThumb = order.representativeThumbnailUrl || (order as any).thumbnailUrl;
-    const qty = order.itemCount || 1;
-    const subtotal = order.subtotal || totalAmount || 0;
-    const unitPrice = qty > 0 ? Math.round(subtotal / qty) : subtotal;
 
-    return [
-      {
-        id: order.id + '-item',
-        productId: (order as any).productId || order.scanId || undefined,
-        productName: repName,
-        productNameSnapshot: repName,
-        thumbnailUrl: repThumb,
-        thumbnailSnapshot: repThumb,
-        sku: (order as any).sku || `MM3D-${orderCode}`,
-        categoryName: (order as any).categoryName || 'Kỷ vật 3D Bespoke',
-        unitPrice,
-        quantity: qty,
-        subtotal,
-        material: (order as any).material || (order as any).actualMaterial || 'Nhựa quang hóa Resin cao cấp (SLA)',
-        technology: (order as any).technology || 'SLA Công nghiệp',
-        dimensions: (order as any).dimensions || 'Tiêu chuẩn (15cm x 10cm x 10cm)',
-        color: (order as any).color || 'Bản màu gốc PolyJet / Đơn sắc hoàn thiện',
-        finish: (order as any).finish || 'Xử lý UV & Phủ bóng mờ cao cấp',
-        base: (order as any).base || 'Đế gỗ óc chó Walnut tự nhiên',
-        personalization: order.note || (order as any).personalization,
-        productionStatus: order.status,
-      },
-    ];
-  }, [order, orderCode, totalAmount]);
 
   const internalCost = order.internalCost || 0;
   const grossProfit = Math.max(0, totalAmount - internalCost);

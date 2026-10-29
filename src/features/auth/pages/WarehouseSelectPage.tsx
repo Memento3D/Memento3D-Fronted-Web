@@ -1,3 +1,4 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
 import React from 'react';
 import { Card, Button, Typography, Space, Row, Col, Tag, Spin, Result } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +13,7 @@ const { Title, Paragraph } = Typography;
 export const WarehouseSelectPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const { data: myWarehouses = [], isLoading, error } = useQuery({
+  const { data: myWarehouses = [], isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: ['my-warehouses'],
     queryFn: warehouseApi.getMyWarehouses,
   });
@@ -22,7 +23,7 @@ export const WarehouseSelectPage: React.FC = () => {
     navigate('/warehouse/home', { replace: true });
   };
 
-  if (isLoading) {
+  if (isLoading || (isError && isFetching)) {
     return (
       <div
         style={{
@@ -38,7 +39,11 @@ export const WarehouseSelectPage: React.FC = () => {
     );
   }
 
-  if (error || myWarehouses.length === 0) {
+  if (isError) {
+    return <ErrorState onRetry={() => { void refetch(); }} />;
+  }
+
+  if (myWarehouses.length === 0) {
     return (
       <div
         style={{

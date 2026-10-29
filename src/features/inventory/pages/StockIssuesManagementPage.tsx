@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
@@ -52,7 +53,7 @@ export const StockIssuesManagementPage: React.FC = () => {
   const [form] = Form.useForm();
 
   // Queries
-  const { data: issuesData, isLoading } = useQuery({
+  const { data: issuesData, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['stock-issues', activeWarehouse?.id, statusFilter, page],
     queryFn: () => wmsEnterpriseApi.getStockIssues({ 
       warehouseId: activeWarehouse?.id, 
@@ -306,6 +307,7 @@ export const StockIssuesManagementPage: React.FC = () => {
       </div>
 
       <Card bordered={false} style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
+        <ReadState isLoading={isLoading} isError={isError} isFetching={isFetching} onRetry={() => { void refetch(); }}>
         <Table 
           columns={columns} 
           dataSource={issuesData?.content || []} 
@@ -318,6 +320,7 @@ export const StockIssuesManagementPage: React.FC = () => {
             onChange: (p) => setPage(p - 1),
           }}
         />
+        </ReadState>
       </Card>
 
       {/* Create Modal */}

@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import {
   Table,
@@ -41,7 +42,7 @@ export const WarehouseManagementPage: React.FC = () => {
   const [membersWarehouse, setMembersWarehouse] = useState<Warehouse | null>(null);
   const [isMembersDrawerOpen, setIsMembersDrawerOpen] = useState(false);
 
-  const { data, isLoading } = useWarehouses({
+  const { data, isLoading, isError, refetch, isFetching } = useWarehouses({
     search: search || undefined,
     limit: 50,
   });
@@ -247,6 +248,7 @@ export const WarehouseManagementPage: React.FC = () => {
           </Text>
         </div>
 
+        <ReadState isLoading={isLoading} isError={isError} isFetching={isFetching} onRetry={() => { void refetch(); }}>
         <Table
           columns={columns}
           dataSource={warehouses}
@@ -254,6 +256,7 @@ export const WarehouseManagementPage: React.FC = () => {
           loading={isLoading}
           pagination={{ pageSize: 10 }}
         />
+        </ReadState>
       </Card>
 
       {/* Create / Edit Modal */}

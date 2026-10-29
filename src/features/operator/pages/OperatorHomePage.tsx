@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -26,15 +27,17 @@ export const OperatorHomePage: React.FC = () => {
   const navigate = useNavigate();
 
   // Fetch real print jobs and printers from backend
-  const { data: printJobs = [], isLoading: isJobsLoading } = useQuery<PrintJob[]>({
+  const jobsQuery = useQuery<PrintJob[]>({
     queryKey: ['operator-home-print-jobs'],
     queryFn: dashboardApi.getPrintJobs,
   });
+  const { data: printJobs = [], isLoading: isJobsLoading } = jobsQuery;
 
-  const { data: printers = [] } = useQuery({
+  const printersQuery = useQuery({
     queryKey: ['operator-home-printers'],
     queryFn: dashboardApi.getPrinters,
   });
+  const { data: printers = [] } = printersQuery;
 
   // Calculate Operator specific counts
   const printingCount = printJobs.filter((j) => j.status === 'PRINTING').length;
@@ -56,6 +59,8 @@ export const OperatorHomePage: React.FC = () => {
 
   return (
     <div className="actor-home-container" id="operator-home-page">
+      <ReadState isLoading={jobsQuery.isPending || printersQuery.isPending} isError={jobsQuery.isError || printersQuery.isError}
+        isFetching={jobsQuery.isFetching || printersQuery.isFetching} hasData={jobsQuery.data != null && printersQuery.data != null} onRetry={() => { void jobsQuery.refetch(); void printersQuery.refetch(); }}>
       {/* 1. Hero Greeting */}
       <HomeGreeting
         user={user}
@@ -235,6 +240,7 @@ export const OperatorHomePage: React.FC = () => {
           />
         </div>
       </div>
+      </ReadState>
     </div>
   );
 };

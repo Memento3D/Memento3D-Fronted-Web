@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
@@ -32,28 +33,28 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState('receipts');
 
   // Queries for SUBMITTED entities with lazy per-tab fetching
-  const { data: receiptsData, isLoading: loadingReceipts } = useQuery({
+  const { data: receiptsData, isLoading: loadingReceipts, isError: receiptsError, isFetching: fetchingReceipts, refetch: refetchReceipts } = useQuery({
     queryKey: ['pending-receipts', activeWarehouse?.id],
     queryFn: () => wmsEnterpriseApi.getGoodsReceipts({ warehouseId: activeWarehouse?.id, status: 'SUBMITTED', size: 50 }),
     enabled: activeTab === 'receipts',
     staleTime: 60 * 1000,
   });
 
-  const { data: issuesData, isLoading: loadingIssues } = useQuery({
+  const { data: issuesData, isLoading: loadingIssues, isError: issuesError, isFetching: fetchingIssues, refetch: refetchIssues } = useQuery({
     queryKey: ['pending-issues', activeWarehouse?.id],
     queryFn: () => wmsEnterpriseApi.getStockIssues({ warehouseId: activeWarehouse?.id, status: 'SUBMITTED', size: 50 }),
     enabled: activeTab === 'issues',
     staleTime: 60 * 1000,
   });
 
-  const { data: adjustmentsData, isLoading: loadingAdjustments } = useQuery({
+  const { data: adjustmentsData, isLoading: loadingAdjustments, isError: adjustmentsError, isFetching: fetchingAdjustments, refetch: refetchAdjustments } = useQuery({
     queryKey: ['pending-adjustments', activeWarehouse?.id],
     queryFn: () => wmsEnterpriseApi.getAdjustments({ warehouseId: activeWarehouse?.id, status: 'SUBMITTED', size: 50 }),
     enabled: activeTab === 'adjustments',
     staleTime: 60 * 1000,
   });
 
-  const { data: transfersData, isLoading: loadingTransfers } = useQuery({
+  const { data: transfersData, isLoading: loadingTransfers, isError: transfersError, isFetching: fetchingTransfers, refetch: refetchTransfers } = useQuery({
     queryKey: ['pending-transfers', activeWarehouse?.id],
     queryFn: () => wmsEnterpriseApi.getTransfers({ warehouseId: activeWarehouse?.id, status: 'SUBMITTED', size: 50 }),
     enabled: activeTab === 'transfers',
@@ -325,6 +326,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                 </Space>
               ),
               children: (
+                <ReadState isLoading={loadingReceipts} isError={receiptsError} isFetching={fetchingReceipts} onRetry={() => { void refetchReceipts(); }}>
                 <Table 
                   columns={receiptColumns} 
                   dataSource={receiptsData?.content || []} 
@@ -332,6 +334,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                   loading={loadingReceipts}
                   locale={{ emptyText: 'Không có phiếu nhập kho nào đang chờ duyệt' }}
                 />
+                </ReadState>
               ),
             },
             {
@@ -344,6 +347,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                 </Space>
               ),
               children: (
+                <ReadState isLoading={loadingIssues} isError={issuesError} isFetching={fetchingIssues} onRetry={() => { void refetchIssues(); }}>
                 <Table 
                   columns={issueColumns} 
                   dataSource={issuesData?.content || []} 
@@ -351,6 +355,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                   loading={loadingIssues}
                   locale={{ emptyText: 'Không có phiếu xuất kho nào đang chờ duyệt' }}
                 />
+                </ReadState>
               ),
             },
             {
@@ -363,6 +368,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                 </Space>
               ),
               children: (
+                <ReadState isLoading={loadingAdjustments} isError={adjustmentsError} isFetching={fetchingAdjustments} onRetry={() => { void refetchAdjustments(); }}>
                 <Table 
                   columns={adjustmentColumns} 
                   dataSource={adjustmentsData?.content || []} 
@@ -370,6 +376,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                   loading={loadingAdjustments}
                   locale={{ emptyText: 'Không có yêu cầu điều chỉnh nào đang chờ duyệt' }}
                 />
+                </ReadState>
               ),
             },
             {
@@ -382,6 +389,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                 </Space>
               ),
               children: (
+                <ReadState isLoading={loadingTransfers} isError={transfersError} isFetching={fetchingTransfers} onRetry={() => { void refetchTransfers(); }}>
                 <Table 
                   columns={transferColumns} 
                   dataSource={transfersData?.content || []} 
@@ -389,6 +397,7 @@ export const ManagerApprovalsCenterPage: React.FC = () => {
                   loading={loadingTransfers}
                   locale={{ emptyText: 'Không có yêu cầu chuyển kho nào đang chờ duyệt' }}
                 />
+                </ReadState>
               ),
             },
           ]}

@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import {
   Card,
@@ -35,7 +36,7 @@ export const StockMovementReportPage: React.FC = () => {
   const [txType, setTxType] = useState<InventoryTransactionType | undefined>(undefined);
 
   const { data: warehousesData } = useWarehouses({ limit: 100 });
-  const { data: txData, isLoading } = useInventoryTransactions({
+  const { data: txData, isLoading, isError, refetch, isFetching } = useInventoryTransactions({
     warehouseId: warehouseId || undefined,
     type: txType,
     limit: 100,
@@ -307,6 +308,7 @@ export const StockMovementReportPage: React.FC = () => {
           </Text>
         </div>
 
+        <ReadState isLoading={isLoading} isError={isError} isFetching={isFetching} onRetry={() => { void refetch(); }}>
         <Table
           columns={columns}
           dataSource={transactions}
@@ -314,6 +316,7 @@ export const StockMovementReportPage: React.FC = () => {
           loading={isLoading}
           pagination={{ pageSize: 15, showSizeChanger: true }}
         />
+        </ReadState>
       </Card>
     </div>
   );

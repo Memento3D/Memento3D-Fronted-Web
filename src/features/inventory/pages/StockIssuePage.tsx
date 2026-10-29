@@ -1,3 +1,4 @@
+import { ReadState } from '../../../components/ui/ReadState';
 import React, { useState } from 'react';
 import {
   Card,
@@ -47,7 +48,7 @@ export const StockIssuePage: React.FC = () => {
 
   const { data: warehousesData } = useWarehouses({ limit: 100 });
   const { data: materialsData } = useMaterials({ limit: 100 });
-  const { data: issuesData, isLoading: isLoadingIssues } = useStockIssues({ limit: 15 });
+  const { data: issuesData, isLoading: isLoadingIssues, isError, refetch, isFetching } = useStockIssues({ limit: 15 });
 
   const { issueMutation } = useInventoryMutations();
 
@@ -275,6 +276,7 @@ export const StockIssuePage: React.FC = () => {
           </Space>
         }
       >
+        <ReadState isLoading={isLoadingIssues} isError={isError} isFetching={isFetching} onRetry={() => { void refetch(); }}>
         <Table
           columns={columns}
           dataSource={issues}
@@ -282,6 +284,7 @@ export const StockIssuePage: React.FC = () => {
           loading={isLoadingIssues}
           pagination={{ pageSize: 8 }}
         />
+        </ReadState>
       </Card>
 
       {/* Confirmation Modal */}

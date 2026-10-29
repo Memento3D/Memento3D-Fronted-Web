@@ -1,3 +1,4 @@
+import { ErrorState } from '../../../components/ui/ErrorState';
 import React from 'react';
 import { Row, Col, Card, Typography, Spin, Empty, Button } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
@@ -12,7 +13,7 @@ const { Title, Text, Paragraph } = Typography;
 export const CategoryListPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const { data: rawCategories = [], isLoading } = useQuery({
+  const { data: rawCategories = [], isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: ['categories-public-list'],
     queryFn: () => categoryApi.list(true),
   });
@@ -33,10 +34,12 @@ export const CategoryListPage: React.FC = () => {
           </Text>
         </div>
 
-        {isLoading ? (
+        {isLoading || (isError && isFetching) ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <Spin size="large" />
           </div>
+        ) : isError ? (
+          <ErrorState onRetry={() => { void refetch(); }} />
         ) : categories.length === 0 ? (
           <Empty description={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Chưa có danh mục nào.</span>} />
         ) : (

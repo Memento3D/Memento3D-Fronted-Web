@@ -45,7 +45,6 @@ export const ManagerDashboardPage: React.FC = () => {
     data: dashboard,
     isLoading,
     isError,
-    error,
     refetch,
     isFetching,
     isRealTimeConnected,
@@ -54,7 +53,7 @@ export const ManagerDashboardPage: React.FC = () => {
     warehouseId: activeWarehouse?.id,
   });
 
-  if (isLoading && !dashboard) {
+  if ((isLoading || (isError && isFetching)) && !dashboard) {
     return (
       <div
         style={{
@@ -80,7 +79,7 @@ export const ManagerDashboardPage: React.FC = () => {
         <Alert
           type="error"
           message="Không thể kết nối Trung tâm dữ liệu Memento3D"
-          description={(error as Error)?.message || 'Vui lòng kiểm tra lại dịch vụ Backend hoặc thử lại.'}
+          description="Vui lòng thử lại."
           action={<Button type="primary" onClick={() => refetch()}>Thử lại</Button>}
           showIcon
           style={{ borderRadius: 12 }}
