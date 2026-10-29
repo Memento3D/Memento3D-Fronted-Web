@@ -351,7 +351,9 @@ export const App: React.FC = () => {
                     path="/warehouse/no-access"
                     element={
                       <ProtectedRoute>
-                        <NoWarehouseAccessPage />
+                        <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_WAREHOUSE']}>
+                          <NoWarehouseAccessPage />
+                        </RoleGuard>
                       </ProtectedRoute>
                     }
                   />
@@ -359,7 +361,9 @@ export const App: React.FC = () => {
                     path="/warehouse/select"
                     element={
                       <ProtectedRoute>
-                        <WarehouseSelectPage />
+                        <RoleGuard allowedRoles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_WAREHOUSE']}>
+                          <WarehouseSelectPage />
+                        </RoleGuard>
                       </ProtectedRoute>
                     }
                   />
