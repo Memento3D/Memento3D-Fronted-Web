@@ -1,3 +1,4 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
 import React, { useState, useEffect } from 'react';
 import {
   Row,
@@ -18,8 +19,6 @@ import { useQuery } from '@tanstack/react-query';
 import { productApi } from '../api/productApi';
 import { categoryApi } from '../api/categoryApi';
 import { formatCurrency } from '../../orders/utils/orderFormatters';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 import { ProductCard } from '../components/ProductCard';
 import { ProductCardSkeleton } from '../components/ProductCardSkeleton';
 import { ProductEmptyState } from '../../../components/common/ProductEmptyState';
@@ -113,10 +112,7 @@ export const ProductListPage: React.FC = () => {
   };
 
   return (
-    <div className="home-wrapper" style={{ minHeight: '100dvh' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1280, margin: '0 auto', padding: '110px 24px 60px' }}>
+    <ShoppingPageFrame publicClassName="home-wrapper" publicStyle={{ minHeight: '100dvh' }} contentStyle={{ maxWidth: 1280, margin: '0 auto', padding: '110px 24px 60px' }}>
         {/* Header */}
         <div style={{ marginBottom: 36, textAlign: 'center' }}>
           <Tag color="cyan" style={{ marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>
@@ -222,7 +218,7 @@ export const ProductListPage: React.FC = () => {
 
         {/* Product Grid */}
         {isLoading ? (
-          <Row gutter={[24, 24]}>
+          <Row className="shopping-catalog-grid" gutter={[24, 24]}>
             <ProductCardSkeleton count={8} />
           </Row>
         ) : isError ? (
@@ -236,7 +232,7 @@ export const ProductListPage: React.FC = () => {
           />
         ) : (
           <>
-            <Row gutter={[24, 24]}>
+            <Row className="shopping-catalog-grid" gutter={[24, 24]}>
               {productsData.content.map((product) => (
                 <Col xs={24} sm={12} md={8} lg={6} key={product.id}>
                   <ProductCard product={product} />
@@ -261,10 +257,7 @@ export const ProductListPage: React.FC = () => {
             )}
           </>
         )}
-      </main>
-
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };
 

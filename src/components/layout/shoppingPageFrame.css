@@ -1,0 +1,26 @@
+/* Use the available dashboard width rather than the full browser width. */
+.customer-page-content .shopping-catalog-grid > .ant-col {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+@container customer-page (min-width: 560px) {
+  .customer-page-content .shopping-catalog-grid > .ant-col {
+    flex-basis: 50%;
+    max-width: 50%;
+  }
+}
+
+@container customer-page (min-width: 900px) {
+  .customer-page-content .shopping-catalog-grid > .ant-col {
+    flex-basis: 33.333333%;
+    max-width: 33.333333%;
+  }
+}
+
+@container customer-page (min-width: 1200px) {
+  .customer-page-content .shopping-catalog-grid > .ant-col {
+    flex-basis: 25%;
+    max-width: 25%;
+  }
+}

@@ -1,3 +1,4 @@
+import { CustomerExperienceLayout } from './components/layout/CustomerExperienceLayout';
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -372,12 +373,14 @@ export const App: React.FC = () => {
                   {/* Root Route: Actor Home if authenticated, Public Storefront if guest */}
                   <Route path="/" element={<RootRoute />} />
 
+                  <Route element={<CustomerExperienceLayout />}>
                   {/* Public Storefront Routes */}
                   <Route path="/products" element={<ProductListPage />} />
                   <Route path="/products/:slug" element={<ProductDetailPage />} />
                   <Route path="/categories" element={<CategoryListPage />} />
                   <Route path="/categories/:slug" element={<ProductListPage />} />
                   <Route path="/cart" element={<CustomerRoute><CartPage /></CustomerRoute>} />
+                  </Route>
                   <Route path="/payment/result" element={<PaymentResultPage />} />
 
                   {/* Dedicated Customer Portal */}
@@ -386,7 +389,7 @@ export const App: React.FC = () => {
                     element={
                       <ProtectedRoute>
                         <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_ADMIN', 'ROLE_MANAGER']}>
-                          <DashboardLayout forceRole="ROLE_USER" />
+                          <DashboardLayout />
                         </RoleGuard>
                       </ProtectedRoute>
                     }
@@ -402,7 +405,7 @@ export const App: React.FC = () => {
                     path="/orders"
                     element={
                       <ProtectedRoute>
-                        <DashboardLayout forceRole="ROLE_USER" />
+                        <DashboardLayout />
                       </ProtectedRoute>
                     }
                   >
@@ -411,6 +414,7 @@ export const App: React.FC = () => {
                   </Route>
 
                   <Route path="/dashboard" element={<Navigate to="/manager/dashboard" replace />} />
+                  <Route element={<CustomerExperienceLayout />}>
                   <Route
                     path="/checkout"
                     element={
@@ -419,6 +423,7 @@ export const App: React.FC = () => {
                       </CustomerRoute>
                     }
                   />
+                  </Route>
                   {/* Payment Gateway Callbacks & Return Pages */}
                   <Route
                     path="/payment/vnpay/return"
@@ -428,6 +433,7 @@ export const App: React.FC = () => {
                     path="/payment/result"
                     element={<PaymentResultPage />}
                   />
+                  <Route element={<CustomerExperienceLayout staffDashboard />}>
                   {/* User Profile & Account Security Management */}
                   <Route
                     path="/profile"
@@ -453,6 +459,7 @@ export const App: React.FC = () => {
                       </ProtectedRoute>
                     }
                   />
+                  </Route>
                   <Route
                     path="/scans/:scanId"
                     element={
@@ -469,6 +476,7 @@ export const App: React.FC = () => {
                       </ProtectedRoute>
                     }
                   />
+                  <Route element={<CustomerExperienceLayout />}>
                   <Route
                     path="/create-keepsake"
                     element={
@@ -494,6 +502,7 @@ export const App: React.FC = () => {
                     }
                   />
 
+                  </Route>
                   {/* Manufacturing Partner Portal */}
                   <Route
                     path="/provider"

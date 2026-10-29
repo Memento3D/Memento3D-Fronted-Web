@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Tooltip, Drawer } from 'antd';
 import {
   Cpu,
@@ -8,7 +8,7 @@ import {
   User,
 } from 'lucide-react';
 import { useAuth } from '../../features/auth/hooks/useAuth';
-import { getNavigationForRole } from './navigationConfig';
+import { getNavigationForRole, isNavigationItemActive } from './navigationConfig';
 import type { NavSectionConfig } from './navigationConfig';
 import { getRoleLabel } from '../../locales/i18n';
 
@@ -61,14 +61,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {section.items.map((item, itemIdx) => {
               const Icon = item.icon;
-              const isItemActive = item.exact
-                ? location.pathname === item.path
-                : location.pathname.startsWith(item.path);
+              const isItemActive = isNavigationItemActive(item, location.pathname);
 
               const navItemContent = (
-                <NavLink
+                <Link
                   to={item.path}
-                  end={item.exact}
+                  aria-current={isItemActive ? 'page' : undefined}
                   onClick={() => {
                     if (isMobile) onMobileClose();
                   }}
@@ -110,7 +108,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       {item.badge}
                     </span>
                   )}
-                </NavLink>
+                </Link>
               );
 
               if (collapsed && !isMobile) {

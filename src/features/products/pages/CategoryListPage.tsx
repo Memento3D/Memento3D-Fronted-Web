@@ -1,3 +1,4 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import React from 'react';
 import { Row, Col, Card, Typography, Spin, Empty, Button } from 'antd';
@@ -5,8 +6,6 @@ import { ArrowRightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { categoryApi } from '../api/categoryApi';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -21,10 +20,7 @@ export const CategoryListPage: React.FC = () => {
   const categories = Array.isArray(rawCategories) ? rawCategories : [];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-app, #F8F5FF)', color: 'var(--text-primary, #28243D)' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1240, margin: '0 auto', padding: '100px 24px 60px' }}>
+    <ShoppingPageFrame publicStyle={{ minHeight: '100vh', background: 'var(--bg-app, #F8F5FF)', color: 'var(--text-primary, #28243D)' }} contentStyle={{ maxWidth: 1240, margin: '0 auto', padding: '100px 24px 60px' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <Title level={1} style={{ color: 'var(--text-primary, #28243D)', fontWeight: 800, margin: '0 0 12px' }}>
             Danh mục Tác phẩm Memento3D
@@ -43,7 +39,7 @@ export const CategoryListPage: React.FC = () => {
         ) : categories.length === 0 ? (
           <Empty description={<span style={{ color: 'var(--text-secondary, #6A6282)' }}>Chưa có danh mục nào.</span>} />
         ) : (
-          <Row gutter={[24, 24]}>
+          <Row className="shopping-catalog-grid" gutter={[24, 24]}>
             {categories.map((cat) => (
               <Col xs={24} sm={12} md={8} lg={6} key={cat.id}>
                 <Card
@@ -103,9 +99,6 @@ export const CategoryListPage: React.FC = () => {
             ))}
           </Row>
         )}
-      </main>
-
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };

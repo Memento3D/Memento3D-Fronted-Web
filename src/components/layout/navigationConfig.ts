@@ -31,6 +31,7 @@ export interface NavItemConfig {
   icon: LucideIcon;
   badge?: string;
   exact?: boolean;
+  activePaths?: string[];
 }
 
 export interface NavSectionConfig {
@@ -198,8 +199,8 @@ export const navigationByRole: Record<string, NavSectionConfig[]> = {
         { path: '/customer/home', label: 'Trang chủ', icon: Home, exact: true },
         { path: '/products', label: 'Khám phá sản phẩm', icon: ShoppingBag },
         { path: '/categories', label: 'Danh mục kỷ vật', icon: Layers },
-        { path: '/orders', label: 'Đơn hàng của tôi', icon: Package },
-        { path: '/cart', label: 'Giỏ hàng', icon: ShoppingCart },
+        { activePaths: ['/customer/orders'], path: '/orders', label: 'Đơn hàng của tôi', icon: Package },
+        { activePaths: ['/checkout'], path: '/cart', label: 'Giỏ hàng', icon: ShoppingCart },
         { path: '/profile', label: 'Hồ sơ & Bảo mật', icon: User },
       ],
     },
@@ -222,4 +223,14 @@ export function getNavigationForRole(role?: UserRole | string | null): NavSectio
   if (navigationByRole[clean]) return navigationByRole[clean];
   const withPrefix = clean.startsWith('ROLE_') ? clean : `ROLE_${clean}`;
   return navigationByRole[withPrefix] || navigationByRole.ROLE_USER;
+}
+
+export function isNavigationItemActive(item: NavItemConfig, pathname: string): boolean {
+  return [item.path, ...(item.activePaths || [])].some((path) =>
+    item.exact ? pathname === path : pathname === path || pathname.startsWith(`${path}/`));
+}
+
+export function getCustomerNavigationItem(pathname: string): NavItemConfig | undefined {
+  return navigationByRole.ROLE_USER.flatMap((section) => section.items)
+    .find((item) => isNavigationItemActive(item, pathname));
 }

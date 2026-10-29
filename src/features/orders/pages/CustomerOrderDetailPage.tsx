@@ -1,3 +1,5 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
+import { useDashboardShell } from '../../../components/layout/DashboardShellContext';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import React, { useState, useMemo } from 'react';
@@ -53,12 +55,11 @@ import { OrderTimeline } from '../components/OrderTimeline';
 import { OrderPaymentModal } from '../components/OrderPaymentModal';
 import { formatCurrency, formatOrderDate } from '../utils/orderFormatters';
 import { canCustomerCancel } from '../utils/orderStateMachine';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 import { useEventSubscription } from '../../../shared/realtime';
 import { modelReviewService } from '../../../services/modelReviewService';
 
 export const CustomerOrderDetailPage: React.FC = () => {
+  const inDashboard = useDashboardShell();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -145,7 +146,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
   if (isLoading || (isError && isFetching)) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--bg-app)', padding: '120px 24px 60px' }}>
+      <div style={{ minHeight: inDashboard ? 'auto' : '100vh', background: 'var(--bg-app)', padding: inDashboard ? '24px 0' : '120px 24px 60px' }}>
         <div style={{ maxWidth: 1140, margin: '0 auto' }}>
           <Skeleton active paragraph={{ rows: 10 }} />
         </div>
@@ -273,10 +274,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '110px 20px 60px' }}>
+    <ShoppingPageFrame publicStyle={{ minHeight: '100vh', background: 'var(--bg-app)', color: 'var(--text-primary)' }} contentStyle={{ maxWidth: 1200, margin: '0 auto', padding: '110px 20px 60px' }}>
         {/* Navigation Breadcrumb & Actions Bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
           <Button
@@ -1080,7 +1078,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
             </Card>
           </Col>
         </Row>
-      </main>
+
 
       {/* Payment Modal */}
       <OrderPaymentModal
@@ -1180,8 +1178,6 @@ export const CustomerOrderDetailPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
-
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };

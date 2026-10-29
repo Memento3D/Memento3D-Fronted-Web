@@ -1,3 +1,4 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -20,8 +21,6 @@ import {
   StarOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 import { CameraCaptureModal } from '../components/CameraCaptureModal';
 import { scanReconstructionService } from '../../../services/scanReconstructionService';
 import type { ReconstructionCapabilities } from '../../../services/scanReconstructionService';
@@ -182,10 +181,7 @@ export const Create3DKeepsakePage: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-bg, #0B0A10)', color: 'var(--text-primary)' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1080, margin: '0 auto', padding: '110px 24px 60px' }}>
+    <ShoppingPageFrame publicStyle={{ minHeight: '100vh', background: 'var(--color-bg, #0B0A10)', color: 'var(--text-primary)' }} contentStyle={{ maxWidth: 1080, margin: '0 auto', padding: '110px 24px 60px' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <Tag color="purple" style={{ padding: '4px 14px', borderRadius: 9999, fontWeight: 700, fontSize: '0.8rem' }}>
@@ -527,7 +523,7 @@ export const Create3DKeepsakePage: React.FC = () => {
             </Button>
           </div>
         </Card>
-      </main>
+
 
       {/* Camera Capture Modal */}
       <CameraCaptureModal
@@ -538,8 +534,6 @@ export const Create3DKeepsakePage: React.FC = () => {
           message.success('Đã lưu ảnh từ camera vào danh sách quét 3D.');
         }}
       />
-
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };
