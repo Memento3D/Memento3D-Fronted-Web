@@ -9,6 +9,7 @@ import type { User } from '../features/auth/types/auth.types';
 import { setupDom, until } from './domHarness';
 
 const auth = vi.hoisted(() => ({ user: null as User | null, isLoading: false, updateUser: vi.fn() }));
+const demoOutputs = vi.hoisted(() => vi.fn(async () => []));
 vi.mock('../features/auth/context/AuthContext', () => ({
   AuthProvider: ({ children }: { children: ReactNode }) => children,
   useAuth: () => ({ ...auth, isAuthenticated: !!auth.user, logout: vi.fn(), updateUser: auth.updateUser }),
@@ -51,9 +52,15 @@ vi.mock('../features/orders/api/paymentApi', () => ({ paymentApi: {
   list: async () => [], getOrderPayments: async () => [],
 } }));
 vi.mock('../services/scanReconstructionService', () => ({ scanReconstructionService: {
+  getDemoOutputs: demoOutputs,
+  getLatestJobForScan: async () => ({ jobId: 'job-1' }),
+  getJobById: async () => ({ jobId: 'job-1', status: 'running', progressPercent: 20 }),
   getMyJobs: async () => ({ jobs: [], total: 0 }),
   getCapabilities: async () => ({ minImages: 1, maxImages: 50, supportedFormats: [] }),
 } }));
+vi.mock('../features/reconstruction/components/ReconstructionProgress', () => ({ ReconstructionProgress: () => <div>Processing progress</div> }));
+vi.mock('../features/reconstruction/components/Keepsake3DViewer', () => ({ Keepsake3DViewer: () => null }));
+vi.mock('../features/reconstruction/components/OrderKeepsakeModal', () => ({ OrderKeepsakeModal: () => null }));
 
 let host: HTMLDivElement;
 let root: Root;
@@ -89,7 +96,8 @@ it.each([
   ['/checkout', '/cart'], ['/profile', '/profile'], ['/profile/addresses', '/profile'],
   ['/profile/security', '/profile'], ['/orders', '/orders'], ['/customer/orders', '/orders'],
   ['/orders/order-1', '/orders'], ['/customer/orders/order-1', '/orders'],
-  ['/create-keepsake', null], ['/my-models', null], ['/customer/models', null],
+  ['/create-keepsake', '/create-keepsake'], ['/reconstruction/scan-1', '/create-keepsake'],
+  ['/scans/scan-1', '/create-keepsake'], ['/my-models', null], ['/customer/models', null],
 ])('customer %s retains one dashboard shell and the correct active item', async (path, activePath) => {
   await open(path!);
   await until(() => expect(host.querySelector('#desktop-sidebar-root')).toBeTruthy());
@@ -113,13 +121,32 @@ it.each([
 it('keeps shell and active menu coherent through actual sidebar navigation', async () => {
   await open('/customer/home');
   await until(() => expect(host.querySelector('#desktop-sidebar-root')).toBeTruthy());
-  for (const path of ['/products', '/categories', '/cart', '/profile', '/orders']) {
+  for (const path of ['/create-keepsake', '/products', '/categories', '/cart', '/profile', '/orders']) {
     const link = host.querySelector<HTMLAnchorElement>(`#desktop-sidebar-root a[href="${path}"]`)!;
     await act(async () => { link.click(); });
     await until(() => expect(window.location.pathname).toBe(path));
     await until(() => expect(host.querySelector('#desktop-sidebar-root a.active')?.getAttribute('href')).toBe(path));
     expect(host.querySelector('[data-testid="public-navbar"], [data-testid="public-footer"]')).toBeNull();
   }
+});
+
+it('Customer Home create CTA enters the real creation flow instead of demo', async () => {
+  await open('/customer/home');
+  await until(() => expect([...host.querySelectorAll('button')].some((button) => button.textContent?.includes('Tạo mô hình 3D ngay'))).toBe(true));
+  const button = [...host.querySelectorAll('button')].find((element) => element.textContent?.includes('Tạo mô hình 3D ngay'))!;
+  await act(async () => { button.click(); });
+  await until(() => expect(window.location.pathname).toBe('/create-keepsake'));
+  expect(window.location.pathname).not.toBe('/reconstruction/demo');
+  await until(() => expect(host.querySelector('#desktop-sidebar-root a.active')?.textContent).toContain('Tạo mô hình 3D'));
+  expect(host.querySelector('[data-testid="public-navbar"]')).toBeNull();
+});
+
+it('retains intentional demo processing support without exposing it in customer navigation', async () => {
+  demoOutputs.mockClear();
+  await open('/reconstruction/demo');
+  await until(() => expect(demoOutputs).toHaveBeenCalledOnce());
+  expect(host.querySelector('#desktop-sidebar-root a[href="/reconstruction/demo"]')).toBeNull();
+  expect(host.querySelector('#desktop-sidebar-root a.active')?.getAttribute('href')).toBe('/create-keepsake');
 });
 
 it('does not infer a customer shell from the catalog URL for staff', async () => {
@@ -156,6 +183,8 @@ it('keeps guest cart access protected with its return destination', async () => 
 it.each([
   ['/products/sculpture', '/products'], ['/checkout', '/cart'], ['/orders/order-1', '/orders'],
   ['/customer/orders/order-1', '/orders'], ['/profile/security', '/profile'], ['/products-other', undefined],
+  ['/create-keepsake', '/create-keepsake'], ['/reconstruction/scan-1', '/create-keepsake'],
+  ['/scans/scan-1', '/create-keepsake'],
 ])('central menu matching maps %s without page-specific active state', (path, expected) => {
   expect(getCustomerNavigationItem(path)?.path).toBe(expected);
 });

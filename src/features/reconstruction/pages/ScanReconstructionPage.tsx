@@ -1,9 +1,8 @@
+import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button, Typography, Space, Tag, Alert } from 'antd';
 import { ArrowLeftOutlined, HistoryOutlined, AppstoreOutlined, ReloadOutlined } from '@ant-design/icons';
-import { Navbar } from '../../home/components/Navbar';
-import { Footer } from '../../home/components/Footer';
 import { ReconstructionProgress } from '../components/ReconstructionProgress';
 import { Keepsake3DViewer } from '../components/Keepsake3DViewer';
 import { OrderKeepsakeModal } from '../components/OrderKeepsakeModal';
@@ -163,10 +162,7 @@ export const ScanReconstructionPage: React.FC = () => {
   }, [scanId]);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-bg, #0B0A10)', color: 'var(--text-primary)' }}>
-      <Navbar />
-
-      <main style={{ maxWidth: 1060, margin: '0 auto', padding: '110px 24px 60px' }}>
+    <ShoppingPageFrame publicStyle={{ minHeight: '100vh', background: 'var(--color-bg, #0B0A10)', color: 'var(--text-primary)' }} contentStyle={{ maxWidth: 1060, margin: '0 auto', padding: '110px 24px 60px' }}>
         {/* Navigation Action Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <Button
@@ -283,7 +279,6 @@ export const ScanReconstructionPage: React.FC = () => {
           }}
           onProceedToOrder={() => setOrderModalOpen(true)}
         />
-      </main>
 
       {/* Workshop Manufacturing Order Modal */}
       <OrderKeepsakeModal
@@ -294,8 +289,7 @@ export const ScanReconstructionPage: React.FC = () => {
         modelName="Kỷ vật 3D Chân dung (Scan AI)"
       />
 
-      <Footer />
-    </div>
+    </ShoppingPageFrame>
   );
 };
 

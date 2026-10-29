@@ -33,7 +33,7 @@ export function deferred<T>() {
   return { promise, resolve, reject };
 }
 
-export async function mountPage(page: ReactNode) {
+export async function mountPage(page: ReactNode, routePath = '/test/:id') {
   const client = new QueryClient({ defaultOptions: {
     queries: { retry: false, gcTime: Infinity, refetchOnWindowFocus: false },
     mutations: { retry: false },
@@ -45,7 +45,7 @@ export async function mountPage(page: ReactNode) {
     await act(async () => { root.render(
       <ThemeProvider><ConfigProvider theme={{ token: { motion: false } }}><App>
         <QueryClientProvider client={client}><MemoryRouter initialEntries={['/test/order-1']}>
-          <Routes><Route path="/test/:id" element={node} /></Routes>
+          <Routes><Route path={routePath} element={node} /></Routes>
         </MemoryRouter></QueryClientProvider>
       </App></ConfigProvider></ThemeProvider>,
     ); });

@@ -1,5 +1,7 @@
 # Customer shell consistency
 
+Follow-up: [Create 3D Model navigation](create-model-navigation.md) adds the creation sidebar item and extends the same shell to processing routes. The audit below records the original shell batch.
+
 ## Audit before implementation
 
 `DashboardLayout` is the existing customer application shell used by `/customer/home`: it owns `Sidebar`, `Topbar`, responsive navigation, and a React Router Outlet. The topbar already provides title, sync, notifications, language, theme, and account controls. There is no separate CustomerLayout implementation.

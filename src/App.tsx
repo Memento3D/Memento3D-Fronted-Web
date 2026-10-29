@@ -460,6 +460,7 @@ export const App: React.FC = () => {
                     }
                   />
                   </Route>
+                  <Route element={<CustomerExperienceLayout />}>
                   <Route
                     path="/scans/:scanId"
                     element={
@@ -476,6 +477,7 @@ export const App: React.FC = () => {
                       </ProtectedRoute>
                     }
                   />
+                  </Route>
                   <Route element={<CustomerExperienceLayout />}>
                   <Route
                     path="/create-keepsake"
