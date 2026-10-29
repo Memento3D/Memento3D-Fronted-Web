@@ -1,10 +1,9 @@
 import React from 'react';
 import { Card, Tag, Typography, Space } from 'antd';
-import { Link } from 'react-router-dom';
 import { Cpu, ShieldCheck } from 'lucide-react';
 import type { ActorPortalConfig } from '../types/auth.types';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Paragraph } = Typography;
 
 interface AuthLayoutProps {
   portalConfig: ActorPortalConfig;
@@ -93,55 +92,6 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ portalConfig, children }
         >
           {children}
         </Card>
-
-        {/* Portal Quick Switcher for All Actors */}
-        <div
-          style={{
-            marginTop: 18,
-            padding: '12px 16px',
-            background: 'var(--surface-container)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-card, 10px)',
-            textAlign: 'center',
-          }}
-        >
-          <Text style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: 8, fontWeight: 600 }}>
-            Chuyển đổi cổng truy cập tác nhân:
-          </Text>
-          <Space size={[8, 6]} wrap style={{ justifyContent: 'center' }}>
-            {[
-              { actor: 'customer', path: '/login', label: 'Khách hàng', color: '#7C5CFC' },
-              { actor: 'warehouse', path: '/warehouse/login', label: 'Thủ kho', color: '#5F3ADD' },
-              { actor: 'operator', path: '/operator/login', label: 'Kỹ thuật viên', color: '#7857F8' },
-              { actor: 'manager', path: '/manager/login', label: 'Quản lý', color: '#466253' },
-              { actor: 'admin', path: '/admin/login', label: 'Quản trị viên', color: '#B35C00' },
-              { actor: 'provider', path: '/provider/login', label: 'Đối tác 3D', color: '#7C5CFC' },
-              { actor: 'driver', path: '/driver/login', label: 'Tài xế', color: '#466253' },
-            ].map((item, idx, arr) => {
-              const isActive = portalConfig.actor === item.actor;
-              return (
-                <React.Fragment key={item.actor}>
-                  <Link
-                    to={item.path}
-                    style={{
-                      fontSize: '0.75rem',
-                      color: isActive ? '#FFFFFF' : 'var(--text-primary)',
-                      fontWeight: isActive ? 700 : 500,
-                      padding: '3px 10px',
-                      borderRadius: '9999px',
-                      background: isActive ? 'var(--primary, #7C5CFC)' : 'transparent',
-                      border: isActive ? '1px solid var(--primary)' : '1px solid transparent',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {item.label}
-                  </Link>
-                  {idx < arr.length - 1 && <span style={{ color: 'var(--border-secondary)' }}>•</span>}
-                </React.Fragment>
-              );
-            })}
-          </Space>
-        </div>
 
         {/* Security Footer */}
         <div style={{ textAlign: 'center', marginTop: 16 }}>

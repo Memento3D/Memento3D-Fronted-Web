@@ -60,7 +60,7 @@ export const ACTOR_PORTAL_CONFIGS: Record<ActorPortalType, ActorPortalConfig> = 
     badge: 'Trạm Xưởng in 3D',
     badgeColor: 'purple',
     defaultRedirect: '/operator/home',
-    allowedRoles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR'],
+    allowedRoles: ['ROLE_ADMIN', 'ROLE_OPERATOR'],
     showGoogleLogin: false,
     accentGradient: 'linear-gradient(135deg, #7C5CFC 0%, #5F3ADD 100%)',
   },
