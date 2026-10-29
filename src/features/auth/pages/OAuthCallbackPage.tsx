@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Result, Button, Spin } from 'antd';
 import { useAuth } from '../hooks/useAuth';
 import { tokenStorage } from '../utils/tokenStorage';
-import { getDefaultRouteForRole } from '../utils/resolveActorRoute';
+import { resolvePostLoginDestination } from '../utils/postLoginDestination';
 
 export const OAuthCallbackPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -49,8 +49,7 @@ export const OAuthCallbackPage: React.FC = () => {
           navigate('/complete-registration', { replace: true });
           return;
         }
-        tokenStorage.clearIntendedUrl();
-        const destination = getDefaultRouteForRole(user.role);
+        const destination = resolvePostLoginDestination(user.role, tokenStorage.getIntendedUrl());
         navigate(destination, { replace: true });
       })
       .catch((err: any) => {

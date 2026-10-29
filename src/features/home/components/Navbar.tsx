@@ -18,6 +18,7 @@ import {
   EnvironmentOutlined,
   SafetyCertificateOutlined,
 } from '@ant-design/icons';
+import { getCustomerEntryRoute } from '../../auth/utils/postLoginDestination';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCart } from '../../cart/context/CartContext';
@@ -106,7 +107,7 @@ export const Navbar: React.FC = () => {
       key: 'cart-menu',
       icon: <ShoppingCartOutlined style={{ color: 'var(--primary)' }} />,
       label: `Giỏ hàng (${cartCount})`,
-      onClick: () => navigate('/cart'),
+      onClick: () => navigate(getCustomerEntryRoute(user?.role, '/cart')),
     },
     {
       key: 'customer-orders',
@@ -204,7 +205,7 @@ export const Navbar: React.FC = () => {
           </span>
           <span
             className={`nav-item-link ${location.pathname === '/cart' ? 'active' : ''}`}
-            onClick={() => navigate('/cart')}
+            onClick={() => navigate(getCustomerEntryRoute(user?.role, '/cart'))}
           >
             Giỏ hàng
           </span>
@@ -246,7 +247,7 @@ export const Navbar: React.FC = () => {
               <button
                 type="button"
                 className="navbar-icon-btn"
-                onClick={() => navigate('/cart')}
+                onClick={() => navigate(getCustomerEntryRoute(user?.role, '/cart'))}
                 aria-label="Giỏ hàng"
               >
                 <ShoppingCartOutlined />
@@ -412,7 +413,7 @@ export const Navbar: React.FC = () => {
               className="mobile-nav-item"
               onClick={() => {
                 setMobileMenuOpen(false);
-                navigate('/cart');
+                navigate(getCustomerEntryRoute(user?.role, '/cart'));
               }}
             >
               Giỏ hàng ({cartCount})

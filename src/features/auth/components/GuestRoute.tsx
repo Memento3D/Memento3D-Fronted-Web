@@ -1,17 +1,18 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { getDefaultRouteForRole } from '../utils/resolveActorRoute';
+import { resolvePostLoginDestination } from '../utils/postLoginDestination';
 
 export const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const [searchParams] = useSearchParams();
 
   if (isLoading) {
     return null;
   }
 
   if (isAuthenticated && user) {
-    return <Navigate to={getDefaultRouteForRole(user.role)} replace />;
+    return <Navigate to={resolvePostLoginDestination(user.role, searchParams.get('redirect'))} replace />;
   }
 
   return <>{children}</>;

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Alert, Divider, App } from 'antd';
 import { MailOutlined, LockOutlined, ArrowRightOutlined } from '@ant-design/icons';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { GoogleLoginButton } from './GoogleLoginButton';
 import { tokenStorage } from '../utils/tokenStorage';
-import { getDefaultRouteForRole } from '../utils/resolveActorRoute';
+import { resolvePostLoginDestination, resolveSafeRedirect } from '../utils/postLoginDestination';
 import type { ActorPortalConfig, LoginPayload, User } from '../types/auth.types';
 
 interface LoginFormProps {
@@ -15,6 +15,8 @@ interface LoginFormProps {
 export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
   const { message } = App.useApp();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = resolveSafeRedirect(searchParams.get('redirect'));
   const [form] = Form.useForm();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
 
   const handlePostLoginRouting = (user: User) => {
     tokenStorage.clearIntendedUrl();
-    const destination = getDefaultRouteForRole(user.role);
+    const destination = resolvePostLoginDestination(user.role, redirect);
 
     message.success(`Chào mừng trở lại, ${user.fullName || user.email}!`);
     navigate(destination, { replace: true });
@@ -172,6 +174,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
           </Divider>
 
           <GoogleLoginButton
+            intendedRedirect={redirect || undefined}
             disabled={loading}
           />
         </>

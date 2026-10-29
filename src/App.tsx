@@ -13,6 +13,7 @@ import { getRoleHomeRoute } from './utils/roleHomeRoutes';
 import { RealTimeProvider } from './shared/realtime';
 import { CartProvider } from './features/cart/context/CartContext';
 import { WarehouseProvider } from './features/warehouse/context/WarehouseContext';
+import { CustomerRoute } from './features/auth/components/CustomerRoute';
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 import { RoleGuard } from './features/auth/components/RoleGuard';
 import { GuestRoute } from './features/auth/components/GuestRoute';
@@ -238,9 +239,9 @@ export const App: React.FC = () => {
           <ErrorBoundary>
             <AuthProvider>
             <RealTimeProvider>
+              <BrowserRouter>
               <CartProvider>
                 <WarehouseProvider>
-              <BrowserRouter>
                 <React.Suspense fallback={<RouteLoadingFallback />}>
                 <Routes>
                   {/* Guest Customer Register & Email Verification Routes */}
@@ -376,7 +377,7 @@ export const App: React.FC = () => {
                   <Route path="/products/:slug" element={<ProductDetailPage />} />
                   <Route path="/categories" element={<CategoryListPage />} />
                   <Route path="/categories/:slug" element={<ProductListPage />} />
-                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/cart" element={<CustomerRoute><CartPage /></CustomerRoute>} />
                   <Route path="/payment/result" element={<PaymentResultPage />} />
 
                   {/* Dedicated Customer Portal */}
@@ -413,9 +414,9 @@ export const App: React.FC = () => {
                   <Route
                     path="/checkout"
                     element={
-                      <ProtectedRoute>
+                      <CustomerRoute>
                         <CheckoutPage />
-                      </ProtectedRoute>
+                      </CustomerRoute>
                     }
                   />
                   {/* Payment Gateway Callbacks & Return Pages */}
@@ -717,9 +718,9 @@ export const App: React.FC = () => {
                   <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>
                 </React.Suspense>
-              </BrowserRouter>
             </WarehouseProvider>
           </CartProvider>
+              </BrowserRouter>
           </RealTimeProvider>
         </AuthProvider>
         </ErrorBoundary>

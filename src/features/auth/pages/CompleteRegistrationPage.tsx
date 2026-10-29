@@ -4,6 +4,8 @@ import { GoogleOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { authApi } from '../api/authApi';
+import { tokenStorage } from '../utils/tokenStorage';
+import { resolvePostLoginDestination } from '../utils/postLoginDestination';
 import { TermsAgreement } from '../components/TermsAgreement';
 
 const { Title, Paragraph } = Typography;
@@ -36,7 +38,7 @@ export const CompleteRegistrationPage: React.FC = () => {
       });
 
       message.success('Hoàn tất kích hoạt tài khoản Memento3D thành công!');
-      navigate('/products', { replace: true });
+      navigate(resolvePostLoginDestination(user?.role || '', tokenStorage.getIntendedUrl() || '/products'), { replace: true });
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
