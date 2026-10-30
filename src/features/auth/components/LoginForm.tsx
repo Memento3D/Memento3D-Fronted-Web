@@ -196,6 +196,19 @@ export const LoginForm: React.FC<LoginFormProps> = ({ portalConfig }) => {
           >
             Đăng ký ngay
           </Link>
+          <div style={{ marginTop: 12 }}>
+            <Link
+              to="/"
+              style={{
+                color: 'var(--primary, #7C5CFC)',
+                fontWeight: 700,
+                fontSize: '0.875rem',
+                textDecoration: 'none',
+              }}
+            >
+              Hủy
+            </Link>
+          </div>
         </div>
       )}
     </div>

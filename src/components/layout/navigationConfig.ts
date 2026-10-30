@@ -198,6 +198,7 @@ export const navigationByRole: Record<string, NavSectionConfig[]> = {
       items: [
         { path: '/customer/home', label: 'Trang chủ', icon: Home, exact: true },
         { path: '/create-keepsake', label: 'Tạo mô hình 3D', icon: Box, activePaths: ['/reconstruction', '/scans'] },
+        { path: '/my-models', label: 'Mô hình của tôi', icon: Box, activePaths: ['/customer/models'] },
         { path: '/products', label: 'Khám phá sản phẩm', icon: ShoppingBag },
         { path: '/categories', label: 'Danh mục kỷ vật', icon: Layers },
         { activePaths: ['/customer/orders'], path: '/orders', label: 'Đơn hàng của tôi', icon: Package },
