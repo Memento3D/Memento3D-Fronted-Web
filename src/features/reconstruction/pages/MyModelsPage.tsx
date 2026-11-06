@@ -8,15 +8,16 @@ import {
   Typography,
   Spin,
   Empty,
+  Pagination,
 } from 'antd';
 import {
   PlusOutlined,
   EyeOutlined,
-  PrinterOutlined,
   CheckCircleOutlined,
   SyncOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { scanReconstructionService } from '../../../services/scanReconstructionService';
@@ -31,13 +32,17 @@ export const MyModelsPage: React.FC = () => {
 
   const [hasError, setHasError] = useState(false);
   const [reload, setReload] = useState(0);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
+    setIsLoading(true);
+    setHasError(false);
     scanReconstructionService
-      .getMyJobs(1, 50)
+      .getMyJobs(page, 12)
       .then((data) => {
-        if (isMounted) setJobs(data.jobs);
+        if (isMounted) { setJobs(data.jobs);setTotal(data.total); }
       })
       .catch(() => {
         if (isMounted) setHasError(true);
@@ -49,7 +54,7 @@ export const MyModelsPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [reload]);
+  }, [reload, page]);
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -63,6 +68,8 @@ export const MyModelsPage: React.FC = () => {
         return <Tag color="warning" icon={<ClockCircleOutlined />}>Đang chờ xử lý</Tag>;
       case 'failed':
         return <Tag color="error" icon={<CloseCircleOutlined />}>Thất bại</Tag>;
+      case 'cancelled':
+        return <Tag>Đã hủy</Tag>;
       default:
         return <Tag color="default">{status}</Tag>;
     }
@@ -77,10 +84,12 @@ export const MyModelsPage: React.FC = () => {
               Mô Hình 3D Của Tôi
             </Title>
             <Text style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-              Quản lý các bản dựng 3D cá nhân hóa, xem lại mô phỏng in và gửi yêu cầu chế tác xưởng.
+              Xem tiến trình dựng 3D, tùy chỉnh phụ kiện và mở lại thiết kế đã lưu.
             </Text>
           </div>
 
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Button icon={<ReloadOutlined />} onClick={() => setReload(value => value + 1)} disabled={isLoading}>Làm mới</Button>
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -95,6 +104,7 @@ export const MyModelsPage: React.FC = () => {
           >
             Tạo kỷ vật mới
           </Button>
+          </div>
         </div>
 
         {/* Content */}
@@ -207,7 +217,10 @@ export const MyModelsPage: React.FC = () => {
                   <Button
                     type="primary"
                     icon={<EyeOutlined />}
-                    onClick={() => navigate(`/reconstruction/${job.scanId || job.jobId}`)}
+                    onClick={() => navigate(
+                      `/reconstruction/${job.scanId}`,
+                      { state: { jobId: job.jobId } }
+                    )}
                     style={{
                       flex: 1,
                       background: 'var(--primary, #7C5CFC)',
@@ -215,26 +228,16 @@ export const MyModelsPage: React.FC = () => {
                       fontWeight: 600,
                     }}
                   >
-                    Xem 3D & In MVP
+                    Xem 3D & Tùy chỉnh
                   </Button>
 
-                  <Button
-                    icon={<PrinterOutlined />}
-                    onClick={() => navigate(`/reconstruction/${job.scanId || job.jobId}`)}
-                    style={{
-                      borderRadius: 8,
-                      borderColor: '#443C68',
-                      color: 'var(--text-primary)',
-                      background: 'transparent',
-                    }}
-                  >
-                    Đặt in
-                  </Button>
                 </div>
               </Card>
             ))}
           </div>
         )}
+        {!isLoading && !hasError && total > 12 && <Pagination current={page} total={total} pageSize={12}
+          showSizeChanger={false} onChange={setPage} style={{ marginTop: 24, display: 'flex', justifyContent: 'center' }} />}
     </ShoppingPageFrame>
   );
 };

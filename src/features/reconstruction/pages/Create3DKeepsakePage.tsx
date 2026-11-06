@@ -1,5 +1,6 @@
 import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { apiErrorStatus } from '../../../services/apiErrors';
 import {
   Card,
   Button,
@@ -11,6 +12,8 @@ import {
   Progress,
   App,
   Popconfirm,
+  Select,
+  Alert,
 } from 'antd';
 import {
   UploadOutlined,
@@ -18,12 +21,11 @@ import {
   DeleteOutlined,
   ThunderboltOutlined,
   InfoCircleOutlined,
-  StarOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { CameraCaptureModal } from '../components/CameraCaptureModal';
 import { scanReconstructionService } from '../../../services/scanReconstructionService';
-import type { ReconstructionCapabilities } from '../../../services/scanReconstructionService';
+import type { ReconstructionCapabilities, ViewHint } from '../../../services/scanReconstructionService';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -31,16 +33,32 @@ interface LocalImageItem {
   id: string;
   file: File;
   previewUrl: string;
-  isPrimary: boolean;
+  viewHint: ViewHint | null;
 }
+
+const REQUIRED_VIEW_HINTS: ViewHint[] = ['front', 'left', 'right'];
+const VIEW_HINT_OPTIONS: Array<{ value: ViewHint; label: string }> = [
+  { value: 'front', label: 'Chính diện (front)' },
+  { value: 'left', label: 'Nghiêng trái (left)' },
+  { value: 'right', label: 'Nghiêng phải (right)' },
+  { value: 'back', label: 'Phía sau (back, tùy chọn)' },
+];
 
 export const Create3DKeepsakePage: React.FC = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
 
   const [capabilities, setCapabilities] = useState<ReconstructionCapabilities | null>(null);
+  const [capabilitiesError, setCapabilitiesError] = useState<string | null>(null);
+  const [capabilitiesReload, setCapabilitiesReload] = useState(0);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const submittingRef = useRef(false);
+  const mountedRef = useRef(true);
+  const pendingScanRef = useRef<{ signature: string; id: string; uploaded: Map<string, string>; submitted: boolean } | null>(null);
 
   const [images, setImages] = useState<LocalImageItem[]>([]);
+  const imagesRef = useRef<LocalImageItem[]>([]);
+  const imageUrlsRef = useRef(new Set<string>());
   const [cameraModalOpen, setCameraModalOpen] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
 
@@ -54,73 +72,135 @@ export const Create3DKeepsakePage: React.FC = () => {
     scanReconstructionService
       .getCapabilities()
       .then((data) => {
-        if (isMounted) setCapabilities(data);
+        if (isMounted) {
+          setCapabilities(data);
+          setCapabilitiesError(null);
+        }
       })
-      .catch(() => {
-        // Fallback default
+      .catch((error: unknown) => {
+        if (isMounted) {
+          setCapabilitiesError(
+            error instanceof Error ? error.message : 'Không thể tải cấu hình reconstruction từ máy chủ.'
+          );
+        }
       });
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [capabilitiesReload]);
+  useEffect(() => { mountedRef.current = true;return () => { mountedRef.current = false; }; }, []);
 
-  // Cleanup object URLs on unmount
+  // Keep the ref in sync for synchronous multi-file selection events.
   useEffect(() => {
-    return () => {
-      images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
-    };
+    imagesRef.current = images;
   }, [images]);
 
-  const minImages = capabilities?.minImages ?? 1;
-  const maxImages = capabilities?.maxImages ?? 50;
+  // Cleanup object URLs on unmount.
+  useEffect(() => {
+    const imageUrls = imageUrlsRef.current;
+    return () => {
+      imageUrls.forEach((url) => URL.revokeObjectURL(url));
+      imageUrls.clear();
+    };
+  }, []);
+
+  const minImages = capabilities?.minImages ?? 3;
+  const maxImages = capabilities?.maxImages ?? 4;
 
   // Add captured or picked file to image list
   const addFile = (file: File) => {
-    if (images.length >= maxImages) {
+    if (submittingRef.current) return;
+    if (!capabilities) {
+      message.error('Chưa tải được cấu hình ảnh từ máy chủ. Vui lòng tải lại trang hoặc thử lại sau.');
+      return;
+    }
+
+    if (imagesRef.current.length >= maxImages) {
       message.warning(`Đã đạt giới hạn tối đa ${maxImages} ảnh cho một phiên tái tạo.`);
       return;
     }
 
-    const previewUrl = URL.createObjectURL(file);
-    const isFirst = images.length === 0;
+    if (!capabilities.supportedFormats.includes(file.type)) {
+      message.error(`Định dạng ${file.type || 'không xác định'} không được hỗ trợ.`);
+      return;
+    }
 
-    setImages((prev) => [
-      ...prev,
+    if (file.size > capabilities.maxFileSizeMb * 1024 * 1024) {
+      message.error(`Mỗi ảnh không được vượt quá ${capabilities.maxFileSizeMb} MiB.`);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    imageUrlsRef.current.add(previewUrl);
+    const next = [
+      ...imagesRef.current,
       {
         id: `img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         file,
         previewUrl,
-        isPrimary: isFirst,
+        viewHint: null,
       },
-    ]);
+    ];
+    imagesRef.current = next;
+    setImages(next);
+    return true;
   };
 
   const handleRemoveImage = (id: string) => {
-    setImages((prev) => {
-      const target = prev.find((i) => i.id === id);
-      if (target) URL.revokeObjectURL(target.previewUrl);
-      const remaining = prev.filter((i) => i.id !== id);
-      if (target?.isPrimary && remaining.length > 0) {
-        remaining[0].isPrimary = true;
-      }
-      return remaining;
-    });
+    if (submittingRef.current) return;
+    const target = imagesRef.current.find((image) => image.id === id);
+    if (target) {
+      URL.revokeObjectURL(target.previewUrl);
+      imageUrlsRef.current.delete(target.previewUrl);
+    }
+    const next = imagesRef.current.filter((image) => image.id !== id);
+    imagesRef.current = next;
+    setImages(next);
   };
 
-  const handleSetPrimary = (id: string) => {
-    setImages((prev) =>
-      prev.map((img) => ({
-        ...img,
-        isPrimary: img.id === id,
-      }))
-    );
+  const handleSetViewHint = (id: string, viewHint: ViewHint | null) => {
+    if (submittingRef.current) return;
+    if (viewHint && imagesRef.current.some((image) => image.id !== id && image.viewHint === viewHint)) {
+      message.warning(`Đã có ảnh được gán góc ${viewHint}. Mỗi góc chỉ dùng một ảnh.`);
+      return;
+    }
+    const next = imagesRef.current.map((image) => image.id === id ? { ...image, viewHint } : image);
+    imagesRef.current = next;
+    setImages(next);
+  };
+
+  const handleRemoveAllImages = () => {
+    if (submittingRef.current) return;
+    imageUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    imageUrlsRef.current.clear();
+    imagesRef.current = [];
+    setImages([]);
   };
 
   // Submit flow: Create Scan Session -> Upload Images -> Submit Reconstruction Job
   const handleSubmitJob = async () => {
-    if (images.length < minImages) {
-      message.error(`Vui lòng thêm tối thiểu ${minImages} ảnh để AI có thể phân tích và tái tạo mô hình 3D.`);
+    if (submittingRef.current) return;
+    if (!capabilities) {
+      message.error('Chưa lấy được cấu hình reconstruction từ máy chủ.');
+      return;
+    }
+
+    if (images.length < minImages || images.length > maxImages) {
+      message.error(`Cần chọn từ ${minImages} đến ${maxImages} ảnh.`);
+      return;
+    }
+
+    const currentImages = imagesRef.current;
+    const assignedViews = currentImages.map((image) => image.viewHint).filter((view): view is ViewHint => view !== null);
+    const missingViews = REQUIRED_VIEW_HINTS.filter((view) => !assignedViews.includes(view));
+    if (currentImages.length < minImages || currentImages.length > maxImages || missingViews.length > 0) {
+      message.error(`Vui lòng gán đủ góc: ${missingViews.join(', ')}.`);
+      return;
+    }
+
+    if (assignedViews.length !== currentImages.length) {
+      message.error('Mỗi ảnh được gửi cần có một góc chụp; ảnh back là tùy chọn.');
       return;
     }
 
@@ -130,50 +210,72 @@ export const Create3DKeepsakePage: React.FC = () => {
     }
 
     try {
+      submittingRef.current = true;
       setIsSubmitting(true);
+      setSubmitError(null);
       setUploadProgress(10);
       setStatusMessage('Đang khởi tạo phiên quét 3D an toàn...');
 
       // 1. Create Scan
       const sessionName = `Kỷ vật 3D (${new Date().toLocaleDateString('vi-VN')})`;
-      const scan = await scanReconstructionService.createScan(sessionName);
+      const signature = currentImages.map(image => `${image.id}:${image.viewHint}`).join('|');
+      if (pendingScanRef.current?.signature !== signature) {
+        const scan = await scanReconstructionService.createScan(sessionName);
+        pendingScanRef.current = { signature, id: scan.id, uploaded: new Map(), submitted: false };
+      }
+      const pending = pendingScanRef.current!;
+      const scan = { id: pending.id };
       setUploadProgress(25);
 
       // 2. Upload images sequentially
-      const total = images.length;
-      let primaryBackendImageId = '';
+      const total = currentImages.length;
+      let frontImageId = '';
 
       for (let i = 0; i < total; i++) {
-        const item = images[i];
-        setStatusMessage(`Đang tải lên và mã hóa ảnh an toàn trên Cloudinary (${i + 1}/${total})...`);
-        const uploaded = await scanReconstructionService.uploadImage(scan.id, item.file);
-
-        if (item.isPrimary || !primaryBackendImageId) {
-          primaryBackendImageId = uploaded.id;
+        const item = currentImages[i];
+        setStatusMessage(`Đang tải ảnh ${item.viewHint} lên phiên scan (${i + 1}/${total})...`);
+        let imageId = pending.uploaded.get(item.id);
+        if (!imageId) {
+          const uploaded = await scanReconstructionService.uploadImage(scan.id, item.file, item.viewHint!);
+          imageId = uploaded.id;
+          pending.uploaded.set(item.id, imageId);
         }
+        if (item.viewHint === 'front') frontImageId = imageId;
 
         const pct = 25 + Math.round(((i + 1) / total) * 55);
         setUploadProgress(pct);
       }
 
-      if (!primaryBackendImageId) {
-        throw new Error('Không thể xác nhận mã định danh ảnh trên hệ thống lưu trữ. Vui lòng thử lại.');
+      if (!frontImageId) {
+        throw new Error('Không nhận được ID của ảnh front sau khi upload.');
       }
 
-      // 3. Submit Reconstruction Job
-      setStatusMessage('Đang gửi lệnh tái tạo lên cụm AI FastAPI / Hunyuan3D-2...');
+      // 3. Submit a free preview job using the front image as the required primary reference.
+      setStatusMessage('Đang gửi bộ ảnh front/left/right tới dịch vụ reconstruction...');
       setUploadProgress(85);
 
-      const job = await scanReconstructionService.submitJob(scan.id, primaryBackendImageId);
+      let job;
+      if (pending.submitted) {
+        // A timed-out POST may already have created the job. Resolve it before
+        // issuing another creation request for this same scan.
+        try { job = await scanReconstructionService.getLatestJobForScan(scan.id); }
+        catch (error) { if (apiErrorStatus(error) !== 404) throw error; }
+      }
+      if (!job) {
+        pending.submitted = true;
+        job = await scanReconstructionService.submitPreviewJob(scan.id, frontImageId);
+      }
       setUploadProgress(100);
       setStatusMessage('Khởi tạo thành công! Đang chuyển hướng tới màn hình theo dõi 3D...');
 
-      message.success('Đã bắt đầu dựng mô hình 3D! Cụm GPU đang xử lý ảnh của bạn.');
+      message.success('Đã bắt đầu dựng mô hình xem trước.');
       setTimeout(() => {
-        navigate(`/reconstruction/${scan.id}`, { state: { jobId: job.jobId } });
+        if (mountedRef.current) navigate(`/reconstruction/${scan.id}`, { state: { jobId: job.jobId } });
       }, 600);
-    } catch {
-      message.error('Không thể tạo phiên quét 3D. Vui lòng kiểm tra kết nối mạng và thử lại.');
+    } catch (error: unknown) {
+      message.error(error instanceof Error ? error.message : 'Không thể tạo phiên scan và reconstruction.');
+      setSubmitError('Chưa gửi xong bộ ảnh. Giữ nguyên lựa chọn và bấm tạo lại để tiếp tục phiên đang tải; các ảnh đã nhận thành công sẽ không được gửi lại.');
+      submittingRef.current = false;
       setIsSubmitting(false);
       setUploadProgress(0);
       setStatusMessage('');
@@ -185,15 +287,27 @@ export const Create3DKeepsakePage: React.FC = () => {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <Tag color="purple" style={{ padding: '4px 14px', borderRadius: 9999, fontWeight: 700, fontSize: '0.8rem' }}>
-            DEEPTECH 3D RECONSTRUCTION
+            MEMENTO3D HEAD RECONSTRUCTION
           </Tag>
           <Title level={1} style={{ color: 'var(--text-primary)', marginTop: 12, fontWeight: 800 }}>
             Tạo Kỷ Vật 3D Cá Nhân Hóa
           </Title>
           <Paragraph style={{ color: 'var(--text-secondary)', maxWidth: 680, margin: '8px auto 0', fontSize: '1rem' }}>
-            Chụp ảnh bằng camera laptop hoặc tải lên tập ảnh từ điện thoại thông minh. Trí tuệ nhân tạo sẽ biến chuỗi ảnh thành mô hình 3D chân thực, sẵn sàng để chế tác in vật lý.
+            Chụp hoặc tải lên bộ ảnh có đủ góc chính diện, trái và phải. Bạn có thể kiểm tra mô hình xem trước sau khi reconstruction hoàn tất.
           </Paragraph>
         </div>
+
+        {capabilitiesError && (
+          <Alert
+            type="error"
+            showIcon
+            message="Không tải được cấu hình reconstruction"
+            description={capabilitiesError}
+            action={<Button onClick={() => { setCapabilitiesError(null);setCapabilitiesReload(value => value + 1); }}>Tải lại cấu hình</Button>}
+            style={{ marginBottom: 24 }}
+          />
+        )}
+        {submitError && <Alert type="error" showIcon title="Chưa tạo được tác vụ" description={submitError} style={{ marginBottom: 24 }} />}
 
         {/* Input Guidelines Alert */}
         <Card
@@ -217,7 +331,9 @@ export const Create3DKeepsakePage: React.FC = () => {
               <div style={{ marginTop: 8, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <Tag color="blue">Tối thiểu: {minImages} ảnh</Tag>
                 <Tag color="cyan">Tối đa: {maxImages} ảnh</Tag>
-                <Tag color="geekblue">Định dạng: JPG, PNG, WEBP (Tối đa 20MB/ảnh)</Tag>
+                <Tag color="geekblue">
+                  Định dạng: {capabilities?.supportedFormats.join(', ') || 'đang tải'} (tối đa {capabilities?.maxFileSizeMb ?? '—'} MiB/ảnh)
+                </Tag>
               </div>
             </div>
           </div>
@@ -272,7 +388,7 @@ export const Create3DKeepsakePage: React.FC = () => {
           {/* Card 2: Upload Files */}
           <Upload
             multiple
-            accept="image/jpeg,image/png,image/webp"
+            accept={capabilities?.supportedFormats.join(',') || 'image/jpeg,image/png'}
             showUploadList={false}
             beforeUpload={(file) => {
               addFile(file);
@@ -330,10 +446,10 @@ export const Create3DKeepsakePage: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <div>
               <Title level={4} style={{ color: 'var(--text-primary)', margin: 0, fontWeight: 700 }}>
-                Danh sách ảnh đầu vào ({images.length} / {minImages} tối thiểu)
+                Ảnh đầu vào ({images.length}/{maxImages})
               </Title>
               <Text style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                Bấm vào biểu tượng ngôi sao để chọn một ảnh làm ảnh góc chính (Primary view).
+                Gán đúng góc chụp cho từng ảnh. Cần đủ front, left và right; back là tùy chọn.
               </Text>
             </div>
 
@@ -341,7 +457,7 @@ export const Create3DKeepsakePage: React.FC = () => {
               {images.length > 0 && (
                 <Popconfirm
                   title="Xóa toàn bộ ảnh đã chọn?"
-                  onConfirm={() => setImages([])}
+                  onConfirm={handleRemoveAllImages}
                   okText="Xóa tất cả"
                   cancelText="Hủy"
                 >
@@ -383,7 +499,7 @@ export const Create3DKeepsakePage: React.FC = () => {
                     aspectRatio: '1',
                     borderRadius: 12,
                     overflow: 'hidden',
-                    border: item.isPrimary ? '2.5px solid var(--primary, #7C5CFC)' : '1px solid var(--border-default, #2E274A)',
+                    border: item.viewHint ? '2.5px solid var(--primary, #7C5CFC)' : '1px solid var(--border-default, #2E274A)',
                     background: '#0B0A10',
                   }}
                 >
@@ -393,8 +509,7 @@ export const Create3DKeepsakePage: React.FC = () => {
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
 
-                  {/* Primary Badge */}
-                  {item.isPrimary && (
+                  {item.viewHint && (
                     <div
                       style={{
                         position: 'absolute',
@@ -408,7 +523,7 @@ export const Create3DKeepsakePage: React.FC = () => {
                         borderRadius: 9999,
                       }}
                     >
-                      Ảnh chính
+                      {item.viewHint}
                     </div>
                   )}
 
@@ -422,19 +537,6 @@ export const Create3DKeepsakePage: React.FC = () => {
                       gap: 4,
                     }}
                   >
-                    {!item.isPrimary && (
-                      <Button
-                        shape="circle"
-                        size="small"
-                        icon={<StarOutlined />}
-                        onClick={() => handleSetPrimary(item.id)}
-                        style={{
-                          background: 'rgba(0, 0, 0, 0.65)',
-                          color: '#facc15',
-                          borderColor: 'transparent',
-                        }}
-                      />
-                    )}
                     <Button
                       shape="circle"
                       size="small"
@@ -447,6 +549,25 @@ export const Create3DKeepsakePage: React.FC = () => {
                       }}
                     />
                   </div>
+
+                  <Select
+                    value={item.viewHint ?? undefined}
+                    placeholder="Chọn góc ảnh"
+                    options={VIEW_HINT_OPTIONS.map((option) => ({
+                      ...option,
+                      disabled: images.some((other) => other.id !== item.id && other.viewHint === option.value),
+                    }))}
+                    onChange={(value: ViewHint | undefined) => handleSetViewHint(item.id, value ?? null)}
+                    allowClear
+                    style={{
+                      position: 'absolute',
+                      bottom: 8,
+                      left: 8,
+                      right: 8,
+                      width: 'calc(100% - 16px)',
+                    }}
+                    disabled={isSubmitting}
+                  />
                 </div>
               ))}
             </div>
@@ -494,11 +615,11 @@ export const Create3DKeepsakePage: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
             <div>
               <Text style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'block' }}>
-                Đã sẵn sàng {images.length}/{minImages} ảnh đầu vào
+                Đã gán góc: {REQUIRED_VIEW_HINTS.filter((view) => images.some((image) => image.viewHint === view)).length}/3
               </Text>
-              {images.length < minImages && (
+              {REQUIRED_VIEW_HINTS.some((view) => !images.some((image) => image.viewHint === view)) && (
                 <Text type="danger" style={{ fontSize: '0.8rem' }}>
-                  Cần thêm ít nhất {minImages - images.length} ảnh nữa để tiếp tục.
+                  Cần gán đủ ba ảnh front, left và right để tiếp tục.
                 </Text>
               )}
             </div>
@@ -508,7 +629,15 @@ export const Create3DKeepsakePage: React.FC = () => {
               size="large"
               icon={<ThunderboltOutlined />}
               onClick={handleSubmitJob}
-              disabled={images.length < minImages || !consentChecked || isSubmitting}
+              disabled={
+                !capabilities ||
+                images.length < minImages ||
+                images.length > maxImages ||
+                REQUIRED_VIEW_HINTS.some((view) => !images.some((image) => image.viewHint === view)) ||
+                images.some((image) => image.viewHint === null) ||
+                !consentChecked ||
+                isSubmitting
+              }
               loading={isSubmitting}
               style={{
                 background: 'var(--primary, #7C5CFC)',
@@ -530,8 +659,7 @@ export const Create3DKeepsakePage: React.FC = () => {
         open={cameraModalOpen}
         onClose={() => setCameraModalOpen(false)}
         onPhotoCaptured={(file) => {
-          addFile(file);
-          message.success('Đã lưu ảnh từ camera vào danh sách quét 3D.');
+          if (addFile(file)) message.success('Đã lưu ảnh từ camera vào danh sách quét 3D.');
         }}
       />
     </ShoppingPageFrame>

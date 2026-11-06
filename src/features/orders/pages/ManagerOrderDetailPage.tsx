@@ -17,6 +17,8 @@ import {
   Skeleton,
   Radio,
   InputNumber,
+  Dropdown,
+  Alert,
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -40,6 +42,7 @@ import {
   GiftOutlined,
   FormOutlined,
   EyeOutlined,
+  MoreOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -51,15 +54,19 @@ import { printJobApi } from '../../printjob/api/printJobApi';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import { OrderTimeline } from '../components/OrderTimeline';
 import { OrderPrintJobLinkModal } from '../components/OrderPrintJobLinkModal';
+import { CustomPrintDesignPanel, isCustomPrintOrder } from '../components/CustomPrintDesignPanel';
+import { customPrintApi } from '../api/customPrintApi';
 import { formatCurrency, formatOrderDate } from '../utils/orderFormatters';
 import { getNextAllowedStatuses } from '../utils/orderStateMachine';
 import type { OrderStatus } from '../types/order.types';
+import type { PrintJob } from '../../printjob/types/printJob.types';
 
 export const ManagerOrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const { data: order, isLoading, isError, refetch, isFetching } = useOrderDetail(id);
+  const customDesign = useQuery({ queryKey: ['custom-print-design', id], queryFn: () => customPrintApi.get(id!), enabled: !!id && !!order && isCustomPrintOrder(order), retry: false });
   const updateOrderMutation = useUpdateOrder(id || '');
   const { data: payments = [], refetch: refetchPayments } = usePaymentsList();
   const confirmCashMutation = useConfirmCash();
@@ -73,7 +80,12 @@ export const ManagerOrderDetailPage: React.FC = () => {
   const [isReviewing, setIsReviewing] = useState(false);
 
   // Fetch linked print jobs for this order
-  const { refetch: refetchPrintJobs } = useQuery({
+  const {
+    data: printJobsPage,
+    isLoading: isLoadingPrintJobs,
+    isError: isPrintJobsError,
+    refetch: refetchPrintJobs,
+  } = useQuery({
     queryKey: ['order-print-jobs', id],
     queryFn: () => printJobApi.list({ limit: 50 }),
     enabled: Boolean(id),
@@ -139,12 +151,73 @@ export const ManagerOrderDetailPage: React.FC = () => {
   const orderPayments = payments.filter((p) => p.orderId === order.id);
   const cashPayment = orderPayments.find((p) => p.paymentMethod === 'CASH');
   const orderCode = order.orderCode || order.id.slice(0, 8).toUpperCase();
+  const isCash = order.paymentMethod === 'CASH';
+  const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === 'SUCCESS';
+  const totalAmount = order.totalAmount ?? order.totalPrice;
+  const feasibilityStatus = order.feasibilityStatus || 'PENDING_REVIEW';
+  const isScanOrder = Boolean(order.scanId);
+  const isScanApproved = !isScanOrder || feasibilityStatus === 'ACCEPTED';
+  const linkedPrintJobs: PrintJob[] = (printJobsPage?.content ?? []).filter((job) => job.orderId === order.id);
+  const hasLinkedPrintJob = linkedPrintJobs.some((job) => job.status !== 'CANCELLED');
+  const hasRunningPrintJob = linkedPrintJobs.some((job) => job.status === 'PRINTING' || job.status === 'COMPLETED');
+  const hasCompletedPrintJob = linkedPrintJobs.some((job) => job.status === 'COMPLETED');
   const allowedStatuses = getNextAllowedStatuses(order.status, true);
+  const canAdvanceOrder = isPaid && isScanApproved;
+  const availableTransitions = allowedStatuses.filter((status) => {
+    if (status === 'CANCELLED') return true;
+    if (!canAdvanceOrder) return false;
+    if (order.status === 'PROCESSING' && status === 'PRINTING') return hasRunningPrintJob;
+    if (order.status === 'PRINTING' && status === 'READY') return hasCompletedPrintJob;
+    return true;
+  });
+  const primaryTransition = availableTransitions.find((status) => status !== 'CANCELLED');
+  const secondaryTransitions = availableTransitions.filter((status) => status !== primaryTransition);
+  const canCreatePrintJob = order.status === 'PROCESSING'
+    && (!isCustomPrintOrder(order) || customDesign.data?.approvedForProduction === true)
+    && canAdvanceOrder
+    && !isLoadingPrintJobs
+    && !isPrintJobsError
+    && Boolean(printJobsPage)
+    && !hasLinkedPrintJob;
+  const canReviewFeasibility = isScanOrder
+    && (!isCustomPrintOrder(order) || customDesign.data?.approvedForProduction === true)
+    && !isPaid
+    && order.status !== 'CANCELLED'
+    && feasibilityStatus !== 'ACCEPTED'
+    && feasibilityStatus !== 'REJECTED';
+
+  const transitionLabels: Partial<Record<OrderStatus, string>> = {
+    CONFIRMED: 'Xác nhận đơn hàng',
+    PROCESSING: 'Đưa vào xếp lịch sản xuất',
+    PRINTING: 'Xác nhận bắt đầu in',
+    READY: 'Đánh dấu hoàn tất chế tác',
+    SHIPPED: 'Bàn giao cho đơn vị vận chuyển',
+    DELIVERED: 'Xác nhận đã giao hàng',
+    COMPLETED: 'Hoàn tất đơn hàng',
+    CANCELLED: 'Hủy đơn hàng',
+    REFUNDED: 'Đánh dấu đã hoàn tiền',
+  };
+
+  const statusActionNotice = isScanOrder && feasibilityStatus === 'PENDING_REVIEW'
+    ? 'Cần thẩm định hồ sơ và gửi báo giá trước khi khách hàng có thể chấp thuận, thanh toán.'
+    : isScanOrder && feasibilityStatus === 'FEASIBLE'
+      ? 'Chờ khách hàng chấp thuận báo giá và hoàn tất thanh toán trước khi chuyển sang sản xuất.'
+      : !isPaid
+        ? 'Chờ khách hàng hoàn tất thanh toán trước khi chuyển đơn vào sản xuất.'
+        : !isScanApproved
+      ? 'Chờ khách hàng chấp thuận báo giá và mô hình trước khi chuyển sang sản xuất.'
+      : order.status === 'PROCESSING' && isLoadingPrintJobs
+        ? 'Đang kiểm tra lệnh in đã liên kết với đơn hàng.'
+        : order.status === 'PROCESSING' && hasLinkedPrintJob && !hasRunningPrintJob
+        ? 'Lệnh in đã được tạo; chỉ chuyển đơn sang “Đang in” khi lệnh in thực sự bắt đầu.'
+        : order.status === 'PRINTING' && !hasCompletedPrintJob
+          ? 'Chỉ đánh dấu hoàn tất chế tác sau khi lệnh in liên kết đã hoàn tất.'
+          : null;
 
   const handleStatusTransition = async (nextStatus: OrderStatus) => {
     try {
       await updateOrderMutation.mutateAsync({ status: nextStatus });
-      message.success(`Đã cập nhật trạng thái đơn hàng thành: ${nextStatus}`);
+      message.success(`Đã cập nhật trạng thái: ${transitionLabels[nextStatus] || nextStatus}`);
       refetch();
     } catch (err: any) {
       message.error(err.message || 'Không thể cập nhật trạng thái đơn hàng');
@@ -182,7 +255,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
     try {
       setIsReviewing(true);
       await orderApi.reviewFeasibility(order.id, {
-        status: values.status,
+        decision: values.status,
         notes: values.notes,
         finalPrice: values.finalPrice ? Number(values.finalPrice) : undefined,
         estimatedDays: values.estimatedDays ? Number(values.estimatedDays) : undefined,
@@ -197,11 +270,6 @@ export const ManagerOrderDetailPage: React.FC = () => {
       setIsReviewing(false);
     }
   };
-
-  const isCash = order.paymentMethod === 'CASH';
-  const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === 'SUCCESS';
-  const totalAmount = order.totalAmount ?? order.totalPrice;
-
 
   const internalCost = order.internalCost || 0;
   const grossProfit = Math.max(0, totalAmount - internalCost);
@@ -229,83 +297,80 @@ export const ManagerOrderDetailPage: React.FC = () => {
         </Space>
 
         <Space wrap>
-          {/* Status Transitions */}
-          {allowedStatuses.map((st) => (
-            <Button
-              key={st}
-              type={st === 'CANCELLED' ? 'default' : 'primary'}
-              danger={st === 'CANCELLED'}
-              onClick={() => handleStatusTransition(st)}
-              loading={updateOrderMutation.isPending}
-              style={{
-                borderRadius: 8,
-                fontWeight: 600,
-                background:
-                  st === 'PRINTING'
-                    ? '#0ea5e9'
-                    : st === 'SHIPPED'
-                    ? '#f59e0b'
-                    : st === 'DELIVERED'
-                    ? 'var(--tertiary)'
-                    : undefined,
-                borderColor:
-                  st === 'PRINTING'
-                    ? '#0ea5e9'
-                    : st === 'SHIPPED'
-                    ? '#f59e0b'
-                    : st === 'DELIVERED'
-                    ? 'var(--tertiary)'
-                    : undefined,
-              }}
-            >
-              Chuyển sang: {st}
-            </Button>
-          ))}
-
-          {(order.status === 'CONFIRMED' || order.status === 'PRINTING') && (
+          {(primaryTransition || canCreatePrintJob) && (
             <Button
               type="primary"
-              icon={<PrinterOutlined />}
-              onClick={() => setPrintJobModalOpen(true)}
-              style={{
-                background: 'var(--primary)',
-                borderColor: 'var(--primary)',
-                fontWeight: 600,
-                borderRadius: 8,
+              icon={canCreatePrintJob ? <PrinterOutlined /> : undefined}
+              onClick={() => {
+                if (canCreatePrintJob) {
+                  setPrintJobModalOpen(true);
+                } else if (primaryTransition) {
+                  void handleStatusTransition(primaryTransition);
+                }
               }}
+              loading={updateOrderMutation.isPending}
+              style={{ borderRadius: 8, fontWeight: 700 }}
             >
-              Lập lệnh in 3D
+              {canCreatePrintJob ? 'Lập lệnh in 3D' : transitionLabels[primaryTransition!]}
             </Button>
           )}
 
-          {order.scanId && (
-            <Button
-              type="primary"
-              icon={<SafetyCertificateOutlined />}
-              onClick={() => {
-                feasibilityForm.setFieldsValue({
-                  status: order.feasibilityStatus || 'FEASIBLE',
-                  notes: order.feasibilityNotes || '',
-                  finalPrice: order.totalAmount ?? order.totalPrice,
-                  estimatedDays: order.estimatedProductionDays || 3,
-                  revisionGlbUrl: order.revisionGlbUrl || '',
-                });
-                setFeasibilityModalOpen(true);
+          {secondaryTransitions.length > 0 && (
+            <Dropdown
+              menu={{
+                items: secondaryTransitions.map((status) => ({
+                  key: status,
+                  label: transitionLabels[status] || status,
+                  danger: status === 'CANCELLED',
+                })),
+                onClick: ({ key }) => {
+                  const status = secondaryTransitions.find((candidate) => candidate === key);
+                  if (!status) return;
+                  if (status === 'CANCELLED') {
+                    Modal.confirm({
+                      title: 'Hủy đơn hàng này?',
+                      content: `Đơn #${orderCode} sẽ được chuyển sang trạng thái đã hủy.`,
+                      okText: 'Xác nhận hủy',
+                      cancelText: 'Giữ đơn hàng',
+                      okButtonProps: { danger: true },
+                      onOk: () => handleStatusTransition(status),
+                    });
+                    return;
+                  }
+                  void handleStatusTransition(status);
+                },
               }}
-              style={{
-                background: '#8b5cf6',
-                borderColor: '#8b5cf6',
-                fontWeight: 600,
-                borderRadius: 8,
-              }}
+              trigger={['click']}
             >
-              Thẩm định kỹ thuật & Báo giá
-            </Button>
+              <Button icon={<MoreOutlined />} style={{ borderRadius: 8 }}>
+                Thao tác khác
+              </Button>
+            </Dropdown>
           )}
         </Space>
       </div>
 
+      {statusActionNotice && (
+        <Alert
+          type="info"
+          showIcon
+          message={statusActionNotice}
+          style={{ marginBottom: 20, borderRadius: 8 }}
+        />
+      )}
+      {isPrintJobsError && order.status === 'PROCESSING' && (
+        <Alert
+      type="error"
+      showIcon
+      message="Không tải được dữ liệu lệnh in"
+      description="Hãy làm mới trang để kiểm tra các lệnh in hiện có trước khi tiếp tục, tránh tạo trùng lệnh."
+      action={<Button size="small" onClick={() => refetchPrintJobs()}>Tải lại lệnh in</Button>}
+      style={{ marginBottom: 20, borderRadius: 8 }}
+        />
+      )}
+
       {/* Order Banner Header */}
+      <CustomPrintDesignPanel key={order.id} order={order} manager />
       <Card
         style={{
           background: 'var(--bg-card)',
@@ -432,28 +497,30 @@ export const ManagerOrderDetailPage: React.FC = () => {
               <div style={{ marginTop: 16, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <Button
                   icon={<EyeOutlined />}
-                  onClick={() => navigate(`/reconstruction/${order.scanId}`)}
+                  onClick={() => isCustomPrintOrder(order) ? document.getElementById(`custom-print-design-${order.id}`)?.scrollIntoView({ behavior: 'smooth' }) : navigate(`/reconstruction/${order.scanId}`)}
                   style={{ borderRadius: 8 }}
                 >
-                  Xem mô hình 3D gốc
+                  Xem mô hình 3D của đơn
                 </Button>
-                <Button
-                  type="primary"
-                  icon={<SafetyCertificateOutlined />}
-                  onClick={() => {
-                    feasibilityForm.setFieldsValue({
-                      status: order.feasibilityStatus || 'FEASIBLE',
-                      notes: order.feasibilityNotes || '',
-                      finalPrice: order.totalAmount ?? order.totalPrice,
-                      estimatedDays: order.estimatedProductionDays || 3,
-                      revisionGlbUrl: order.revisionGlbUrl || '',
-                    });
-                    setFeasibilityModalOpen(true);
-                  }}
-                  style={{ background: '#8b5cf6', borderColor: '#8b5cf6', borderRadius: 8 }}
-                >
-                  Cập nhật Thẩm định & Báo giá
-                </Button>
+                {canReviewFeasibility && (
+                  <Button
+                    type="primary"
+                    icon={<SafetyCertificateOutlined />}
+                    onClick={() => {
+                      feasibilityForm.setFieldsValue({
+                        status: feasibilityStatus === 'PENDING_REVIEW' ? 'FEASIBLE' : feasibilityStatus,
+                        notes: order.feasibilityNotes || '',
+                        finalPrice: order.totalAmount ?? order.totalPrice,
+                        estimatedDays: order.estimatedProductionDays || 3,
+                        revisionGlbUrl: order.revisionGlbUrl || '',
+                      });
+                      setFeasibilityModalOpen(true);
+                    }}
+                    style={{ background: '#8b5cf6', borderColor: '#8b5cf6', borderRadius: 8 }}
+                  >
+                    {feasibilityStatus === 'PENDING_REVIEW' ? 'Thẩm định & gửi báo giá' : 'Cập nhật thẩm định'}
+                  </Button>
+                )}
               </div>
             </Card>
           )}
@@ -918,7 +985,7 @@ export const ManagerOrderDetailPage: React.FC = () => {
           layout="vertical"
           onFinish={handleReviewFeasibility}
           initialValues={{
-            status: order.feasibilityStatus || 'FEASIBLE',
+            status: feasibilityStatus === 'PENDING_REVIEW' ? 'FEASIBLE' : feasibilityStatus,
             notes: order.feasibilityNotes || '',
             finalPrice: order.totalAmount ?? order.totalPrice,
             estimatedDays: order.estimatedProductionDays || 3,

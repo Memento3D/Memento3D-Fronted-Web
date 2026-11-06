@@ -12,19 +12,18 @@ export const getNextAllowedStatuses = (currentStatus: OrderStatus, isStaff: bool
     case 'PENDING_PAYMENT':
       return ['CONFIRMED', 'CANCELLED'];
     case 'CONFIRMED':
-      return ['PROCESSING', 'PRINTING', 'CANCELLED'];
+      return ['PROCESSING', 'CANCELLED'];
     case 'PROCESSING':
-      return ['PRINTING', 'READY', 'CANCELLED'];
+      return ['PRINTING', 'CANCELLED'];
     case 'PRINTING':
-      return ['READY', 'SHIPPED', 'CANCELLED'];
+      return ['READY', 'CANCELLED'];
     case 'READY':
-      return ['COMPLETED', 'SHIPPED'];
+      return ['SHIPPED', 'COMPLETED', 'CANCELLED'];
     case 'SHIPPED':
       return ['DELIVERED', 'COMPLETED'];
+    case 'CANCELLED':
     case 'DELIVERED':
     case 'COMPLETED':
-      return ['REFUNDED'];
-    case 'CANCELLED':
     case 'REFUNDED':
     default:
       return [];

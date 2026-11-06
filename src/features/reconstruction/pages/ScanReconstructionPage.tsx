@@ -5,7 +5,7 @@ import { Button, Typography, Space, Tag, Alert } from 'antd';
 import { ArrowLeftOutlined, HistoryOutlined, AppstoreOutlined, ReloadOutlined } from '@ant-design/icons';
 import { ReconstructionProgress } from '../components/ReconstructionProgress';
 import { Keepsake3DViewer } from '../components/Keepsake3DViewer';
-import { OrderKeepsakeModal } from '../components/OrderKeepsakeModal';
+import { ModelCustomizationWorkspace } from '../components/ModelCustomizationWorkspace';
 import { scanReconstructionService } from '../../../services/scanReconstructionService';
 
 const { Title, Text } = Typography;
@@ -22,34 +22,62 @@ export const ScanReconstructionPage: React.FC = () => {
   const [isDone, setIsDone] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [outputError, setOutputError] = useState<string | null>(null);
   const [modelPreviewUrl, setModelPreviewUrl] = useState<string | undefined>(undefined);
-  const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [modelOutputId, setModelOutputId] = useState<string | null>(null);
+  const navigateAway = (path: string) => navigate(path);
   const [jobProgress, setJobProgress] = useState(0);
   const [jobStage, setJobStage] = useState('queued');
+  const [jobStatus, setJobStatus] = useState('queued');
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   // Request token counter to prevent race conditions & stale job polling
   const activeRequestIdRef = useRef(0);
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const outputRequestRef = useRef<{ jobId: string; requestId: number; promise: Promise<void> } | null>(null);
+  const stopPolling = () => {
+    if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
+    pollTimerRef.current = null;
+  };
 
-  const fetchJobOutputs = async (jobId: string, currentReqId: number) => {
+  const fetchJobOutputs = (jobId: string, currentReqId: number): Promise<void> => {
+    const pending = outputRequestRef.current;
+    if (pending?.jobId === jobId && pending.requestId === currentReqId) return pending.promise;
+    const promise = loadJobOutputs(jobId, currentReqId).finally(() => {
+      if (outputRequestRef.current?.promise === promise) outputRequestRef.current = null;
+    });
+    outputRequestRef.current = { jobId, requestId: currentReqId, promise };
+    return promise;
+  };
+  const loadJobOutputs = async (jobId: string, currentReqId: number) => {
+    setOutputError(null);
     try {
       const outputs = await scanReconstructionService.getJobOutputs(jobId);
       if (currentReqId !== activeRequestIdRef.current) return;
 
       const glb = outputs.find((o) => o.fileFormat.toLowerCase() === 'glb' && o.outputUrl);
       if (glb && glb.outputUrl) {
+        setModelOutputId(glb.id);
         setModelPreviewUrl(glb.outputUrl);
         setIsDone(true);
         setIsFailed(false);
+      } else {
+        setIsDone(true);
+        setOutputError('Tác vụ đã hoàn tất nhưng API chưa trả về output GLB để xem.');
       }
-    } catch (err: any) {
-      console.warn('Could not fetch outputs for job:', jobId, err);
+    } catch (error: unknown) {
+      if (currentReqId !== activeRequestIdRef.current) return;
+      setIsDone(true);
+      setOutputError(error instanceof Error ? error.message : 'Không thể tải output của reconstruction.');
     }
   };
 
-  const resolveAndPollJob = async () => {
+  const resolveAndPollJob = async (jobIdOverride?: string) => {
+    stopPolling();
     const currentReqId = ++activeRequestIdRef.current;
     setIsFailed(false);
     setErrorMessage(null);
+    setConnectionError(null);
 
     // Handle demo route explicitly
     if (scanId === 'scan-demo' || scanId === 'demo') {
@@ -67,7 +95,7 @@ export const ScanReconstructionPage: React.FC = () => {
     }
 
     // Step 1: Resolve real Job ID
-    let resolvedJobId = activeJobId;
+    let resolvedJobId = jobIdOverride ?? activeJobId;
 
     if (!resolvedJobId && scanId) {
       try {
@@ -87,7 +115,7 @@ export const ScanReconstructionPage: React.FC = () => {
             resolvedJobId = directJob.jobId;
             setActiveJobId(resolvedJobId);
           }
-        } catch (err: any) {
+        } catch {
           if (currentReqId !== activeRequestIdRef.current) return;
           setIsFailed(true);
           setErrorMessage(
@@ -99,76 +127,96 @@ export const ScanReconstructionPage: React.FC = () => {
     }
 
     if (!resolvedJobId) {
+      setIsFailed(true);
+      setErrorMessage('Phiên này chưa có tác vụ tạo mô hình. Bạn có thể quay lại trang tạo kỷ vật.');
       return;
     }
 
     // Step 2: Poll status of resolved job
-    let pollInterval: any = null;
+    let isTerminal = false;
+    let failures = 0;
 
     const checkStatus = async () => {
       if (currentReqId !== activeRequestIdRef.current) {
-        if (pollInterval) clearInterval(pollInterval);
         return;
       }
 
       try {
         const job = await scanReconstructionService.getJobById(resolvedJobId!);
         if (currentReqId !== activeRequestIdRef.current) return;
+        failures = 0;
+        setConnectionError(null);
 
         setJobProgress(job.progressPercent ?? 0);
-        setJobStage(job.stage || 'running');
+        setJobStage(job.stage || '');
+        setJobStatus(job.status);
 
         const statusLower = (job.status || '').toLowerCase();
 
-        if (statusLower === 'done' || statusLower === 'completed' || (job.progressPercent ?? 0) >= 100) {
-          if (pollInterval) clearInterval(pollInterval);
+        if (statusLower === 'done' || statusLower === 'completed') {
+          isTerminal = true;
+          stopPolling();
           await fetchJobOutputs(resolvedJobId!, currentReqId);
         } else if (statusLower === 'failed' || statusLower === 'cancelled') {
-          if (pollInterval) clearInterval(pollInterval);
+          isTerminal = true;
+          stopPolling();
+          setIsDone(false);
           setIsFailed(true);
+          setJobStatus(statusLower);
           setErrorMessage(
-            job.message || 'Quá trình tái tạo 3D không thành công. Ảnh đầu vào có thể bị mờ hoặc thiếu chi tiết.'
+            job.message || job.errorCode || 'Quá trình reconstruction không thành công.'
           );
         }
       } catch {
-        // transient error, continue polling
+        if (currentReqId !== activeRequestIdRef.current) return;
+        failures++;
+        if (failures >= 3) setConnectionError('Chưa kết nối được máy chủ để cập nhật tiến trình. Tác vụ vẫn có thể đang chạy; bạn không cần gửi lại ảnh.');
       }
+      if (!isTerminal && currentReqId === activeRequestIdRef.current) pollTimerRef.current = setTimeout(checkStatus, 3500);
     };
 
     await checkStatus();
-    pollInterval = setInterval(checkStatus, 3500);
 
     return () => {
-      if (pollInterval) clearInterval(pollInterval);
+      stopPolling();
     };
   };
 
   useEffect(() => {
+    const requestIdRef = activeRequestIdRef;
+
     // Reset state when scanId changes to prevent showing old model
+    setActiveJobId(stateJobId || null);
     setModelPreviewUrl(undefined);
+    setModelOutputId(null);
     setIsDone(false);
     setIsFailed(false);
     setErrorMessage(null);
+    setOutputError(null);
+    setJobProgress(0);
+    setJobStage('queued');
+    setJobStatus('queued');
 
     let cleanupFn: (() => void) | undefined;
-    resolveAndPollJob().then((fn) => {
+    resolveAndPollJob(stateJobId).then((fn) => {
       cleanupFn = fn;
     });
 
     return () => {
-      activeRequestIdRef.current++;
+      requestIdRef.current++;
+      stopPolling();
       if (cleanupFn) cleanupFn();
     };
-  }, [scanId]);
+  }, [scanId, stateJobId]);
 
   return (
     <ShoppingPageFrame publicStyle={{ minHeight: '100vh', background: 'var(--color-bg, #0B0A10)', color: 'var(--text-primary)' }} contentStyle={{ maxWidth: 1060, margin: '0 auto', padding: '110px 24px 60px' }}>
         {/* Navigation Action Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/create-keepsake')}
+            onClick={() => navigateAway('/create-keepsake')}
             style={{ color: 'var(--text-secondary)', paddingLeft: 0 }}
           >
             Tạo kỷ vật mới
@@ -177,7 +225,7 @@ export const ScanReconstructionPage: React.FC = () => {
           <Space>
             <Button
               icon={<AppstoreOutlined />}
-              onClick={() => navigate('/my-models')}
+              onClick={() => navigateAway('/my-models')}
               style={{
                 background: 'var(--bg-elevated)',
                 borderColor: 'var(--border-color)',
@@ -189,7 +237,7 @@ export const ScanReconstructionPage: React.FC = () => {
             </Button>
             <Button
               icon={<HistoryOutlined />}
-              onClick={() => navigate('/orders')}
+              onClick={() => navigateAway('/orders')}
               style={{
                 background: 'var(--bg-elevated)',
                 borderColor: 'var(--border-color)',
@@ -206,10 +254,10 @@ export const ScanReconstructionPage: React.FC = () => {
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             <Tag color="cyan" style={{ borderRadius: 6, fontWeight: 700 }}>
-              AI PIPELINE — FASTAPI & HUNYUAN3D
+              MEMENTO3D HEAD RECONSTRUCTION
             </Tag>
             <Text style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-              Mã phiên quét: {scanId}
+              Phiên scan: {scanId}
               {activeJobId ? ` | Tác vụ: #${activeJobId.slice(0, 8).toUpperCase()}` : ''}
             </Text>
           </div>
@@ -217,7 +265,7 @@ export const ScanReconstructionPage: React.FC = () => {
             Tái Tạo Kỷ Vật 3D từ Ảnh Chụp
           </Title>
           <Text style={{ color: 'var(--text-secondary)' }}>
-            Hệ thống đang chạy cụm thị giác máy tính và khuếch tán hình học (DiT Mesh + Paint Texture) để dựng mô hình 3D chân thực từ ảnh của bạn.
+            Theo dõi trạng thái reconstruction và kiểm tra output sau khi tác vụ hoàn tất.
           </Text>
         </div>
 
@@ -230,8 +278,8 @@ export const ScanReconstructionPage: React.FC = () => {
             showIcon
             action={
               <Space>
-                <Button size="small" icon={<ReloadOutlined />} onClick={resolveAndPollJob}>
-                  Thử lại
+                <Button size="small" icon={<ReloadOutlined />} onClick={() => resolveAndPollJob()}>
+                  Kiểm tra lại trạng thái
                 </Button>
                 <Button size="small" type="primary" onClick={() => navigate('/create-keepsake')}>
                   Thay ảnh khác
@@ -242,6 +290,19 @@ export const ScanReconstructionPage: React.FC = () => {
           />
         )}
 
+        {outputError && (
+          <Alert
+            type="warning"
+            showIcon
+            message="Chưa tải được mô hình"
+            description={outputError}
+            action={<Button onClick={() => activeJobId && void fetchJobOutputs(activeJobId, activeRequestIdRef.current)}>Tải lại mô hình</Button>}
+            style={{ marginBottom: 28 }}
+          />
+        )}
+        {connectionError && <Alert type="warning" showIcon title="Đang kết nối lại" description={connectionError}
+          action={<Button onClick={() => void resolveAndPollJob()}>Kiểm tra kết nối</Button>} style={{ marginBottom: 24 }} />}
+
         {/* Live Reconstruction Progress Stepper */}
         {activeJobId && (
           <div style={{ marginBottom: 32 }}>
@@ -250,26 +311,28 @@ export const ScanReconstructionPage: React.FC = () => {
               scanId={scanId}
               initialStage={jobStage}
               initialProgress={jobProgress}
-              initialStatus={isDone ? 'COMPLETED' : isFailed ? 'FAILED' : 'RUNNING'}
+              initialStatus={isDone ? 'COMPLETED' : isFailed ? 'FAILED' : jobStatus}
+              failureMessage={errorMessage}
               onCompleted={(url) => {
+                stopPolling();
                 setIsDone(true);
                 if (url) setModelPreviewUrl(url);
-                else fetchJobOutputs(activeJobId, activeRequestIdRef.current);
+                void fetchJobOutputs(activeJobId, activeRequestIdRef.current);
               }}
-              onRetry={resolveAndPollJob}
+              onRetry={() => void resolveAndPollJob()}
             />
           </div>
         )}
 
         {/* Interactive 3D WebGL Viewer & MVP Print Simulation */}
-        <Keepsake3DViewer
+        {modelOutputId ? <ModelCustomizationWorkspace key={modelOutputId} outputId={modelOutputId} /> : <Keepsake3DViewer
           modelUrl={modelPreviewUrl}
           modelName="Kỷ vật 3D Cá nhân hóa (Bản dựng AI)"
           isUnlocked={isDone}
           isProcessing={!isDone && !isFailed}
           statusMessage={
             isFailed
-              ? 'Tác vụ dựng 3D gặp lỗi. Bấm "Thử lại" hoặc thay ảnh mới.'
+              ? 'Tác vụ dựng 3D gặp lỗi. Xem thông báo phía trên để biết cách tiếp tục.'
               : !isDone
               ? 'AI đang xử lý ảnh của bạn. Mô hình 3D thực tế sẽ xuất hiện ngay khi hoàn tất.'
               : undefined
@@ -277,17 +340,7 @@ export const ScanReconstructionPage: React.FC = () => {
           onRetry={() => {
             if (activeJobId) fetchJobOutputs(activeJobId, activeRequestIdRef.current);
           }}
-          onProceedToOrder={() => setOrderModalOpen(true)}
-        />
-
-      {/* Workshop Manufacturing Order Modal */}
-      <OrderKeepsakeModal
-        open={orderModalOpen}
-        onClose={() => setOrderModalOpen(false)}
-        scanId={scanId}
-        modelUrl={modelPreviewUrl}
-        modelName="Kỷ vật 3D Chân dung (Scan AI)"
-      />
+        />}
 
     </ShoppingPageFrame>
   );

@@ -30,6 +30,8 @@ export interface PrintJob {
 
 export interface CreatePrintJobPayload {
   orderId?: string;
+  orderItemId?: string;
+  modelVersionId?: string;
   printerId?: string;
   materialId: string;
   estimatedGram: number;

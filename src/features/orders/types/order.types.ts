@@ -120,7 +120,7 @@ export interface OrderResponse {
 }
 
 export interface OrderFeasibilityReviewRequest {
-  status: 'FEASIBLE' | 'REVISION_REQUESTED' | 'REJECTED';
+  decision: 'FEASIBLE' | 'REVISION_REQUESTED' | 'REJECTED';
   notes: string;
   finalPrice?: number;
   estimatedDays?: number;
@@ -135,6 +135,11 @@ export interface OrderListResponse {
 }
 
 export interface CreateOrderRequest {
+  modelOutputId?: string;
+  fitResultId?: string;
+  customizationRevision?: number;
+  requestedHeightCm?: number;
+  idempotencyKey?: string;
   scanId?: string;
   totalPrice?: number;
   currency?: string;

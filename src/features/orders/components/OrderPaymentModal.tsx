@@ -71,6 +71,7 @@ export const OrderPaymentModal: React.FC<OrderPaymentModalProps> = ({
           window.location.assign(vnpayRes.paymentUrl);
           return;
         }
+        throw new Error('VNPAY không trả về liên kết thanh toán. Vui lòng thử lại sau.');
       }
 
       // MOMO or ZALOPAY

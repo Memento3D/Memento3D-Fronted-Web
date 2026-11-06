@@ -14,6 +14,7 @@ export const useOrderDetail = (orderId?: string) => {
     // Poll every 8 seconds if order is in transient state (PENDING_PAYMENT, CONFIRMED, or PRINTING)
     refetchInterval: (query) => {
       const status = query.state.data?.status;
+      if (status === 'PENDING' && query.state.data?.scanId) return 8000;
       if (status === 'PENDING_PAYMENT' || status === 'CONFIRMED' || status === 'PRINTING') {
         return 8000;
       }

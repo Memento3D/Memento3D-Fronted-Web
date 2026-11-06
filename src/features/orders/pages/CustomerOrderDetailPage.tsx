@@ -1,4 +1,5 @@
 import { ShoppingPageFrame } from '../../../components/layout/ShoppingPageFrame';
+import { CustomPrintDesignPanel, isCustomPrintOrder } from '../components/CustomPrintDesignPanel';
 import { useDashboardShell } from '../../../components/layout/DashboardShellContext';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import { EmptyState } from '../../../components/ui/EmptyState';
@@ -175,16 +176,19 @@ export const CustomerOrderDetailPage: React.FC = () => {
   const isFeasibilityPending = isBespokeScan && feasibilityStatus === 'PENDING_REVIEW';
   const isFeasibilityFeasible = isBespokeScan && feasibilityStatus === 'FEASIBLE';
   const isFeasibilityAccepted = isBespokeScan && feasibilityStatus === 'ACCEPTED';
-  const isEligibleToPay =
-    !isPaid &&
-    order.status !== 'CANCELLED' &&
-    order.status !== 'COMPLETED' &&
-    (!isBespokeScan || isFeasibilityFeasible || isFeasibilityAccepted);
-
-  const isEligibleToCancel = canCustomerCancel(order.status);
   const totalAmount = order.totalAmount ?? order.totalPrice;
   const paidAmount = order.paidAmount ?? (isPaid ? totalAmount : 0);
   const remainingAmount = order.remainingAmount ?? Math.max(0, totalAmount - paidAmount);
+  const isOrderClosed = order.status === 'CANCELLED' || order.status === 'COMPLETED' || order.status === 'REFUNDED';
+  const isQuoteAccepted = isCustomPrintOrder(order) ? isFeasibilityAccepted : isFeasibilityFeasible || isFeasibilityAccepted || Boolean(order.customerAcceptedAt);
+  const isEligibleToPay =
+    !isPaid &&
+    remainingAmount > 0 &&
+    !isOrderClosed &&
+    (!isBespokeScan || isQuoteAccepted);
+  const shouldShowPaymentAction = !isPaid && remainingAmount > 0 && !isOrderClosed;
+
+  const isEligibleToCancel = canCustomerCancel(order.status);
 
   const handleAcceptQuote = async () => {
     try {
@@ -331,6 +335,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
         </div>
 
         {/* 3.1 GENERAL INFO HEADER */}
+        <CustomPrintDesignPanel key={order.id} order={order} />
         <Card
           style={{
             background: 'var(--bg-card)',
@@ -395,7 +400,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                     <Button
                       size="small"
                       icon={<EyeOutlined />}
-                      onClick={() => navigate(`/reconstruction/${order.scanId}`)}
+                      onClick={() => isCustomPrintOrder(order) ? document.getElementById(`custom-print-design-${order.id}`)?.scrollIntoView({ behavior: 'smooth' }) : navigate(`/reconstruction/${order.scanId}`)}
                     >
                       Xem lại mô hình 3D
                     </Button>
@@ -443,7 +448,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       </Button>
                       <Button
                         icon={<EyeOutlined />}
-                        onClick={() => navigate(`/reconstruction/${order.scanId}`)}
+                        onClick={() => isCustomPrintOrder(order) ? document.getElementById(`custom-print-design-${order.id}`)?.scrollIntoView({ behavior: 'smooth' }) : navigate(`/reconstruction/${order.scanId}`)}
                         style={{ borderRadius: 8 }}
                       >
                         Kiểm tra lại mô hình 3D
@@ -1050,13 +1055,15 @@ export const CustomerOrderDetailPage: React.FC = () => {
                   </span>
                 </div>
 
-                {isEligibleToPay && (
+                {shouldShowPaymentAction && (
                   <Button
                     type="primary"
                     block
                     size="large"
                     icon={<CreditCardOutlined />}
                     onClick={() => setPaymentModalOpen(true)}
+                    disabled={!isEligibleToPay}
+                    title={!isEligibleToPay ? 'Thanh toán sẽ khả dụng sau khi báo giá được duyệt và chấp thuận.' : undefined}
                     style={{
                       background: 'var(--primary)',
                       borderColor: 'var(--primary)',
@@ -1066,8 +1073,28 @@ export const CustomerOrderDetailPage: React.FC = () => {
                       boxShadow: 'none',
                     }}
                   >
-                    Thanh toán ngay
+                    {isEligibleToPay ? 'Thanh toán đơn hàng qua VNPAY' : 'Chưa thể thanh toán'}
                   </Button>
+                )}
+
+                {shouldShowPaymentAction && !isEligibleToPay && isBespokeScan && (
+                  <Alert
+                    type="info"
+                    showIcon
+                    message={
+                      isFeasibilityPending
+                        ? 'Đang chờ xưởng duyệt báo giá'
+                        : feasibilityStatus === 'REVISION_REQUESTED'
+                          ? 'Cần cập nhật mô hình theo yêu cầu của xưởng'
+                          : 'Cần chấp thuận báo giá trước khi thanh toán'
+                    }
+                    description={
+                      isFeasibilityPending
+                        ? 'Nút thanh toán sẽ được mở sau khi xưởng hoàn tất thẩm định và gửi báo giá.'
+                        : 'Sau khi báo giá được duyệt và bạn chấp thuận, nút thanh toán VNPAY sẽ khả dụng tại đây.'
+                    }
+                    style={{ marginTop: 8 }}
+                  />
                 )}
 
                 <div style={{ marginTop: 14, padding: '12px', background: 'var(--surface-container)', borderRadius: 'var(--radius-sm, 6px)', fontSize: '0.775rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>

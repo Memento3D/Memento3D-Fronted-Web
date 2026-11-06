@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Form, Select, InputNumber, Button, message, Alert } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { materialApi } from '../../material/api/materialApi';
 import { printJobApi } from '../../printjob/api/printJobApi';
 import type { OrderResponse } from '../types/order.types';
+import { customPrintApi } from '../api/customPrintApi';
+import { isCustomPrintOrder } from './CustomPrintDesignPanel';
 
 interface OrderPrintJobLinkModalProps {
   order: OrderResponse | null;
@@ -21,6 +23,9 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const custom = !!order && isCustomPrintOrder(order);
+  const design = useQuery({ queryKey: ['custom-print-design', order?.id], queryFn: () => customPrintApi.get(order!.id), enabled: open && custom, retry: false });
+  useEffect(() => {if(open) form.setFieldValue('orderItemId', order?.items?.length === 1 ? order.items[0].id : undefined);}, [open, order?.id, form]);
 
   const { data: materialsData, isLoading: loadingMaterials } = useQuery({
     queryKey: ['active-materials'],
@@ -46,8 +51,11 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
   if (!order) return null;
 
   const handleSubmit = async (values: any) => {
+    if(custom && !design.data?.approvedForProduction) {message.error('File của đơn cần được xưởng duyệt trước khi lập lệnh in.');return;}
     await createJobMutation.mutateAsync({
       orderId: order.id,
+      orderItemId: custom ? design.data!.orderItemId : values.orderItemId,
+      modelVersionId: custom ? design.data!.modelVersionId ?? undefined : undefined,
       materialId: values.materialId,
       estimatedGram: values.estimatedGram,
       estimatedDurationSeconds: values.estimatedDurationSeconds,
@@ -84,6 +92,9 @@ export const OrderPrintJobLinkModal: React.FC<OrderPrintJobLinkModalProps> = ({
           estimatedDurationSeconds: 14400,
         }}
       >
+        <Form.Item name="orderItemId" label="Sản phẩm trong đơn" rules={[{ required: true }]}>
+          <Select options={order.items?.map(item => ({ value: item.id, label: item.productNameSnapshot || item.productName || item.id }))} />
+        </Form.Item>
         <Form.Item
           name="materialId"
           label={<span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Vật liệu in</span>}

@@ -145,6 +145,95 @@ describe.each(cases)('$name', ({ component, read, data, empty, marker, summary }
   });
 });
 
+describe('customer order payment action', () => {
+  it('shows an enabled VNPAY action after a custom scan quote is accepted', async () => {
+    api.order.mockResolvedValue({
+      ...order,
+      status: 'PENDING_PAYMENT',
+      paymentStatus: 'PENDING',
+      paymentMethod: 'VNPAY',
+      scanId: 'scan-1',
+      feasibilityStatus: 'ACCEPTED',
+      customerAcceptedAt: '2026-10-31T00:00:00Z',
+      paidAmount: 0,
+      remainingAmount: 120000,
+    });
+    mounted = await mountPage(<CustomerOrderDetailPage />);
+
+    await until(() => expect(mounted!.host.textContent).toContain('Thanh toán đơn hàng qua VNPAY'));
+    const paymentButton = [...mounted.host.querySelectorAll('button')]
+      .find((button) => button.textContent?.includes('Thanh toán đơn hàng qua VNPAY'));
+    expect(paymentButton).toBeTruthy();
+    expect(paymentButton?.disabled).toBe(false);
+  });
+
+  it('explains why payment is unavailable while a custom scan quote is pending', async () => {
+    api.order.mockResolvedValue({
+      ...order,
+      status: 'PENDING_PAYMENT',
+      paymentStatus: 'PENDING',
+      paymentMethod: 'VNPAY',
+      scanId: 'scan-1',
+      feasibilityStatus: 'PENDING_REVIEW',
+      paidAmount: 0,
+      remainingAmount: 120000,
+    });
+    mounted = await mountPage(<CustomerOrderDetailPage />);
+
+    await until(() => expect(mounted!.host.textContent).toContain('Đang chờ xưởng duyệt báo giá'));
+    const paymentButton = [...mounted.host.querySelectorAll('button')]
+      .find((button) => button.textContent?.includes('Chưa thể thanh toán'));
+    expect(paymentButton).toBeTruthy();
+    expect(paymentButton?.disabled).toBe(true);
+  });
+});
+
+describe('manager order actions', () => {
+  it('keeps scan feasibility review in its section instead of duplicating it in the action bar', async () => {
+    api.order.mockResolvedValue({
+      ...order,
+      status: 'PENDING_PAYMENT',
+      paymentStatus: 'PENDING',
+      paymentMethod: 'VNPAY',
+      scanId: 'scan-1',
+      feasibilityStatus: 'PENDING_REVIEW',
+    });
+    mounted = await mountPage(<ManagerOrderDetailPage />);
+
+    await until(() => expect(mounted!.host.textContent).toContain('Thẩm định & gửi báo giá'));
+    const reviewButtons = [...mounted.host.querySelectorAll('button')]
+      .filter((button) => button.textContent?.includes('Thẩm định & gửi báo giá'));
+    expect(reviewButtons).toHaveLength(1);
+    expect(mounted.host.textContent).not.toContain('Chuyển sang:');
+  });
+
+  it('does not expose production status actions before the order is paid', async () => {
+    api.order.mockResolvedValue({
+      ...order,
+      status: 'CONFIRMED',
+      paymentStatus: 'PENDING',
+      paymentMethod: 'VNPAY',
+    });
+    mounted = await mountPage(<ManagerOrderDetailPage />);
+
+    await until(() => expect(mounted!.host.textContent).toContain('Chờ khách hàng hoàn tất thanh toán'));
+    expect(mounted!.host.textContent).not.toContain('Đưa vào xếp lịch sản xuất');
+  });
+
+  it('offers print-job creation as the main action after payment and production intake', async () => {
+    api.order.mockResolvedValue({
+      ...order,
+      status: 'PROCESSING',
+      paymentStatus: 'PAID',
+      paymentMethod: 'VNPAY',
+    });
+    mounted = await mountPage(<ManagerOrderDetailPage />);
+
+    await until(() => expect(mounted!.host.textContent).toContain('Lập lệnh in 3D'));
+    expect(mounted!.host.textContent).not.toContain('Đánh dấu hoàn tất chế tác');
+  });
+});
+
 it.each([
   ['customer', <CustomerOrderDetailPage key="customer" />], ['manager', <ManagerOrderDetailPage key="manager" />],
 ])('%s order detail preserves hook order across loading, success, failed refetch, missing data, and recovery', async (_name, component) => {
