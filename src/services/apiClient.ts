@@ -8,7 +8,7 @@ export const resolveApiBaseUrl = (): string => {
     envUrl ||
     (import.meta.env.PROD
       ? "https://memento3d-backend.onrender.com"
-      : "https://lively-diffusion-duvet.ngrok-free.dev http://localhost:8080");
+      : "http://localhost:8080");
 
   const cleanUrl = rawUrl.replace(/\/+$/, "");
 
@@ -29,21 +29,64 @@ export const apiClient = axios.create({
   },
 });
 
-let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (token: string) => void;
-  reject: (error: any) => void;
-}> = [];
+let refreshInFlight: Promise<string> | null = null;
 
-const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else if (token) {
-      prom.resolve(token);
+export const expireSession = () => {
+  tokenStorage.clearTokens();
+  window.dispatchEvent(new CustomEvent('memento3d:session-expired'));
+};
+
+// REST and SSE share one rotation. A late 401 can reuse an already renewed token.
+export const refreshAccessToken = (rejectedToken?: string | null): Promise<string> => {
+  const current = tokenStorage.getAccessToken();
+  if (rejectedToken && current && current !== rejectedToken) return Promise.resolve(current);
+  if (refreshInFlight) return refreshInFlight;
+  const refreshToken = tokenStorage.getRefreshToken();
+  if (!refreshToken) {
+    expireSession();
+    return Promise.reject(new Error('No refresh token available'));
+  }
+  refreshInFlight = (async () => {
+    try {
+      const response = await axios.post(BASE_URL + '/auth/refresh', { refreshToken }, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }, timeout: 15000,
+      });
+      const access = response.data?.accessToken;
+      const refresh = response.data?.refreshToken;
+      if (typeof access !== 'string' || !access || typeof refresh !== 'string' || !refresh) {
+        throw new Error('Invalid refresh response');
+      }
+      // A logout/new login while the request was pending must not restore the old session.
+      if (tokenStorage.getRefreshToken() !== refreshToken) throw new Error('Session changed during refresh');
+      tokenStorage.setTokens(access, refresh);
+      return access;
+    } catch (error) {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      if ((status === 401 || status === 403) && tokenStorage.getRefreshToken() === refreshToken) expireSession();
+      throw error;
+    } finally {
+      refreshInFlight = null;
     }
-  });
-  failedQueue = [];
+  })();
+  return refreshInFlight;
+};
+
+// A resource can misreport authorization failure as 401. Verify the identity
+// endpoint before treating a rejected, freshly rotated token as a lost session.
+export const verifySessionAfterUnauthorized = async (rejectedToken: string): Promise<boolean> => {
+  if (tokenStorage.getAccessToken() !== rejectedToken) return false;
+  try {
+    const response = await axios.get(BASE_URL + '/auth/me', {
+      headers: { Authorization: 'Bearer ' + rejectedToken, 'ngrok-skip-browser-warning': 'true' },
+      timeout: 15000,
+    });
+    return Boolean(response.data?.id) && tokenStorage.getAccessToken() === rejectedToken;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401 && tokenStorage.getAccessToken() === rejectedToken) {
+      expireSession();
+    }
+    return false;
+  }
 };
 
 // Request interceptor: attach bearer token from tokenStorage
@@ -106,56 +149,19 @@ apiClient.interceptors.response.use(
       !originalRequest?._retry &&
       !isAuthEndpoint
     ) {
-      const refreshToken = tokenStorage.getRefreshToken();
-
-      if (!refreshToken) {
-        tokenStorage.clearTokens();
-        window.dispatchEvent(new CustomEvent("memento3d:session-expired"));
-        return Promise.reject(error);
-      }
-
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${token}`;
-            }
-            return apiClient(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
-      }
-
       originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        const refreshResponse = await axios.post(`${BASE_URL}/auth/refresh`, {
-          refreshToken,
-        });
-
-        const newAccessToken = refreshResponse.data?.accessToken;
-        const newRefreshToken = refreshResponse.data?.refreshToken;
-
-        if (newAccessToken) {
-          tokenStorage.setTokens(newAccessToken, newRefreshToken);
-          processQueue(null, newAccessToken);
-
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          }
-          return apiClient(originalRequest);
-        } else {
-          throw new Error("Refresh response missing access token");
-        }
-      } catch (refreshErr) {
-        processQueue(refreshErr, null);
-        tokenStorage.clearTokens();
-        window.dispatchEvent(new CustomEvent("memento3d:session-expired"));
-        return Promise.reject(refreshErr);
-      } finally {
-        isRefreshing = false;
+      const authorization = originalRequest.headers?.Authorization;
+      const rejectedToken = typeof authorization === 'string' ? authorization.replace(/^Bearer /, '') : null;
+      const token = await refreshAccessToken(rejectedToken);
+      originalRequest.headers.Authorization = 'Bearer ' + token;
+      return apiClient(originalRequest);
+    }
+    if (error.response?.status === 401 && originalRequest?._retry && !isAuthEndpoint) {
+      const sent = originalRequest.headers?.Authorization;
+      const current = tokenStorage.getAccessToken();
+      if (current && sent === 'Bearer ' + current) {
+        if (originalRequest.url?.split('?')[0].endsWith('/auth/me')) expireSession();
+        else await verifySessionAfterUnauthorized(current);
       }
     }
 
@@ -176,7 +182,9 @@ apiClient.interceptors.response.use(
       if (isLoginOrAuth) {
         message = "Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.";
       } else {
-        message = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+        message = tokenStorage.getAccessToken()
+          ? "Máy chủ từ chối truy cập chức năng này. Vui lòng kiểm tra quyền của tài khoản."
+          : "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
       }
     } else if (status === 403) {
       // If server returned a specific message (e.g. Email not verified, account suspended), preserve it!

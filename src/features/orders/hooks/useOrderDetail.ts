@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { orderApi } from '../api/orderApi';
 import type { OrderResponse } from '../types/order.types';
+import { isWorkshopOrder } from '../utils/orderQuotation';
 
 export const useOrderDetail = (orderId?: string) => {
   return useQuery<OrderResponse, Error>({
@@ -14,7 +15,8 @@ export const useOrderDetail = (orderId?: string) => {
     // Poll every 8 seconds if order is in transient state (PENDING_PAYMENT, CONFIRMED, or PRINTING)
     refetchInterval: (query) => {
       const status = query.state.data?.status;
-      if (status === 'PENDING' && query.state.data?.scanId) return 8000;
+      const order = query.state.data;
+      if (order && isWorkshopOrder(order) && (status === 'PENDING' || status === 'PENDING_PAYMENT')) return 8000;
       if (status === 'PENDING_PAYMENT' || status === 'CONFIRMED' || status === 'PRINTING') {
         return 8000;
       }

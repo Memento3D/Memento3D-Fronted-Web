@@ -6,6 +6,7 @@ import {
   Skeleton,
   Modal,
   message,
+  Alert,
 } from 'antd';
 import {
   PlusOutlined,
@@ -20,6 +21,7 @@ import { OrderFilterBar } from '../../orders/components/OrderFilterBar';
 import { OrderPaymentModal } from '../../orders/components/OrderPaymentModal';
 import type { OrderResponse, OrderStatus } from '../../orders/types/order.types';
 import { useEventSubscription } from '../../../shared/realtime';
+import { hasPendingQuotation } from '../../orders/utils/orderQuotation';
 
 export const CustomerOrdersPage: React.FC = () => {
   const navigate = useNavigate();
@@ -73,6 +75,7 @@ export const CustomerOrdersPage: React.FC = () => {
 
   const orders = data?.orders || [];
   const totalCount = data?.total || 0;
+  const quotations = orders.filter(hasPendingQuotation);
 
   return (
     <div
@@ -152,6 +155,17 @@ export const CustomerOrdersPage: React.FC = () => {
             </Button>
           </div>
         </div>
+
+        {quotations.length > 0 && (
+          <Alert
+            type="info"
+            showIcon
+            title="Bạn có báo giá từ xưởng cần xem và chấp thuận"
+            description="Mở chi tiết đơn để xem giá, thời gian chế tác và ghi chú của xưởng. Bạn chỉ thanh toán sau khi đồng ý báo giá."
+            action={<Button type="primary" onClick={() => navigate(`/customer/orders/${quotations[0].id}`)}>Xem báo giá</Button>}
+            style={{ marginBottom: 16 }}
+          />
+        )}
 
         {/* 2. Toolbar: Segmented Tabs & Search Bar */}
         <OrderFilterBar

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { orderApi } from '../api/orderApi';
 import type { OrderListParams, OrderListResponse } from '../types/order.types';
+import { isWorkshopOrder } from '../utils/orderQuotation';
 
 export const useOrders = (params?: OrderListParams) => {
   return useQuery<OrderListResponse, Error>({
@@ -8,6 +9,8 @@ export const useOrders = (params?: OrderListParams) => {
     queryFn: () => orderApi.list(params),
     placeholderData: (previousData) => previousData,
     refetchOnWindowFocus: true,
+    refetchInterval: query => query.state.data?.orders.some(order =>
+      isWorkshopOrder(order) && (order.status === 'PENDING' || order.status === 'PENDING_PAYMENT')) ? 15000 : false,
   });
 };
 

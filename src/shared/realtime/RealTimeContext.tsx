@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { notification } from 'antd';
-import axios from 'axios';
 import { useAuth } from '../../features/auth/context/AuthContext';
 import { tokenStorage } from '../../features/auth/utils/tokenStorage';
-import { BASE_URL } from '../../services/apiClient';
+import { BASE_URL, refreshAccessToken, verifySessionAfterUnauthorized } from '../../services/apiClient';
+import { readEventStream } from './sseTransport';
 import type { ConnectionStatus, RealTimeEvent, RealTimeEventType } from './eventTypes';
 
 type EventCallback<T = any> = (event: RealTimeEvent<T>) => void;
@@ -32,12 +32,11 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('DISCONNECTED');
   const [lastEvent, setLastEvent] = useState<RealTimeEvent | null>(null);
 
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const eventSourceRef = useRef<{ close: () => void } | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heartbeatWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const backoffDelayRef = useRef<number>(INITIAL_BACKOFF_MS);
   const consecutiveFailuresRef = useRef<number>(0);
-  const isRefreshingTokenRef = useRef<boolean>(false);
   const processedEventIdsRef = useRef<Set<string>>(new Set());
 
   // Subscription registries
@@ -208,106 +207,61 @@ export const RealTimeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       eventSourceRef.current = null;
     }
 
-    const sseUrl = `${BASE_URL}/events/stream?token=${encodeURIComponent(token)}`;
-
-    setConnectionStatus((prev) => (prev === 'CONNECTED' ? 'CONNECTED' : 'CONNECTING'));
-
-    const es = new EventSource(sseUrl);
-    eventSourceRef.current = es;
-
-    es.onopen = () => {
-      setConnectionStatus('CONNECTED');
-      consecutiveFailuresRef.current = 0;
-      backoffDelayRef.current = INITIAL_BACKOFF_MS;
-      resetHeartbeatWatchdog();
-      console.log('[RealTime] Connected to Memento3D real-time event stream');
-    };
-
-    // Generic message handler
-    es.onmessage = (event) => {
-      resetHeartbeatWatchdog();
+    const controller = new AbortController();
+    const connection = { close: () => controller.abort() };
+    eventSourceRef.current = connection;
+    setConnectionStatus('CONNECTING');
+    void (async () => {
       try {
-        const parsed: RealTimeEvent = JSON.parse(event.data);
-        handleIncomingEvent(parsed);
-      } catch (err) {
-        console.warn('[RealTime] Non-JSON SSE message received:', event.data);
-      }
-    };
-
-    // Specific event listeners for all known event types
-    const knownTypes: RealTimeEventType[] = [
-      'RECONSTRUCTION_PROGRESS',
-      'RECONSTRUCTION_UPDATED',
-      'PAYMENT_STATUS_CHANGED',
-      'ORDER_STATUS_CHANGED',
-      'MODEL_APPROVAL_REQUIRED',
-      'MODEL_APPROVED',
-      'MODEL_REVISION_COMPLETED',
-      'PRINT_JOB_UPDATED',
-      'PRINTER_STATUS_CHANGED',
-      'QC_STATUS_CHANGED',
-      'NOTIFICATION_CREATED',
-      'CONNECTED',
-    ];
-
-    knownTypes.forEach((evtType) => {
-      es.addEventListener(evtType, (e: MessageEvent) => {
-        resetHeartbeatWatchdog();
-        try {
-          const parsed: RealTimeEvent = JSON.parse(e.data);
-          handleIncomingEvent(parsed);
-        } catch (err) {
-          console.warn(`[RealTime] Error parsing ${evtType} data:`, e.data);
+        let accessToken = token;
+        const open = () => fetch(BASE_URL + '/events/stream', {
+          headers: {
+            Accept: 'text/event-stream',
+            Authorization: 'Bearer ' + accessToken,
+            'ngrok-skip-browser-warning': 'true',
+          },
+          signal: controller.signal,
+          cache: 'no-store',
+        });
+        let response = await open();
+        if (response.status === 401) {
+          await response.body?.cancel();
+          accessToken = await refreshAccessToken(accessToken);
+          if (controller.signal.aborted) return;
+          response = await open();
+          if (response.status === 401) await verifySessionAfterUnauthorized(accessToken);
         }
-      });
-    });
-
-    es.onerror = async () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
+        if (!response.ok) throw new Error('Realtime HTTP ' + response.status);
+        if (!response.headers.get('content-type')?.includes('text/event-stream')) {
+          await response.body?.cancel();
+          throw new Error('Realtime endpoint returned a non-stream response');
+        }
+        if (controller.signal.aborted) return;
+        setConnectionStatus('CONNECTED');
+        consecutiveFailuresRef.current = 0;
+        backoffDelayRef.current = INITIAL_BACKOFF_MS;
+        resetHeartbeatWatchdog();
+        await readEventStream(response, controller.signal, (data) => {
+          if (controller.signal.aborted) return;
+          try { handleIncomingEvent(JSON.parse(data)); }
+          catch { console.warn('[RealTime] Invalid event payload'); }
+        }, resetHeartbeatWatchdog);
+        if (!controller.signal.aborted) throw new Error('Realtime stream ended');
+      } catch {
+        if (controller.signal.aborted || eventSourceRef.current !== connection) return;
+        controller.abort();
         eventSourceRef.current = null;
-      }
-
-      consecutiveFailuresRef.current += 1;
-      const failures = consecutiveFailuresRef.current;
-
-      // Handle potential 401 token expiration: attempt refresh if we have a refresh token
-      const refreshToken = tokenStorage.getRefreshToken();
-      if (failures >= 2 && refreshToken && !isRefreshingTokenRef.current) {
-        isRefreshingTokenRef.current = true;
-        try {
-          const refreshRes = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken });
-          const newAccessToken = refreshRes.data?.accessToken;
-          const newRefreshToken = refreshRes.data?.refreshToken;
-          if (newAccessToken) {
-            tokenStorage.setTokens(newAccessToken, newRefreshToken);
-            consecutiveFailuresRef.current = 0;
-            backoffDelayRef.current = INITIAL_BACKOFF_MS;
-            isRefreshingTokenRef.current = false;
-            connectStream();
-            return;
-          }
-        } catch {
-          // Token refresh failed -> session has expired
-          isRefreshingTokenRef.current = false;
-          tokenStorage.clearTokens();
-          window.dispatchEvent(new CustomEvent('memento3d:session-expired'));
+        if (heartbeatWatchdogRef.current) clearTimeout(heartbeatWatchdogRef.current);
+        consecutiveFailuresRef.current += 1;
+        // Transport/CORS/server failures never invalidate the login session.
+        if (!tokenStorage.getAccessToken() || consecutiveFailuresRef.current >= MAX_RETRY_ATTEMPTS) {
           setConnectionStatus('DISCONNECTED');
-          console.warn('[RealTime] Phiên đăng nhập đã hết hạn. Đã dừng kết nối thời gian thực.');
           return;
         }
-        isRefreshingTokenRef.current = false;
+        setConnectionStatus('RECONNECTING');
+        scheduleReconnection();
       }
-
-      if (failures >= MAX_RETRY_ATTEMPTS) {
-        setConnectionStatus('DISCONNECTED');
-        console.warn(`[RealTime] Đã thử kết nối ${failures} lần không thành công. Dừng kết nối.`);
-        return;
-      }
-
-      setConnectionStatus('RECONNECTING');
-      scheduleReconnection();
-    };
+    })();
   }, [isAuthenticated, handleIncomingEvent, resetHeartbeatWatchdog]);
 
   // Schedule reconnection with exponential backoff + jitter

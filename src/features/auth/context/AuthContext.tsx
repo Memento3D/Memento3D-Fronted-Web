@@ -35,7 +35,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
     } catch (err) {
       console.warn('Failed to restore auth session:', err);
-      tokenStorage.clearTokens();
+      // Network/proxy/server failures do not prove the session was revoked.
+      const status = (err as { status?: number; response?: { status?: number } }).status ??
+        (err as { response?: { status?: number } }).response?.status;
+      if (status === 401 || status === 403) tokenStorage.clearTokens();
       await clearAuthCache();
       setUser(null);
     } finally {

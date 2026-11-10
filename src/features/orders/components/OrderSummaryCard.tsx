@@ -14,6 +14,7 @@ import type { OrderResponse } from '../types/order.types';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { formatCurrency, formatOrderDate } from '../utils/orderFormatters';
 import { canCustomerCancel } from '../utils/orderStateMachine';
+import { isWorkshopOrder, hasPendingQuotation, hasAcceptedQuotation } from '../utils/orderQuotation';
 
 interface OrderSummaryCardProps {
   order: OrderResponse;
@@ -32,8 +33,11 @@ export const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
   const detailUrl = isManagerView ? `/manager/orders/${order.id}` : `/customer/orders/${order.id}`;
 
   const isEligibleToCancel = canCustomerCancel(order.status) || isManagerView;
-  const isEligibleToPay = order.status === 'PENDING_PAYMENT' || (order.status === 'PENDING' && order.paymentStatus !== 'PAID');
   const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === 'SUCCESS';
+  const pendingQuote = hasPendingQuotation(order);
+  const isEligibleToPay = !isPaid && (order.totalAmount ?? order.totalPrice) > 0 &&
+    (order.status === 'PENDING_PAYMENT' || order.status === 'PENDING') &&
+    (!isWorkshopOrder(order) || hasAcceptedQuotation(order));
 
   // Representative Product Details
   const items = order.items || [];
@@ -89,6 +93,7 @@ export const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
           </span>
 
           <OrderStatusBadge status={order.status} />
+          {pendingQuote && <Tag color="purple">Có báo giá mới · Chờ bạn duyệt</Tag>}
 
           {/* Payment Status Tag */}
           <Tag
@@ -115,7 +120,7 @@ export const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
               margin: 0,
             }}
           >
-            {isPaid ? 'ĐÃ THANH TOÁN' : order.paymentMethod === 'CASH' ? 'TIỀN MẶT (COD)' : 'CHỜ THANH TOÁN'}
+            {isPaid ? 'ĐÃ THANH TOÁN' : pendingQuote ? 'CHỜ DUYỆT BÁO GIÁ' : isWorkshopOrder(order) && !hasAcceptedQuotation(order) ? 'CHỜ XƯỞNG THẨM ĐỊNH' : order.paymentMethod === 'CASH' ? 'TIỀN MẶT (COD)' : 'CHỜ THANH TOÁN'}
           </Tag>
         </div>
 
@@ -310,7 +315,7 @@ export const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
             fontSize: '0.825rem',
           }}
         >
-          Xem chi tiết
+          {pendingQuote && !isManagerView ? 'Xem & duyệt báo giá' : 'Xem chi tiết'}
         </Button>
       </div>
     </Card>

@@ -56,6 +56,7 @@ import { OrderTimeline } from '../components/OrderTimeline';
 import { OrderPaymentModal } from '../components/OrderPaymentModal';
 import { formatCurrency, formatOrderDate } from '../utils/orderFormatters';
 import { canCustomerCancel } from '../utils/orderStateMachine';
+import { isWorkshopOrder, hasPendingQuotation, hasAcceptedQuotation } from '../utils/orderQuotation';
 import { useEventSubscription } from '../../../shared/realtime';
 import { modelReviewService } from '../../../services/modelReviewService';
 
@@ -171,16 +172,16 @@ export const CustomerOrderDetailPage: React.FC = () => {
   const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === 'SUCCESS';
   const isCash = order.paymentMethod === 'CASH';
 
-  const isBespokeScan = Boolean(order.scanId);
+  const isBespokeScan = isWorkshopOrder(order);
   const feasibilityStatus = order.feasibilityStatus || 'PENDING_REVIEW';
   const isFeasibilityPending = isBespokeScan && feasibilityStatus === 'PENDING_REVIEW';
-  const isFeasibilityFeasible = isBespokeScan && feasibilityStatus === 'FEASIBLE';
-  const isFeasibilityAccepted = isBespokeScan && feasibilityStatus === 'ACCEPTED';
+  const isFeasibilityFeasible = hasPendingQuotation(order);
+  const isFeasibilityAccepted = isBespokeScan && hasAcceptedQuotation(order);
   const totalAmount = order.totalAmount ?? order.totalPrice;
   const paidAmount = order.paidAmount ?? (isPaid ? totalAmount : 0);
   const remainingAmount = order.remainingAmount ?? Math.max(0, totalAmount - paidAmount);
   const isOrderClosed = order.status === 'CANCELLED' || order.status === 'COMPLETED' || order.status === 'REFUNDED';
-  const isQuoteAccepted = isCustomPrintOrder(order) ? isFeasibilityAccepted : isFeasibilityFeasible || isFeasibilityAccepted || Boolean(order.customerAcceptedAt);
+  const isQuoteAccepted = isFeasibilityAccepted;
   const isEligibleToPay =
     !isPaid &&
     remainingAmount > 0 &&
@@ -191,11 +192,12 @@ export const CustomerOrderDetailPage: React.FC = () => {
   const isEligibleToCancel = canCustomerCancel(order.status);
 
   const handleAcceptQuote = async () => {
+    if (acceptingQuoteLoading || !isFeasibilityFeasible || totalAmount <= 0) return;
     try {
       setAcceptingQuoteLoading(true);
       await orderApi.acceptQuote(order.id);
       message.success('Đã chấp thuận báo giá và thời gian sản xuất! Đơn hàng sẵn sàng thanh toán.');
-      refetch();
+      await refetch();
     } catch (err: any) {
       message.error(err.message || 'Không thể duyệt báo giá. Vui lòng thử lại.');
     } finally {
@@ -335,7 +337,6 @@ export const CustomerOrderDetailPage: React.FC = () => {
         </div>
 
         {/* 3.1 GENERAL INFO HEADER */}
-        <CustomPrintDesignPanel key={order.id} order={order} />
         <Card
           style={{
             background: 'var(--bg-card)',
@@ -424,7 +425,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                   <div>
                     <p style={{ margin: '4px 0 8px' }}>
                       <strong>Báo giá chính thức:</strong> {formatCurrency(totalAmount, order.currency || 'VND')} •{' '}
-                      <strong>Thời gian chế tác dự kiến:</strong> {order.estimatedProductionDays || 3} ngày làm việc
+                      <strong>Thời gian chế tác dự kiến:</strong> {order.estimatedProductionDays ? `${order.estimatedProductionDays} ngày làm việc` : 'Chưa được xưởng xác nhận'}
                       {order.feasibilityNotes && (
                         <span style={{ display: 'block', marginTop: 4 }}>
                           <strong>Ghi chú từ kỹ thuật viên:</strong> {order.feasibilityNotes}
@@ -436,6 +437,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
                         type="primary"
                         icon={<CheckCircleOutlined />}
                         loading={acceptingQuoteLoading}
+                        disabled={totalAmount <= 0}
                         onClick={handleAcceptQuote}
                         style={{
                           background: 'var(--primary)',
@@ -549,6 +551,8 @@ export const CustomerOrderDetailPage: React.FC = () => {
             )}
           </div>
         )}
+
+        <CustomPrintDesignPanel key={order.id} order={order} />
 
         {/* Alerts for active phases */}
         {order.status === 'PRINTING' && (
@@ -1109,7 +1113,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
 
       {/* Payment Modal */}
       <OrderPaymentModal
-        open={paymentModalOpen}
+        open={paymentModalOpen && isEligibleToPay}
         order={order}
         onClose={() => setPaymentModalOpen(false)}
         onPaymentSuccess={() => refetch()}
